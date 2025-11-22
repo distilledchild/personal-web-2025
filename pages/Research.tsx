@@ -1,0 +1,220 @@
+import React, { useState } from 'react';
+import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
+import { FileText, GitBranch, Database, Sliders } from 'lucide-react';
+
+const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
+  name: `Loc ${i * 10}kb`,
+  interaction: Math.abs(Math.sin(i * 0.2) * 10) + Math.random() * 5,
+  ctcf: Math.abs(Math.cos(i * 0.2) * 8),
+  enhancer: i > 20 && i < 35 ? 15 : 2
+}));
+
+const mockScatterData = Array.from({ length: 100 }, () => ({
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  z: Math.random() * 500, // expression
+  cluster: Math.random() > 0.5 ? 'Cluster A' : 'Cluster B'
+}));
+
+// Removed "card" styling (bg-white, border, shadow) to make it look like a full page section
+const PEInteractions = () => (
+  <div className="space-y-8 animate-fadeIn py-4">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6">
+      <div>
+        <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+          <Sliders size={24} className="text-green-600" />
+          Promoter–Enhancer Interaction Mapping
+        </h3>
+        <p className="text-slate-500 mt-2 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
+      </div>
+      <div className="flex gap-3">
+        <select className="bg-green-50 text-green-800 text-sm font-medium px-4 py-2 rounded-lg border border-green-100 outline-none cursor-pointer hover:bg-green-100 transition-colors">
+          <option>Gene: MYC</option>
+          <option>Gene: SOX2</option>
+          <option>Gene: TP53</option>
+        </select>
+        <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
+          <option>Res: 5kb</option>
+          <option>Res: 10kb</option>
+        </select>
+      </div>
+    </div>
+
+    <div className="h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={mockInteractionData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={4} stroke="#94a3b8" />
+          <YAxis stroke="#94a3b8" />
+          <Tooltip
+            contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+          />
+          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+          <Bar dataKey="enhancer" barSize={30} fill="#86efac" name="Enhancer Signal" radius={[4, 4, 0, 0]} />
+          <Line type="monotone" dataKey="interaction" stroke="#059669" strokeWidth={4} name="Interaction Freq" dot={false} />
+          <Line type="step" dataKey="ctcf" stroke="#db2777" strokeWidth={3} strokeDasharray="5 5" name="CTCF Density" dot={false} />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600">
+      <div className="bg-white p-4 rounded-xl border border-slate-100">
+        <strong className="block text-slate-900 mb-1">File Source</strong> data_chr8_myc.tsv
+      </div>
+      <div className="bg-white p-4 rounded-xl border border-slate-100">
+        <strong className="block text-slate-900 mb-1">Significant Loops</strong> 142 detected (FDR &lt; 0.05)
+      </div>
+      <div className="bg-white p-4 rounded-xl border border-slate-100">
+        <strong className="block text-slate-900 mb-1">Algorithm</strong> Fit-Hi-C / HiCCUPS
+      </div>
+    </div>
+  </div>
+);
+
+const SingleCell = () => (
+  <div className="space-y-8 animate-fadeIn py-4">
+    <div className="border-b border-slate-100 pb-6">
+      <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+        <Database size={24} className="text-blue-600" />
+        Single-cell Sequencing Analysis
+      </h3>
+      <p className="text-slate-500 mt-2 text-lg">Dimensionality reduction (UMAP) and clustering of 10k PBMCs.</p>
+    </div>
+
+    <div className="h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100">
+      <ResponsiveContainer width="100%" height="100%">
+        <ScatterChart>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+          <XAxis type="number" dataKey="x" name="UMAP_1" stroke="#94a3b8" tick={false} />
+          <YAxis type="number" dataKey="y" name="UMAP_2" stroke="#94a3b8" tick={false} />
+          <ZAxis type="number" dataKey="z" range={[50, 400]} name="Expression" />
+          <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: '12px' }} />
+          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+          <Scatter name="Cluster A (Neural)" data={mockScatterData.filter(d => d.cluster === 'Cluster A')} fill="#60a5fa" shape="circle" />
+          <Scatter name="Cluster B (Progenitor)" data={mockScatterData.filter(d => d.cluster === 'Cluster B')} fill="#a78bfa" shape="triangle" />
+        </ScatterChart>
+      </ResponsiveContainer>
+    </div>
+
+    <div className="flex gap-4 overflow-x-auto pb-2">
+      {['QC Passed: 98%', 'Doublets Removed', 'Mito < 5%'].map((tag, i) => (
+        <span key={i} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border border-slate-200">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+);
+
+const EnhancerID = () => (
+  <div className="space-y-8 animate-fadeIn py-4">
+    <div className="border-b border-slate-100 pb-6">
+      <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+        <FileText size={24} className="text-purple-600" />
+        Computational Enhancer Identification
+      </h3>
+      <p className="text-slate-500 mt-2 text-lg">Deep learning prediction of enhancer regions using sequence motifs and conservation.</p>
+    </div>
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div>
+        <h4 className="text-lg font-bold text-slate-900 mb-4">Model Architecture & Pipeline</h4>
+        <p className="text-slate-600 mb-6 leading-relaxed">
+          We utilize a CNN-LSTM hybrid architecture to capture both local motif patterns and long-range sequence dependencies. Input features include one-hot encoded DNA sequences, conservation scores (PhyloP), and chromatin accessibility signals (ATAC-seq).
+        </p>
+
+        <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto shadow-inner">
+          <code className="text-sm font-mono leading-relaxed">
+            <span className="text-purple-400">def</span> <span className="text-blue-400">predict_enhancer</span>(sequence, atac_signal):<br />
+            &nbsp;&nbsp;<span className="text-slate-500"># Load pre-trained weights</span><br />
+            &nbsp;&nbsp;model = load_model(<span className="text-yellow-300">'enhancer_net_v2.h5'</span>)<br />
+            &nbsp;&nbsp;<span className="text-slate-500"># Feature extraction</span><br />
+            &nbsp;&nbsp;features = extract_motifs(sequence)<br />
+            &nbsp;&nbsp;conservation = get_phyloP_score(sequence)<br />
+            &nbsp;&nbsp;<span className="text-purple-400">return</span> model.predict([features, conservation])
+          </code>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="border border-purple-100 p-6 rounded-2xl bg-purple-50/30">
+          <h4 className="font-bold text-purple-900 mb-3 text-lg">Input Features</h4>
+          <ul className="list-disc list-inside text-slate-700 space-y-2">
+            <li><strong>Sequence:</strong> 1kb window centered on peak</li>
+            <li><strong>Accessibility:</strong> ATAC-seq peak intensity</li>
+            <li><strong>Epigenetics:</strong> H3K27ac ChIP-seq signal</li>
+            <li><strong>Conservation:</strong> 100-way vertebrate alignment</li>
+          </ul>
+        </div>
+        <div className="border border-blue-100 p-6 rounded-2xl bg-blue-50/30">
+          <h4 className="font-bold text-blue-900 mb-3 text-lg">Performance Metrics</h4>
+          <ul className="list-disc list-inside text-slate-700 space-y-2">
+            <li><strong>AUROC:</strong> 0.94</li>
+            <li><strong>AUPR:</strong> 0.89</li>
+            <li><strong>Validation:</strong> CRISPRi validated regions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export const Research: React.FC = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  const tabs = [
+    { label: 'PE Interactions', icon: GitBranch, color: 'text-blue-600 border-blue-200', activeBg: 'bg-blue-50 ring-blue-200' },
+    { label: 'Single-cell Seq', icon: Database, color: 'text-teal-600 border-teal-200', activeBg: 'bg-teal-50 ring-teal-200' },
+    { label: 'Enhancer ID', icon: FileText, color: 'text-pink-600 border-pink-200', activeBg: 'bg-pink-50 ring-pink-200' },
+    { label: 'LLM', icon: FileText, color: 'text-purple-600 border-purple-200', activeBg: 'bg-purple-50 ring-purple-200' },
+  ];
+
+  return (
+    <div className="flex flex-col h-screen bg-white">
+      {/* Fixed Header Section */}
+      <div className="pt-32 pb-6 px-6 bg-white border-b border-slate-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">Projects</h2>
+
+          </div>
+
+          {/* Responsive Tabs Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-visible pt-2">
+            {tabs.map((tab, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveTab(idx)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 border ${activeTab === idx
+                  ? `${tab.activeBg} ${tab.color.split(' ')[0]} shadow-sm ring-2 ring-offset-2 ring-offset-white ${tab.activeBg.split(' ')[1]} mt-2`
+                  : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:-translate-y-1'
+                  }`}
+              >
+                <tab.icon size={20} />
+                <span className="font-bold text-lg">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 pb-4">
+      </div>
+
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto px-6 pb-20">
+        <div className="max-w-7xl mx-auto pt-8">
+          {activeTab === 0 && <PEInteractions />}
+          {activeTab === 1 && <SingleCell />}
+          {activeTab === 2 && <EnhancerID />}
+          {activeTab === 3 && (
+            <div className='p-8'>
+              <h3 className='text-2xl font-bold mb-4'>LLM Research</h3>
+              <p className='text-slate-600'>Content for LLM research goes here.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
