@@ -17,7 +17,14 @@ const Home: React.FC = () => (
       <h1 className="text-6xl md:text-8xl font-extrabold tracking-tight drop-shadow-2xl">
         <span className="text-white">Computational </span>
         <br className="md:hidden" />
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-purple-400 animate-gradient pr-2">
+        <span
+          className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-purple-400 animate-gradient pr-2"
+          style={{
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}
+        >
           Biology
         </span>
       </h1>
