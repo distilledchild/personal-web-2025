@@ -22,7 +22,7 @@ const PEInteractions = () => (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6">
       <div>
         <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-          <Sliders size={24} className="text-green-600" />
+          <GitBranch size={24} className="text-blue-600" />
           Promoter–Enhancer Interaction Mapping
         </h3>
         <p className="text-slate-500 mt-2 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
@@ -75,7 +75,7 @@ const SingleCell = () => (
   <div className="space-y-8 animate-fadeIn py-4">
     <div className="border-b border-slate-100 pb-6">
       <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-        <Database size={24} className="text-blue-600" />
+        <Database size={24} className="text-green-600" />
         Single-cell Sequencing Analysis
       </h3>
       <p className="text-slate-500 mt-2 text-lg">Dimensionality reduction (UMAP) and clustering of 10k PBMCs.</p>
@@ -90,8 +90,8 @@ const SingleCell = () => (
           <ZAxis type="number" dataKey="z" range={[50, 400]} name="Expression" />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: '12px' }} />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
-          <Scatter name="Cluster A (Neural)" data={mockScatterData.filter(d => d.cluster === 'Cluster A')} fill="#60a5fa" shape="circle" />
-          <Scatter name="Cluster B (Progenitor)" data={mockScatterData.filter(d => d.cluster === 'Cluster B')} fill="#a78bfa" shape="triangle" />
+          <Scatter name="Cluster A (Neural)" data={mockScatterData.filter(d => d.cluster === 'Cluster A')} fill="#FFA300" shape="circle" />
+          <Scatter name="Cluster B (Progenitor)" data={mockScatterData.filter(d => d.cluster === 'Cluster B')} fill="#4ade80" shape="triangle" />
         </ScatterChart>
       </ResponsiveContainer>
     </div>
@@ -110,7 +110,7 @@ const EnhancerID = () => (
   <div className="space-y-8 animate-fadeIn py-4">
     <div className="border-b border-slate-100 pb-6">
       <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-        <FileText size={24} className="text-purple-600" />
+        <FileText size={24} className="text-pink-600" />
         Computational Enhancer Identification
       </h3>
       <p className="text-slate-500 mt-2 text-lg">Deep learning prediction of enhancer regions using sequence motifs and conservation.</p>
@@ -164,9 +164,9 @@ export const Research: React.FC = () => {
 
   const tabs = [
     { label: 'PE Interactions', icon: GitBranch, color: 'text-blue-600 border-blue-200', activeBg: 'bg-blue-50 ring-blue-200' },
-    { label: 'Single-cell Seq', icon: Database, color: 'text-teal-600 border-teal-200', activeBg: 'bg-teal-50 ring-teal-200' },
+    { label: 'Single-cell Seq', icon: Database, color: 'text-green-600 border-green-200', activeBg: 'bg-green-50 ring-green-200' },
     { label: 'Enhancer ID', icon: FileText, color: 'text-pink-600 border-pink-200', activeBg: 'bg-pink-50 ring-pink-200' },
-    { label: 'LLM', icon: FileText, color: 'text-purple-600 border-purple-200', activeBg: 'bg-purple-50 ring-purple-200' },
+    { label: 'LLM', icon: Sliders, color: 'text-purple-600 border-purple-200', activeBg: 'bg-purple-50 ring-purple-200' },
   ];
 
   return (
@@ -209,7 +209,10 @@ export const Research: React.FC = () => {
           {activeTab === 2 && <EnhancerID />}
           {activeTab === 3 && (
             <div className='p-8'>
-              <h3 className='text-2xl font-bold mb-4'>LLM Research</h3>
+              <h3 className='text-2xl font-bold mb-4 flex items-center gap-3'>
+                <Sliders size={24} className="text-purple-600" />
+                LLM Research
+              </h3>
               <p className='text-slate-600'>Content for LLM research goes here.</p>
             </div>
           )}

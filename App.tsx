@@ -74,6 +74,7 @@ const About: React.FC = () => (
               <li>• Riding a bike</li>
               <li>• Camping</li>
               <li>• Traveling</li>
+              <li>• Playing Baduk (Go)</li>
             </ul>
           </div>
         </div>
@@ -228,59 +229,87 @@ const Tech: React.FC = () => {
   );
 };
 
-const Contact: React.FC = () => (
-  <div className="min-h-screen bg-white pt-32 pb-20 px-6 flex flex-col items-center">
-    <div className="max-w-2xl w-full animate-fadeIn">
-      <h2 className="text-4xl font-bold text-slate-900 mb-16 text-center border-b border-slate-100 pb-8">Get in Touch</h2>
+const Contact: React.FC = () => {
+  const [showCopied, setShowCopied] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
-      <div className="space-y-8">
-        <a href="mailto:distilledchild@gmail.com" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group border border-slate-100 hover:border-blue-100">
-          <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-blue-600 transition-colors">
-            <Mail size={32} />
-          </div>
-          <div className="ml-6 text-left">
-            <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Email</p>
-            <p className="text-xl text-slate-900 font-medium break-all">distilledchild@gmail.com</p>
-          </div>
-        </a>
+  const handleCopy = (e: React.MouseEvent) => {
+    setCursorPos({ x: e.clientX, y: e.clientY });
+    navigator.clipboard.writeText('distilledchild@gmail.com');
+    setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 2000);
+  };
 
-        <a href="https://github.com/distilledchild" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-green-50 transition-colors group border border-slate-100 hover:border-green-100">
-          <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-green-600 transition-colors">
-            <Github size={32} />
-          </div>
-          <div className="ml-6 text-left">
-            <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">GitHub</p>
-            <p className="text-xl text-slate-900 font-medium break-all">github.com/distilledchild</p>
-          </div>
-        </a>
+  return (
+    <div className="min-h-screen bg-white pt-32 pb-20 px-6 flex flex-col items-center relative">
+      {/* Notification Toast */}
+      {showCopied && (
+        <div
+          className="fixed z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg animate-fadeIn flex items-center gap-2 pointer-events-none"
+          style={{
+            left: cursorPos.x + 16,
+            top: cursorPos.y - 16
+          }}
+        >
+          <span>✨ Email copied to clipboard!</span>
+        </div>
+      )}
 
-        <a href="https://www.linkedin.com/in/pkim11/" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-pink-50 transition-colors group border border-slate-100 hover:border-pink-100">
-          <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-pink-600 transition-colors">
-            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-            </svg>
-          </div>
-          <div className="ml-6 text-left">
-            <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">LinkedIn</p>
-            <p className="text-xl text-slate-900 font-medium break-all">linkedin.com/in/distilledchild</p>
-          </div>
-        </a>
+      <div className="max-w-2xl w-full animate-fadeIn">
+        <h2 className="text-4xl font-bold text-slate-900 mb-16 text-center border-b border-slate-100 pb-8">Get in Touch</h2>
 
-        <a href="https://www.google.com/maps/place/Memphis,+TN" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group cursor-default border border-slate-100 hover:border-purple-100">
-          <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
-            <MapPin size={32} />
-          </div>
-          <div className="ml-6 text-left">
-            <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Location</p>
-            <p className="text-xl text-slate-900 font-medium">Memphis, TN, USA</p>
-          </div>
-        </a>
+        <div className="space-y-8">
+          <button
+            onClick={handleCopy}
+            className="w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group border border-slate-100 hover:border-blue-100 cursor-pointer text-left"
+          >
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-blue-600 transition-colors">
+              <Mail size={32} />
+            </div>
+            <div className="ml-6 text-left">
+              <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Email</p>
+              <p className="text-xl text-slate-900 font-medium break-all">distilledchild@gmail.com</p>
+            </div>
+          </button>
+
+          <a href="https://github.com/distilledchild" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-green-50 transition-colors group border border-slate-100 hover:border-green-100">
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-green-600 transition-colors">
+              <Github size={32} />
+            </div>
+            <div className="ml-6 text-left">
+              <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">GitHub</p>
+              <p className="text-xl text-slate-900 font-medium break-all">github.com/distilledchild</p>
+            </div>
+          </a>
+
+          <a href="https://www.linkedin.com/in/pkim11/" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-pink-50 transition-colors group border border-slate-100 hover:border-pink-100">
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-pink-600 transition-colors">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </div>
+            <div className="ml-6 text-left">
+              <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">LinkedIn</p>
+              <p className="text-xl text-slate-900 font-medium break-all">linkedin.com/in/distilledchild</p>
+            </div>
+          </a>
+
+          <a href="https://www.google.com/maps/place/Memphis,+TN" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group cursor-default border border-slate-100 hover:border-purple-100">
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
+              <MapPin size={32} />
+            </div>
+            <div className="ml-6 text-left">
+              <p className="text-sm text-slate-500 uppercase font-bold tracking-wider mb-1">Location</p>
+              <p className="text-xl text-slate-900 font-medium">Memphis, TN, USA</p>
+            </div>
+          </a>
 
 
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Liquid Crystal Tab Component - 95% of original size
 const LiquidTab = ({ to, label, active, colorClass, badgeCount }: { to: string; label: string; active: boolean; colorClass: string; badgeCount?: number }) => (
@@ -339,7 +368,7 @@ const Layout: React.FC = () => {
       <div className="fixed top-0 left-0 z-50 p-4 md:p-8 flex items-center">
         <Link to="/" className="font-extrabold tracking-tighter flex items-center text-slate-900" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.4rem)' }}>
           <span className="text-green-500">Distilled</span>
-          <span className="text-purple-500">Child</span>
+          <span className="text-[#0D1584]">Child</span>
         </Link>
       </div>
 
