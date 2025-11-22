@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Dna, Mail, Github, MapPin } from 'lucide-react';
 import { ThreeDNA } from './components/ThreeDNA';
 import { ChatBot } from './components/ChatBot';
