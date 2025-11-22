@@ -310,7 +310,7 @@ const Layout: React.FC = () => {
 
   useEffect(() => {
     if (isAdmin) {
-      const socket = io('http://localhost:3001');
+      const socket = io('https://personal-web-2025-production.up.railway.app');
 
       socket.on('connect', () => {
         socket.emit('register_owner');

@@ -25,7 +25,7 @@ export const ChatBot: React.FC = () => {
   // Initialize Socket connection
   useEffect(() => {
     if (isOpen && !socket) {
-      const newSocket = io('http://localhost:3001');
+      const newSocket = io('https://personal-web-2025-production.up.railway.app');
       setSocket(newSocket);
 
       newSocket.on('connect', () => {
@@ -113,8 +113,8 @@ export const ChatBot: React.FC = () => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'user'
-                    ? 'bg-pastel-blue text-blue-900 rounded-br-none'
-                    : 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-sm'
+                  ? 'bg-pastel-blue text-blue-900 rounded-br-none'
+                  : 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-sm'
                   }`}>
                   {msg.text}
                 </div>
