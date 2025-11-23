@@ -28,7 +28,7 @@ const PEInteractions = () => (
         <p className="text-slate-500 mt-2 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
       </div>
       <div className="flex gap-3">
-        <select className="bg-green-50 text-green-800 text-sm font-medium px-4 py-2 rounded-lg border border-green-100 outline-none cursor-pointer hover:bg-green-100 transition-colors">
+        <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
           <option>Gene: MYC</option>
           <option>Gene: SOX2</option>
           <option>Gene: TP53</option>
@@ -50,8 +50,8 @@ const PEInteractions = () => (
             contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
           />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
-          <Bar dataKey="enhancer" barSize={30} fill="#86efac" name="Enhancer Signal" radius={[4, 4, 0, 0]} />
-          <Line type="monotone" dataKey="interaction" stroke="#059669" strokeWidth={4} name="Interaction Freq" dot={false} />
+          <Bar dataKey="enhancer" barSize={30} fill="#BFDBFE" name="Enhancer Signal" radius={[4, 4, 0, 0]} />
+          <Line type="monotone" dataKey="interaction" stroke="#2863EB" strokeWidth={4} name="Interaction Freq" dot={false} />
           <Line type="step" dataKey="ctcf" stroke="#db2777" strokeWidth={3} strokeDasharray="5 5" name="CTCF Density" dot={false} />
         </ComposedChart>
       </ResponsiveContainer>
@@ -90,7 +90,7 @@ const SingleCell = () => (
           <ZAxis type="number" dataKey="z" range={[50, 400]} name="Expression" />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: '12px' }} />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
-          <Scatter name="Cluster A (Neural)" data={mockScatterData.filter(d => d.cluster === 'Cluster A')} fill="#FFA300" shape="circle" />
+          <Scatter name="Cluster A (Neural)" data={mockScatterData.filter(d => d.cluster === 'Cluster A')} fill="#DB2777" shape="circle" />
           <Scatter name="Cluster B (Progenitor)" data={mockScatterData.filter(d => d.cluster === 'Cluster B')} fill="#4ade80" shape="triangle" />
         </ScatterChart>
       </ResponsiveContainer>
@@ -137,8 +137,8 @@ const EnhancerID = () => (
       </div>
 
       <div className="space-y-6">
-        <div className="border border-purple-100 p-6 rounded-2xl bg-purple-50/30">
-          <h4 className="font-bold text-purple-900 mb-3 text-lg">Input Features</h4>
+        <div className="border border-slate-100 p-6 rounded-2xl">
+          <h4 className="font-bold text-slate-900 mb-3 text-lg">Input Features</h4>
           <ul className="list-disc list-inside text-slate-700 space-y-2">
             <li><strong>Sequence:</strong> 1kb window centered on peak</li>
             <li><strong>Accessibility:</strong> ATAC-seq peak intensity</li>
@@ -146,8 +146,8 @@ const EnhancerID = () => (
             <li><strong>Conservation:</strong> 100-way vertebrate alignment</li>
           </ul>
         </div>
-        <div className="border border-blue-100 p-6 rounded-2xl bg-blue-50/30">
-          <h4 className="font-bold text-blue-900 mb-3 text-lg">Performance Metrics</h4>
+        <div className="border border-slate-100 p-6 rounded-2xl">
+          <h4 className="font-bold text-slate-900 mb-3 text-lg">Performance Metrics</h4>
           <ul className="list-disc list-inside text-slate-700 space-y-2">
             <li><strong>AUROC:</strong> 0.94</li>
             <li><strong>AUPR:</strong> 0.89</li>

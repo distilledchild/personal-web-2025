@@ -5,11 +5,106 @@ import cors from 'cors';
 
 const app = express();
 app.use(cors());
+app.use(express.json());
+
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+// Determine Redirect URI based on environment
+const isProduction = process.env.NODE_ENV === 'production';
+const REDIRECT_URI = isProduction
+    ? 'https://www.distilledchild.space/oauth/google/callback'
+    : (process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/oauth/google/callback');
+
+// Database connection
+import mongoose from 'mongoose';
+
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+const stateSchema = new mongoose.Schema({
+    code: String,
+    name: String,
+    status: String
+}, { collection: 'states' });
+
+const State = mongoose.model('State', stateSchema);
+
+const citySchema = new mongoose.Schema({
+    state_code: String,
+    name: String,
+    status: String
+}, { collection: 'cities' });
+
+const City = mongoose.model('City', citySchema);
+
+// Google OAuth Endpoint
+app.post('/api/auth/google', async (req, res) => {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: 'No code provided' });
+
+    try {
+        // 1. Exchange code for tokens
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                code,
+                client_id: GOOGLE_CLIENT_ID,
+                client_secret: GOOGLE_CLIENT_SECRET,
+                redirect_uri: REDIRECT_URI,
+                grant_type: 'authorization_code',
+            }),
+        });
+
+        const tokenData = await tokenResponse.json();
+        if (!tokenResponse.ok) {
+            console.error('Token exchange failed:', tokenData);
+            return res.status(500).json({ error: 'Failed to exchange token', details: tokenData });
+        }
+
+        // 2. Get User Profile
+        const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: { Authorization: `Bearer ${tokenData.access_token}` },
+        });
+
+        const userData = await userResponse.json();
+        if (!userResponse.ok) {
+            return res.status(500).json({ error: 'Failed to get user info' });
+        }
+
+        res.json({
+            name: userData.name,
+            email: userData.email,
+            picture: userData.picture,
+        });
+
+    } catch (error) {
+        console.error('Error exchanging token:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to authenticate' });
+    }
+});
+
+// Travel States Endpoint
+app.get('/api/travel/states', async (req, res) => {
+    try {
+        const states = await State.find({}, 'code status');
+        res.json(states);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173", "http://localhost:3000"], // Allow Vite dev server on both ports
+        origin: ["http://localhost:5173", "http://localhost:3000", "https://www.distilledchild.space"], // Added production domain
         methods: ["GET", "POST"]
     }
 });

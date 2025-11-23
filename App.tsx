@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
-import { Dna, Mail, Github, MapPin } from 'lucide-react';
+import { Dna, Mail, Github, MapPin, Loader2 } from 'lucide-react';
 import { ThreeDNA } from './components/ThreeDNA';
 import { ChatBot } from './components/ChatBot';
 import { Research } from './pages/Research';
+import { Interests } from './pages/Interests';
 import { io, Socket } from 'socket.io-client';
 
 const Home: React.FC = () => (
@@ -45,7 +45,7 @@ const Home: React.FC = () => (
 const About: React.FC = () => (
   <div className="min-h-screen bg-white pt-32 pb-20 px-6 animate-fadeIn">
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-4xl font-bold text-slate-900 mb-12 flex items-center gap-3 border-b border-slate-100 pb-6">
+      <h2 className="text-4xl font-bold text-slate-900 mb-12 flex items-center justify-center gap-3 border-b border-slate-100 pb-6">
         {/* <span className="text-green-600"><Dna size={36} /></span> */}
         About Me
       </h2>
@@ -133,9 +133,9 @@ const Tech: React.FC = () => {
   }));
 
   return (
-    <div className="h-screen bg-white pt-24 pb-4 px-6 flex flex-col overflow-hidden">
+    <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
-        <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech Blog</h2>
+        <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech Blog</h2>
 
         <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
           {/* Sidebar TOC - Visible on all screens, but styling changes? 
@@ -379,9 +379,9 @@ const Layout: React.FC = () => {
         aria-label="Toggle menu"
       >
         <div className="w-8 h-8 flex flex-col justify-center items-center gap-1.5">
-          <span className={`w-full h-0.5 bg-slate-900 transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`w-full h-0.5 bg-slate-900 transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
-          <span className={`w-full h-0.5 bg-slate-900 transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          <span className={`w-full h-0.5 bg-red-500 transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`w-full h-0.5 bg-red-500 transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+          <span className={`w-full h-0.5 bg-red-500 transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </div>
       </button>
 
@@ -401,6 +401,9 @@ const Layout: React.FC = () => {
               </Link>
               <Link to="/tech" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
                 Tech
+              </Link>
+              <Link to="/interests" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
+                Interests
               </Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2">
                 Contact
@@ -432,6 +435,12 @@ const Layout: React.FC = () => {
             colorClass="text-pink-500 hover:text-pink-300"
           />
           <LiquidTab
+            to="/interests"
+            label="Interests"
+            active={location.pathname === '/interests'}
+            colorClass="text-[#FFA300] hover:text-[#FFD180]"
+          />
+          <LiquidTab
             to="/contact"
             label="Contact"
             active={location.pathname === '/contact'}
@@ -446,10 +455,127 @@ const Layout: React.FC = () => {
         <Route path="/about" element={<About />} />
         <Route path="/research" element={<Research />} />
         <Route path="/tech" element={<Tech />} />
+        <Route path="/interests" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
 
       <ChatBot />
+      <GoogleLogin />
+    </div>
+  );
+};
+
+const GoogleLogin: React.FC = () => {
+  const [user, setUser] = useState<{ picture: string; name: string } | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user_profile');
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse user profile", e);
+      }
+    }
+  }, []);
+
+  const handleLogin = () => {
+    if (user) {
+      // Logout logic if needed, or just show info
+      if (confirm('Do you want to logout?')) {
+        localStorage.removeItem('user_profile');
+        setUser(null);
+      }
+      return;
+    }
+
+    const isProduction = window.location.hostname !== 'localhost';
+    const redirectUri = isProduction
+      ? 'https://www.distilledchild.space/oauth/google/callback'
+      : 'http://localhost:3000/oauth/google/callback';
+
+    const params = new URLSearchParams({
+      client_id: '511732610766-qma8v1ljq0qia68rtvuq790shn03bvmo.apps.googleusercontent.com',
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'email profile',
+      access_type: 'offline',
+      prompt: 'consent'
+    });
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  };
+
+  return (
+    <div className="fixed bottom-6 left-6 z-50">
+      <button
+        onClick={handleLogin}
+        className="bg-white p-0 rounded-full shadow-lg hover:shadow-xl border border-slate-100 transition-all duration-300 hover:scale-105 overflow-hidden w-[58px] h-[58px] flex items-center justify-center"
+        title={user ? `Logged in as ${user.name}` : "Login with Google"}
+      >
+        {user ? (
+          <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="bg-red-600 w-full h-full flex items-center justify-center">
+            <span className="text-white font-bold text-2xl">G</span>
+          </div>
+        )}
+      </button>
+    </div>
+  );
+};
+
+const OAuthCallback: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = React.useMemo(() => {
+    // This is a hack because useNavigate might not be available if this component is rendered outside Router context, 
+    // but here it is inside. However, to be safe and simple:
+    return (path: string) => window.location.href = path;
+  }, []);
+
+  const code = searchParams.get('code');
+  const [status, setStatus] = useState('Processing login...');
+
+  useEffect(() => {
+    if (code) {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3001/api/auth/google'
+        : 'https://personal-web-2025-production.up.railway.app/api/auth/google';
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      })
+        .then(async res => {
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Login failed');
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data.picture) {
+            localStorage.setItem('user_profile', JSON.stringify(data));
+            setStatus('Login successful! Redirecting...');
+            setTimeout(() => navigate('/'), 1000);
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          setStatus(`Login failed: ${err.message}`);
+          setTimeout(() => navigate('/'), 3000);
+        });
+    } else {
+      navigate('/');
+    }
+  }, [code, navigate]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="text-center">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500 mx-auto mb-4" />
+        <p className="text-slate-600 text-lg">{status}</p>
+      </div>
     </div>
   );
 };
@@ -457,7 +583,14 @@ const Layout: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Router>
-      <Layout />
+      <Routes>
+        <Route path="/oauth/google/callback" element={<OAuthCallback />} />
+        <Route path="*" element={<Layout />} />
+      </Routes>
+      {/* Google Login is part of Layout logically, but since we have a catch-all route for Layout, 
+          we can put it here to ensure it's on every page except maybe the callback page if we wanted.
+          But Layout wraps everything else. Let's put it inside Layout.
+      */}
     </Router>
   );
 };

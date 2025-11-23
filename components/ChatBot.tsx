@@ -83,7 +83,7 @@ export const ChatBot: React.FC = () => {
         <div className="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col h-96 transition-all duration-300">
           <div className="bg-pastel-purple px-4 py-3 flex justify-between items-center border-b border-purple-100">
             <h3 className="font-semibold text-pastel-darkPurple flex items-center gap-2">
-              Research Assistant
+              The Person Behind This Site
               {queuePosition !== null && (
                 <span className="text-xs bg-white/50 px-2 py-0.5 rounded-full text-purple-700">
                   Queue: {queuePosition}
