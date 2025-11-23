@@ -26,7 +26,7 @@
     "react-dom": "^19.2.0",
     "react-is": "^19.2.0",
     "react-router-dom": "^7.9.6",
-    "react-simple-maps": "^1.0.0",
+    "react-simple-maps": "^3.0.0",
     "react-usa-map": "^1.5.0",
     "recharts": "^3.4.1",
     "socket.io": "^4.8.1",
