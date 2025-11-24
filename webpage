@@ -1,8 +1,0 @@
-db.states.updateMany(
-  { status: "VISITED" },
-  { $set: { status: "STAYED" } }
-);
-
-
-
-

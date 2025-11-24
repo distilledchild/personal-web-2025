@@ -31,7 +31,7 @@ const stateSchema = new mongoose.Schema({
     code: String,
     name: String,
     status: String
-}, { collection: 'states' });
+}, { collection: 'STATE' });
 
 const State = mongoose.model('State', stateSchema);
 
@@ -39,9 +39,31 @@ const citySchema = new mongoose.Schema({
     state_code: String,
     name: String,
     status: String
-}, { collection: 'cities' });
+}, { collection: 'CITY' });
 
 const City = mongoose.model('City', citySchema);
+
+const techBlogSchema = new mongoose.Schema({
+    category: String,
+    title: String,
+    content: String,
+    likes: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
+    createdAt: Date,
+    updatedAt: Date,
+    isPublished: { type: Boolean, default: true },
+    slug: String,
+    tags: [String],
+    author: {
+        name: String,
+        email: String,
+        avatar: String
+    },
+    likedBy: [{ type: String }],  // Array of email strings
+    show: { type: String, default: 'Y' }  // 'Y' or 'N'
+}, { collection: 'TECH_BLOG' });
+
+const TechBlog = mongoose.model('TechBlog', techBlogSchema);
 
 // Google OAuth Endpoint
 app.post('/api/auth/google', async (req, res) => {
@@ -95,6 +117,171 @@ app.get('/api/travel/states', async (req, res) => {
     try {
         const states = await State.find({}, 'code status');
         res.json(states);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Tech Blog Endpoint
+app.get('/api/tech-blog', async (req, res) => {
+    try {
+        const blogs = await TechBlog.find({ isPublished: true, show: 'Y' })
+            .sort({ createdAt: -1 });
+        res.json(blogs);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create Tech Blog Post
+app.post('/api/tech-blog', async (req, res) => {
+    try {
+        const { category, title, content, author } = req.body;
+
+        if (!category || !title || !content || !author || !author.email) {
+            return res.status(400).json({ error: 'Category, title, content, and author are required' });
+        }
+
+        // Check if user is authorized (distilledchild or wellclouder)
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(author.email)) {
+            return res.status(403).json({ error: 'Unauthorized: Only authorized users can create posts' });
+        }
+
+        const newBlog = new TechBlog({
+            category,
+            title,
+            content,
+            author: {
+                name: author.name,
+                email: author.email,
+                avatar: author.avatar
+            },
+            likes: 0,
+            views: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isPublished: true,
+            show: 'Y',
+            likedBy: []
+        });
+
+        await newBlog.save();
+        res.status(201).json(newBlog);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Like/Unlike Tech Blog Post
+app.post('/api/tech-blog/:id/like', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const blog = await TechBlog.findById(id);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog post not found' });
+        }
+
+        // Initialize likedBy if it doesn't exist
+        if (!blog.likedBy) {
+            blog.likedBy = [];
+        }
+
+        // Check if user already liked (by email)
+        const likedIndex = blog.likedBy.indexOf(email);
+
+        if (likedIndex > -1) {
+            // Unlike: remove email from likedBy
+            blog.likedBy.splice(likedIndex, 1);
+        } else {
+            // Like: add email to likedBy
+            blog.likedBy.push(email);
+        }
+
+        // Update likes count based on likedBy array length
+        blog.likes = blog.likedBy.length;
+
+        await blog.save();
+        res.json({
+            likes: blog.likes,
+            likedBy: blog.likedBy,
+            isLiked: likedIndex === -1
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update Tech Blog Post
+app.put('/api/tech-blog/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { category, title, content, email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const blog = await TechBlog.findById(id);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog post not found' });
+        }
+
+        // Check if user is the author
+        if (blog.author.email !== email) {
+            return res.status(403).json({ error: 'Unauthorized: Only author can update' });
+        }
+
+        // Update fields
+        if (category) blog.category = category;
+        if (title) blog.title = title;
+        if (content) blog.content = content;
+        blog.updatedAt = new Date();
+
+        await blog.save();
+        res.json(blog);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Delete (Soft Delete) Tech Blog Post
+app.delete('/api/tech-blog/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const blog = await TechBlog.findById(id);
+        if (!blog) {
+            return res.status(404).json({ error: 'Blog post not found' });
+        }
+
+        // Check if user is the author
+        if (blog.author.email !== email) {
+            return res.status(403).json({ error: 'Unauthorized: Only author can delete' });
+        }
+
+        // Soft delete: set show to 'N'
+        blog.show = 'N';
+        blog.updatedAt = new Date();
+
+        await blog.save();
+        res.json({ message: 'Blog post deleted successfully', blog });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });

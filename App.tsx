@@ -50,13 +50,9 @@ const About: React.FC = () => (
         About Me
       </h2>
 
-      <div className="prose prose-xl text-slate-600 leading-relaxed">
-        <p className="mb-8">
-          I completed my <strong>Ph.D. in Computational Biology</strong> at <a href="https://www.uthsc.edu" target="_blank" rel="noopener noreferrer">the University of Tennessee Health Science Center (UTHSC)</a> in September 2025. My research lies at the intersection of genomics and data science, focusing specifically on <strong>3D chromatin architecture</strong>, <strong>promoter–enhancer interactions</strong>, and the integration of <strong>Hi-C</strong> data with <strong>GWAS</strong> findings to understand the regulatory mechanisms underlying complex traits.
-        </p>
-
-        <p className="mb-8">
-          My academic journey is driven by a passion for decoding the non-coding genome. I specialize in developing and applying computational pipelines to map 3D genomic structures, enabling the identification of long-range regulatory loops that control gene expression.
+      <div className="space-y-8 text-slate-700 leading-relaxed text-lg">
+        <p>
+          I am a <strong>Computational Biologist</strong> with a deep passion for understanding the intricate architecture of the genome. My research focuses on <strong>3D genomics</strong>, exploring how chromatin organization influences gene regulation and cellular function.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
@@ -87,36 +83,363 @@ const About: React.FC = () => (
   </div>
 );
 
+const Test: React.FC = () => {
+  const [userData, setUserData] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem('user_profile');
+    if (stored) {
+      try {
+        setUserData(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to parse user data', e);
+      }
+    }
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white pt-32 pb-20 px-6 animate-fadeIn">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-4xl font-bold text-slate-900 mb-12 text-center border-b border-slate-100 pb-6">
+          OAuth User Data Test
+        </h2>
+
+        {userData ? (
+          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+            <h3 className="text-2xl font-bold text-slate-900 mb-6">Logged In User Data:</h3>
+            <pre className="bg-slate-900 text-green-400 p-6 rounded-lg overflow-auto text-sm font-mono">
+              {JSON.stringify(userData, null, 2)}
+            </pre>
+
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-4">
+                <span className="font-bold text-slate-700 w-32">Name:</span>
+                <span className="text-slate-900">{userData.name || 'N/A'}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="font-bold text-slate-700 w-32">Email:</span>
+                <span className="text-slate-900">{userData.email || 'N/A'}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="font-bold text-slate-700 w-32">User ID:</span>
+                <span className="text-slate-900 font-mono text-sm">{userData.sub || userData.id || 'N/A'}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="font-bold text-slate-700 w-32">Avatar:</span>
+                {userData.picture && (
+                  <img src={userData.picture} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-slate-300" />
+                )}
+              </div>
+              <div className="flex items-start gap-4">
+                <span className="font-bold text-slate-700 w-32">Avatar URL:</span>
+                <span className="text-slate-900 text-xs font-mono break-all">{userData.picture || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-slate-500 text-lg">No user logged in. Please login with Google OAuth.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const Tech: React.FC = () => {
   const [selectedPost, setSelectedPost] = React.useState<number | null>(null);
+  const [blogPosts, setBlogPosts] = React.useState<any[]>([]);
+  const [user, setUser] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [showToast, setShowToast] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState('');
+  const [toastPos, setToastPos] = React.useState({ x: 0, y: 0 });
+  const [isEditMode, setIsEditMode] = React.useState(false);
+  const [editData, setEditData] = React.useState({ category: '', title: '', content: '' });
+  const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [isCreateMode, setIsCreateMode] = React.useState(false);
 
-  // Content defined in reverse chronological order (Newest first)
-  const postsContent = [
-    {
-      title: "Rapid Prototyping with Google AI Studio",
-      category: "AI Tools",
-      desc: "Google AI Studio offers a streamlined interface for prompt engineering and model tuning. Learn how to effectively test system instructions before deploying to production.",
-      fullContent: "Google AI Studio provides an intuitive platform for rapid prototyping of AI applications. With its streamlined interface, developers can quickly iterate on prompt engineering strategies and fine-tune models without extensive setup.\n\nKey features include:\n• Real-time prompt testing and validation\n• System instruction optimization\n• Model comparison tools\n• Seamless deployment pipeline\n\nThis tool is particularly valuable for bioinformatics applications where precise prompt engineering can significantly impact the quality of genomic data analysis and interpretation.",
-    },
-    {
-      title: "Optimizing with Gemini Nano & Flash",
-      category: "Models",
-      desc: "Exploring the 'nano banana' (Gemini 2.5 Flash Image) series for efficient, on-device compatible multimodal tasks. A look at balancing latency and token costs in bioinformatics apps.",
-      fullContent: "The Gemini Nano and Flash models represent a breakthrough in efficient AI processing. These lightweight models are designed for on-device compatibility while maintaining impressive performance across multimodal tasks.\n\nPerformance Characteristics:\n• Ultra-low latency for real-time applications\n• Reduced token costs for large-scale processing\n• Multimodal capabilities (text, image, code)\n• Optimized for edge computing scenarios\n\nIn bioinformatics, these models excel at processing genomic sequences, analyzing microscopy images, and generating insights from complex datasets without requiring constant cloud connectivity.",
-    },
-    {
-      title: "Advanced Genomic Data Visualization",
-      category: "Visualization",
-      desc: "Modern genomic research demands sophisticated visualization techniques to make sense of complex 3D chromatin structures and regulatory networks.",
-      fullContent: "Modern genomic research demands sophisticated visualization techniques to make sense of complex 3D chromatin structures and regulatory networks.\n\nVisualization Approaches:\n• Interactive 3D genome browsers\n• Hi-C contact map rendering\n• Chromatin loop visualization\n• Multi-omics data integration\n• Real-time data exploration\n\nBy leveraging advanced rendering techniques and WebGL, we can create immersive visualizations that help researchers identify patterns in chromatin architecture and understand the spatial organization of the genome.",
-    },
-    {
-      title: "Google Antigravity: A Physics Metaphor?",
-      category: "Experimental",
-      desc: "A playful look at 'Google Antigravity'—often an easter egg, but metaphorically representing how we defy the weight of massive genomic datasets using cloud computing.",
-      fullContent: "The concept of 'Google Antigravity' serves as a powerful metaphor for modern computational biology. Just as antigravity would defy physical constraints, cloud computing allows us to transcend the limitations of local hardware.\n\nCloud Computing Advantages:\n• Massive parallel processing capabilities\n• Elastic scaling for variable workloads\n• Distributed storage for petabyte-scale datasets\n• Global collaboration infrastructure\n• Cost-effective resource allocation\n\nIn genomics, this 'antigravity' effect enables researchers to analyze entire populations' worth of sequencing data, run complex simulations, and collaborate across continents—tasks that would be impossible with traditional computing infrastructure.",
-    },
-  ];
+  React.useEffect(() => {
+    // Fetch blog posts
+    const fetchBlogs = async () => {
+      try {
+        const API_URL = window.location.hostname === 'localhost'
+          ? 'http://localhost:3001'
+          : 'https://personal-web-2025-production.up.railway.app';
+
+        console.log('Fetching from:', `${API_URL}/api/tech-blog`);
+        const response = await fetch(`${API_URL}/api/tech-blog`);
+        console.log('Response status:', response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched blog posts:', data);
+          console.log('Number of posts:', data.length);
+          setBlogPosts(data);
+        } else {
+          console.error('Failed to fetch:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Failed to fetch blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+
+    // Get user data from localStorage (set by Google OAuth)
+    const userData = localStorage.getItem('user_profile');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        // Add userId from OAuth sub or id
+        setUser({
+          ...parsedUser,
+          userId: parsedUser.sub || parsedUser.id || parsedUser.email
+        });
+      } catch (e) {
+        console.error('Failed to parse user data', e);
+      }
+    }
+  }, []);
+
+  // ESC key listener for modal
+  React.useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedPost !== null) {
+        e.preventDefault();
+        setSelectedPost(null);
+      }
+    };
+
+    if (selectedPost !== null) {
+      window.addEventListener('keydown', handleEsc);
+      return () => window.removeEventListener('keydown', handleEsc);
+    }
+  }, [selectedPost]);
+
+  // Handle like/unlike
+  const handleLike = async (postId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!user) {
+      setToastMessage('Login required to like posts');
+      setToastPos({ x: e.clientX, y: e.clientY });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+      return;
+    }
+
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3001'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/tech-blog/${postId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update local state
+        setBlogPosts(prev => prev.map(post =>
+          post._id === postId
+            ? { ...post, likes: data.likes, likedBy: data.likedBy }
+            : post
+        ));
+      }
+    } catch (error) {
+      console.error('Failed to like post:', error);
+    }
+  };
+
+  // Check if current user liked a post
+  const isLikedByUser = (post: any) => {
+    // Heart color is determined by likes count only
+    return (post.likes || 0) > 0;
+  };
+
+  // Check if current user has already liked (for toggle logic)
+  const hasUserLiked = (post: any) => {
+    if (!user || !post.likedBy || !Array.isArray(post.likedBy)) return false;
+    return post.likedBy.includes(user.email);
+  };
+
+  // Check if current user is the author
+  const isAuthor = (post: any) => {
+    return user && post.author?.email && user.email === post.author.email;
+  };
+
+  // Handle edit button click
+  const handleEdit = () => {
+    if (selectedPost !== null && posts[selectedPost]) {
+      setEditData({
+        category: posts[selectedPost].category || '',
+        title: posts[selectedPost].title || '',
+        content: posts[selectedPost].content || ''
+      });
+      setIsEditMode(true);
+    }
+  };
+
+  // Handle save
+  const handleSave = async () => {
+    if (selectedPost === null || !posts[selectedPost]) return;
+
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3001'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...editData,
+          email: user.email
+        })
+      });
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        // Update local state
+        setBlogPosts(prev => prev.map(post =>
+          post._id === updatedPost._id ? updatedPost : post
+        ));
+        setIsEditMode(false);
+        setSelectedPost(null);
+      }
+    } catch (error) {
+      console.error('Failed to update post:', error);
+    }
+  };
+
+  // Handle close edit (show discard dialog)
+  const handleCloseEdit = () => {
+    setShowDiscardDialog(true);
+  };
+
+  // Handle discard
+  const handleDiscard = () => {
+    setIsEditMode(false);
+    setShowDiscardDialog(false);
+    setSelectedPost(null);
+  };
+
+  // Handle continue editing
+  const handleContinueEdit = () => {
+    setShowDiscardDialog(false);
+  };
+
+  // Handle delete button click
+  const handleDelete = () => {
+    setShowDeleteDialog(true);
+  };
+
+  // Handle confirm delete
+  const handleConfirmDelete = async () => {
+    if (selectedPost === null || !posts[selectedPost]) return;
+
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3001'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email
+        })
+      });
+
+      if (response.ok) {
+        // Remove from local state
+        setBlogPosts(prev => prev.filter(post => post._id !== posts[selectedPost]._id));
+        setShowDeleteDialog(false);
+        setSelectedPost(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
+  };
+
+  // Handle cancel delete
+  const handleCancelDelete = () => {
+    setShowDeleteDialog(false);
+    setSelectedPost(null);
+  };
+
+  // Check if user can create posts
+  const canCreatePost = () => {
+    const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+    return user && authorizedEmails.includes(user.email);
+  };
+
+  // Handle create button click
+  const handleCreate = () => {
+    setEditData({ category: '', title: '', content: '' });
+    setIsCreateMode(true);
+  };
+
+  // Handle create save
+  const handleCreateSave = async () => {
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3001'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/tech-blog`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...editData,
+          author: {
+            name: user.name,
+            email: user.email,
+            avatar: user.picture
+          }
+        })
+      });
+
+      if (response.ok) {
+        const newPost = await response.json();
+        // Add to local state
+        setBlogPosts(prev => [newPost, ...prev]);
+        setIsCreateMode(false);
+        setEditData({ category: '', title: '', content: '' });
+      }
+    } catch (error) {
+      console.error('Failed to create post:', error);
+    }
+  };
+
+  // Handle create cancel
+  const handleCreateCancel = () => {
+    // Check if any field has content
+    const hasContent = editData.category.trim() || editData.title.trim() || editData.content.trim();
+
+    if (hasContent) {
+      setShowDiscardDialog(true);
+    } else {
+      // No content, just close
+      setIsCreateMode(false);
+      setEditData({ category: '', title: '', content: '' });
+    }
+  };
+
+  // Handle discard create
+  const handleDiscardCreate = () => {
+    setIsCreateMode(false);
+    setShowDiscardDialog(false);
+    setEditData({ category: '', title: '', content: '' });
+  };
 
   // Fixed Color Themes Order: Blue -> Green -> Pink -> Purple
   const colorThemes = [
@@ -126,81 +449,109 @@ const Tech: React.FC = () => {
     { color: "bg-purple-50", textColor: "text-purple-700", borderColor: "border-purple-100", hoverBorderColor: "hover:border-purple-200", hoverColor: "group-hover:text-purple-600" },
   ];
 
-  // Combine content with themes
-  const posts = postsContent.map((post, i) => ({
+  // Combine blog posts with themes
+  const posts = blogPosts.map((post, i) => ({
     ...post,
     ...colorThemes[i % colorThemes.length]
   }));
+
+  // Format date helper
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
 
   return (
     <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
         <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech Blog</h2>
 
-        <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
-          {/* Sidebar TOC - Visible on all screens, but styling changes? 
-              User said: "When width is reduced further, show only TOC".
-          */}
-          <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Latest Posts</h3>
-            {posts.map((post, i) => (
-              <div
-                key={i}
-                onClick={() => setSelectedPost(i)}
-                className={`
-                  group cursor-pointer transition-all duration-200
-                  bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                  hover:${post.color} hover:${post.borderColor}
-                `}
-              >
-                <p className={`
-                  text-sm font-medium text-slate-600 truncate
-                  group-hover:${post.textColor}
-                `}>
-                  {post.title}
-                </p>
-              </div>
-            ))}
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-slate-400">Loading posts...</div>
           </div>
-
-          {/* Grid - Hidden on very small screens (< 640px), 1 col on medium, 2 cols on large */}
-          <div className="hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
-            {posts.map((post, i) => (
-              <div key={i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
-                {/* Compact Header */}
-                <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
-                    {post.category}
-                  </span>
-                </div>
-                <div className="p-5 flex-1 flex flex-col min-h-0">
-                  <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-1">
+        ) : posts.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-slate-400">No blog posts found.</div>
+          </div>
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+            {/* Sidebar TOC */}
+            <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Latest Posts</h3>
+              {posts.map((post, i) => (
+                <div
+                  key={post._id || i}
+                  onClick={() => setSelectedPost(i)}
+                  className={`
+                    group cursor-pointer transition-all duration-200
+                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                    hover:${post.color} hover:${post.borderColor}
+                  `}
+                >
+                  <p className={`
+                    text-sm font-medium text-slate-600 truncate
+                    group-hover:${post.textColor}
+                  `}>
                     {post.title}
-                  </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
-                    {post.desc}
                   </p>
-                  <button
-                    onClick={() => setSelectedPost(i)}
-                    className={`mt-4 text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors self-start flex items-center gap-1`}
-                  >
-                    Read Article &rarr;
-                  </button>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Grid */}
+            <div className="hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+              {posts.map((post, i) => (
+                <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+                  {/* Header */}
+                  <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
+                      {post.category}
+                    </span>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col min-h-0">
+                    <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
+                      {post.content?.substring(0, 150)}...
+                    </p>
+
+                    {/* Footer with likes, date */}
+                    <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xl ${isLikedByUser(post) ? 'text-red-500' : 'text-gray-400'}`}>
+                          {isLikedByUser(post) ? '❤️' : '🤍'}
+                        </span>
+                        <span className="font-medium text-slate-700">{post.likes || 0}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>{formatDate(post.createdAt)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedPost(i)}
+                      className={`mt-4 text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors self-start flex items-center gap-1`}
+                    >
+                      Read Article &rarr;
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Modal Popup */}
-      {selectedPost !== null && (
+      {/* Modal Popup - View/Edit Mode */}
+      {selectedPost !== null && posts[selectedPost] && !isEditMode && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modalBackdrop"
           onClick={() => setSelectedPost(null)}
         >
           <div
-            className="bg-white rounded-3xl max-w-3xl w-full max-h-[80vh] overflow-hidden shadow-2xl animate-modalContent"
+            className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl animate-modalContent"
             onClick={(e) => e.stopPropagation()}
           >
             <div className={`${posts[selectedPost].color} p-8`}>
@@ -211,18 +562,261 @@ const Tech: React.FC = () => {
                 {posts[selectedPost].title}
               </h2>
             </div>
-            <div className="p-8 overflow-y-auto max-h-[calc(80vh-200px)]">
+            <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
               <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed whitespace-pre-line">
-                {posts[selectedPost].fullContent}
+                {posts[selectedPost].content}
               </div>
+
+              {/* Footer in modal */}
+              <div className="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between">
+                <button
+                  onClick={(e) => handleLike(posts[selectedPost]._id, e)}
+                  className="flex items-center gap-3 cursor-pointer hover:scale-110 transition-transform"
+                >
+                  <span className={`text-2xl ${isLikedByUser(posts[selectedPost]) ? 'text-red-500' : 'text-gray-400'}`}>
+                    {isLikedByUser(posts[selectedPost]) ? '❤️' : '🤍'}
+                  </span>
+                  <span className="font-medium text-slate-700 text-base">{posts[selectedPost].likes || 0}</span>
+                </button>
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-500">{formatDate(posts[selectedPost].createdAt)}</span>
+                </div>
+              </div>
+
+              <div className={`flex mt-8 ${isAuthor(posts[selectedPost]) ? 'justify-between' : 'justify-start'}`}>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setSelectedPost(null)}
+                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                  >
+                    Close
+                  </button>
+                  {isAuthor(posts[selectedPost]) && (
+                    <button
+                      onClick={handleEdit}
+                      className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                    >
+                      Update
+                    </button>
+                  )}
+                </div>
+                {isAuthor(posts[selectedPost]) && (
+                  <button
+                    onClick={handleDelete}
+                    className="px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Mode Modal */}
+      {selectedPost !== null && posts[selectedPost] && isEditMode && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`${posts[selectedPost].color} p-8`}>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">Category:</label>
+                  <input
+                    type="text"
+                    value={editData.category}
+                    onChange={(e) => setEditData({ ...editData, category: e.target.value })}
+                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">Title:</label>
+                  <input
+                    type="text"
+                    value={editData.title}
+                    onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 overflow-y-auto max-h-[calc(85vh-300px)]">
+              <textarea
+                value={editData.content}
+                onChange={(e) => setEditData({ ...editData, content: e.target.value })}
+                className="w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                placeholder="Content..."
+              />
+
+              <div className="flex justify-between mt-8">
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCloseEdit}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Discard Confirmation Dialog */}
+      {showDiscardDialog && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
+            <button
+              onClick={isCreateMode ? () => setShowDiscardDialog(false) : handleContinueEdit}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Unsaved Changes</h3>
+            <p className="text-slate-600 mb-6">
+              {isCreateMode
+                ? 'Your new post will not be saved. Are you sure you want to discard it?'
+                : 'Your changes will not be saved. Are you sure you want to discard them?'}
+            </p>
+            <div className="flex gap-4 justify-end">
               <button
-                onClick={() => setSelectedPost(null)}
-                className="mt-8 px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                onClick={isCreateMode ? () => setShowDiscardDialog(false) : handleContinueEdit}
+                className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
               >
-                Close
+                {isCreateMode ? 'Continue Writing' : 'Continue Editing'}
+              </button>
+              <button
+                onClick={isCreateMode ? handleDiscardCreate : handleDiscard}
+                className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
+              >
+                Discard
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Delete Post Permanently?</h3>
+            <p className="text-slate-600 mb-6">This action will permanently delete this blog post. Are you sure you want to continue?</p>
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={handleCancelDelete}
+                className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Mode Modal */}
+      {isCreateMode && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-blue-50 p-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">Category:</label>
+                  <input
+                    type="text"
+                    value={editData.category}
+                    onChange={(e) => setEditData({ ...editData, category: e.target.value })}
+                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Technology, Tutorial, etc."
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">Title:</label>
+                  <input
+                    type="text"
+                    value={editData.title}
+                    onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter post title..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 overflow-y-auto max-h-[calc(85vh-300px)]">
+              <textarea
+                value={editData.content}
+                onChange={(e) => setEditData({ ...editData, content: e.target.value })}
+                className="w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                placeholder="Write your content here..."
+              />
+
+              <div className="flex justify-between mt-8">
+                <button
+                  onClick={handleCreateSave}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCreateCancel}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Button (+ icon) - Tech page only */}
+      {canCreatePost() && location.pathname === '/tech' && !isCreateMode && !isEditMode && selectedPost === null && (
+        <button
+          onClick={handleCreate}
+          className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 text-white rounded-full shadow-lg hover:bg-pink-600 transition-all hover:scale-110 flex items-center justify-center text-3xl font-bold z-40 leading-none"
+          title="Create new post"
+          style={{ lineHeight: '1' }}
+        >
+          +
+        </button>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div
+          className="fixed z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg animate-fadeIn flex items-center gap-2 pointer-events-none"
+          style={{
+            left: toastPos.x + 16,
+            top: toastPos.y - 40,
+            transform: 'translateX(-50%)'
+          }}
+        >
+          {toastMessage}
         </div>
       )}
     </div>
@@ -416,6 +1010,14 @@ const Layout: React.FC = () => {
       {/* Navigation Bar - Desktop Only */}
       <nav className="fixed top-0 right-0 w-full z-50 p-[0.9rem] md:p-[1.8rem] justify-end pointer-events-none hidden lg:flex">
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
+          {window.location.hostname === 'localhost' && (
+            <LiquidTab
+              to="/test"
+              label="Test"
+              active={location.pathname === '/test'}
+              colorClass="text-gray-500 hover:text-gray-300"
+            />
+          )}
           <LiquidTab
             to="/about"
             label="About"
@@ -452,6 +1054,7 @@ const Layout: React.FC = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/test" element={<Test />} />
         <Route path="/about" element={<About />} />
         <Route path="/research" element={<Research />} />
         <Route path="/tech" element={<Tech />} />
