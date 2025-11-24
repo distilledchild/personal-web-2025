@@ -180,20 +180,26 @@ export const Research: React.FC = () => {
           </div>
 
           {/* Responsive Tabs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-visible pt-2">
-            {tabs.map((tab, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveTab(idx)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 border ${activeTab === idx
-                  ? `${tab.activeBg} ${tab.color.split(' ')[0]} shadow-sm ring-2 ring-offset-2 ring-offset-white ${tab.activeBg.split(' ')[1]} mt-2`
-                  : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:-translate-y-1'
-                  }`}
-              >
-                <tab.icon size={20} />
-                <span className="font-bold text-lg">{tab.label}</span>
-              </button>
-            ))}
+          <div className="flex flex-wrap justify-center gap-2 border-b border-slate-200">
+            {tabs.map((tab, idx) => {
+              // Extract the base color class (e.g., 'text-blue-600') to use for border
+              const textColorClass = tab.color.split(' ')[0];
+              const borderColorClass = textColorClass.replace('text-', 'border-');
+
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setActiveTab(idx)}
+                  className={`flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300 ${activeTab === idx
+                    ? `${textColorClass} ${borderColorClass}`
+                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
+                >
+                  <tab.icon size={20} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

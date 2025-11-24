@@ -49,7 +49,7 @@ export const Interests: React.FC = () => {
             try {
                 // Determine API URL based on environment
                 const API_URL = window.location.hostname === 'localhost'
-                    ? 'http://localhost:3001'
+                    ? 'http://localhost:4000'
                     : 'https://personal-web-2025-production.up.railway.app';
 
                 const response = await fetch(`${API_URL}/api/travel/states`);
@@ -81,54 +81,54 @@ export const Interests: React.FC = () => {
                     </h2>
 
                     {/* Tabs Navigation */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="flex flex-wrap justify-center gap-2 border-b border-slate-200">
                         <button
                             onClick={() => setActiveTab('travel')}
                             className={`
-                flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 border
+                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'travel'
-                                    ? 'bg-orange-50 text-[#FFA300] border-orange-200 shadow-sm ring-2 ring-offset-2 ring-offset-white ring-orange-200'
-                                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:-translate-y-1'}
+                                    ? 'border-[#FFA300] text-[#FFA300]'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
                             <Plane size={20} />
-                            <span className="font-bold text-lg">Travel</span>
+                            <span>Travel</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('bike')}
                             className={`
-                flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 border
+                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'bike'
-                                    ? 'bg-orange-50 text-[#FFA300] border-orange-200 shadow-sm ring-2 ring-offset-2 ring-offset-white ring-orange-200'
-                                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:-translate-y-1'}
+                                    ? 'border-blue-500 text-blue-500'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
                             <Bike size={20} />
-                            <span className="font-bold text-lg">Bike</span>
+                            <span>Bike</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('games')}
                             className={`
-                flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 border
+                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'games'
-                                    ? 'bg-orange-50 text-[#FFA300] border-orange-200 shadow-sm ring-2 ring-offset-2 ring-offset-white ring-orange-200'
-                                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:-translate-y-1'}
+                                    ? 'border-purple-500 text-purple-500'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
                             <Gamepad2 size={20} />
-                            <span className="font-bold text-lg">Games</span>
+                            <span>Games</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('topic4')}
                             className={`
-                flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 border
+                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'topic4'
-                                    ? 'bg-orange-50 text-[#FFA300] border-orange-200 shadow-sm ring-2 ring-offset-2 ring-offset-white ring-orange-200'
-                                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:-translate-y-1'}
+                                    ? 'border-green-600 text-green-600'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
                             <Trophy size={20} />
-                            <span className="font-bold text-lg">Sports</span>
+                            <span>Sports</span>
                         </button>
                     </div>
                 </div>

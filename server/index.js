@@ -288,6 +288,102 @@ app.delete('/api/tech-blog/:id', async (req, res) => {
     }
 });
 
+// --- Milestone (About Page) Schema & Endpoints ---
+
+const milestoneSchema = new mongoose.Schema({
+    date: Date,
+    title: String,
+    description: String,
+    createdAt: Date,
+    category: String // 'ME' or 'WEB'
+}, { collection: 'ABOUT_MILESTONE' });
+
+const Milestone = mongoose.model('Milestone', milestoneSchema);
+
+// Get Milestones
+app.get('/api/milestones', async (req, res) => {
+    try {
+        // Sort by date ascending (chronological) as per "time order" request for history
+        const milestones = await Milestone.find({}).sort({ date: 1 });
+        res.json(milestones);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create Milestone
+app.post('/api/milestones', async (req, res) => {
+    try {
+        const { date, title, description, category, email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const newMilestone = new Milestone({
+            date: new Date(date),
+            title,
+            description,
+            category,
+            createdAt: new Date()
+        });
+
+        await newMilestone.save();
+        res.status(201).json(newMilestone);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update Milestone
+app.put('/api/milestones/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { date, title, description, category, email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const milestone = await Milestone.findById(id);
+        if (!milestone) return res.status(404).json({ error: 'Not found' });
+
+        if (date) milestone.date = new Date(date);
+        if (title) milestone.title = title;
+        if (description) milestone.description = description;
+        if (category) milestone.category = category;
+
+        await milestone.save();
+        res.json(milestone);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Delete Milestone
+app.delete('/api/milestones/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        await Milestone.findByIdAndDelete(id);
+        res.json({ message: 'Deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
@@ -464,7 +560,7 @@ function updateVisitorStatus(socketId) {
     }
 }
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
     console.log(`SERVER RUNNING ON PORT ${PORT}`);
 });

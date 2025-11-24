@@ -33,6 +33,7 @@ This document outlines the modern full-stack architecture used in the **Distille
 | **3D Graphics** | **Three.js (R3F)** | Implements the interactive 3D DNA double-helix visualization using `@react-three/fiber`. |
 | **Data Viz** | **Recharts** | React-based composable charting library used for the Research page visualizations. |
 | **Backend** | **Node.js + Socket.io** | Custom server handling real-time bidirectional communication for the chat feature. |
+| **Database** | **MongoDB** | NoSQL database used for storing Tech Blog posts and user interactions (likes, views). |
 
 ## ☁️ Infrastructure & Deployment
 

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
-import { Dna, Mail, Github, MapPin, Loader2 } from 'lucide-react';
+import { Dna, Mail, Github, MapPin, Loader2, Plus } from 'lucide-react';
 import { ThreeDNA } from './components/ThreeDNA';
 import { ChatBot } from './components/ChatBot';
 import { Research } from './pages/Research';
 import { Interests } from './pages/Interests';
+import { About } from './pages/About';
 import { io, Socket } from 'socket.io-client';
 
 const Home: React.FC = () => (
@@ -42,46 +43,7 @@ const Home: React.FC = () => (
   </div>
 );
 
-const About: React.FC = () => (
-  <div className="min-h-screen bg-white pt-32 pb-20 px-6 animate-fadeIn">
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-4xl font-bold text-slate-900 mb-12 flex items-center justify-center gap-3 border-b border-slate-100 pb-6">
-        {/* <span className="text-green-600"><Dna size={36} /></span> */}
-        About Me
-      </h2>
 
-      <div className="space-y-8 text-slate-700 leading-relaxed text-lg">
-        <p>
-          I am a <strong>Computational Biologist</strong> with a deep passion for understanding the intricate architecture of the genome. My research focuses on <strong>3D genomics</strong>, exploring how chromatin organization influences gene regulation and cellular function.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
-          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Research Interests</h3>
-            <ul className="space-y-3 text-base">
-              <li>• 3D Genomics </li>
-              <li>• Single-cell sequencing for cancer research</li>
-              <li>• Structural Variant Analysis</li>
-            </ul>
-          </div>
-          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Hobbies</h3>
-            <ul className="space-y-3 text-base">
-              <li>• Riding a bike</li>
-              <li>• Camping</li>
-              <li>• Traveling</li>
-              <li>• Playing Baduk (Go)</li>
-            </ul>
-          </div>
-        </div>
-
-        <p>
-          Looking forward, I aspire to leverage my expertise in a dynamic environment within the <strong>Pharmaceutical or IT industry</strong>, contributing to drug discovery and precision medicine through advanced computational strategies.
-        </p>
-      </div>
-    </div>
-  </div>
-);
 
 const Test: React.FC = () => {
   const [userData, setUserData] = React.useState<any>(null);
@@ -166,7 +128,7 @@ const Tech: React.FC = () => {
     const fetchBlogs = async () => {
       try {
         const API_URL = window.location.hostname === 'localhost'
-          ? 'http://localhost:3001'
+          ? 'http://localhost:4000'
           : 'https://personal-web-2025-production.up.railway.app';
 
         console.log('Fetching from:', `${API_URL}/api/tech-blog`);
@@ -235,7 +197,7 @@ const Tech: React.FC = () => {
 
     try {
       const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:3001'
+        ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
       const response = await fetch(`${API_URL}/api/tech-blog/${postId}/like`, {
@@ -295,7 +257,7 @@ const Tech: React.FC = () => {
 
     try {
       const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:3001'
+        ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
       const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
@@ -349,7 +311,7 @@ const Tech: React.FC = () => {
 
     try {
       const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:3001'
+        ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
       const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
@@ -399,7 +361,7 @@ const Tech: React.FC = () => {
 
     try {
       const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:3001'
+        ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
       const response = await fetch(`${API_URL}/api/tech-blog`, {
@@ -824,11 +786,10 @@ const Tech: React.FC = () => {
       {canCreatePost() && location.pathname === '/tech' && !isCreateMode && !isEditMode && selectedPost === null && (
         <button
           onClick={handleCreate}
-          className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 text-white rounded-full shadow-lg hover:bg-pink-600 transition-all hover:scale-110 flex items-center justify-center text-3xl font-bold z-40 leading-none"
+          className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40"
           title="Create new post"
-          style={{ lineHeight: '1' }}
         >
-          +
+          <Plus size={28} />
         </button>
       )}
 
@@ -1167,7 +1128,7 @@ const OAuthCallback: React.FC = () => {
   useEffect(() => {
     if (code) {
       const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:3001/api/auth/google'
+        ? 'http://localhost:4000/api/auth/google'
         : 'https://personal-web-2025-production.up.railway.app/api/auth/google';
 
       fetch(API_URL, {
