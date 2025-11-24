@@ -159,6 +159,7 @@ const Tech: React.FC = () => {
   const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [isCreateMode, setIsCreateMode] = React.useState(false);
+  const [showValidationDialog, setShowValidationDialog] = React.useState(false);
 
   React.useEffect(() => {
     // Fetch blog posts
@@ -390,6 +391,12 @@ const Tech: React.FC = () => {
 
   // Handle create save
   const handleCreateSave = async () => {
+    // Validation check
+    if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
+      setShowValidationDialog(true);
+      return;
+    }
+
     try {
       const API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:3001'
@@ -790,6 +797,25 @@ const Tech: React.FC = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Validation Dialog */}
+      {showValidationDialog && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">⚠️</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Missing Information</h3>
+            <p className="text-slate-600 mb-8">Please fill in all fields (Category, Title, and Content) before saving.</p>
+            <button
+              onClick={() => setShowValidationDialog(false)}
+              className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+            >
+              Confirm
+            </button>
           </div>
         </div>
       )}
