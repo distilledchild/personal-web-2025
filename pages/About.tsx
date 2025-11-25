@@ -148,12 +148,14 @@ export const About: React.FC = () => {
             {/* Fixed Header Section */}
             <div className="pt-32 pb-6 px-6 bg-white border-b border-slate-100">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-4xl font-bold text-slate-900 mb-8 flex items-center justify-center gap-3">
-                        Intro
-                    </h2>
+                    <div className="text-center mb-8">
+                        <h2 className="text-4xl font-bold text-slate-900 mb-4">
+                            Intro
+                        </h2>
+                    </div>
 
                     {/* Tabs */}
-                    <div className="flex justify-center mb-6 border-b border-slate-200">
+                    <div className="flex justify-center gap-2">
                         <button
                             onClick={() => setActiveTab('me')}
                             className={`

@@ -81,7 +81,7 @@ export const Interests: React.FC = () => {
                     </h2>
 
                     {/* Tabs Navigation */}
-                    <div className="flex flex-wrap justify-center gap-2 border-b border-slate-200">
+                    <div className="flex flex-wrap justify-center gap-2">
                         <button
                             onClick={() => setActiveTab('travel')}
                             className={`

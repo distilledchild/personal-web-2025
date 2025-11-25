@@ -180,7 +180,7 @@ export const Research: React.FC = () => {
           </div>
 
           {/* Responsive Tabs Grid */}
-          <div className="flex flex-wrap justify-center gap-2 border-b border-slate-200">
+          <div className="flex flex-wrap justify-center gap-2">
             {tabs.map((tab, idx) => {
               // Extract the base color class (e.g., 'text-blue-600') to use for border
               const textColorClass = tab.color.split(' ')[0];
