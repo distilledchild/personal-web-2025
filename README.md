@@ -56,5 +56,69 @@ The application employs a decoupled architecture for optimal performance and cos
   - **Glassmorphism**: Applied semi-transparent, blurred backgrounds to UI elements like the chat interface and cards.
 - **Icons**: **Lucide React** for clean, consistent, and lightweight SVG icons.
 
+## 🏃 Strava OAuth 2.0 Integration
+
+The application integrates with Strava's API to fetch and display workout activities. The OAuth 2.0 flow follows these steps:
+
+### Authorization Flow
+
+1. **Initiate Authorization**
+   - User clicks "Test Strava Connection" button
+   - Frontend requests authorization URL from backend (`GET /api/strava/auth`)
+   - User is redirected to Strava's authorization page:
+     ```
+     https://www.strava.com/oauth/authorize?
+       client_id={CLIENT_ID}&
+       response_type=code&
+       redirect_uri=http://localhost:3000/strava/callback&
+       approval_prompt=force&
+       scope=read,activity:read_all,profile:read_all,read_all
+     ```
+
+2. **User Grants Permission**
+   - User reviews and approves the requested permissions on Strava's page
+   - Strava redirects back to the application with an authorization code:
+     ```
+     http://localhost:3000/strava/callback?code={AUTHORIZATION_CODE}&scope=...
+     ```
+
+3. **Exchange Code for Access Token**
+   - Callback page extracts the authorization code from URL parameters
+   - Sends code to backend (`POST /api/strava/exchange_token`)
+   - Backend exchanges code for access token via Strava's token endpoint:
+     ```
+     POST https://www.strava.com/oauth/token
+     {
+       client_id: {CLIENT_ID},
+       client_secret: {CLIENT_SECRET},
+       code: {AUTHORIZATION_CODE},
+       grant_type: "authorization_code"
+     }
+     ```
+   - Response includes `access_token`, `refresh_token`, and athlete profile
+
+4. **Fetch Activity Data**
+   - Using the access token, request athlete's activities:
+     ```
+     GET https://www.strava.com/api/v3/athlete/activities?access_token={ACCESS_TOKEN}
+     ```
+   - Activities are stored in localStorage for persistence
+   - User is redirected to the Interests page where activities are displayed
+
+### Data Display Features
+
+- **Monthly Statistics**: Bar chart showing total distance by activity type (Walk, Bike, Run)
+- **Activity Counters**: Circular badges displaying monthly activity counts
+- **Paginated Table**: Activity details with 5 rows per page
+- **Activity Types**: Color-coded badges for different sport types
+
+### Security Note
+
+**Why automatic OAuth approval is not possible:**
+- Strava's authorization page is hosted on a different domain
+- Browser's Same-Origin Policy prevents cross-domain JavaScript execution
+- OAuth 2.0 security model requires explicit user consent
+- Attempting to automate this would violate security principles and is technically blocked by browsers
+
 ---
-*This project demonstrates a blend of domain expertise in Computational Biology (Data Visualization) with modern Web Engineering (3D Graphics, Real-time Systems).*
+*This project demonstrates a blend of domain expertise in Computational Biology (Data Visualization) with modern Web Engineering (3D Graphics, Real-time Systems, OAuth Integration).*

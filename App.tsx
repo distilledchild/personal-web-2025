@@ -6,6 +6,7 @@ import { ChatBot } from './components/ChatBot';
 import { Research } from './pages/Research';
 import { Interests } from './pages/Interests';
 import { About } from './pages/About';
+import { StravaCallback } from './pages/StravaCallback';
 import { io, Socket } from 'socket.io-client';
 
 const Home: React.FC = () => (
@@ -1047,6 +1048,7 @@ const Layout: React.FC = () => {
         <Route path="/tech" element={<Tech />} />
         <Route path="/interests" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/strava/callback" element={<StravaCallback />} />
       </Routes>
 
       <ChatBot />

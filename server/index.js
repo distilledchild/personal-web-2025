@@ -65,6 +65,27 @@ const techBlogSchema = new mongoose.Schema({
 
 const TechBlog = mongoose.model('TechBlog', techBlogSchema);
 
+// Workout Schema for Strava activities
+const workoutSchema = new mongoose.Schema({
+    activity_id: { type: Number, unique: true, required: true },
+    name: String,
+    distance: Number,
+    moving_time: Number,
+    elapsed_time: Number,
+    total_elevation_gain: Number,
+    type: String,
+    sport_type: String,
+    start_date: Date,
+    start_date_local: Date,
+    average_speed: Number,
+    max_speed: Number,
+    athlete_id: Number,
+    insertedAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
+}, { collection: 'INTERESTS_WORKOUT' });
+
+const Workout = mongoose.model('Workout', workoutSchema);
+
 // Google OAuth Endpoint
 app.post('/api/auth/google', async (req, res) => {
     const { code } = req.body;
@@ -559,6 +580,257 @@ function updateVisitorStatus(socketId) {
         io.to(socketId).emit('queue_status', { position: index + 1 });
     }
 }
+
+// --- Strava API Endpoints ---
+
+// Strava OAuth - Initiate Authorization
+app.get('/api/strava/auth', (req, res) => {
+    const clientId = process.env.STRAVA_CLIENT_ID || '187016';
+    const redirectUri = encodeURIComponent('http://localhost:3000/strava/callback');
+    const scope = 'read,activity:read_all,profile:read_all,read_all';
+
+    const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&approval_prompt=force&scope=${scope}`;
+
+    res.json({ authUrl });
+});
+
+// Strava OAuth - Exchange Code for Token
+app.post('/api/strava/exchange_token', async (req, res) => {
+    try {
+        const { code } = req.body;
+
+        if (!code) {
+            return res.status(400).json({ error: 'Authorization code is required' });
+        }
+
+        const clientId = process.env.STRAVA_CLIENT_ID || '187016';
+        const clientSecret = process.env.STRAVA_CLIENT_SECRET || '021ca34790af66291ff4b82a8e02101744080353';
+
+        const response = await fetch('https://www.strava.com/oauth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                client_id: clientId,
+                client_secret: clientSecret,
+                code: code,
+                grant_type: 'authorization_code'
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Token exchange failed:', response.status, errorText);
+            return res.status(response.status).json({ error: 'Failed to exchange token', details: errorText });
+        }
+
+        const data = await response.json();
+        console.log('Successfully exchanged code for token');
+        res.json(data);
+    } catch (err) {
+        console.error('Token exchange error:', err);
+        res.status(500).json({ error: 'Failed to exchange token', details: err.message });
+    }
+});
+
+// Get Strava Activities with provided access token
+app.post('/api/strava/activities-with-token', async (req, res) => {
+    try {
+        const { accessToken } = req.body;
+
+        if (!accessToken) {
+            return res.status(400).json({ error: 'Access token is required' });
+        }
+
+        const response = await fetch('https://www.strava.com/api/v3/athlete/activities?per_page=100', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Strava API Error:', response.status, errorText);
+            return res.status(response.status).json({ error: `Strava API error: ${response.status}`, details: errorText });
+        }
+
+        const activities = await response.json();
+        console.log(`Fetched ${activities.length} activities from Strava`);
+
+        // Sync with database
+        try {
+            const dbCount = await Workout.countDocuments();
+            const apiCount = activities.length;
+
+            console.log(`DB has ${dbCount} activities, API returned ${apiCount} activities`);
+
+            // Always try to sync/insert new activities
+            // We'll filter out ones that already exist by ID to avoid duplicate key errors filling up logs,
+            // or just rely on the unique index and ordered: false.
+            // Since we want to be robust, let's just try to insert all and let Mongo handle duplicates.
+
+            console.log(`Attempting to sync ${apiCount} activities to DB`);
+
+            if (apiCount > 0) {
+                console.log('Sample activity structure:', JSON.stringify(activities[0], null, 2));
+            }
+
+            // Prepare activities for insertion
+            const activitiesToInsert = activities.map(activity => {
+                // Ensure required fields are present
+                if (!activity.id) {
+                    console.warn('Activity missing ID:', activity);
+                }
+                return {
+                    activity_id: activity.id,
+                    name: activity.name,
+                    distance: activity.distance,
+                    moving_time: activity.moving_time,
+                    elapsed_time: activity.elapsed_time,
+                    total_elevation_gain: activity.total_elevation_gain,
+                    type: activity.type,
+                    sport_type: activity.sport_type,
+                    start_date: new Date(activity.start_date),
+                    start_date_local: new Date(activity.start_date_local),
+                    average_speed: activity.average_speed,
+                    max_speed: activity.max_speed,
+                    athlete_id: activity.athlete?.id,
+                    insertedAt: new Date()
+                };
+            });
+
+            console.log(`Prepared ${activitiesToInsert.length} documents for insertion`);
+
+            // Insert new activities (ignore duplicates)
+            try {
+                const result = await Workout.insertMany(activitiesToInsert, { ordered: false });
+                console.log(`Successfully inserted ${result.length} activities.`);
+            } catch (err) {
+                // Ignore duplicate key errors (code 11000)
+                if (err.code === 11000) {
+                    console.log(`Sync complete. Some activities already existed.`);
+                    if (err.insertedDocs && err.insertedDocs.length > 0) {
+                        console.log(`Inserted ${err.insertedDocs.length} new activities (others were duplicates).`);
+                    } else {
+                        console.log('No new activities inserted (all were duplicates).');
+                    }
+                } else {
+                    console.error('Error inserting activities:', err);
+                    // Log validation errors if any
+                    if (err.name === 'ValidationError') {
+                        console.error('Validation Errors:', err.errors);
+                    }
+                }
+            }
+
+            // Verify final count
+            const finalCount = await Workout.countDocuments();
+            console.log(`Final DB count: ${finalCount}`);
+
+        } catch (dbErr) {
+            console.error('Database sync error:', dbErr);
+        }
+
+        res.json(activities);
+    } catch (err) {
+        console.error('Strava API handler error:', err);
+        res.status(500).json({ error: 'Failed to fetch Strava activities', details: err.message });
+    }
+});
+
+// Function to refresh Strava Access Token
+async function refreshStravaToken() {
+    try {
+        console.log('Refreshing Strava Access Token...');
+        const response = await fetch('https://www.strava.com/oauth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                client_id: process.env.STRAVA_CLIENT_ID,
+                client_secret: process.env.STRAVA_CLIENT_SECRET,
+                grant_type: 'refresh_token',
+                refresh_token: process.env.STRAVA_REFRESH_TOKEN
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Failed to refresh token response:', response.status, errorText);
+            throw new Error(`Failed to refresh token: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Successfully refreshed Strava token');
+        return data.access_token;
+    } catch (error) {
+        console.error('Error refreshing Strava token:', error);
+        return null;
+    }
+}
+
+// Get Strava Activities
+app.get('/api/strava/activities', async (req, res) => {
+    try {
+        let accessToken = process.env.STRAVA_ACCESS_TOKEN;
+
+        if (!accessToken) {
+            // Try refreshing if no access token is set initially
+            accessToken = await refreshStravaToken();
+            if (!accessToken) {
+                return res.status(500).json({ error: 'Strava configuration missing' });
+            }
+            process.env.STRAVA_ACCESS_TOKEN = accessToken;
+        }
+
+        // Helper to fetch activities
+        const fetchActivities = async (token) => {
+            return await fetch('https://www.strava.com/api/v3/athlete/activities?per_page=30', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+        };
+
+        let response = await fetchActivities(accessToken);
+
+        // If 401 Unauthorized, try refreshing token
+        if (response.status === 401) {
+            console.log('Strava token expired (401), attempting refresh...');
+            const newToken = await refreshStravaToken();
+
+            if (newToken) {
+                process.env.STRAVA_ACCESS_TOKEN = newToken; // Update in memory
+                response = await fetchActivities(newToken);
+            } else {
+                return res.status(401).json({ error: 'Failed to refresh Strava token' });
+            }
+        }
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Strava API Error:', response.status, errorText);
+            return res.status(response.status).json({ error: `Strava API error: ${response.status}`, details: errorText });
+        }
+
+        const activities = await response.json();
+        console.log(`Fetched ${activities.length} activities from Strava`);
+        res.json(activities);
+    } catch (err) {
+        console.error('Strava API handler error:', err);
+        res.status(500).json({ error: 'Failed to fetch Strava activities', details: err.message });
+    }
+});
+
+// Get stored workouts from Database
+app.get('/api/workouts', async (req, res) => {
+    try {
+        const workouts = await Workout.find().sort({ start_date: -1 });
+        console.log(`Fetched ${workouts.length} workouts from DB`);
+        res.json(workouts);
+    } catch (err) {
+        console.error('Database fetch error:', err);
+        res.status(500).json({ error: 'Failed to fetch workouts from database', details: err.message });
+    }
+});
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
