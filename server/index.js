@@ -25,7 +25,31 @@ import mongoose from 'mongoose';
 import { Storage } from '@google-cloud/storage';
 
 // Initialize Google Cloud Storage
-const storage = new Storage();
+// Supports both file path (local) and JSON string (Railway/Render)
+let storageConfig = {};
+
+if (process.env.GCP_SERVICE_ACCOUNT_KEY) {
+    // Railway/Render: JSON string in environment variable
+    try {
+        storageConfig.credentials = JSON.parse(process.env.GCP_SERVICE_ACCOUNT_KEY);
+        console.log('Using GCS credentials from GCP_SERVICE_ACCOUNT_KEY');
+    } catch (error) {
+        console.error('Failed to parse GCP_SERVICE_ACCOUNT_KEY:', error.message);
+    }
+} else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    // Local: file path
+    console.log('Using GCS credentials from GOOGLE_APPLICATION_CREDENTIALS file');
+    storageConfig.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+} else {
+    // Default: Application Default Credentials (gcloud auth)
+    console.log('Using GCS default credentials');
+}
+
+if (process.env.GCP_PROJECT_ID) {
+    storageConfig.projectId = process.env.GCP_PROJECT_ID;
+}
+
+const storage = new Storage(storageConfig);
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
