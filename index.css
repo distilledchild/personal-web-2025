@@ -111,17 +111,31 @@
   }
 }
 
-/* Y-axis 180 degree rotation (half rotation) */
+/* Y-axis 180 degree rotation (half rotation) with fade effect */
 @keyframes rotateY360 {
-  from {
+  0% {
     transform: perspective(1000px) rotateY(0deg);
     opacity: 0;
   }
-  30% {
+  15% {
     opacity: 1;
   }
-  to {
+  85% {
     transform: perspective(1000px) rotateY(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(1000px) rotateY(180deg);
+    opacity: 0;
+  }
+}
+
+/* Fade-in after rotation completes */
+@keyframes fadeInFinal {
+  0% {
+    opacity: 0;
+  }
+  100% {
     opacity: 1;
   }
 }

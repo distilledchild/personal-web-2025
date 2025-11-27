@@ -46,6 +46,7 @@ interface ArtMuseum {
     state: string;
     coordinates?: [number, number];
     fips_code?: string;
+    artworks?: string[];
 }
 
 // State info interface and data
@@ -211,6 +212,59 @@ export const Interests: React.FC = () => {
         } catch (error) {
             console.error('Failed to initiate Strava auth:', error);
         }
+    };
+
+    // Function to load artworks from public/art-images/{museum_code} folder
+    const loadArtworksForMuseum = async (museum: ArtMuseum): Promise<ArtMuseum> => {
+        const museumCode = museum.museum_code;
+        const basePath = `/art-images/${museumCode}`;
+
+        try {
+            // We can't directly list files in a static folder from the frontend,
+            // so we'll try to load images by convention (e.g., NOMA1.JPG, NOMA2.JPG, etc.)
+            // We'll try up to 50 images and filter out the ones that don't exist
+            const artworkPromises: Promise<string | null>[] = [];
+
+            // Try loading images with common naming patterns
+            for (let i = 1; i <= 50; i++) {
+                // Try both .JPG and .jpg extensions
+                const imagePathJPG = `${basePath}/${museumCode}${i}.JPG`;
+                const imagePathJpg = `${basePath}/${museumCode}${i}.jpg`;
+                const imagePathPNG = `${basePath}/${museumCode}${i}.PNG`;
+                const imagePathPng = `${basePath}/${museumCode}${i}.png`;
+
+                // Create a promise that resolves to the path if image exists, null otherwise
+                const checkImage = async (path: string): Promise<string | null> => {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => resolve(path);
+                        img.onerror = () => resolve(null);
+                        img.src = path;
+                    });
+                };
+
+                artworkPromises.push(
+                    checkImage(imagePathJPG).then(result => result || checkImage(imagePathJpg)).then(result => result || checkImage(imagePathPNG)).then(result => result || checkImage(imagePathPng))
+                );
+            }
+
+            const results = await Promise.all(artworkPromises);
+            const artworks = results.filter((path): path is string => path !== null);
+
+            return {
+                ...museum,
+                artworks
+            };
+        } catch (error) {
+            console.error('Failed to load artworks for museum:', museum.museum_name, error);
+            return museum;
+        }
+    };
+
+    // Handler for museum pin click
+    const handleMuseumClick = async (museum: ArtMuseum) => {
+        const museumWithArtworks = await loadArtworksForMuseum(museum);
+        setSelectedMuseum(museumWithArtworks);
     };
 
     useEffect(() => {
@@ -759,282 +813,303 @@ export const Interests: React.FC = () => {
                                             }
                                         }}
                                     >
-                                    <defs>
-                                        <filter id="state-shadow" x="-50%" y="-50%" width="200%" height="200%">
-                                            <feDropShadow dx="0" dy="0" stdDeviation="15" floodOpacity="0.5" />
-                                        </filter>
-                                    </defs>
-                                    <Geographies geography={geoUrl}>
-                                        {({ geographies }) => {
-                                            const activeStateId = expandedState || hoveredState;
-                                            const activeGeo = geographies.find(geo => {
-                                                const hasMuseum = artMuseums.some(m => m.fips_code === geo.id);
-                                                return hasMuseum && artMuseums.find(m => m.fips_code === geo.id)?.state === activeStateId;
-                                            });
-                                            const otherGeos = geographies.filter(geo => geo !== activeGeo);
+                                        <defs>
+                                            <filter id="state-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                                <feDropShadow dx="0" dy="0" stdDeviation="15" floodOpacity="0.5" />
+                                            </filter>
+                                        </defs>
+                                        <Geographies geography={geoUrl}>
+                                            {({ geographies }) => {
+                                                const activeStateId = expandedState || hoveredState;
+                                                const activeGeo = geographies.find(geo => {
+                                                    const hasMuseum = artMuseums.some(m => m.fips_code === geo.id);
+                                                    return hasMuseum && artMuseums.find(m => m.fips_code === geo.id)?.state === activeStateId;
+                                                });
+                                                const otherGeos = geographies.filter(geo => geo !== activeGeo);
 
-                                            return (
-                                                <>
-                                                    {/* Background layer: all non-active states */}
-                                                    {otherGeos.map(geo => {
-                                                        const hasMuseum = artMuseums.some(m => m.fips_code === geo.id);
-                                                        const museum = artMuseums.find(m => m.fips_code === geo.id);
-                                                        const stateCode = museum?.state;
-                                                        const isHovered = hoveredState === stateCode && !expandedState;
+                                                return (
+                                                    <>
+                                                        {/* Background layer: all non-active states */}
+                                                        {otherGeos.map(geo => {
+                                                            const hasMuseum = artMuseums.some(m => m.fips_code === geo.id);
+                                                            const museum = artMuseums.find(m => m.fips_code === geo.id);
+                                                            const stateCode = museum?.state;
+                                                            const isHovered = hoveredState === stateCode && !expandedState;
 
-                                                        return (
-                                                            <Geography
-                                                                key={geo.rsmKey}
-                                                                geography={geo}
-                                                                fill={hasMuseum ? (isHovered ? "#FFA300" : "#FFCC80") : "#FFFFFF"}
-                                                                stroke="#CBD5E1"
-                                                                strokeWidth={0.5}
-                                                                data-state-code={stateCode || ''}
-                                                                onMouseEnter={() => {
-                                                                    if (hasMuseum && !expandedState && stateCode) {
-                                                                        setHoveredState(stateCode);
-                                                                    }
-                                                                }}
-                                                                onMouseLeave={() => {
-                                                                    if (!expandedState) setHoveredState(null);
-                                                                }}
-                                                                onClick={(e) => {
-                                                                    if (hasMuseum && !expandedState && stateCode) {
-                                                                        e.stopPropagation();
-                                                                        const svg = e.currentTarget.ownerSVGElement;
-                                                                        if (svg) {
-                                                                            const pt = svg.createSVGPoint();
-                                                                            pt.x = e.clientX;
-                                                                            pt.y = e.clientY;
-                                                                            const svgP = pt.matrixTransform(svg.getScreenCTM()!.inverse());
-                                                                            setClickPosition({ x: svgP.x, y: svgP.y });
-                                                                        }
-                                                                        setExpandedState(stateCode);
-
-                                                                        const centroid = geoCentroid(geo);
-                                                                        const projCentroid = projection(centroid);
-                                                                        if (projCentroid) {
-                                                                            setExpandedCentroid({ x: projCentroid[0], y: projCentroid[1] });
-                                                                        }
-                                                                    }
-                                                                }}
-                                                                style={{
-                                                                    default: {
-                                                                        outline: "none",
-                                                                        filter: isHovered ? "url(#state-shadow)" : "none",
-                                                                        transition: "fill 0.5s ease",
-                                                                        cursor: hasMuseum ? "pointer" : "default"
-                                                                    },
-                                                                    hover: {
-                                                                        outline: "none",
-                                                                        filter: hasMuseum && !expandedState ? "url(#state-shadow)" : "none",
-                                                                        transition: "fill 0.5s ease",
-                                                                        cursor: hasMuseum ? "pointer" : "default"
-                                                                    },
-                                                                    pressed: { outline: "none" }
-                                                                }}
-                                                            />
-                                                        );
-                                                    })}
-
-                                                    {/* Foreground layer: active/expanded state */}
-                                                    {activeGeo && (() => {
-                                                        const museum = artMuseums.find(m => m.fips_code === activeGeo.id);
-                                                        const stateCode = museum?.state;
-                                                        const stateMuseums = artMuseums.filter(m => m.state === stateCode);
-                                                        const isExpanded = expandedState === stateCode;
-                                                        const isHovered = hoveredState === stateCode && !expandedState;
-
-                                                        // Use stored expandedCentroid if available (for consistency), otherwise calculate
-                                                        let cx = 0, cy = 0;
-                                                        if (isExpanded && expandedCentroid) {
-                                                            cx = expandedCentroid.x;
-                                                            cy = expandedCentroid.y;
-                                                        } else {
-                                                            const centroid = geoCentroid(activeGeo);
-                                                            const proj = projection(centroid);
-                                                            if (proj) {
-                                                                cx = proj[0];
-                                                                cy = proj[1];
-                                                            }
-                                                        }
-
-                                                        let transform = "";
-                                                        let opacity = 1;
-
-                                                        if (isExpanded && clickPosition && (cx !== 0 || cy !== 0)) {
-                                                            const { x, y } = clickPosition;
-                                                            // Move centroid to cursor position (x,y), then scale 2x
-                                                            transform = `translate(${x}px, ${y}px) scale(2) translate(${-cx}px, ${-cy}px)`;
-                                                        } else if (!isExpanded && !isHovered) {
-                                                            // Fade out when collapsing
-                                                            opacity = 0;
-                                                        }
-
-                                                        return (
-                                                            <g style={{
-                                                                transform,
-                                                                opacity,
-                                                                transition: isExpanded ? 'transform 0.5s ease-out, opacity 0.3s ease-out' : 'opacity 0.3s ease-out',
-                                                                pointerEvents: 'auto'
-                                                            }}>
+                                                            return (
                                                                 <Geography
-                                                                    key={activeGeo.rsmKey + "-active"}
-                                                                    geography={activeGeo}
-                                                                    fill={isExpanded ? "#FFA300" : (isHovered ? "#FFA300" : "#FFCC80")}
+                                                                    key={geo.rsmKey}
+                                                                    geography={geo}
+                                                                    fill={hasMuseum ? (isHovered ? "#FFA300" : "#FFCC80") : "#FFFFFF"}
                                                                     stroke="#CBD5E1"
-                                                                    strokeWidth={isExpanded ? 0.25 : 0.5}
+                                                                    strokeWidth={0.5}
                                                                     data-state-code={stateCode || ''}
+                                                                    onMouseEnter={() => {
+                                                                        if (hasMuseum && !expandedState && stateCode) {
+                                                                            setHoveredState(stateCode);
+                                                                        }
+                                                                    }}
+                                                                    onMouseLeave={() => {
+                                                                        if (!expandedState) setHoveredState(null);
+                                                                    }}
                                                                     onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        if (!expandedState && stateCode) {
+                                                                        if (hasMuseum && !expandedState && stateCode) {
+                                                                            e.stopPropagation();
                                                                             const svg = e.currentTarget.ownerSVGElement;
-                                                                            let clickX = 0;
-                                                                            let clickY = 0;
-
                                                                             if (svg) {
                                                                                 const pt = svg.createSVGPoint();
                                                                                 pt.x = e.clientX;
                                                                                 pt.y = e.clientY;
                                                                                 const svgP = pt.matrixTransform(svg.getScreenCTM()!.inverse());
-                                                                                clickX = svgP.x;
-                                                                                clickY = svgP.y;
-                                                                                setClickPosition({
-                                                                                    x: clickX,
-                                                                                    y: clickY
-                                                                                });
+                                                                                setClickPosition({ x: svgP.x, y: svgP.y });
                                                                             }
                                                                             setExpandedState(stateCode);
 
-                                                                            // Calculate and store centroid for consistency
-                                                                            const centroid = geoCentroid(activeGeo);
+                                                                            const centroid = geoCentroid(geo);
                                                                             const projCentroid = projection(centroid);
                                                                             if (projCentroid) {
-                                                                                const [cx, cy] = projCentroid;
-                                                                                setExpandedCentroid({ x: cx, y: cy });
+                                                                                setExpandedCentroid({ x: projCentroid[0], y: projCentroid[1] });
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        default: {
+                                                                            outline: "none",
+                                                                            filter: isHovered ? "url(#state-shadow)" : "none",
+                                                                            transition: "fill 0.5s ease",
+                                                                            cursor: hasMuseum ? "pointer" : "default"
+                                                                        },
+                                                                        hover: {
+                                                                            outline: "none",
+                                                                            filter: hasMuseum && !expandedState ? "url(#state-shadow)" : "none",
+                                                                            transition: "fill 0.5s ease",
+                                                                            cursor: hasMuseum ? "pointer" : "default"
+                                                                        },
+                                                                        pressed: { outline: "none" }
+                                                                    }}
+                                                                />
+                                                            );
+                                                        })}
 
-                                                                                // Alert for Expanded Coordinates (after animation)
-                                                                                setTimeout(() => {
-                                                                                    let msg = `[Expanded State: ${stateCode}]\n`;
-                                                                                    msg += `New Centroid (Click Pos): (${clickX.toFixed(1)}, ${clickY.toFixed(1)})\n`;
+                                                        {/* Foreground layer: active/expanded state */}
+                                                        {activeGeo && (() => {
+                                                            const museum = artMuseums.find(m => m.fips_code === activeGeo.id);
+                                                            const stateCode = museum?.state;
+                                                            const stateMuseums = artMuseums.filter(m => m.state === stateCode);
+                                                            const isExpanded = expandedState === stateCode;
+                                                            const isHovered = hoveredState === stateCode && !expandedState;
+
+                                                            // Use stored expandedCentroid if available (for consistency), otherwise calculate
+                                                            let cx = 0, cy = 0;
+                                                            if (isExpanded && expandedCentroid) {
+                                                                cx = expandedCentroid.x;
+                                                                cy = expandedCentroid.y;
+                                                            } else {
+                                                                const centroid = geoCentroid(activeGeo);
+                                                                const proj = projection(centroid);
+                                                                if (proj) {
+                                                                    cx = proj[0];
+                                                                    cy = proj[1];
+                                                                }
+                                                            }
+
+                                                            let transform = "";
+                                                            let opacity = 1;
+
+                                                            if (isExpanded && clickPosition && (cx !== 0 || cy !== 0)) {
+                                                                const { x, y } = clickPosition;
+                                                                // Move centroid to cursor position (x,y), then scale 2x
+                                                                transform = `translate(${x}px, ${y}px) scale(2) translate(${-cx}px, ${-cy}px)`;
+                                                            } else if (!isExpanded && !isHovered) {
+                                                                // Fade out when collapsing
+                                                                opacity = 0;
+                                                            }
+
+                                                            return (
+                                                                <g style={{
+                                                                    transform,
+                                                                    opacity,
+                                                                    transition: isExpanded ? 'transform 0.5s ease-out, opacity 0.3s ease-out' : 'opacity 0.3s ease-out',
+                                                                    pointerEvents: 'auto'
+                                                                }}>
+                                                                    <Geography
+                                                                        key={activeGeo.rsmKey + "-active"}
+                                                                        geography={activeGeo}
+                                                                        fill={isExpanded ? "#FFA300" : (isHovered ? "#FFA300" : "#FFCC80")}
+                                                                        stroke="#CBD5E1"
+                                                                        strokeWidth={isExpanded ? 0.25 : 0.5}
+                                                                        data-state-code={stateCode || ''}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            if (!expandedState && stateCode) {
+                                                                                const svg = e.currentTarget.ownerSVGElement;
+                                                                                let clickX = 0;
+                                                                                let clickY = 0;
+
+                                                                                if (svg) {
+                                                                                    const pt = svg.createSVGPoint();
+                                                                                    pt.x = e.clientX;
+                                                                                    pt.y = e.clientY;
+                                                                                    const svgP = pt.matrixTransform(svg.getScreenCTM()!.inverse());
+                                                                                    clickX = svgP.x;
+                                                                                    clickY = svgP.y;
+                                                                                    setClickPosition({
+                                                                                        x: clickX,
+                                                                                        y: clickY
+                                                                                    });
+                                                                                }
+                                                                                setExpandedState(stateCode);
+
+                                                                                // Calculate and store centroid for consistency
+                                                                                const centroid = geoCentroid(activeGeo);
+                                                                                const projCentroid = projection(centroid);
+                                                                                if (projCentroid) {
+                                                                                    const [cx, cy] = projCentroid;
+                                                                                    setExpandedCentroid({ x: cx, y: cy });
+
+                                                                                    // Alert for Expanded Coordinates (after animation)
+                                                                                    setTimeout(() => {
+                                                                                        let msg = `[Expanded State: ${stateCode}]\n`;
+                                                                                        msg += `New Centroid (Click Pos): (${clickX.toFixed(1)}, ${clickY.toFixed(1)})\n`;
+
+                                                                                        stateMuseums.forEach(m => {
+                                                                                            if (m.coordinates) {
+                                                                                                const proj = projection(m.coordinates);
+                                                                                                if (proj) {
+                                                                                                    const [mx, my] = proj;
+                                                                                                    // Calculate transformed position: Click + (City - Centroid) * 2
+                                                                                                    const exX = clickX + (mx - cx) * 2;
+                                                                                                    const exY = clickY + (my - cy) * 2;
+                                                                                                    msg += `City ${m.city}: (${exX.toFixed(1)}, ${exY.toFixed(1)})\n`;
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                    }, 550); // Wait for 0.5s transition
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        onMouseEnter={() => {
+                                                                            if (!expandedState && stateCode) {
+                                                                                setHoveredState(stateCode);
+
+                                                                                // Alert for Hover Coordinates
+                                                                                // Use current centroid calculation for hover
+                                                                                const centroid = geoCentroid(activeGeo);
+                                                                                const projCentroid = projection(centroid);
+                                                                                if (projCentroid) {
+                                                                                    const [cx, cy] = projCentroid;
+                                                                                    let msg = `[Hover State: ${stateCode}]\n`;
+                                                                                    msg += `Centroid: (${cx.toFixed(1)}, ${cy.toFixed(1)})\n`;
 
                                                                                     stateMuseums.forEach(m => {
                                                                                         if (m.coordinates) {
                                                                                             const proj = projection(m.coordinates);
                                                                                             if (proj) {
                                                                                                 const [mx, my] = proj;
-                                                                                                // Calculate transformed position: Click + (City - Centroid) * 2
-                                                                                                const exX = clickX + (mx - cx) * 2;
-                                                                                                const exY = clickY + (my - cy) * 2;
-                                                                                                msg += `City ${m.city}: (${exX.toFixed(1)}, ${exY.toFixed(1)})\n`;
+                                                                                                msg += `City ${m.city}: (${mx.toFixed(1)}, ${my.toFixed(1)})\n`;
                                                                                             }
                                                                                         }
                                                                                     });
-                                                                                }, 550); // Wait for 0.5s transition
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    }}
-                                                                    onMouseEnter={() => {
-                                                                        if (!expandedState && stateCode) {
-                                                                            setHoveredState(stateCode);
+                                                                        }}
+                                                                        onMouseLeave={() => {
+                                                                            if (!expandedState) setHoveredState(null);
+                                                                        }}
+                                                                        style={{
+                                                                            default: {
+                                                                                outline: "none",
+                                                                                filter: (isHovered || isExpanded) ? "url(#state-shadow)" : "none",
+                                                                                transition: "fill 0.5s ease, filter 0.3s ease",
+                                                                                cursor: isExpanded ? "default" : "pointer"
+                                                                            },
+                                                                            hover: {
+                                                                                outline: "none",
+                                                                                filter: "url(#state-shadow)",
+                                                                                transition: "fill 0.5s ease, filter 0.3s ease",
+                                                                                cursor: isExpanded ? "default" : "pointer"
+                                                                            },
+                                                                            pressed: { outline: "none" }
+                                                                        }}
+                                                                    />
 
-                                                                            // Alert for Hover Coordinates
-                                                                            // Use current centroid calculation for hover
-                                                                            const centroid = geoCentroid(activeGeo);
-                                                                            const projCentroid = projection(centroid);
-                                                                            if (projCentroid) {
-                                                                                const [cx, cy] = projCentroid;
-                                                                                let msg = `[Hover State: ${stateCode}]\n`;
-                                                                                msg += `Centroid: (${cx.toFixed(1)}, ${cy.toFixed(1)})\n`;
-
-                                                                                stateMuseums.forEach(m => {
-                                                                                    if (m.coordinates) {
-                                                                                        const proj = projection(m.coordinates);
-                                                                                        if (proj) {
-                                                                                            const [mx, my] = proj;
-                                                                                            msg += `City ${m.city}: (${mx.toFixed(1)}, ${my.toFixed(1)})\n`;
-                                                                                        }
-                                                                                    }
-                                                                                });
+                                                                    {/* Museum Pins - only show when expanded */}
+                                                                    {isExpanded && (() => {
+                                                                        // Group museums by coordinates to avoid duplicate pins
+                                                                        const groupedMuseums = stateMuseums.reduce((acc: Record<string, ArtMuseum[]>, museum: ArtMuseum) => {
+                                                                            if (!museum.coordinates) return acc;
+                                                                            const key = `${museum.coordinates[0]},${museum.coordinates[1]}`;
+                                                                            if (!acc[key]) {
+                                                                                acc[key] = [];
                                                                             }
-                                                                        }
-                                                                    }}
-                                                                    onMouseLeave={() => {
-                                                                        if (!expandedState) setHoveredState(null);
-                                                                    }}
-                                                                    style={{
-                                                                        default: {
-                                                                            outline: "none",
-                                                                            filter: (isHovered || isExpanded) ? "url(#state-shadow)" : "none",
-                                                                            transition: "fill 0.5s ease, filter 0.3s ease",
-                                                                            cursor: isExpanded ? "default" : "pointer"
-                                                                        },
-                                                                        hover: {
-                                                                            outline: "none",
-                                                                            filter: "url(#state-shadow)",
-                                                                            transition: "fill 0.5s ease, filter 0.3s ease",
-                                                                            cursor: isExpanded ? "default" : "pointer"
-                                                                        },
-                                                                        pressed: { outline: "none" }
-                                                                    }}
-                                                                />
+                                                                            acc[key].push(museum);
+                                                                            return acc;
+                                                                        }, {});
 
-                                                                {/* Museum Pins - only show when expanded */}
-                                                                {isExpanded && stateMuseums.map((museum, idx) => {
-                                                                    if (!museum.coordinates) return null;
+                                                                        return Object.entries(groupedMuseums).map(([coordKey, museums], idx) => {
+                                                                            const museum = museums[0]; // Use first museum for pin location
 
-                                                                    return (
-                                                                        <Marker key={`pin-${museum.id}-${idx}`} coordinates={museum.coordinates}>
-                                                                            <g
-                                                                                transform="scale(0.5) translate(-12, -24)"
-                                                                                onMouseEnter={() => setHoveredPin(museum.id)}
-                                                                                onMouseLeave={() => setHoveredPin(null)}
-                                                                                onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    setSelectedMuseum(museum);
-                                                                                }}
-                                                                                style={{ cursor: 'pointer' }}
-                                                                            >
-                                                                                <path
-                                                                                    d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
-                                                                                    fill="#DC2626"
-                                                                                    stroke="#FFFFFF"
-                                                                                    strokeWidth="1"
-                                                                                    style={{ pointerEvents: 'auto' }}
-                                                                                />
-                                                                            </g>
-                                                                            {/* Tooltips */}
-                                                                            {hoveredPin === museum.id && (
-                                                                                <g transform="translate(0, -35)">
-                                                                                    <foreignObject x="-100" y="-40" width="200" height="60">
-                                                                                        <div style={{
-                                                                                            background: 'white',
-                                                                                            padding: '8px 12px',
-                                                                                            borderRadius: '8px',
-                                                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                                                                                            fontSize: '14px',
-                                                                                            textAlign: 'center',
-                                                                                            pointerEvents: 'none'
-                                                                                        }}>
-                                                                                            <strong>{museum.museum_name}</strong>
-                                                                                            <div style={{ fontSize: '12px', color: '#666' }}>
-                                                                                                {museum.city_name || museum.city}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </foreignObject>
+                                                                            // Use coordKey as hover identifier
+                                                                            const pinId = coordKey;
+                                                                            // Click on museum with artworks, or first one if none have artworks
+                                                                            const museumToOpen = museums.find((m: ArtMuseum) => m.artworks && m.artworks.length > 0) || museums[0];
+
+                                                                            return (
+                                                                            <Marker key={`pin-${coordKey}-${idx}`} coordinates={museum.coordinates}>
+                                                                                <g
+                                                                                    transform="scale(0.5) translate(-12, -24)"
+                                                                                    onMouseEnter={() => setHoveredPin(pinId)}
+                                                                                    onMouseLeave={() => setHoveredPin(null)}
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        setSelectedMuseum(museumToOpen);
+                                                                                    }}
+                                                                                    style={{ cursor: 'pointer' }}
+                                                                                >
+                                                                                    <path
+                                                                                        d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
+                                                                                        fill="#DC2626"
+                                                                                        stroke="#FFFFFF"
+                                                                                        strokeWidth="1"
+                                                                                        style={{ pointerEvents: 'auto' }}
+                                                                                    />
                                                                                 </g>
-                                                                            )}
-                                                                        </Marker>
-                                                                    );
-                                                                })}
-                                                            </g>
-                                                        );
-                                                    })()}
-                                                </>
-                                            );
-                                        }}
-                                    </Geographies>
-                                </ComposableMap>
+                                                                                {/* Tooltips - show first museum only */}
+                                                                                {hoveredPin === pinId && (
+                                                                                    <g transform="translate(0, -35)">
+                                                                                        <foreignObject x="-100" y="-40" width="200" height="50">
+                                                                                            <div style={{
+                                                                                                background: 'transparent',
+                                                                                                padding: '6px 10px',
+                                                                                                borderRadius: '8px',
+                                                                                                fontSize: '11px',
+                                                                                                textAlign: 'center',
+                                                                                                pointerEvents: 'none',
+                                                                                                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                                                                                lineHeight: '1.3'
+                                                                                            }}>
+                                                                                                <div style={{ color: '#000', fontWeight: '600' }}>
+                                                                                                    {museumToOpen.museum_name}
+                                                                                                </div>
+                                                                                                <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                                                                                    {museum.city_name || museum.city}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </foreignObject>
+                                                                                    </g>
+                                                                                )}
+                                                                            </Marker>
+                                                                            );
+                                                                        });
+                                                                    })()}
+                                                                </g>
+                                                            );
+                                                        })()}
+                                                    </>
+                                                );
+                                            }}
+                                        </Geographies>
+                                    </ComposableMap>
                                 </div>
                             </div>
 
@@ -1060,13 +1135,15 @@ export const Interests: React.FC = () => {
 
                                         {/* Masonry Layout - overflow visible to show cropped effect */}
                                         <div className="w-full h-full overflow-y-auto scrollbar-hide p-6 pt-16">
-                                            <div className="columns-4 gap-4">
+                                            <div className="columns-4 gap-1">
                                                 {selectedMuseum.artworks && selectedMuseum.artworks.length > 0 ? selectedMuseum.artworks.map((artwork, index) => {
                                                     // Generate random scale between 0.6 and 1.0 for variety
                                                     const randomScale = 0.6 + (Math.sin(index * 12345) * 0.5 + 0.5) * 0.4;
+                                                    // Generate random X-axis offset for staggered effect
+                                                    const randomOffsetX = (Math.sin(index * 7890) * 0.5 + 0.5) * 30 - 15; // -15px to +15px
 
                                                     return (
-                                                        <div key={index} className="break-inside-avoid mb-4">
+                                                        <div key={index} className="break-inside-avoid mb-1">
                                                             <div
                                                                 className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
                                                                 onClick={(e) => {
@@ -1074,7 +1151,7 @@ export const Interests: React.FC = () => {
                                                                     setSelectedArtwork(artwork);
                                                                 }}
                                                                 style={{
-                                                                    transform: `scale(${randomScale})`,
+                                                                    transform: `translateX(${randomOffsetX}px) scale(${randomScale})`,
                                                                     transformOrigin: 'center'
                                                                 }}
                                                             >
@@ -1111,13 +1188,14 @@ export const Interests: React.FC = () => {
                                             <X size={28} />
                                         </button>
 
-                                        {/* Artwork Image with Y-axis 360° rotation */}
+                                        {/* Artwork Image with Y-axis 180° rotation and fade effects */}
                                         <img
                                             src={selectedArtwork}
                                             alt="Artwork"
                                             className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                                             style={{
-                                                animation: 'rotateY360 1s ease-out'
+                                                animation: 'rotateY360 1s ease-out forwards, fadeInFinal 0.2s ease-out 1s forwards',
+                                                transform: 'perspective(1000px) rotateY(180deg)'
                                             }}
                                         />
                                     </div>

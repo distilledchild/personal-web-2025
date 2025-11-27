@@ -22,6 +22,10 @@ const REDIRECT_URI = isProduction
 
 // Database connection
 import mongoose from 'mongoose';
+import { Storage } from '@google-cloud/storage';
+
+// Initialize Google Cloud Storage
+const storage = new Storage();
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
@@ -54,7 +58,8 @@ const artMuseumSchema = new mongoose.Schema({
     city_code: String, // City code for lookup in CITY table
     museum_code: String,
     museum_name: String,
-    state: String
+    state: String,
+    show: String // 'Y' or 'N' to show/hide museum
 }, { collection: 'INTERESTS_ART_MUSEUM' });
 
 const ArtMuseum = mongoose.model('ArtMuseum', artMuseumSchema);
@@ -62,13 +67,12 @@ const ArtMuseum = mongoose.model('ArtMuseum', artMuseumSchema);
 // Get Art Museums with City Data
 app.get('/api/interests/art-museums', async (req, res) => {
     try {
-        const museums = await ArtMuseum.find({});
+        // Filter museums where show='Y'
+        const museums = await ArtMuseum.find({ show: 'Y' });
 
-        // Artwork assignments
-        const artworkAssignments = {
-            'ORD': Array.from({ length: 7 }, (_, i) => `/art-images/artwork-${i + 1}.png`), // Chicago (ORD): 1-7
-            'LIT': Array.from({ length: 7 }, (_, i) => `/art-images/artwork-${i + 8}.png`)  // Little Rock (LIT): 8-14
-        };
+        // Google Cloud Storage bucket configuration
+        const GCS_BUCKET_URL = process.env.GCS_BUCKET_URL || null;
+        const GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME || 'distilledchild-art-images';
 
         // Enrich museums with city data (coordinates and full name) and state data (fips_code)
         const enrichedMuseums = await Promise.all(museums.map(async (museum) => {
@@ -83,6 +87,29 @@ app.get('/api/interests/art-museums', async (req, res) => {
                 console.log(`City not found for code: ${cityCode}, museum: ${museum.museum_name}`);
             }
 
+            // Load artworks from GCS bucket
+            let artworks = [];
+
+            if (museum.museum_code && GCS_BUCKET_URL) {
+                try {
+                    // List files in the bucket for this museum
+                    const bucket = storage.bucket(GCS_BUCKET_NAME);
+                    const [files] = await bucket.getFiles({
+                        prefix: `${museum.museum_code}/`,
+                        delimiter: '/'
+                    });
+
+                    // Filter image files and generate public URLs
+                    artworks = files
+                        .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name))
+                        .map(file => `${GCS_BUCKET_URL}/${file.name}`);
+
+                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS`);
+                } catch (error) {
+                    console.log(`Error reading GCS bucket for ${museum.museum_code}:`, error.message);
+                }
+            }
+
             return {
                 ...museum.toObject(),
                 city_name: cityData ? cityData.city_name : cityCode,
@@ -92,7 +119,7 @@ app.get('/api/interests/art-museums', async (req, res) => {
                     ? [cityData.longitude, cityData.latitude]
                     : null,
                 fips_code: stateData ? stateData.fips_code : null,
-                artworks: artworkAssignments[cityCode] || []
+                artworks: artworks
             };
         }));
 
