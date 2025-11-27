@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, Navigate } from 'react-router-dom';
 import { Dna, Mail, Github, MapPin, Loader2, Plus } from 'lucide-react';
 import { ThreeDNA } from './components/ThreeDNA';
 import { ChatBot } from './components/ChatBot';
@@ -926,6 +926,49 @@ const Layout: React.FC = () => {
   const isAdmin = searchParams.get('admin') === 'true';
   const [queueCount, setQueueCount] = useState<number | null>(null);
 
+  // Log access information
+  useEffect(() => {
+    const logAccess = async () => {
+      try {
+        const API_URL = window.location.hostname === 'localhost'
+          ? 'http://localhost:4000'
+          : 'https://personal-web-2025-production.up.railway.app';
+
+        // Generate or retrieve session ID
+        let sessionId = sessionStorage.getItem('session_id');
+        if (!sessionId) {
+          sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          sessionStorage.setItem('session_id', sessionId);
+        }
+
+        const payload = {
+          page_url: window.location.href,
+          referrer: document.referrer,
+          session_id: sessionId
+        };
+
+        console.log('[CLIENT] Logging access:', payload);
+
+        const response = await fetch(`${API_URL}/api/access/log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          console.error('[CLIENT] Access logging failed:', response.status, response.statusText);
+        } else {
+          const data = await response.json();
+          console.log('[CLIENT] Access logged successfully:', data);
+        }
+      } catch (error) {
+        console.error('[CLIENT] Access logging error:', error);
+      }
+    };
+
+    logAccess();
+  }, [location.pathname]); // Log on every page change
+
   useEffect(() => {
     if (isAdmin) {
       const socket = io('https://personal-web-2025-production.up.railway.app');
@@ -978,13 +1021,13 @@ const Layout: React.FC = () => {
               <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-blue-500 hover:text-blue-300 transition-colors px-4 py-2">
                 About
               </Link>
-              <Link to="/research" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-teal-500 hover:text-teal-300 transition-colors px-4 py-2">
+              <Link to="/research/peinteractions" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-teal-500 hover:text-teal-300 transition-colors px-4 py-2">
                 Research
               </Link>
               <Link to="/tech" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
                 Tech
               </Link>
-              <Link to="/interests" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
+              <Link to="/interests/travel" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
                 Interests
               </Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2">
@@ -1013,9 +1056,9 @@ const Layout: React.FC = () => {
             colorClass="text-blue-500 hover:text-blue-300"
           />
           <LiquidTab
-            to="/research"
+            to="/research/peinteractions"
             label="Research"
-            active={location.pathname === '/research'}
+            active={location.pathname.startsWith('/research')}
             colorClass="text-teal-500 hover:text-teal-300"
           />
           <LiquidTab
@@ -1025,9 +1068,9 @@ const Layout: React.FC = () => {
             colorClass="text-pink-500 hover:text-pink-300"
           />
           <LiquidTab
-            to="/interests"
+            to="/interests/travel"
             label="Interests"
-            active={location.pathname === '/interests'}
+            active={location.pathname.startsWith('/interests')}
             colorClass="text-[#FFA300] hover:text-[#FFD180]"
           />
           <LiquidTab
@@ -1044,9 +1087,11 @@ const Layout: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/test" element={<Test />} />
         <Route path="/about" element={<About />} />
-        <Route path="/research" element={<Research />} />
+        <Route path="/research" element={<Navigate to="/research/peinteractions" replace />} />
+        <Route path="/research/:submenu" element={<Research />} />
         <Route path="/tech" element={<Tech />} />
-        <Route path="/interests" element={<Interests />} />
+        <Route path="/interests" element={<Navigate to="/interests/travel" replace />} />
+        <Route path="/interests/:submenu" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/strava/callback" element={<StravaCallback />} />
       </Routes>
@@ -1119,7 +1164,7 @@ const GoogleLogin: React.FC = () => {
 const OAuthCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = React.useMemo(() => {
-    // This is a hack because useNavigate might not be available if this component is rendered outside Router context, 
+    // This is a hack because useNavigate might not be available if this component is rendered outside Router context,
     // but here it is inside. However, to be safe and simple:
     return (path: string) => window.location.href = path;
   }, []);

@@ -30,18 +30,78 @@ mongoose.connect(process.env.MONGODB_URI)
 const stateSchema = new mongoose.Schema({
     code: String,
     name: String,
-    status: String
+    status: String,
+    fips_code: String,
+    color_code: String // column added for filling states with colors 
 }, { collection: 'STATE' });
 
 const State = mongoose.model('State', stateSchema);
 
 const citySchema = new mongoose.Schema({
     state_code: String,
-    name: String,
+    city_name: String,
+    city_code: String, // Airport code (e.g., ORD, BOS, JFK)
+    latitude: Number,
+    longitude: Number,
     status: String
 }, { collection: 'CITY' });
 
 const City = mongoose.model('City', citySchema);
+
+const artMuseumSchema = new mongoose.Schema({
+    id: Number,
+    city: String, // Legacy field
+    city_code: String, // City code for lookup in CITY table
+    museum_code: String,
+    museum_name: String,
+    state: String
+}, { collection: 'INTERESTS_ART_MUSEUM' });
+
+const ArtMuseum = mongoose.model('ArtMuseum', artMuseumSchema);
+
+// Get Art Museums with City Data
+app.get('/api/interests/art-museums', async (req, res) => {
+    try {
+        const museums = await ArtMuseum.find({});
+
+        // Artwork assignments
+        const artworkAssignments = {
+            'ORD': Array.from({ length: 7 }, (_, i) => `/art-images/artwork-${i + 1}.png`), // Chicago (ORD): 1-7
+            'LIT': Array.from({ length: 7 }, (_, i) => `/art-images/artwork-${i + 8}.png`)  // Little Rock (LIT): 8-14
+        };
+
+        // Enrich museums with city data (coordinates and full name) and state data (fips_code)
+        const enrichedMuseums = await Promise.all(museums.map(async (museum) => {
+            // Find city by code - museum.city_code or museum.city contains the city code
+            const cityCode = museum.city_code || museum.city;
+            const cityData = await City.findOne({ city_code: cityCode });
+            // Find state by code to get fips_code
+            const stateData = await State.findOne({ code: museum.state });
+
+            // Log for debugging
+            if (!cityData) {
+                console.log(`City not found for code: ${cityCode}, museum: ${museum.museum_name}`);
+            }
+
+            return {
+                ...museum.toObject(),
+                city_name: cityData ? cityData.city_name : cityCode,
+                // Use city coordinates if available, otherwise null.
+                // Format: [longitude, latitude] for d3-geo
+                coordinates: (cityData && cityData.longitude && cityData.latitude)
+                    ? [cityData.longitude, cityData.latitude]
+                    : null,
+                fips_code: stateData ? stateData.fips_code : null,
+                artworks: artworkAssignments[cityCode] || []
+            };
+        }));
+
+        res.json(enrichedMuseums);
+    } catch (err) {
+        console.error('Error fetching art museums:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 const techBlogSchema = new mongoose.Schema({
     category: String,
@@ -85,6 +145,63 @@ const workoutSchema = new mongoose.Schema({
 }, { collection: 'INTERESTS_WORKOUT' });
 
 const Workout = mongoose.model('Workout', workoutSchema);
+
+// Access Info Schema for tracking website visitors
+const accessInfoSchema = new mongoose.Schema({
+    ip_address: String,
+    page_url: String,
+    user_agent: String,
+    referrer: String,
+    timestamp: { type: Date, default: Date.now },
+    session_id: String,
+    status_code: Number
+}, { collection: 'ACCESS_INFO' });
+
+const AccessInfo = mongoose.model('AccessInfo', accessInfoSchema);
+
+// API endpoint to log access information
+app.post('/api/access/log', async (req, res) => {
+    try {
+        console.log('[ACCESS LOG] Received request:', {
+            body: req.body,
+            headers: {
+                'x-forwarded-for': req.headers['x-forwarded-for'],
+                'user-agent': req.headers['user-agent']
+            }
+        });
+
+        const { page_url, referrer, session_id } = req.body;
+
+        // Get IP address from request
+        const ip_address = req.headers['x-forwarded-for'] ||
+                          req.headers['x-real-ip'] ||
+                          req.connection.remoteAddress ||
+                          req.socket.remoteAddress;
+
+        // Get user agent
+        const user_agent = req.headers['user-agent'];
+
+        // Create access info entry
+        const accessInfo = new AccessInfo({
+            ip_address,
+            page_url,
+            user_agent,
+            referrer: referrer || '',
+            session_id: session_id || '',
+            status_code: 200,
+            timestamp: new Date()
+        });
+
+        console.log('[ACCESS LOG] Saving to DB:', accessInfo.toObject());
+        const saved = await accessInfo.save();
+        console.log('[ACCESS LOG] Saved successfully:', saved._id);
+
+        res.json({ success: true, message: 'Access logged' });
+    } catch (err) {
+        console.error('[ACCESS LOG ERROR]:', err);
+        res.status(500).json({ error: 'Failed to log access' });
+    }
+});
 
 // Google OAuth Endpoint
 app.post('/api/auth/google', async (req, res) => {
@@ -136,7 +253,8 @@ app.post('/api/auth/google', async (req, res) => {
 // Travel States Endpoint
 app.get('/api/travel/states', async (req, res) => {
     try {
-        const states = await State.find({}, 'code status');
+        const states = await State.find({}, 'code status fips_code'); //fips_code is the state code added
+        // console.log("It's backend::::::::::::::::::::::::::::::::::" + JSON.stringify(states, null, 2));
         res.json(states);
     } catch (err) {
         console.error(err);

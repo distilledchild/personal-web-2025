@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { FileText, GitBranch, Database, Sliders } from 'lucide-react';
 
@@ -160,14 +161,19 @@ const EnhancerID = () => (
 );
 
 export const Research: React.FC = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const { submenu } = useParams<{ submenu?: string }>();
+  const navigate = useNavigate();
 
   const tabs = [
-    { label: 'PE Interactions', icon: GitBranch, color: 'text-blue-600 border-blue-200', activeBg: 'bg-blue-50 ring-blue-200' },
-    { label: 'Single-cell Seq', icon: Database, color: 'text-green-600 border-green-200', activeBg: 'bg-green-50 ring-green-200' },
-    { label: 'Enhancer ID', icon: FileText, color: 'text-pink-600 border-pink-200', activeBg: 'bg-pink-50 ring-pink-200' },
-    { label: 'LLM', icon: Sliders, color: 'text-purple-600 border-purple-200', activeBg: 'bg-purple-50 ring-purple-200' },
+    { label: 'PE Interactions', icon: GitBranch, color: 'text-blue-600 border-blue-200', activeBg: 'bg-blue-50 ring-blue-200', slug: 'peinteractions' },
+    { label: 'Single-cell Seq', icon: Database, color: 'text-green-600 border-green-200', activeBg: 'bg-green-50 ring-green-200', slug: 'singlecellseq' },
+    { label: 'Enhancer ID', icon: FileText, color: 'text-pink-600 border-pink-200', activeBg: 'bg-pink-50 ring-pink-200', slug: 'deeplearningenhancer' },
+    { label: 'LLM', icon: Sliders, color: 'text-purple-600 border-purple-200', activeBg: 'bg-purple-50 ring-purple-200', slug: 'llm' },
   ];
+
+  // Determine active tab from URL, default to first tab
+  const activeTabIndex = tabs.findIndex(tab => tab.slug === submenu);
+  const activeTab = activeTabIndex !== -1 ? activeTabIndex : 0;
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -189,7 +195,7 @@ export const Research: React.FC = () => {
               return (
                 <button
                   key={idx}
-                  onClick={() => setActiveTab(idx)}
+                  onClick={() => navigate(`/research/${tab.slug}`)}
                   className={`flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300 ${activeTab === idx
                     ? `${textColorClass} ${borderColorClass}`
                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
