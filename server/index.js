@@ -22,6 +22,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
 // Load environment variables
 import dotenv from 'dotenv';
 dotenv.config();
