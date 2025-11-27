@@ -4,7 +4,22 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
+
+// CORS configuration - explicitly allow production and development domains
+const corsOptions = {
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'https://www.distilledchild.space',
+        'https://distilledchild.space'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Load environment variables
@@ -225,9 +240,9 @@ app.post('/api/access/log', async (req, res) => {
 
         // Get IP address from request
         const ip_address = req.headers['x-forwarded-for'] ||
-                          req.headers['x-real-ip'] ||
-                          req.connection.remoteAddress ||
-                          req.socket.remoteAddress;
+            req.headers['x-real-ip'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress;
 
         // Get user agent
         const user_agent = req.headers['user-agent'];
