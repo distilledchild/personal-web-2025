@@ -1622,6 +1622,119 @@ app.get('/api/workouts', async (req, res) => {
     }
 });
 
+// Clean up duplicate workouts (development only)
+app.delete('/api/workouts/cleanup-duplicates', async (req, res) => {
+    try {
+        // Find all duplicates by activity_id
+        const duplicates = await Workout.aggregate([
+            { $match: { activity_id: { $ne: null } } },
+            { $group: { _id: '$activity_id', count: { $sum: 1 }, ids: { $push: '$_id' } } },
+            { $match: { count: { $gt: 1 } } }
+        ]);
+
+        let deletedCount = 0;
+        for (const dup of duplicates) {
+            // Keep the first one, delete the rest
+            const idsToDelete = dup.ids.slice(1);
+            const result = await Workout.deleteMany({ _id: { $in: idsToDelete } });
+            deletedCount += result.deletedCount;
+        }
+
+        // Delete all workouts with null activity_id
+        const nullResult = await Workout.deleteMany({ activity_id: null });
+        deletedCount += nullResult.deletedCount;
+
+        const remainingCount = await Workout.countDocuments();
+
+        res.json({
+            success: true,
+            deletedCount,
+            remainingCount,
+            message: `Cleaned up ${deletedCount} duplicate/invalid workouts`
+        });
+    } catch (err) {
+        console.error('Cleanup error:', err);
+        res.status(500).json({ error: 'Failed to cleanup duplicates', details: err.message });
+    }
+});
+
+// Sync Strava Activities - Fetch from Strava and insert only new activities
+app.post('/api/workouts/sync', async (req, res) => {
+    try {
+        const { accessToken } = req.body;
+
+        if (!accessToken) {
+            return res.status(400).json({ error: 'Access token is required' });
+        }
+
+        // Fetch activities from Strava
+        const stravaResponse = await fetch('https://www.strava.com/api/v3/athlete/activities?per_page=200', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (!stravaResponse.ok) {
+            const errorText = await stravaResponse.text();
+            console.error('Strava API Error:', stravaResponse.status, errorText);
+            return res.status(stravaResponse.status).json({ error: `Strava API error: ${stravaResponse.status}`, details: errorText });
+        }
+
+        const stravaActivities = await stravaResponse.json();
+        console.log(`Fetched ${stravaActivities.length} activities from Strava`);
+
+        // Get current count in DB
+        const dbCount = await Workout.countDocuments();
+        console.log(`Current DB count: ${dbCount}`);
+
+        // Get existing activity IDs from DB
+        const existingActivities = await Workout.find({}, { activity_id: 1 });
+        const existingIds = new Set(existingActivities.map(a => a.activity_id));
+
+        // Filter out activities that already exist
+        const newActivities = stravaActivities.filter(activity => !existingIds.has(activity.id));
+        console.log(`Found ${newActivities.length} new activities to insert`);
+
+        // Insert new activities
+        let insertedCount = 0;
+        if (newActivities.length > 0) {
+            const workoutsToInsert = newActivities.map(activity => ({
+                activity_id: activity.id,
+                name: activity.name,
+                distance: activity.distance,
+                moving_time: activity.moving_time,
+                elapsed_time: activity.elapsed_time,
+                total_elevation_gain: activity.total_elevation_gain,
+                type: activity.type,
+                sport_type: activity.sport_type,
+                start_date: activity.start_date,
+                start_date_local: activity.start_date_local,
+                average_speed: activity.average_speed,
+                max_speed: activity.max_speed,
+                athlete_id: activity.athlete?.id
+            }));
+
+            const insertResult = await Workout.insertMany(workoutsToInsert, { ordered: false });
+            insertedCount = insertResult.length;
+            console.log(`Successfully inserted ${insertedCount} new activities`);
+        }
+
+        const newDbCount = await Workout.countDocuments();
+
+        res.json({
+            success: true,
+            stravaCount: stravaActivities.length,
+            previousDbCount: dbCount,
+            newDbCount: newDbCount,
+            inserted: insertedCount,
+            message: `Synced ${insertedCount} new activities`
+        });
+    } catch (err) {
+        console.error('Sync error:', err);
+        res.status(500).json({ error: 'Failed to sync activities', details: err.message });
+    }
+});
+
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
     console.log(`SERVER RUNNING ON PORT ${PORT}`);

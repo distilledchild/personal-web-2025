@@ -207,12 +207,8 @@ export const Interests: React.FC = () => {
     }, [activeTab]);
 
     const handleStravaAuth = async () => {
-        const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:4000'
-            : 'https://personal-web-2025-production.up.railway.app';
-
         try {
-            const response = await fetch(`${API_URL}/api/strava/auth`);
+            const response = await fetch('/api/strava/auth');
             const data = await response.json();
 
             // Redirect to Strava authorization page
@@ -300,11 +296,13 @@ export const Interests: React.FC = () => {
                 const response = await fetch(`${API_URL}/api/workouts`);
                 if (response.ok) {
                     const data = await response.json();
-                    // Map DB activity_id to id for frontend compatibility
-                    const activities = data.map((activity: any) => ({
-                        ...activity,
-                        id: activity.activity_id || activity.id
-                    }));
+                    // Map DB activity_id to id for frontend compatibility and sort by date (newest first)
+                    const activities = data
+                        .map((activity: any) => ({
+                            ...activity,
+                            id: activity.activity_id || activity.id
+                        }))
+                        .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
                     setStravaActivities(activities);
                 } else {
                     // Fallback to localStorage if API fails
@@ -633,7 +631,7 @@ export const Interests: React.FC = () => {
                                                         `}
                                                         style={
                                                             day !== null && workoutDays.has(day)
-                                                                ? { background: 'linear-gradient(135deg, #FFCC80 0%, #FFA300 50%, #FF7700 100%)' }
+                                                                ? { background: 'linear-gradient(135deg, #FFCC80 0%, #FFA300 50%, #FF6600 100%)' }
                                                                 : {}
                                                         }
                                                     >

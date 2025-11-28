@@ -47,26 +47,26 @@ export const StravaCallback: React.FC = () => {
                 const tokenData = await tokenResponse.json();
                 const accessToken = tokenData.access_token;
 
-                // Fetch activities with the access token
-                const activitiesResponse = await fetch(`${API_URL}/api/strava/activities-with-token`, {
+                // Sync activities to database
+                const syncResponse = await fetch(`${API_URL}/api/workouts/sync`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ accessToken })
                 });
 
-                if (!activitiesResponse.ok) {
-                    throw new Error('Failed to fetch activities');
+                if (!syncResponse.ok) {
+                    throw new Error('Failed to sync activities');
                 }
 
-                const activities = await activitiesResponse.json();
+                const syncData = await syncResponse.json();
+                console.log('Sync result:', syncData);
 
-                // Store in localStorage for the Interests page to use
-                localStorage.setItem('strava_activities', JSON.stringify(activities));
+                // Store access token and athlete info for future use
                 localStorage.setItem('strava_access_token', accessToken);
                 localStorage.setItem('strava_athlete', JSON.stringify(tokenData.athlete));
 
                 setStatus('success');
-                setTimeout(() => navigate('/interests'), 1500);
+                setTimeout(() => navigate('/interests/workout'), 1500);
 
             } catch (err) {
                 console.error('Error during Strava callback:', err);
