@@ -226,7 +226,8 @@ const accessInfoSchema = new mongoose.Schema({
     referrer: String,
     timestamp: { type: Date, default: Date.now },
     session_id: String,
-    status_code: Number
+    status_code: Number,
+    location: String  // Format: "City, Country" (e.g., "Seoul, South Korea")
 });
 
 // Production collection
@@ -234,6 +235,48 @@ const AccessInfo = mongoose.model('AccessInfo', accessInfoSchema.clone(), 'ACCES
 
 // Development collection (for local/test IPs)
 const AccessInfoDev = mongoose.model('AccessInfoDev', accessInfoSchema.clone(), 'ACCESS_INFO_DEV');
+
+// Helper function to get location from IP address
+async function getLocationFromIP(ip) {
+    try {
+        // Skip geolocation for local IPs
+        const ipStr = ip.toString();
+        if (ipStr === '::1' || ipStr === '127.0.0.1' ||
+            ipStr.startsWith('::ffff:127.') || ipStr.startsWith('192.168.') ||
+            ipStr.startsWith('10.') || ipStr.startsWith('172.16.') || ipStr === 'localhost') {
+            return 'Local';
+        }
+
+        // Clean up IPv6-mapped IPv4 addresses (::ffff:xxx.xxx.xxx.xxx -> xxx.xxx.xxx.xxx)
+        let cleanIP = ipStr;
+        if (ipStr.startsWith('::ffff:')) {
+            cleanIP = ipStr.substring(7);
+        }
+
+        // Call ip-api.com free API (no key required, 45 requests/minute limit)
+        const response = await fetch(`http://ip-api.com/json/${cleanIP}?fields=status,message,city,country`);
+
+        if (!response.ok) {
+            console.error(`[GEOLOCATION] API error: ${response.status}`);
+            return null;
+        }
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            // Format as "City, Country"
+            const city = data.city || 'Unknown';
+            const country = data.country || 'Unknown';
+            return `${city}, ${country}`;
+        } else {
+            console.error(`[GEOLOCATION] Failed for IP ${cleanIP}:`, data.message);
+            return null;
+        }
+    } catch (error) {
+        console.error(`[GEOLOCATION] Error fetching location for IP ${ip}:`, error.message);
+        return null;
+    }
+}
 
 // API endpoint to log access information
 app.post('/api/access/log', async (req, res) => {
@@ -270,6 +313,9 @@ app.post('/api/access/log', async (req, res) => {
                    ipStr === 'localhost';
         };
 
+        // Get location from IP address
+        const location = await getLocationFromIP(ip_address);
+
         // Determine which model to use based on IP
         const Model = isLocalIP(ip_address) ? AccessInfoDev : AccessInfo;
         const collectionName = isLocalIP(ip_address) ? 'ACCESS_INFO_DEV' : 'ACCESS_INFO';
@@ -282,6 +328,7 @@ app.post('/api/access/log', async (req, res) => {
             referrer: referrer || '',
             session_id: session_id || '',
             status_code: 200,
+            location: location || '',
             timestamp: new Date()
         });
 
@@ -520,8 +567,72 @@ app.delete('/api/tech-blog/:id', async (req, res) => {
     }
 });
 
-// --- Milestone (About Page) Schema & Endpoints ---
+// --- About Page Schemas & Endpoints ---
 
+// ABOUT_ME Schema
+const aboutMeSchema = new mongoose.Schema({
+    introduction: String,
+    research_interests: [String],
+    hobbies: [String],
+    future_goal: String,
+    show: { type: String, default: 'Y' },
+    updated_at: { type: Date, default: Date.now }
+}, { collection: 'ABOUT_ME' });
+
+const AboutMe = mongoose.model('AboutMe', aboutMeSchema);
+
+// ABOUT_ACADEMIC Schema
+const aboutAcademicSchema = new mongoose.Schema({
+    education: [{
+        degree: String,
+        institution: String,
+        location: String,
+        period: String,
+        description: String,
+        gpa: String,
+        order: Number
+    }],
+    experience: [{
+        title: String,
+        organization: String,
+        location: String,
+        period: String,
+        description: String,
+        responsibilities: [String],
+        order: Number
+    }],
+    publications: [{
+        title: String,
+        authors: String,
+        journal: String,
+        year: Number,
+        volume: String,
+        pages: String,
+        doi: String,
+        pmid: String,
+        type: String,
+        order: Number
+    }],
+    skills: {
+        programming: [{ name: String, level: String, order: Number }],
+        bioinformatics: [{ name: String, level: String, order: Number }],
+        tools: [{ name: String, level: String, order: Number }],
+        frameworks: [{ name: String, level: String, order: Number }]
+    },
+    awards: [{
+        title: String,
+        organization: String,
+        year: Number,
+        description: String,
+        order: Number
+    }],
+    show: { type: String, default: 'Y' },
+    updated_at: { type: Date, default: Date.now }
+}, { collection: 'ABOUT_ACADEMIC' });
+
+const AboutAcademic = mongoose.model('AboutAcademic', aboutAcademicSchema);
+
+// Milestone Schema
 const milestoneSchema = new mongoose.Schema({
     date: Date,
     title: String,
@@ -610,6 +721,144 @@ app.delete('/api/milestones/:id', async (req, res) => {
 
         await Milestone.findByIdAndDelete(id);
         res.json({ message: 'Deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// --- ABOUT_ME Endpoints ---
+
+// Get About Me
+app.get('/api/about-me', async (req, res) => {
+    try {
+        const aboutMe = await AboutMe.findOne({ show: 'Y' });
+        res.json(aboutMe || {});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create About Me
+app.post('/api/about-me', async (req, res) => {
+    try {
+        const { introduction, research_interests, hobbies, future_goal, email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const newAboutMe = new AboutMe({
+            introduction,
+            research_interests,
+            hobbies,
+            future_goal,
+            show: 'Y',
+            updated_at: new Date()
+        });
+
+        await newAboutMe.save();
+        res.status(201).json(newAboutMe);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update About Me
+app.put('/api/about-me/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { introduction, research_interests, hobbies, future_goal, email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const aboutMe = await AboutMe.findById(id);
+        if (!aboutMe) return res.status(404).json({ error: 'Not found' });
+
+        if (introduction !== undefined) aboutMe.introduction = introduction;
+        if (research_interests !== undefined) aboutMe.research_interests = research_interests;
+        if (hobbies !== undefined) aboutMe.hobbies = hobbies;
+        if (future_goal !== undefined) aboutMe.future_goal = future_goal;
+        aboutMe.updated_at = new Date();
+
+        await aboutMe.save();
+        res.json(aboutMe);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// --- ABOUT_ACADEMIC Endpoints ---
+
+// Get About Academic
+app.get('/api/about-academic', async (req, res) => {
+    try {
+        const aboutAcademic = await AboutAcademic.findOne({ show: 'Y' });
+        res.json(aboutAcademic || {});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create About Academic
+app.post('/api/about-academic', async (req, res) => {
+    try {
+        const { education, experience, publications, skills, awards, email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const newAboutAcademic = new AboutAcademic({
+            education,
+            experience,
+            publications,
+            skills,
+            awards,
+            show: 'Y',
+            updated_at: new Date()
+        });
+
+        await newAboutAcademic.save();
+        res.status(201).json(newAboutAcademic);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update About Academic
+app.put('/api/about-academic/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { education, experience, publications, skills, awards, email } = req.body;
+
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const aboutAcademic = await AboutAcademic.findById(id);
+        if (!aboutAcademic) return res.status(404).json({ error: 'Not found' });
+
+        if (education !== undefined) aboutAcademic.education = education;
+        if (experience !== undefined) aboutAcademic.experience = experience;
+        if (publications !== undefined) aboutAcademic.publications = publications;
+        if (skills !== undefined) aboutAcademic.skills = skills;
+        if (awards !== undefined) aboutAcademic.awards = awards;
+        aboutAcademic.updated_at = new Date();
+
+        await aboutAcademic.save();
+        res.json(aboutAcademic);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });

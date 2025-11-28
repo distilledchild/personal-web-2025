@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dna, Plus, X, Trash2, Edit2 } from 'lucide-react';
+import { Plus, X, Trash2 } from 'lucide-react';
 
 interface Milestone {
     _id: string;
@@ -10,21 +10,92 @@ interface Milestone {
     createdAt: string;
 }
 
+interface AboutMe {
+    _id?: string;
+    introduction: string;
+    research_interests: string[];
+    hobbies: string[];
+    future_goal: string;
+}
+
+interface AboutAcademic {
+    _id?: string;
+    education: Array<{
+        degree: string;
+        institution: string;
+        location: string;
+        period: string;
+        description: string;
+        gpa: string;
+        order: number;
+    }>;
+    experience: Array<{
+        title: string;
+        organization: string;
+        location: string;
+        period: string;
+        description: string;
+        responsibilities: string[];
+        order: number;
+    }>;
+    publications: Array<{
+        title: string;
+        authors: string;
+        journal: string;
+        year: number;
+        volume: string;
+        pages: string;
+        doi: string;
+        pmid: string;
+        type: string;
+        order: number;
+    }>;
+    skills: {
+        programming: Array<{ name: string; level: string; order: number }>;
+        bioinformatics: Array<{ name: string; level: string; order: number }>;
+        tools: Array<{ name: string; level: string; order: number }>;
+        frameworks: Array<{ name: string; level: string; order: number }>;
+    };
+    awards: Array<{
+        title: string;
+        organization: string;
+        year: number;
+        description: string;
+        order: number;
+    }>;
+}
+
 export const About: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'me' | 'website' | 'cv'>('me');
     const [milestones, setMilestones] = useState<Milestone[]>([]);
+    const [aboutMe, setAboutMe] = useState<AboutMe | null>(null);
+    const [aboutAcademic, setAboutAcademic] = useState<AboutAcademic | null>(null);
     const [user, setUser] = useState<any>(null);
     const [isAuthorized, setIsAuthorized] = useState(false);
 
     // Modal States
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<'milestone' | 'aboutMe' | 'academic'>('milestone');
     const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
-    const [formData, setFormData] = useState({
+
+    // Milestone Form
+    const [milestoneForm, setMilestoneForm] = useState({
         date: '',
         title: '',
         description: '',
         category: 'WEB' as 'ME' | 'WEB'
     });
+
+    // About Me Form
+    const [aboutMeForm, setAboutMeForm] = useState({
+        introduction: '',
+        research_interests: '',
+        hobbies: '',
+        future_goal: ''
+    });
+
+    // Academic Form (simplified - just as JSON editor)
+    const [academicFormJson, setAcademicFormJson] = useState('');
 
     useEffect(() => {
         // Get user from local storage
@@ -42,15 +113,20 @@ export const About: React.FC = () => {
     useEffect(() => {
         if (activeTab === 'website') {
             fetchMilestones();
+        } else if (activeTab === 'me') {
+            fetchAboutMe();
+        } else if (activeTab === 'cv') {
+            fetchAboutAcademic();
         }
     }, [activeTab]);
 
+    const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:4000'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+    // Fetch functions
     const fetchMilestones = async () => {
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
-
             const response = await fetch(`${API_URL}/api/milestones`);
             if (response.ok) {
                 const data = await response.json();
@@ -61,14 +137,35 @@ export const About: React.FC = () => {
         }
     };
 
-    const handleSave = async () => {
+    const fetchAboutMe = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/about-me`);
+            if (response.ok) {
+                const data = await response.json();
+                setAboutMe(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch about me:', error);
+        }
+    };
+
+    const fetchAboutAcademic = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/about-academic`);
+            if (response.ok) {
+                const data = await response.json();
+                setAboutAcademic(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch about academic:', error);
+        }
+    };
+
+    // Save handlers
+    const handleSaveMilestone = async () => {
         if (!user) return;
 
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
-
             const method = editingMilestone ? 'PUT' : 'POST';
             const url = editingMilestone
                 ? `${API_URL}/api/milestones/${editingMilestone._id}`
@@ -78,7 +175,7 @@ export const About: React.FC = () => {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    ...formData,
+                    ...milestoneForm,
                     email: user.email
                 })
             });
@@ -92,16 +189,73 @@ export const About: React.FC = () => {
         }
     };
 
-    const handleDelete = async () => {
+    const handleSaveAboutMe = async () => {
+        if (!user) return;
+
+        try {
+            const isCreating = !aboutMe?._id;
+            const url = isCreating
+                ? `${API_URL}/api/about-me`
+                : `${API_URL}/api/about-me/${aboutMe._id}`;
+            const method = isCreating ? 'POST' : 'PUT';
+
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    introduction: aboutMeForm.introduction,
+                    research_interests: aboutMeForm.research_interests.split('\n').filter(i => i.trim()),
+                    hobbies: aboutMeForm.hobbies.split('\n').filter(h => h.trim()),
+                    future_goal: aboutMeForm.future_goal,
+                    email: user.email
+                })
+            });
+
+            if (response.ok) {
+                fetchAboutMe();
+                closeModal();
+            }
+        } catch (error) {
+            console.error('Failed to save about me:', error);
+        }
+    };
+
+    const handleSaveAcademic = async () => {
+        if (!user) return;
+
+        try {
+            const parsedData = JSON.parse(academicFormJson);
+            const isCreating = !aboutAcademic?._id;
+            const url = isCreating
+                ? `${API_URL}/api/about-academic`
+                : `${API_URL}/api/about-academic/${aboutAcademic._id}`;
+            const method = isCreating ? 'POST' : 'PUT';
+
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...parsedData,
+                    email: user.email
+                })
+            });
+
+            if (response.ok) {
+                fetchAboutAcademic();
+                closeModal();
+            }
+        } catch (error) {
+            console.error('Failed to save academic:', error);
+            alert('Invalid JSON format');
+        }
+    };
+
+    const handleDeleteMilestone = async () => {
         if (!editingMilestone || !user) return;
 
         if (!confirm('Are you sure you want to delete this milestone?')) return;
 
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
-
             const response = await fetch(`${API_URL}/api/milestones/${editingMilestone._id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -117,12 +271,13 @@ export const About: React.FC = () => {
         }
     };
 
-    const openModal = (milestone?: Milestone) => {
+    // Modal handlers
+    const openMilestoneModal = (milestone?: Milestone) => {
         if (milestone) {
             setEditingMilestone(milestone);
             const date = new Date(milestone.date);
             const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-            setFormData({
+            setMilestoneForm({
                 date: yearMonth,
                 title: milestone.title,
                 description: milestone.description,
@@ -132,13 +287,36 @@ export const About: React.FC = () => {
             setEditingMilestone(null);
             const now = new Date();
             const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-            setFormData({
+            setMilestoneForm({
                 date: yearMonth,
                 title: '',
                 description: '',
                 category: 'WEB'
             });
         }
+        setModalType('milestone');
+        setIsModalOpen(true);
+    };
+
+    const openAboutMeModal = () => {
+        if (aboutMe) {
+            setAboutMeForm({
+                introduction: aboutMe.introduction || '',
+                research_interests: aboutMe.research_interests?.join('\n') || '',
+                hobbies: aboutMe.hobbies?.join('\n') || '',
+                future_goal: aboutMe.future_goal || ''
+            });
+        }
+        setModalType('aboutMe');
+        setIsModalOpen(true);
+    };
+
+    const openAcademicModal = () => {
+        if (aboutAcademic) {
+            const { _id, ...dataWithoutId } = aboutAcademic;
+            setAcademicFormJson(JSON.stringify(dataWithoutId, null, 2));
+        }
+        setModalType('academic');
         setIsModalOpen(true);
     };
 
@@ -202,34 +380,42 @@ export const About: React.FC = () => {
                 <div className="max-w-7xl mx-auto pt-8">
                     {/* Content */}
                     {activeTab === 'me' ? (
-                        <div className="animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg">
-                            <p>
-                                I am a <strong>Computational Biologist</strong> with a deep passion for understanding the intricate architecture of the genome. My research focuses on <strong>3D genomics</strong>, exploring how chromatin organization influences gene regulation and cellular function.
-                            </p>
+                        <div className="animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg relative">
+                            {/* Admin Add Button */}
+                            {isAuthorized && (
+                                <div className="fixed bottom-24 left-6 z-50">
+                                    <button
+                                        onClick={openAboutMeModal}
+                                        className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
+                                        title="Edit About Me"
+                                    >
+                                        <Plus size={28} />
+                                    </button>
+                                </div>
+                            )}
+
+                            <p dangerouslySetInnerHTML={{ __html: aboutMe?.introduction || '' }} />
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
                                 <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
                                     <h3 className="text-xl font-bold text-slate-900 mb-4">Research Interests</h3>
                                     <ul className="space-y-3 text-base">
-                                        <li>• 3D Genomics </li>
-                                        <li>• Single-cell sequencing for cancer research</li>
-                                        <li>• Structural Variant Analysis</li>
+                                        {aboutMe?.research_interests?.map((interest, idx) => (
+                                            <li key={idx}>• {interest}</li>
+                                        ))}
                                     </ul>
                                 </div>
                                 <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
                                     <h3 className="text-xl font-bold text-slate-900 mb-4">Hobbies</h3>
                                     <ul className="space-y-3 text-base">
-                                        <li>• Riding a bike</li>
-                                        <li>• Camping</li>
-                                        <li>• Traveling</li>
-                                        <li>• Playing Baduk (Go)</li>
+                                        {aboutMe?.hobbies?.map((hobby, idx) => (
+                                            <li key={idx}>• {hobby}</li>
+                                        ))}
                                     </ul>
                                 </div>
                             </div>
 
-                            <p>
-                                Looking forward, I aspire to leverage my expertise in a dynamic environment within the <strong>Pharmaceutical or IT industry</strong>, contributing to drug discovery and precision medicine through advanced computational strategies.
-                            </p>
+                            <p dangerouslySetInnerHTML={{ __html: aboutMe?.future_goal || '' }} />
                         </div>
                     ) : activeTab === 'website' ? (
                         <div className="animate-fadeIn relative min-h-[400px]">
@@ -237,7 +423,7 @@ export const About: React.FC = () => {
                             {isAuthorized && (
                                 <div className="fixed bottom-24 left-6 z-50">
                                     <button
-                                        onClick={() => openModal()}
+                                        onClick={() => openMilestoneModal()}
                                         className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
                                         title="Add Milestone"
                                     >
@@ -263,7 +449,7 @@ export const About: React.FC = () => {
                                         <div className="w-1/2 pr-12 flex justify-end">
                                             {milestone.category === 'ME' && (
                                                 <div
-                                                    onClick={() => isAuthorized && openModal(milestone)}
+                                                    onClick={() => isAuthorized && openMilestoneModal(milestone)}
                                                     className={`
                                                         relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
                                                         ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
@@ -290,7 +476,7 @@ export const About: React.FC = () => {
                                         <div className="w-1/2 pl-12 flex justify-start">
                                             {milestone.category === 'WEB' && (
                                                 <div
-                                                    onClick={() => isAuthorized && openModal(milestone)}
+                                                    onClick={() => isAuthorized && openMilestoneModal(milestone)}
                                                     className={`
                                                         relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
                                                         ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
@@ -317,7 +503,20 @@ export const About: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+                        <div className="animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0 relative">
+                            {/* Admin Add Button */}
+                            {isAuthorized && (
+                                <div className="fixed bottom-24 left-6 z-50">
+                                    <button
+                                        onClick={openAcademicModal}
+                                        className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
+                                        title="Edit Academic"
+                                    >
+                                        <Plus size={28} />
+                                    </button>
+                                </div>
+                            )}
+
                             {/* Left Sidebar - Links Section */}
                             <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Links</h3>
@@ -358,7 +557,15 @@ export const About: React.FC = () => {
                                     <div className="mb-8">
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Education</h4>
                                         <div className="space-y-4">
-                                            <p className="text-slate-600">Your education information will go here...</p>
+                                            {aboutAcademic?.education?.map((edu, idx) => (
+                                                <div key={idx} className="mb-4">
+                                                    <p className="text-lg font-bold text-slate-900">{edu.degree}</p>
+                                                    <p className="text-slate-600">{edu.institution} • {edu.location}</p>
+                                                    <p className="text-slate-500 text-sm">{edu.period}</p>
+                                                    <p className="text-slate-600 mt-1">{edu.description}</p>
+                                                    {edu.gpa && <p className="text-slate-500 text-sm">GPA: {edu.gpa}</p>}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
 
@@ -366,7 +573,21 @@ export const About: React.FC = () => {
                                     <div className="mb-8">
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Experience</h4>
                                         <div className="space-y-4">
-                                            <p className="text-slate-600">Your experience information will go here...</p>
+                                            {aboutAcademic?.experience?.map((exp, idx) => (
+                                                <div key={idx} className="mb-4">
+                                                    <p className="text-lg font-bold text-slate-900">{exp.title}</p>
+                                                    <p className="text-slate-600">{exp.organization} • {exp.location}</p>
+                                                    <p className="text-slate-500 text-sm">{exp.period}</p>
+                                                    <p className="text-slate-600 mt-1">{exp.description}</p>
+                                                    {exp.responsibilities && exp.responsibilities.length > 0 && (
+                                                        <ul className="mt-2 ml-4 space-y-1">
+                                                            {exp.responsibilities.map((resp, ridx) => (
+                                                                <li key={ridx} className="text-slate-600 text-sm">• {resp}</li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
 
@@ -374,15 +595,41 @@ export const About: React.FC = () => {
                                     <div className="mb-8">
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Publications</h4>
                                         <div className="space-y-4">
-                                            <p className="text-slate-600">Your publications will go here...</p>
+                                            {aboutAcademic?.publications?.map((pub, idx) => (
+                                                <div key={idx} className="mb-3">
+                                                    <p className="text-slate-900 font-medium">{pub.title}</p>
+                                                    <p className="text-slate-600 text-sm">{pub.authors}</p>
+                                                    <p className="text-slate-500 text-sm italic">{pub.journal}, {pub.year}</p>
+                                                    {pub.doi && <p className="text-slate-500 text-xs">DOI: {pub.doi}</p>}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
 
                                     {/* Skills Section */}
                                     <div>
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Skills</h4>
-                                        <div className="space-y-4">
-                                            <p className="text-slate-600">Your skills will go here...</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {aboutAcademic?.skills?.programming && (
+                                                <div>
+                                                    <p className="font-bold text-slate-700 mb-2">Programming</p>
+                                                    <ul className="space-y-1">
+                                                        {aboutAcademic.skills.programming.map((skill, idx) => (
+                                                            <li key={idx} className="text-slate-600 text-sm">• {skill.name} ({skill.level})</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                            {aboutAcademic?.skills?.bioinformatics && (
+                                                <div>
+                                                    <p className="font-bold text-slate-700 mb-2">Bioinformatics</p>
+                                                    <ul className="space-y-1">
+                                                        {aboutAcademic.skills.bioinformatics.map((skill, idx) => (
+                                                            <li key={idx} className="text-slate-600 text-sm">• {skill.name} ({skill.level})</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -395,83 +642,192 @@ export const About: React.FC = () => {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
-                        >
-                            <X size={24} />
-                        </button>
+                    {modalType === 'milestone' ? (
+                        <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
 
-                        <h3 className="text-2xl font-bold text-slate-900 mb-6">
-                            {editingMilestone ? 'Edit Milestone' : 'Add Milestone'}
-                        </h3>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-6">
+                                {editingMilestone ? 'Edit Milestone' : 'Add Milestone'}
+                            </h3>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1">Month</label>
-                                <input
-                                    type="month"
-                                    value={formData.date}
-                                    onChange={e => setFormData({ ...formData, date: e.target.value })}
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1">Category</label>
-                                <select
-                                    value={formData.category}
-                                    onChange={e => setFormData({ ...formData, category: e.target.value as 'ME' | 'WEB' })}
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="ME">Me</option>
-                                    <option value="WEB">Website</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
-                                />
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Month</label>
+                                    <input
+                                        type="month"
+                                        value={milestoneForm.date}
+                                        onChange={e => setMilestoneForm({ ...milestoneForm, date: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Category</label>
+                                    <select
+                                        value={milestoneForm.category}
+                                        onChange={e => setMilestoneForm({ ...milestoneForm, category: e.target.value as 'ME' | 'WEB' })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="ME">Me</option>
+                                        <option value="WEB">Website</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Title</label>
+                                    <input
+                                        type="text"
+                                        value={milestoneForm.title}
+                                        onChange={e => setMilestoneForm({ ...milestoneForm, title: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Enter milestone title"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Description</label>
+                                    <textarea
+                                        value={milestoneForm.description}
+                                        onChange={e => setMilestoneForm({ ...milestoneForm, description: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                                        placeholder="Enter milestone description"
+                                    />
+                                </div>
+
+                                <div className="flex gap-3 pt-4">
+                                    {editingMilestone && (
+                                        <button
+                                            onClick={handleDeleteMilestone}
+                                            className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                                        >
+                                            <Trash2 size={18} />
+                                            Delete
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={closeModal}
+                                        className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleSaveMilestone}
+                                        className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                                    >
+                                        Save
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    ) : modalType === 'aboutMe' ? (
+                        <div className="bg-white rounded-2xl max-w-3xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
 
-                        <div className="flex justify-between mt-8">
-                            {editingMilestone && (
-                                <button
-                                    onClick={handleDelete}
-                                    className="px-4 py-2 text-red-600 font-bold hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
-                                >
-                                    <Trash2 size={18} /> Delete
-                                </button>
-                            )}
-                            <div className="flex gap-4 ml-auto">
-                                <button
-                                    onClick={closeModal}
-                                    className="px-6 py-2 bg-slate-100 text-slate-600 rounded-full font-bold hover:bg-slate-200 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
-                                >
-                                    Save
-                                </button>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-6">Edit About Me</h3>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Introduction (HTML allowed)</label>
+                                    <textarea
+                                        value={aboutMeForm.introduction}
+                                        onChange={e => setAboutMeForm({ ...aboutMeForm, introduction: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                                        placeholder="Enter introduction (HTML tags like <strong> allowed)"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Research Interests (one per line)</label>
+                                    <textarea
+                                        value={aboutMeForm.research_interests}
+                                        onChange={e => setAboutMeForm({ ...aboutMeForm, research_interests: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                                        placeholder="3D Genomics&#10;Single-cell sequencing&#10;..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Hobbies (one per line)</label>
+                                    <textarea
+                                        value={aboutMeForm.hobbies}
+                                        onChange={e => setAboutMeForm({ ...aboutMeForm, hobbies: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                                        placeholder="Riding a bike&#10;Camping&#10;..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">Future Goal (HTML allowed)</label>
+                                    <textarea
+                                        value={aboutMeForm.future_goal}
+                                        onChange={e => setAboutMeForm({ ...aboutMeForm, future_goal: e.target.value })}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                                        placeholder="Enter future goals"
+                                    />
+                                </div>
+
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        onClick={closeModal}
+                                        className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleSaveAboutMe}
+                                        className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                                    >
+                                        Save
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="bg-white rounded-2xl max-w-4xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+
+                            <h3 className="text-2xl font-bold text-slate-900 mb-6">Edit Academic (JSON Format)</h3>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-1">JSON Data</label>
+                                    <textarea
+                                        value={academicFormJson}
+                                        onChange={e => setAcademicFormJson(e.target.value)}
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm min-h-[400px]"
+                                        placeholder="Enter JSON data"
+                                    />
+                                    <p className="text-xs text-slate-500 mt-2">
+                                        Edit the JSON directly. Make sure it's valid JSON format.
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        onClick={closeModal}
+                                        className="flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleSaveAcademic}
+                                        className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
