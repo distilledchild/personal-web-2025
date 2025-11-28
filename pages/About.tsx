@@ -11,7 +11,7 @@ interface Milestone {
 }
 
 export const About: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<'me' | 'website'>('me');
+    const [activeTab, setActiveTab] = useState<'me' | 'website' | 'cv'>('me');
     const [milestones, setMilestones] = useState<Milestone[]>([]);
     const [user, setUser] = useState<any>(null);
     const [isAuthorized, setIsAuthorized] = useState(false);
@@ -120,16 +120,20 @@ export const About: React.FC = () => {
     const openModal = (milestone?: Milestone) => {
         if (milestone) {
             setEditingMilestone(milestone);
+            const date = new Date(milestone.date);
+            const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
             setFormData({
-                date: new Date(milestone.date).toISOString().split('T')[0],
+                date: yearMonth,
                 title: milestone.title,
                 description: milestone.description,
                 category: milestone.category
             });
         } else {
             setEditingMilestone(null);
+            const now = new Date();
+            const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             setFormData({
-                date: new Date().toISOString().split('T')[0],
+                date: yearMonth,
                 title: '',
                 description: '',
                 category: 'WEB'
@@ -147,15 +151,15 @@ export const About: React.FC = () => {
         <div className="flex flex-col h-screen bg-white">
             {/* Fixed Header Section */}
             <div className="pt-32 pb-6 px-6 bg-white border-b border-slate-100">
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-4xl font-bold text-slate-900 mb-4">
                             Intro
                         </h2>
                     </div>
 
-                    {/* Tabs */}
-                    <div className="flex justify-center gap-2">
+                    {/* Tabs - Equal spacing */}
+                    <div className="flex justify-center gap-4">
                         <button
                             onClick={() => setActiveTab('me')}
                             className={`
@@ -178,13 +182,24 @@ export const About: React.FC = () => {
                         >
                             Milestones
                         </button>
+                        <button
+                            onClick={() => setActiveTab('cv')}
+                            className={`
+                                flex items-center gap-2 px-8 py-4 border-b-2 text-lg font-bold transition-all duration-300
+                                ${activeTab === 'cv'
+                                    ? 'border-blue-600 text-blue-600'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
+                            `}
+                        >
+                            Academic
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto px-6 pb-20">
-                <div className="max-w-4xl mx-auto pt-8">
+                <div className="max-w-7xl mx-auto pt-8">
                     {/* Content */}
                     {activeTab === 'me' ? (
                         <div className="animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg">
@@ -216,7 +231,7 @@ export const About: React.FC = () => {
                                 Looking forward, I aspire to leverage my expertise in a dynamic environment within the <strong>Pharmaceutical or IT industry</strong>, contributing to drug discovery and precision medicine through advanced computational strategies.
                             </p>
                         </div>
-                    ) : (
+                    ) : activeTab === 'website' ? (
                         <div className="animate-fadeIn relative min-h-[400px]">
                             {/* Admin Add Button - Fixed above Login */}
                             {isAuthorized && (
@@ -260,7 +275,7 @@ export const About: React.FC = () => {
                                                     {/* Responsive Content Layout */}
                                                     <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
                                                         <span className="text-xs font-bold text-slate-400 mb-2 lg:mb-0 lg:whitespace-nowrap">
-                                                            {new Date(milestone.date).toLocaleDateString()}
+                                                            {new Date(milestone.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
                                                         </span>
                                                         <div className="lg:border-l lg:border-slate-300 lg:pl-4 flex-1">
                                                             <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
@@ -287,7 +302,7 @@ export const About: React.FC = () => {
                                                     {/* Responsive Content Layout */}
                                                     <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
                                                         <span className="text-xs font-bold text-slate-400 mb-2 lg:mb-0 lg:whitespace-nowrap">
-                                                            {new Date(milestone.date).toLocaleDateString()}
+                                                            {new Date(milestone.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
                                                         </span>
                                                         <div className="lg:border-l lg:border-slate-300 lg:pl-4 flex-1">
                                                             <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
@@ -299,6 +314,78 @@ export const About: React.FC = () => {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+                            {/* Left Sidebar - Links Section */}
+                            <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Links</h3>
+                                <div className="space-y-3">
+                                    {/* ORCiD Link */}
+                                    <a
+                                        href="https://orcid.org/0000-0001-8767-4080"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
+                                    >
+                                        <p className="text-sm font-medium">
+                                            <span style={{ color: '#A6A8AB' }}>ORC</span>
+                                            <span style={{ color: '#A5CD39' }}>iD</span>
+                                        </p>
+                                    </a>
+
+                                    {/* Google Scholar Link */}
+                                    <a
+                                        href="https://scholar.google.com"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
+                                    >
+                                        <p className="text-sm font-medium text-slate-600 group-hover:text-blue-600 transition-colors">
+                                            Google Scholar
+                                        </p>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Right Side - CV Content */}
+                            <div className="flex-1 min-h-0 overflow-y-auto">
+                                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+                                    <h3 className="text-2xl font-bold text-slate-900 mb-6">Curriculum Vitae</h3>
+
+                                    {/* Education Section */}
+                                    <div className="mb-8">
+                                        <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Education</h4>
+                                        <div className="space-y-4">
+                                            <p className="text-slate-600">Your education information will go here...</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Experience Section */}
+                                    <div className="mb-8">
+                                        <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Experience</h4>
+                                        <div className="space-y-4">
+                                            <p className="text-slate-600">Your experience information will go here...</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Publications Section */}
+                                    <div className="mb-8">
+                                        <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Publications</h4>
+                                        <div className="space-y-4">
+                                            <p className="text-slate-600">Your publications will go here...</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Skills Section */}
+                                    <div>
+                                        <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Skills</h4>
+                                        <div className="space-y-4">
+                                            <p className="text-slate-600">Your skills will go here...</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -322,9 +409,9 @@ export const About: React.FC = () => {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-1">Date</label>
+                                <label className="block text-sm font-bold text-slate-700 mb-1">Month</label>
                                 <input
-                                    type="date"
+                                    type="month"
                                     value={formData.date}
                                     onChange={e => setFormData({ ...formData, date: e.target.value })}
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

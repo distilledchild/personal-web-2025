@@ -2,6 +2,12 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -21,9 +27,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-
-// Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
 
 // Load environment variables
 import dotenv from 'dotenv';
@@ -224,9 +227,13 @@ const accessInfoSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now },
     session_id: String,
     status_code: Number
-}, { collection: 'ACCESS_INFO' });
+});
 
-const AccessInfo = mongoose.model('AccessInfo', accessInfoSchema);
+// Production collection
+const AccessInfo = mongoose.model('AccessInfo', accessInfoSchema.clone(), 'ACCESS_INFO');
+
+// Development collection (for local/test IPs)
+const AccessInfoDev = mongoose.model('AccessInfoDev', accessInfoSchema.clone(), 'ACCESS_INFO_DEV');
 
 // API endpoint to log access information
 app.post('/api/access/log', async (req, res) => {
@@ -250,8 +257,25 @@ app.post('/api/access/log', async (req, res) => {
         // Get user agent
         const user_agent = req.headers['user-agent'];
 
+        // Check if IP is local/development (localhost, loopback, private IPs)
+        const isLocalIP = (ip) => {
+            if (!ip) return false;
+            const ipStr = ip.toString();
+            return ipStr === '::1' ||
+                   ipStr === '127.0.0.1' ||
+                   ipStr.startsWith('::ffff:127.') ||
+                   ipStr.startsWith('192.168.') ||
+                   ipStr.startsWith('10.') ||
+                   ipStr.startsWith('172.16.') ||
+                   ipStr === 'localhost';
+        };
+
+        // Determine which model to use based on IP
+        const Model = isLocalIP(ip_address) ? AccessInfoDev : AccessInfo;
+        const collectionName = isLocalIP(ip_address) ? 'ACCESS_INFO_DEV' : 'ACCESS_INFO';
+
         // Create access info entry
-        const accessInfo = new AccessInfo({
+        const accessInfo = new Model({
             ip_address,
             page_url,
             user_agent,
@@ -261,9 +285,9 @@ app.post('/api/access/log', async (req, res) => {
             timestamp: new Date()
         });
 
-        console.log('[ACCESS LOG] Saving to DB:', accessInfo.toObject());
+        console.log(`[ACCESS LOG] Saving to ${collectionName}:`, accessInfo.toObject());
         const saved = await accessInfo.save();
-        console.log('[ACCESS LOG] Saved successfully:', saved._id);
+        console.log(`[ACCESS LOG] Saved successfully to ${collectionName}:`, saved._id);
 
         res.json({ success: true, message: 'Access logged' });
     } catch (err) {
@@ -601,9 +625,98 @@ const io = new Server(server, {
 });
 
 // State
-let waitingQueue = []; // Array of socket IDs
-let activeChat = null; // { visitorId: string, ownerId: string } | null
+let waitingQueue = []; // Array of { socketId: string, userInfo: { email?: string, name?: string, avatar?: string } }
+let activeChat = null; // { visitorId: string, ownerId: string, userInfo: object } | null
 let ownerSocketId = null;
+let allChats = new Map(); // socketId -> { messages: [], userInfo: {}, sessionId: string }
+
+// Helper: Generate readable name from session ID
+function generateNickname(sessionId) {
+    // Extract numbers from session ID (e.g., "1764277055030-abc123" -> "1764277055030")
+    const numbers = sessionId.split('-')[0];
+
+    // Mapping: 0-9 to letters
+    const map = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+
+    let nickname = '';
+    for (let char of numbers) {
+        nickname += map[parseInt(char)];
+    }
+
+    return nickname;
+}
+
+// Helper: Save chat to file
+function saveChatToFile(socketId, chatData) {
+    const logsDir = path.join(__dirname, 'chat_logs');
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(logsDir)) {
+        fs.mkdirSync(logsDir, { recursive: true });
+    }
+
+    const userInfo = chatData.userInfo || {};
+    const messages = chatData.messages || [];
+    const sessionId = chatData.sessionId || socketId;
+
+    // Generate identifier (email or nickname from session ID)
+    let identifier;
+    if (userInfo.email) {
+        identifier = userInfo.email.split('@')[0]; // e.g., "distilledchild"
+    } else {
+        identifier = generateNickname(sessionId);
+    }
+
+    // Get current date in MM_DD format
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const datePrefix = `${month}_${day}`;
+
+    // Base filename
+    let baseFilename = `${datePrefix}_${identifier}`;
+    let filename = `${baseFilename}.txt`;
+    let filePath = path.join(logsDir, filename);
+
+    // Check if file exists and find the right sequence number
+    let sequenceNumber = 1;
+    if (fs.existsSync(filePath)) {
+        // Read existing file to check if it's from today
+        const existingContent = fs.readFileSync(filePath, 'utf-8');
+        const firstLine = existingContent.split('\n')[0];
+
+        // Check if last message is from today
+        const today = now.toISOString().split('T')[0];
+        if (firstLine.includes(today)) {
+            // Same day - append to existing file
+            // Do nothing, will append below
+        } else {
+            // Different day - need to find sequence number
+            while (fs.existsSync(filePath)) {
+                filename = `${baseFilename}_${sequenceNumber}.txt`;
+                filePath = path.join(logsDir, filename);
+                sequenceNumber++;
+            }
+        }
+    }
+
+    // Format messages
+    const timestamp = new Date().toISOString();
+    let content = `\n=== Chat Session: ${timestamp} ===\n`;
+    content += `User: ${userInfo.name || identifier}\n`;
+    content += `Session ID: ${sessionId}\n\n`;
+
+    messages.forEach(msg => {
+        const speaker = msg.sender === 'owner' ? 'Distilled Child' : (userInfo.name || identifier);
+        content += `[${speaker}]: ${msg.text}\n`;
+    });
+
+    content += `\n=== End of Session ===\n`;
+
+    // Append to file
+    fs.appendFileSync(filePath, content, 'utf-8');
+    console.log(`Chat saved to: ${filename}`);
+}
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
@@ -613,10 +726,14 @@ io.on('connection', (socket) => {
         console.log('Owner registered:', socket.id);
         ownerSocketId = socket.id;
 
-        // Send current queue count to owner
+        // Send current queue and all waiting users to owner
         socket.emit('queue_update', {
             count: waitingQueue.length,
-            active: !!activeChat
+            queue: waitingQueue,
+            active: activeChat ? {
+                socketId: activeChat.visitorId,
+                userInfo: activeChat.userInfo
+            } : null
         });
 
         // If there's no active chat but people are waiting, start next chat automatically
@@ -626,24 +743,44 @@ io.on('connection', (socket) => {
     });
 
     // 2. Visitor Joins Queue
-    socket.on('join_queue', () => {
+    socket.on('join_queue', (data) => {
         if (socket.id === ownerSocketId) return; // Owner doesn't join queue
 
+        // data: { userInfo: { email?, name?, avatar? } }
+        const userInfo = data?.userInfo || {};
+
+        // Check if owner is online
+        if (!ownerSocketId) {
+            // Owner is offline - notify visitor
+            socket.emit('owner_offline');
+            return;
+        }
+
         // Check if already in queue or active
-        if (waitingQueue.includes(socket.id)) return;
+        if (waitingQueue.some(q => q.socketId === socket.id)) return;
         if (activeChat && activeChat.visitorId === socket.id) return;
 
-        console.log('Visitor joined queue:', socket.id);
-        waitingQueue.push(socket.id);
+        console.log('Visitor joined queue:', socket.id, userInfo);
+        waitingQueue.push({ socketId: socket.id, userInfo });
+
+        // Generate or retrieve session ID for this socket
+        let sessionId = socket.handshake.query.sessionId || `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+
+        // Initialize chat history with session ID
+        allChats.set(socket.id, { messages: [], userInfo, sessionId });
 
         // Notify visitor of their position
         updateVisitorStatus(socket.id);
 
-        // Notify owner of new queue count
+        // Notify owner of new queue with user info
         if (ownerSocketId) {
             io.to(ownerSocketId).emit('queue_update', {
                 count: waitingQueue.length,
-                active: !!activeChat
+                queue: waitingQueue,
+                active: activeChat ? {
+                    socketId: activeChat.visitorId,
+                    userInfo: activeChat.userInfo
+                } : null
             });
         }
 
@@ -655,31 +792,221 @@ io.on('connection', (socket) => {
 
     // 3. Send Message
     socket.on('send_message', (data) => {
-        // data: { text: string }
-        if (!activeChat) return;
+        // data: { text: string, targetSocketId?: string }
+        const targetSocketId = data.targetSocketId;
 
         if (socket.id === ownerSocketId) {
-            // Owner sent message -> send to active visitor
-            io.to(activeChat.visitorId).emit('receive_message', {
-                text: data.text,
-                sender: 'owner'
+            // Owner sent message -> send to specified visitor or active visitor
+            const recipientId = targetSocketId || (activeChat ? activeChat.visitorId : null);
+            if (recipientId) {
+                io.to(recipientId).emit('receive_message', {
+                    text: data.text,
+                    sender: 'owner'
+                });
+
+                // Store message in chat history
+                const chatData = allChats.get(recipientId);
+                if (chatData) {
+                    chatData.messages.push({ sender: 'owner', text: data.text, timestamp: Date.now() });
+                }
+            }
+        } else {
+            // Visitor sent message
+            // Store message in chat history regardless of owner being online
+            const chatData = allChats.get(socket.id);
+            if (chatData) {
+                chatData.messages.push({ sender: 'visitor', text: data.text, timestamp: Date.now() });
+            }
+
+            // If owner is online, send message to owner
+            if (ownerSocketId && activeChat && socket.id === activeChat.visitorId) {
+                io.to(ownerSocketId).emit('receive_message', {
+                    text: data.text,
+                    sender: 'visitor',
+                    fromSocketId: socket.id
+                });
+            }
+        }
+    });
+
+    // 4. Switch Chat (Owner selects different visitor)
+    socket.on('switch_chat', (data) => {
+        if (socket.id !== ownerSocketId) return;
+
+        const { targetSocketId } = data;
+
+        // Check if target is in queue or already active
+        const inQueue = waitingQueue.find(q => q.socketId === targetSocketId);
+        const isActive = activeChat && activeChat.visitorId === targetSocketId;
+
+        if (!inQueue && !isActive) return;
+
+        // If switching to someone in queue, move them to active and put current back in queue
+        if (inQueue && !isActive) {
+            // Put current active back in queue (at front)
+            if (activeChat) {
+                waitingQueue.unshift({
+                    socketId: activeChat.visitorId,
+                    userInfo: activeChat.userInfo
+                });
+
+                // Notify previous active visitor they're back in queue
+                io.to(activeChat.visitorId).emit('queue_status', { position: 1 });
+            }
+
+            // Remove new active from queue
+            waitingQueue = waitingQueue.filter(q => q.socketId !== targetSocketId);
+
+            // Set new active chat
+            activeChat = {
+                visitorId: targetSocketId,
+                ownerId: ownerSocketId,
+                userInfo: inQueue.userInfo
+            };
+
+            // Notify new active visitor
+            io.to(targetSocketId).emit('chat_started', { position: 0 });
+
+            // Send chat history to owner
+            const chatData = allChats.get(targetSocketId);
+            socket.emit('chat_history', {
+                socketId: targetSocketId,
+                messages: chatData?.messages || [],
+                userInfo: chatData?.userInfo || {}
             });
-        } else if (socket.id === activeChat.visitorId) {
-            // Visitor sent message -> send to owner
-            io.to(ownerSocketId).emit('receive_message', {
-                text: data.text,
-                sender: 'visitor'
+
+            // Update owner's queue view
+            socket.emit('queue_update', {
+                count: waitingQueue.length,
+                queue: waitingQueue,
+                active: {
+                    socketId: activeChat.visitorId,
+                    userInfo: activeChat.userInfo
+                }
+            });
+
+            // Update other waiters
+            waitingQueue.forEach((q, idx) => {
+                io.to(q.socketId).emit('queue_status', { position: idx + 1 });
+            });
+        } else if (isActive) {
+            // Just send the chat history if clicking on already active user
+            const chatData = allChats.get(targetSocketId);
+            socket.emit('chat_history', {
+                socketId: targetSocketId,
+                messages: chatData?.messages || [],
+                userInfo: chatData?.userInfo || {}
             });
         }
     });
 
-    // 4. End Chat (Owner triggered)
+    // 5. Close Chat (Owner closes specific user's chat)
+    socket.on('close_chat', (data) => {
+        if (socket.id !== ownerSocketId) return;
+
+        const { targetSocketId } = data;
+
+        // Save chat to file
+        const chatData = allChats.get(targetSocketId);
+        if (chatData && chatData.messages.length > 0) {
+            saveChatToFile(targetSocketId, chatData);
+        }
+
+        // Remove from queue or active
+        const queueIndex = waitingQueue.findIndex(q => q.socketId === targetSocketId);
+        if (queueIndex !== -1) {
+            waitingQueue.splice(queueIndex, 1);
+        }
+
+        if (activeChat && activeChat.visitorId === targetSocketId) {
+            // Notify visitor that chat ended
+            io.to(targetSocketId).emit('chat_ended', { reason: 'owner_closed' });
+            activeChat = null;
+
+            // Start next chat if available
+            startNextChat();
+        } else {
+            // Just notify the visitor in queue
+            io.to(targetSocketId).emit('chat_ended', { reason: 'owner_closed' });
+        }
+
+        // Update owner's queue
+        if (ownerSocketId) {
+            io.to(ownerSocketId).emit('queue_update', {
+                count: waitingQueue.length,
+                queue: waitingQueue,
+                active: activeChat ? {
+                    socketId: activeChat.visitorId,
+                    userInfo: activeChat.userInfo
+                } : null
+            });
+        }
+
+        // Update other waiters
+        waitingQueue.forEach((q, idx) => {
+            io.to(q.socketId).emit('queue_status', { position: idx + 1 });
+        });
+
+        // Don't delete chat data immediately - keep for potential reconnection
+    });
+
+    // 6. Visitor closes chat
+    socket.on('visitor_close', () => {
+        if (socket.id === ownerSocketId) return;
+
+        // Save chat to file
+        const chatData = allChats.get(socket.id);
+        if (chatData && chatData.messages.length > 0) {
+            saveChatToFile(socket.id, chatData);
+        }
+
+        // Reset chat history but keep the data structure for potential reconnection
+        if (allChats.has(socket.id)) {
+            const chatData = allChats.get(socket.id);
+            allChats.set(socket.id, {
+                messages: [],
+                userInfo: chatData.userInfo,
+                sessionId: chatData.sessionId
+            });
+        }
+
+        // Remove from queue or active
+        const queueIndex = waitingQueue.findIndex(q => q.socketId === socket.id);
+        if (queueIndex !== -1) {
+            waitingQueue.splice(queueIndex, 1);
+        }
+
+        if (activeChat && activeChat.visitorId === socket.id) {
+            activeChat = null;
+            // Start next chat
+            startNextChat();
+        }
+
+        // Update owner
+        if (ownerSocketId) {
+            io.to(ownerSocketId).emit('queue_update', {
+                count: waitingQueue.length,
+                queue: waitingQueue,
+                active: activeChat ? {
+                    socketId: activeChat.visitorId,
+                    userInfo: activeChat.userInfo
+                } : null
+            });
+        }
+
+        // Update other waiters
+        waitingQueue.forEach((q, idx) => {
+            io.to(q.socketId).emit('queue_status', { position: idx + 1 });
+        });
+    });
+
+    // 7. End Chat (Owner triggered - legacy)
     socket.on('end_chat', () => {
         if (socket.id !== ownerSocketId) return;
         endCurrentChat();
     });
 
-    // 5. Disconnect
+    // 8. Disconnect
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
 
@@ -688,18 +1015,23 @@ io.on('connection', (socket) => {
             // Optionally notify active visitor that owner left?
         } else {
             // Remove from queue if present
-            const queueIndex = waitingQueue.indexOf(socket.id);
+            const queueIndex = waitingQueue.findIndex(q => q.socketId === socket.id);
             if (queueIndex !== -1) {
                 waitingQueue.splice(queueIndex, 1);
-                // Notify everyone behind them that position changed? 
-                // Simplification: Just notify everyone to update their status
-                waitingQueue.forEach(id => updateVisitorStatus(id));
+                // Notify everyone behind them that position changed
+                waitingQueue.forEach((q, idx) => {
+                    io.to(q.socketId).emit('queue_status', { position: idx + 1 });
+                });
 
                 // Notify owner
                 if (ownerSocketId) {
                     io.to(ownerSocketId).emit('queue_update', {
                         count: waitingQueue.length,
-                        active: !!activeChat
+                        queue: waitingQueue,
+                        active: activeChat ? {
+                            socketId: activeChat.visitorId,
+                            userInfo: activeChat.userInfo
+                        } : null
                     });
                 }
             }
@@ -711,6 +1043,9 @@ io.on('connection', (socket) => {
                 // Auto-start next chat?
                 startNextChat();
             }
+
+            // Keep chat history for a while (could clean up after timeout)
+            // For now, we keep it in memory
         }
     });
 });
@@ -719,23 +1054,41 @@ function startNextChat() {
     if (waitingQueue.length === 0) return;
     if (!ownerSocketId) return;
 
-    const nextVisitorId = waitingQueue.shift();
-    activeChat = { visitorId: nextVisitorId, ownerId: ownerSocketId };
+    const nextVisitor = waitingQueue.shift();
+    activeChat = {
+        visitorId: nextVisitor.socketId,
+        ownerId: ownerSocketId,
+        userInfo: nextVisitor.userInfo
+    };
 
-    console.log('Starting chat with:', nextVisitorId);
+    console.log('Starting chat with:', nextVisitor.socketId);
+
+    // Send chat history to owner
+    const chatData = allChats.get(nextVisitor.socketId);
+    io.to(ownerSocketId).emit('chat_history', {
+        socketId: nextVisitor.socketId,
+        messages: chatData?.messages || [],
+        userInfo: chatData?.userInfo || {}
+    });
 
     // Notify Owner
-    io.to(ownerSocketId).emit('chat_started', { visitorId: nextVisitorId });
+    io.to(ownerSocketId).emit('chat_started', { visitorId: nextVisitor.socketId });
     io.to(ownerSocketId).emit('queue_update', {
         count: waitingQueue.length,
-        active: true
+        queue: waitingQueue,
+        active: {
+            socketId: activeChat.visitorId,
+            userInfo: activeChat.userInfo
+        }
     });
 
     // Notify Visitor
-    io.to(nextVisitorId).emit('chat_started', { position: 0 });
+    io.to(nextVisitor.socketId).emit('chat_started', { position: 0 });
 
     // Update remaining queue
-    waitingQueue.forEach(id => updateVisitorStatus(id));
+    waitingQueue.forEach((q, idx) => {
+        io.to(q.socketId).emit('queue_status', { position: idx + 1 });
+    });
 }
 
 function endCurrentChat() {
@@ -752,7 +1105,8 @@ function endCurrentChat() {
     if (ownerSocketId) {
         io.to(ownerSocketId).emit('queue_update', {
             count: waitingQueue.length,
-            active: false
+            queue: waitingQueue,
+            active: null
         });
     }
 
@@ -761,9 +1115,9 @@ function endCurrentChat() {
 }
 
 function updateVisitorStatus(socketId) {
-    const index = waitingQueue.indexOf(socketId);
+    const index = waitingQueue.findIndex(q => q.socketId === socketId);
     if (index !== -1) {
-        // Position 1 means 0 people ahead
+        // Position 1 means 1 person ahead (index 0 = position 1)
         io.to(socketId).emit('queue_status', { position: index + 1 });
     }
 }

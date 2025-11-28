@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plane, Dumbbell, Gamepad2, Trophy, ChevronLeft, ChevronRight, PersonStanding, Footprints, Bike, Palette, MapPin, X } from 'lucide-react';
+import { Plane, Dumbbell, Gamepad2, BarChart3, ChevronLeft, ChevronRight, PersonStanding, Footprints, Bike, Palette, MapPin, X } from 'lucide-react';
 import { ComposableMap, Geographies, Geography, Marker, Annotation } from 'react-simple-maps';
 import { geoCentroid, geoAlbersUsa } from 'd3-geo';
 import {
@@ -191,6 +191,14 @@ export const Interests: React.FC = () => {
             : 'https://personal-web-2025-production.up.railway.app';
 
         if (activeTab === 'art') {
+            // Reset expanded state when entering Art submenu
+            setExpandedState(null);
+            setClickPosition(null);
+            setExpandedCentroid(null);
+            setHoveredState(null);
+            setSelectedMuseum(null);
+            setSelectedArtwork(null);
+
             fetch(`${API_URL}/api/interests/art-museums`)
                 .then(res => res.json())
                 .then(data => setArtMuseums(data))
@@ -401,7 +409,7 @@ export const Interests: React.FC = () => {
                             className={`
                 flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'workout'
-                                    ? 'border-blue-500 text-blue-500'
+                                    ? 'border-[#FFA300] text-[#FFA300]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
@@ -413,7 +421,7 @@ export const Interests: React.FC = () => {
                             className={`
                 flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'art'
-                                    ? 'border-purple-500 text-purple-500'
+                                    ? 'border-[#FFA300] text-[#FFA300]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
@@ -425,11 +433,11 @@ export const Interests: React.FC = () => {
                             className={`
                 flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                 ${activeTab === 'data'
-                                    ? 'border-green-600 text-green-600'
+                                    ? 'border-[#FFA300] text-[#FFA300]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
-                            <Trophy size={20} />
+                            <BarChart3 size={20} />
                             <span>Data</span>
                         </button>
                     </div>
@@ -550,7 +558,7 @@ export const Interests: React.FC = () => {
                                 {import.meta.env.DEV && (
                                     <button
                                         onClick={handleStravaAuth}
-                                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                        className="px-6 py-3 bg-gradient-to-r from-[#FFA300] to-[#FF8C00] text-white font-bold rounded-xl hover:from-[#FF8C00] hover:to-[#FF7700] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                                     >
                                         Sync from Strava
                                     </button>
@@ -573,16 +581,16 @@ export const Interests: React.FC = () => {
                                                 <BarChart data={chartData}>
                                                     <defs>
                                                         <linearGradient id="walkGradient" x1="0" y1="0" x2="0" y2="1">
-                                                            <stop offset="0%" stopColor="#93c5fd" stopOpacity={1} />
-                                                            <stop offset="100%" stopColor="#60a5fa" stopOpacity={1} />
+                                                            <stop offset="0%" stopColor="#FFCC80" stopOpacity={1} />
+                                                            <stop offset="100%" stopColor="#FFB84D" stopOpacity={1} />
                                                         </linearGradient>
                                                         <linearGradient id="runGradient" x1="0" y1="0" x2="0" y2="1">
-                                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
-                                                            <stop offset="100%" stopColor="#2563eb" stopOpacity={1} />
+                                                            <stop offset="0%" stopColor="#FFA300" stopOpacity={1} />
+                                                            <stop offset="100%" stopColor="#FF8C00" stopOpacity={1} />
                                                         </linearGradient>
                                                         <linearGradient id="bikeGradient" x1="0" y1="0" x2="0" y2="1">
-                                                            <stop offset="0%" stopColor="#1d4ed8" stopOpacity={1} />
-                                                            <stop offset="100%" stopColor="#1e3a8a" stopOpacity={1} />
+                                                            <stop offset="0%" stopColor="#FF8C00" stopOpacity={1} />
+                                                            <stop offset="100%" stopColor="#FF7700" stopOpacity={1} />
                                                         </linearGradient>
                                                     </defs>
                                                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -619,10 +627,15 @@ export const Interests: React.FC = () => {
                                                         className={`
                                                             aspect-square flex items-center justify-center text-sm rounded-lg
                                                             ${day === null ? '' :
-                                                                workoutDays.has(day) ? 'bg-[#080C54] text-white font-bold' :
+                                                                workoutDays.has(day) ? 'text-white font-bold' :
                                                                     day > today ? 'text-slate-400' :
                                                                         'text-black'}
                                                         `}
+                                                        style={
+                                                            day !== null && workoutDays.has(day)
+                                                                ? { background: 'linear-gradient(135deg, #FFCC80 0%, #FFA300 50%, #FF7700 100%)' }
+                                                                : {}
+                                                        }
                                                     >
                                                         {day}
                                                     </div>
@@ -638,7 +651,7 @@ export const Interests: React.FC = () => {
                                             <div className="grid grid-cols-3 gap-4">
                                                 {/* Walk Counter */}
                                                 <div className="flex flex-col items-center">
-                                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 flex items-center justify-center shadow-lg">
+                                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FFCC80] to-[#FFB84D] flex items-center justify-center shadow-lg">
                                                         <span className="text-2xl font-bold text-white">{monthlyStats.walk.count}</span>
                                                     </div>
                                                     <span className="text-xs font-medium text-slate-600 mt-2">Walk</span>
@@ -646,7 +659,7 @@ export const Interests: React.FC = () => {
 
                                                 {/* Run Counter */}
                                                 <div className="flex flex-col items-center">
-                                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FFA300] to-[#FF8C00] flex items-center justify-center shadow-lg">
                                                         <span className="text-2xl font-bold text-white">{monthlyStats.run.count}</span>
                                                     </div>
                                                     <span className="text-xs font-medium text-slate-600 mt-2">Run</span>
@@ -654,7 +667,7 @@ export const Interests: React.FC = () => {
 
                                                 {/* Bike Counter */}
                                                 <div className="flex flex-col items-center">
-                                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-700 to-blue-800 flex items-center justify-center shadow-lg">
+                                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FF8C00] to-[#FF7700] flex items-center justify-center shadow-lg">
                                                         <span className="text-2xl font-bold text-white">{monthlyStats.bike.count}</span>
                                                     </div>
                                                     <span className="text-xs font-medium text-slate-600 mt-2">Bike</span>
@@ -666,8 +679,8 @@ export const Interests: React.FC = () => {
                                     {/* Activity Table with Pagination */}
                                     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                                         <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead className="bg-gradient-to-r from-blue-50 to-slate-50">
+                                            <table className="w-full table-fixed">
+                                                <thead className="bg-gradient-to-r from-orange-50 to-slate-50">
                                                     <tr>
                                                         <th className="px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200">Date</th>
                                                         <th className="px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200">Activity Name</th>
@@ -682,7 +695,7 @@ export const Interests: React.FC = () => {
                                                     {currentActivities.map((activity, index) => (
                                                         <tr
                                                             key={activity.id}
-                                                            className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                                                            className={`hover:bg-orange-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
                                                         >
                                                             <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">
                                                                 {new Date(activity.start_date).toLocaleDateString('en-US', {
@@ -696,11 +709,11 @@ export const Interests: React.FC = () => {
                                                             </td>
                                                             <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">
                                                                 {activity.sport_type.toLowerCase() === 'walk' ? (
-                                                                    <PersonStanding size={24} className="text-blue-400" />
+                                                                    <PersonStanding size={24} className="text-[#FFCC80]" />
                                                                 ) : activity.sport_type.toLowerCase().includes('ride') || activity.sport_type.toLowerCase() === 'bike' || activity.sport_type.toLowerCase() === 'virtualride' ? (
-                                                                    <Bike size={24} className="text-blue-800" />
+                                                                    <Bike size={24} className="text-[#FF7700]" />
                                                                 ) : activity.sport_type.toLowerCase() === 'run' || activity.sport_type.toLowerCase() === 'running' ? (
-                                                                    <Footprints size={24} className="text-blue-600" />
+                                                                    <Footprints size={24} className="text-[#FFA300]" />
                                                                 ) : (
                                                                     <span className="text-xs text-gray-600">{activity.sport_type}</span>
                                                                 )}
@@ -717,6 +730,21 @@ export const Interests: React.FC = () => {
                                                             <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">
                                                                 {(activity.average_speed * 3.6).toFixed(1)} km/h
                                                             </td>
+                                                        </tr>
+                                                    ))}
+                                                    {/* Fill empty rows to maintain 5-row height */}
+                                                    {Array.from({ length: Math.max(0, itemsPerPage - currentActivities.length) }).map((_, index) => (
+                                                        <tr
+                                                            key={`empty-${index}`}
+                                                            className={`${(currentActivities.length + index) % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                                                        >
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
+                                                            <td className="px-6 py-4 text-sm text-slate-600 border-b border-slate-100">&nbsp;</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -736,7 +764,7 @@ export const Interests: React.FC = () => {
                                                     disabled={currentPage === 1}
                                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === 1
                                                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow-md'
+                                                        : 'bg-[#FFA300] text-white hover:bg-[#FF8C00] shadow-sm hover:shadow-md'
                                                         }`}
                                                 >
                                                     <ChevronLeft size={20} />
@@ -749,7 +777,7 @@ export const Interests: React.FC = () => {
                                                     disabled={currentPage === totalPages}
                                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === totalPages
                                                         ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow-md'
+                                                        : 'bg-[#FFA300] text-white hover:bg-[#FF8C00] shadow-sm hover:shadow-md'
                                                         }`}
                                                 >
                                                     <ChevronRight size={20} />

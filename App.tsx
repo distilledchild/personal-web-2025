@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, Navigate } from 'react-router-dom';
 import { Dna, Mail, Github, MapPin, Loader2, Plus } from 'lucide-react';
 import { ThreeDNA } from './components/ThreeDNA';
-import { ChatBot } from './components/ChatBot';
 import { Research } from './pages/Research';
 import { Interests } from './pages/Interests';
 import { About } from './pages/About';
 import { StravaCallback } from './pages/StravaCallback';
-import { io, Socket } from 'socket.io-client';
 
 const Home: React.FC = () => (
   <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
@@ -411,12 +409,12 @@ const Tech: React.FC = () => {
     setEditData({ category: '', title: '', content: '' });
   };
 
-  // Fixed Color Themes Order: Blue -> Green -> Pink -> Purple
+  // Unified Color Theme: All Pink
   const colorThemes = [
-    { color: "bg-blue-50", textColor: "text-blue-700", borderColor: "border-blue-100", hoverBorderColor: "hover:border-blue-200", hoverColor: "group-hover:text-blue-600" },
-    { color: "bg-green-50", textColor: "text-green-700", borderColor: "border-green-100", hoverBorderColor: "hover:border-green-200", hoverColor: "group-hover:text-green-600" },
     { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
-    { color: "bg-purple-50", textColor: "text-purple-700", borderColor: "border-purple-100", hoverBorderColor: "hover:border-purple-200", hoverColor: "group-hover:text-purple-600" },
+    { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
+    { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
+    { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
   ];
 
   // Combine blog posts with themes
@@ -843,9 +841,9 @@ const Contact: React.FC = () => {
         <div className="space-y-8">
           <button
             onClick={handleCopy}
-            className="w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group border border-slate-100 hover:border-blue-100 cursor-pointer text-left"
+            className="w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100 cursor-pointer text-left"
           >
-            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-blue-600 transition-colors">
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
               <Mail size={32} />
             </div>
             <div className="ml-6 text-left">
@@ -854,8 +852,8 @@ const Contact: React.FC = () => {
             </div>
           </button>
 
-          <a href="https://github.com/distilledchild" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-green-50 transition-colors group border border-slate-100 hover:border-green-100">
-            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-green-600 transition-colors">
+          <a href="https://github.com/distilledchild" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100">
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
               <Github size={32} />
             </div>
             <div className="ml-6 text-left">
@@ -864,8 +862,8 @@ const Contact: React.FC = () => {
             </div>
           </a>
 
-          <a href="https://www.linkedin.com/in/pkim11/" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-pink-50 transition-colors group border border-slate-100 hover:border-pink-100">
-            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-pink-600 transition-colors">
+          <a href="https://www.linkedin.com/in/pkim11/" target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100">
+            <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
               <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
               </svg>
@@ -902,10 +900,10 @@ const LiquidTab = ({ to, label, active, colorClass, badgeCount }: { to: string; 
       font-extrabold tracking-tighter hover:scale-105
       ${colorClass}
     `}
-    style={{ fontSize: 'clamp(1.5rem, 3.8vw, 2.28rem)' }}
+    style={{ fontSize: 'clamp(1.3rem, 3.2vw, 2rem)' }}
   >
     {/* Content with Floating Animation */}
-    <span className="relative z-10 block transition-transform duration-300 ease-out group-hover:-translate-y-2 flex items-center gap-2">
+    <span className="relative z-10 block transition-transform duration-300 ease-out group-hover:-translate-y-2 flex items-center gap-2 -translate-y-2">
       {label}
       {badgeCount !== undefined && (
         <span className="bg-red-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[1.5rem] text-center">
@@ -921,10 +919,14 @@ const Layout: React.FC = () => {
   const isHome = location.pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
-  // Owner Queue State
-  const [searchParams] = useSearchParams();
-  const isAdmin = searchParams.get('admin') === 'true';
-  const [queueCount, setQueueCount] = useState<number | null>(null);
+  // Google Analytics - Track page views on route change
+  useEffect(() => {
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('config', 'G-GD5495D6KD', {
+        page_path: location.pathname + location.search
+      });
+    }
+  }, [location]);
 
   // Log access information
   useEffect(() => {
@@ -969,23 +971,6 @@ const Layout: React.FC = () => {
     logAccess();
   }, [location.pathname]); // Log on every page change
 
-  useEffect(() => {
-    if (isAdmin) {
-      const socket = io('https://personal-web-2025-production.up.railway.app');
-
-      socket.on('connect', () => {
-        socket.emit('register_owner');
-      });
-
-      socket.on('queue_update', (data: { count: number }) => {
-        setQueueCount(data.count);
-      });
-
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [isAdmin]);
 
   return (
     <div className="min-h-screen font-sans text-slate-900">
@@ -1039,7 +1024,7 @@ const Layout: React.FC = () => {
       )}
 
       {/* Navigation Bar - Desktop Only */}
-      <nav className="fixed top-0 right-0 w-full z-50 p-[0.9rem] md:p-[1.8rem] justify-end pointer-events-none hidden lg:flex">
+      <nav className="fixed top-0 right-0 w-full z-50 p-4 md:p-8 justify-end pointer-events-none hidden lg:flex">
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
           {window.location.hostname === 'localhost' && (
             <LiquidTab
@@ -1078,7 +1063,6 @@ const Layout: React.FC = () => {
             label="Contact"
             active={location.pathname === '/contact'}
             colorClass="text-purple-500 hover:text-purple-300"
-            badgeCount={queueCount !== null ? queueCount : undefined}
           />
         </div>
       </nav>
@@ -1096,7 +1080,6 @@ const Layout: React.FC = () => {
         <Route path="/strava/callback" element={<StravaCallback />} />
       </Routes>
 
-      <ChatBot />
       <GoogleLogin />
     </div>
   );

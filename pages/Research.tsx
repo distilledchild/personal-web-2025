@@ -165,10 +165,10 @@ export const Research: React.FC = () => {
   const navigate = useNavigate();
 
   const tabs = [
-    { label: 'PE Interactions', icon: GitBranch, color: 'text-blue-600 border-blue-200', activeBg: 'bg-blue-50 ring-blue-200', slug: 'peinteractions' },
-    { label: 'Single-cell Seq', icon: Database, color: 'text-green-600 border-green-200', activeBg: 'bg-green-50 ring-green-200', slug: 'singlecellseq' },
-    { label: 'Enhancer ID', icon: FileText, color: 'text-pink-600 border-pink-200', activeBg: 'bg-pink-50 ring-pink-200', slug: 'deeplearningenhancer' },
-    { label: 'LLM', icon: Sliders, color: 'text-purple-600 border-purple-200', activeBg: 'bg-purple-50 ring-purple-200', slug: 'llm' },
+    { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
+    { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
+    { label: 'Enhancer ID', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
+    { label: 'LLM', icon: Sliders, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'llm' },
   ];
 
   // Determine active tab from URL, default to first tab
