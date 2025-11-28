@@ -98,16 +98,33 @@ export const About: React.FC = () => {
     const [academicFormJson, setAcademicFormJson] = useState('');
 
     useEffect(() => {
-        // Get user from local storage
-        const storedUser = localStorage.getItem('user_profile');
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            setUser(parsedUser);
-            const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
-            if (authorizedEmails.includes(parsedUser.email)) {
-                setIsAuthorized(true);
+        // Check user auth status
+        const checkAuth = () => {
+            const storedUser = localStorage.getItem('user_profile');
+            if (storedUser) {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+                const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+                setIsAuthorized(authorizedEmails.includes(parsedUser.email));
+            } else {
+                setUser(null);
+                setIsAuthorized(false);
             }
-        }
+        };
+
+        // Initial check
+        checkAuth();
+
+        // Listen for storage changes (works across tabs)
+        window.addEventListener('storage', checkAuth);
+
+        // Poll for changes in same tab (since storage event doesn't fire in same tab)
+        const interval = setInterval(checkAuth, 1000);
+
+        return () => {
+            window.removeEventListener('storage', checkAuth);
+            clearInterval(interval);
+        };
     }, []);
 
     useEffect(() => {
@@ -225,6 +242,29 @@ export const About: React.FC = () => {
 
         try {
             const parsedData = JSON.parse(academicFormJson);
+
+            // Validate data structure
+            if (parsedData.education && !Array.isArray(parsedData.education)) {
+                alert('Invalid format: education must be an array');
+                return;
+            }
+            if (parsedData.experience && !Array.isArray(parsedData.experience)) {
+                alert('Invalid format: experience must be an array');
+                return;
+            }
+            if (parsedData.publications && !Array.isArray(parsedData.publications)) {
+                alert('Invalid format: publications must be an array');
+                return;
+            }
+            if (parsedData.awards && !Array.isArray(parsedData.awards)) {
+                alert('Invalid format: awards must be an array');
+                return;
+            }
+            if (parsedData.skills && typeof parsedData.skills !== 'object') {
+                alert('Invalid format: skills must be an object');
+                return;
+            }
+
             const isCreating = !aboutAcademic?._id;
             const url = isCreating
                 ? `${API_URL}/api/about-academic`
@@ -243,10 +283,17 @@ export const About: React.FC = () => {
             if (response.ok) {
                 fetchAboutAcademic();
                 closeModal();
+            } else {
+                const errorData = await response.json();
+                alert(`Failed to save: ${errorData.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Failed to save academic:', error);
-            alert('Invalid JSON format');
+            if (error instanceof SyntaxError) {
+                alert('Invalid JSON format. Please check your syntax.');
+            } else {
+                alert('Failed to save academic data');
+            }
         }
     };
 
