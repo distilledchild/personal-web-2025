@@ -5,6 +5,8 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,6 +77,11 @@ const storage = new Storage(storageConfig);
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
+
+// Postgres connection
+const pool = new Pool({
+    connectionString: process.env.POSTGRES_URL,
+});
 
 const stateSchema = new mongoose.Schema({
     code: String,
@@ -305,12 +312,12 @@ app.post('/api/access/log', async (req, res) => {
             if (!ip) return false;
             const ipStr = ip.toString();
             return ipStr === '::1' ||
-                   ipStr === '127.0.0.1' ||
-                   ipStr.startsWith('::ffff:127.') ||
-                   ipStr.startsWith('192.168.') ||
-                   ipStr.startsWith('10.') ||
-                   ipStr.startsWith('172.16.') ||
-                   ipStr === 'localhost';
+                ipStr === '127.0.0.1' ||
+                ipStr.startsWith('::ffff:127.') ||
+                ipStr.startsWith('192.168.') ||
+                ipStr.startsWith('10.') ||
+                ipStr.startsWith('172.16.') ||
+                ipStr === 'localhost';
         };
 
         // Get location from IP address
@@ -626,6 +633,10 @@ const aboutAcademicSchema = new mongoose.Schema({
         description: String,
         order: Number
     }],
+    links: {
+        ORCiD: String,
+        GoogleScholar: String
+    },
     show: { type: String, default: 'Y' },
     updated_at: { type: Date, default: Date.now }
 }, { collection: 'ABOUT_ACADEMIC' });
@@ -811,7 +822,7 @@ app.get('/api/about-academic', async (req, res) => {
 // Create About Academic
 app.post('/api/about-academic', async (req, res) => {
     try {
-        const { education, experience, publications, skills, awards, email } = req.body;
+        const { education, experience, publications, skills, awards, links, email } = req.body;
 
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
         if (!authorizedEmails.includes(email)) {
@@ -824,6 +835,7 @@ app.post('/api/about-academic', async (req, res) => {
             publications,
             skills,
             awards,
+            links,
             show: 'Y',
             updated_at: new Date()
         });
@@ -840,7 +852,7 @@ app.post('/api/about-academic', async (req, res) => {
 app.put('/api/about-academic/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { education, experience, publications, skills, awards, email } = req.body;
+        const { education, experience, publications, skills, awards, links, email } = req.body;
 
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
         if (!authorizedEmails.includes(email)) {
@@ -855,9 +867,19 @@ app.put('/api/about-academic/:id', async (req, res) => {
         if (publications !== undefined) aboutAcademic.publications = publications;
         if (skills !== undefined) aboutAcademic.skills = skills;
         if (awards !== undefined) aboutAcademic.awards = awards;
+
+        if (links !== undefined) {
+            console.log('Updating links:', links);
+            aboutAcademic.links = {
+                ORCiD: links.ORCiD,
+                GoogleScholar: links.GoogleScholar
+            };
+        }
+
         aboutAcademic.updated_at = new Date();
 
         await aboutAcademic.save();
+        console.log('AboutAcademic updated successfully');
         res.json(aboutAcademic);
     } catch (err) {
         console.error(err);
@@ -1732,6 +1754,240 @@ app.post('/api/workouts/sync', async (req, res) => {
     } catch (err) {
         console.error('Sync error:', err);
         res.status(500).json({ error: 'Failed to sync activities', details: err.message });
+    }
+});
+
+// Create Team Endpoint
+app.post('/api/teams', async (req, res) => {
+    try {
+        const { name, owner_id, description } = req.body;
+
+        if (!name || !owner_id) {
+            return res.status(400).json({ error: 'Name and owner_id are required' });
+        }
+
+        const query = `
+            INSERT INTO "litmers-vibecoding-contest-2025"."teams" (name, owner_id, created_at, description)
+            VALUES ($1, $2, NOW(), $3)
+            RETURNING *
+        `;
+
+        const values = [name, owner_id, description];
+        const result = await pool.query(query, values);
+
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error('Error creating team:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get User Teams Endpoint
+app.get('/api/teams/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        const query = `
+            SELECT 
+                t.id AS team_id,
+                t.name AS team_name,
+                t.description,
+                COUNT(DISTINCT tm_all.user_id) AS member_count,
+                COUNT(DISTINCT p.id) AS project_count,
+                tm.role AS my_role
+            FROM "litmers-vibecoding-contest-2025"."teams" t
+            JOIN "litmers-vibecoding-contest-2025"."team_members" tm 
+                ON t.id = tm.team_id
+                AND tm.user_id = $1
+            LEFT JOIN "litmers-vibecoding-contest-2025"."team_members" tm_all 
+                ON t.id = tm_all.team_id
+            LEFT JOIN "litmers-vibecoding-contest-2025"."projects" p 
+                ON t.id = p.team_id 
+                AND p.deleted_at IS NULL
+            WHERE t.deleted_at IS NULL
+            GROUP BY t.id, t.name, t.description, tm.role
+            ORDER BY t.id;
+        `;
+
+        const result = await pool.query(query, [userId]);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching user teams:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Contact Schema
+const contactSchema = new mongoose.Schema({
+    Email: { type: String, required: true },
+    GitHub: String,
+    LinkedIn: String,
+    Location: {
+        city: String,
+        state: String,
+        country: String,
+        latitude: Number,
+        longitude: Number,
+        ip: String
+    }
+}, { collection: 'CONTACT' });
+
+const Contact = mongoose.model('Contact', contactSchema);
+
+// Member Schema
+const memberSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    role: { type: String, required: true }, // ADMIN, EDITOR, etc.
+    name: String,
+    createdAt: { type: Date, default: Date.now }
+}, { collection: 'MEMBER' });
+
+const Member = mongoose.model('Member', memberSchema);
+
+// Get Contact Info
+app.get('/api/contact', async (req, res) => {
+    try {
+        const contact = await Contact.findOne();
+        res.json(contact);
+    } catch (err) {
+        console.error('Failed to fetch contact:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update Contact Info
+app.put('/api/contact/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Email, GitHub, LinkedIn, Location, userEmail } = req.body;
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(userEmail)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const contact = await Contact.findById(id);
+        if (!contact) {
+            return res.status(404).json({ error: 'Contact not found' });
+        }
+
+        if (Email !== undefined) contact.Email = Email;
+        if (GitHub !== undefined) contact.GitHub = GitHub;
+        if (LinkedIn !== undefined) contact.LinkedIn = LinkedIn;
+
+        if (Location !== undefined) {
+            // Check if location fields are empty (use IP geolocation)
+            const hasLocationData = Location.city && Location.state && Location.country;
+
+            if (!hasLocationData) {
+                // Get user's IP address
+                let userIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+                    req.headers['x-real-ip'] ||
+                    req.connection.remoteAddress ||
+                    req.socket.remoteAddress;
+
+                // Clean up IPv6 localhost format
+                if (userIp && (userIp === '::1' || userIp.includes('127.0.0.1') || userIp.startsWith('::ffff:'))) {
+                    // For localhost/development, use a default IP for testing
+                    console.log('Localhost detected, using public IP for geolocation test');
+                    userIp = ''; // Leave empty to let ip-api.com use the server's IP
+                }
+
+                // Try to get coordinates from IP geolocation API
+                try {
+                    const ipUrl = userIp ? `http://ip-api.com/json/${userIp}` : 'http://ip-api.com/json/';
+                    console.log('Fetching IP geolocation from:', ipUrl);
+
+                    const ipResponse = await fetch(ipUrl);
+                    if (ipResponse.ok) {
+                        const ipData = await ipResponse.json();
+                        console.log('IP Geolocation response:', ipData);
+
+                        if (ipData.status === 'success') {
+                            Location.latitude = ipData.lat;
+                            Location.longitude = ipData.lon;
+                            Location.ip = ipData.query; // Actual IP from response
+                            // Use IP data for location
+                            Location.city = ipData.city;
+                            Location.state = ipData.regionName;
+                            Location.country = ipData.country;
+                            console.log('IP geolocation successful:', Location);
+                        } else {
+                            console.log('IP geolocation failed:', ipData.message);
+                        }
+                    }
+                } catch (ipErr) {
+                    console.error('Failed to get IP geolocation:', ipErr);
+                    // Continue without coordinates if IP lookup fails
+                }
+            } else if (!Location.latitude || !Location.longitude) {
+                // Has city/state/country but no coordinates - use geocoding
+                try {
+                    const address = `${Location.city}, ${Location.state}, ${Location.country}`;
+                    const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+                    console.log('Geocoding address:', address);
+
+                    const geocodeResponse = await fetch(geocodeUrl, {
+                        headers: {
+                            'User-Agent': 'PersonalWebsite/1.0'
+                        }
+                    });
+
+                    if (geocodeResponse.ok) {
+                        const geocodeData = await geocodeResponse.json();
+                        console.log('Geocoding response:', geocodeData);
+
+                        if (geocodeData && geocodeData.length > 0) {
+                            Location.latitude = parseFloat(geocodeData[0].lat);
+                            Location.longitude = parseFloat(geocodeData[0].lon);
+                            console.log('Geocoding successful:', { latitude: Location.latitude, longitude: Location.longitude });
+                        } else {
+                            console.log('No geocoding results found for address:', address);
+                        }
+                    }
+                } catch (geocodeErr) {
+                    console.error('Failed to geocode address:', geocodeErr);
+                    // Continue without coordinates if geocoding fails
+                }
+            }
+
+            contact.Location = Location;
+        }
+
+        await contact.save();
+        res.json(contact);
+    } catch (err) {
+        console.error('Failed to update contact:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Check Member Role by Email
+app.get('/api/member/role/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const member = await Member.findOne({ email: email });
+
+        if (!member) {
+            return res.json({ authorized: false, role: null });
+        }
+
+        // Check if role is ADMIN or EDITOR
+        const isAuthorized = member.role === 'ADMIN' || member.role === 'EDITOR';
+        res.json({
+            authorized: isAuthorized,
+            role: member.role,
+            email: member.email
+        });
+    } catch (err) {
+        console.error('Failed to check member role:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

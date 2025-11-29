@@ -63,6 +63,10 @@ interface AboutAcademic {
         description: string;
         order: number;
     }>;
+    links?: {
+        ORCiD: string;
+        GoogleScholar: string;
+    };
 }
 
 export const About: React.FC = () => {
@@ -97,15 +101,37 @@ export const About: React.FC = () => {
     // Academic Form (simplified - just as JSON editor)
     const [academicFormJson, setAcademicFormJson] = useState('');
 
+    // Academic Links Form
+    const [academicLinksForm, setAcademicLinksForm] = useState({
+        ORCiD: '',
+        GoogleScholar: ''
+    });
+
     useEffect(() => {
         // Check user auth status
-        const checkAuth = () => {
+        const checkAuth = async () => {
             const storedUser = localStorage.getItem('user_profile');
             if (storedUser) {
                 const parsedUser = JSON.parse(storedUser);
                 setUser(parsedUser);
-                const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
-                setIsAuthorized(authorizedEmails.includes(parsedUser.email));
+
+                // Check authorization from MEMBER collection
+                try {
+                    const API_URL = window.location.hostname === 'localhost'
+                        ? 'http://localhost:4000'
+                        : 'https://personal-web-2025-production.up.railway.app';
+
+                    const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setIsAuthorized(data.authorized);
+                    } else {
+                        setIsAuthorized(false);
+                    }
+                } catch (err) {
+                    console.error('Failed to check authorization:', err);
+                    setIsAuthorized(false);
+                }
             } else {
                 setUser(null);
                 setIsAuthorized(false);
@@ -168,7 +194,7 @@ export const About: React.FC = () => {
 
     const fetchAboutAcademic = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/about-academic`);
+            const response = await fetch(`${API_URL}/api/about-academic?t=${new Date().getTime()}`);
             if (response.ok) {
                 const data = await response.json();
                 setAboutAcademic(data);
@@ -241,41 +267,26 @@ export const About: React.FC = () => {
         if (!user) return;
 
         try {
-            const parsedData = JSON.parse(academicFormJson);
-
-            // Validate data structure
-            if (parsedData.education && !Array.isArray(parsedData.education)) {
-                alert('Invalid format: education must be an array');
-                return;
-            }
-            if (parsedData.experience && !Array.isArray(parsedData.experience)) {
-                alert('Invalid format: experience must be an array');
-                return;
-            }
-            if (parsedData.publications && !Array.isArray(parsedData.publications)) {
-                alert('Invalid format: publications must be an array');
-                return;
-            }
-            if (parsedData.awards && !Array.isArray(parsedData.awards)) {
-                alert('Invalid format: awards must be an array');
-                return;
-            }
-            if (parsedData.skills && typeof parsedData.skills !== 'object') {
-                alert('Invalid format: skills must be an object');
+            if (!aboutAcademic?._id) {
+                alert('No academic data found. Please create initial data first.');
                 return;
             }
 
-            const isCreating = !aboutAcademic?._id;
-            const url = isCreating
-                ? `${API_URL}/api/about-academic`
-                : `${API_URL}/api/about-academic/${aboutAcademic._id}`;
-            const method = isCreating ? 'POST' : 'PUT';
+            const url = `${API_URL}/api/about-academic/${aboutAcademic._id}`;
+
+            console.log('Saving academic links:', {
+                ORCiD: academicLinksForm.ORCiD,
+                GoogleScholar: academicLinksForm.GoogleScholar
+            });
 
             const response = await fetch(url, {
-                method,
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    ...parsedData,
+                    links: {
+                        ORCiD: academicLinksForm.ORCiD,
+                        GoogleScholar: academicLinksForm.GoogleScholar
+                    },
                     email: user.email
                 })
             });
@@ -289,11 +300,7 @@ export const About: React.FC = () => {
             }
         } catch (error) {
             console.error('Failed to save academic:', error);
-            if (error instanceof SyntaxError) {
-                alert('Invalid JSON format. Please check your syntax.');
-            } else {
-                alert('Failed to save academic data');
-            }
+            alert('Failed to save academic data');
         }
     };
 
@@ -360,8 +367,14 @@ export const About: React.FC = () => {
 
     const openAcademicModal = () => {
         if (aboutAcademic) {
-            const { _id, ...dataWithoutId } = aboutAcademic;
+            const { _id, links, ...dataWithoutId } = aboutAcademic as any;
             setAcademicFormJson(JSON.stringify(dataWithoutId, null, 2));
+
+            // Set links form separately
+            setAcademicLinksForm({
+                ORCiD: links?.ORCiD || '',
+                GoogleScholar: links?.GoogleScholar || ''
+            });
         }
         setModalType('academic');
         setIsModalOpen(true);
@@ -427,7 +440,7 @@ export const About: React.FC = () => {
                 <div className="max-w-7xl mx-auto pt-8">
                     {/* Content */}
                     {activeTab === 'me' ? (
-                        <div className="animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg relative">
+                        <div className="animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg relative" style={{ textAlign: 'justify' }}>
                             {/* Admin Add Button */}
                             {isAuthorized && (
                                 <div className="fixed bottom-24 left-6 z-50">
@@ -444,7 +457,7 @@ export const About: React.FC = () => {
                             <p dangerouslySetInnerHTML={{ __html: aboutMe?.introduction || '' }} />
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
-                                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
+                                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100" style={{ textAlign: 'left' }}>
                                     <h3 className="text-xl font-bold text-slate-900 mb-4">Research Interests</h3>
                                     <ul className="space-y-3 text-base">
                                         {aboutMe?.research_interests?.map((interest, idx) => (
@@ -452,7 +465,7 @@ export const About: React.FC = () => {
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100">
+                                <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100" style={{ textAlign: 'left' }}>
                                     <h3 className="text-xl font-bold text-slate-900 mb-4">Hobbies</h3>
                                     <ul className="space-y-3 text-base">
                                         {aboutMe?.hobbies?.map((hobby, idx) => (
@@ -569,29 +582,33 @@ export const About: React.FC = () => {
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Links</h3>
                                 <div className="space-y-3">
                                     {/* ORCiD Link */}
-                                    <a
-                                        href="https://orcid.org/0000-0001-8767-4080"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
-                                    >
-                                        <p className="text-sm font-medium">
-                                            <span style={{ color: '#A6A8AB' }}>ORC</span>
-                                            <span style={{ color: '#A5CD39' }}>iD</span>
-                                        </p>
-                                    </a>
+                                    {aboutAcademic?.links?.ORCiD && (
+                                        <a
+                                            href={aboutAcademic.links.ORCiD.startsWith('http') ? aboutAcademic.links.ORCiD : `https://${aboutAcademic.links.ORCiD}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
+                                        >
+                                            <p className="text-sm font-medium">
+                                                <span style={{ color: '#A6A8AB' }}>ORC</span>
+                                                <span style={{ color: '#A5CD39' }}>iD</span>
+                                            </p>
+                                        </a>
+                                    )}
 
                                     {/* Google Scholar Link */}
-                                    <a
-                                        href="https://scholar.google.com"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
-                                    >
-                                        <p className="text-sm font-medium text-slate-600 group-hover:text-blue-600 transition-colors">
-                                            Google Scholar
-                                        </p>
-                                    </a>
+                                    {aboutAcademic?.links?.GoogleScholar && (
+                                        <a
+                                            href={aboutAcademic.links.GoogleScholar.startsWith('http') ? aboutAcademic.links.GoogleScholar : `https://${aboutAcademic.links.GoogleScholar}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
+                                        >
+                                            <p className="text-sm font-medium text-slate-600 group-hover:text-blue-600 transition-colors">
+                                                Google Scholar
+                                            </p>
+                                        </a>
+                                    )}
                                 </div>
                             </div>
 
@@ -600,8 +617,20 @@ export const About: React.FC = () => {
                                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                                     <h3 className="text-2xl font-bold text-slate-900 mb-6">Curriculum Vitae</h3>
 
-                                    {/* Education Section */}
+                                    {/* PDF Viewer */}
                                     <div className="mb-8">
+                                        <div className="w-full h-[800px] border border-slate-200 rounded-lg overflow-hidden">
+                                            <iframe
+                                                src="https://drive.google.com/file/d/1woLM4zcYV1kWI0sl4_OpLcAgQpLMmnma/preview"
+                                                className="w-full h-full"
+                                                allow="autoplay"
+                                                title="Curriculum Vitae PDF"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Education Section */}
+                                    {/* <div className="mb-8">
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Education</h4>
                                         <div className="space-y-4">
                                             {aboutAcademic?.education?.map((edu, idx) => (
@@ -614,10 +643,10 @@ export const About: React.FC = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Experience Section */}
-                                    <div className="mb-8">
+                                    {/* <div className="mb-8">
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Experience</h4>
                                         <div className="space-y-4">
                                             {aboutAcademic?.experience?.map((exp, idx) => (
@@ -636,10 +665,10 @@ export const About: React.FC = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Publications Section */}
-                                    <div className="mb-8">
+                                    {/* <div className="mb-8">
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Publications</h4>
                                         <div className="space-y-4">
                                             {aboutAcademic?.publications?.map((pub, idx) => (
@@ -651,10 +680,10 @@ export const About: React.FC = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     {/* Skills Section */}
-                                    <div>
+                                    {/* <div>
                                         <h4 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Skills</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {aboutAcademic?.skills?.programming && (
@@ -678,7 +707,7 @@ export const About: React.FC = () => {
                                                 </div>
                                             )}
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -842,20 +871,34 @@ export const About: React.FC = () => {
                                 <X size={24} />
                             </button>
 
-                            <h3 className="text-2xl font-bold text-slate-900 mb-6">Edit Academic (JSON Format)</h3>
+                            <h3 className="text-2xl font-bold text-slate-900 mb-6">Edit Academic Links</h3>
 
                             <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 mb-1">JSON Data</label>
-                                    <textarea
-                                        value={academicFormJson}
-                                        onChange={e => setAcademicFormJson(e.target.value)}
-                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm min-h-[400px]"
-                                        placeholder="Enter JSON data"
-                                    />
-                                    <p className="text-xs text-slate-500 mt-2">
-                                        Edit the JSON directly. Make sure it's valid JSON format.
-                                    </p>
+                                {/* Links Section */}
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <h4 className="text-lg font-bold text-slate-800 mb-4">Links</h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-sm font-bold text-slate-700 mb-1">ORCiD URL</label>
+                                            <input
+                                                type="text"
+                                                value={academicLinksForm.ORCiD}
+                                                onChange={e => setAcademicLinksForm({ ...academicLinksForm, ORCiD: e.target.value })}
+                                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="https://orcid.org/0000-0001-8767-4080"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-slate-700 mb-1">Google Scholar URL</label>
+                                            <input
+                                                type="text"
+                                                value={academicLinksForm.GoogleScholar}
+                                                onChange={e => setAcademicLinksForm({ ...academicLinksForm, GoogleScholar: e.target.value })}
+                                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="https://scholar.google.com/citations?user=..."
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-3 pt-4">

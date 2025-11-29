@@ -184,6 +184,7 @@ export const Interests: React.FC = () => {
     const itemsPerPage = 5;
 
     const [artMuseums, setArtMuseums] = useState<ArtMuseum[]>([]);
+    const [activeDataTab, setActiveDataTab] = useState<'urban' | 'weather' | 'fc26'>('urban');
 
     useEffect(() => {
         const API_URL = window.location.hostname === 'localhost'
@@ -391,28 +392,16 @@ export const Interests: React.FC = () => {
                     {/* Tabs Navigation */}
                     <div className="flex flex-wrap justify-center gap-2">
                         <button
-                            onClick={() => navigate('/interests/travel')}
+                            onClick={() => navigate('/interests/data')}
                             className={`
                 flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'travel'
+                ${activeTab === 'data'
                                     ? 'border-[#FFA300] text-[#FFA300]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
-                            <Plane size={20} />
-                            <span>Travel</span>
-                        </button>
-                        <button
-                            onClick={() => navigate('/interests/workout')}
-                            className={`
-                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'workout'
-                                    ? 'border-[#FFA300] text-[#FFA300]'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-              `}
-                        >
-                            <Dumbbell size={20} />
-                            <span>Workout</span>
+                            <BarChart3 size={20} />
+                            <span>Data</span>
                         </button>
                         <button
                             onClick={() => navigate('/interests/art')}
@@ -427,16 +416,28 @@ export const Interests: React.FC = () => {
                             <span>Art</span>
                         </button>
                         <button
-                            onClick={() => navigate('/interests/data')}
+                            onClick={() => navigate('/interests/workout')}
                             className={`
                 flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'data'
+                ${activeTab === 'workout'
                                     ? 'border-[#FFA300] text-[#FFA300]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
               `}
                         >
-                            <BarChart3 size={20} />
-                            <span>Data</span>
+                            <Dumbbell size={20} />
+                            <span>Workout</span>
+                        </button>
+                        <button
+                            onClick={() => navigate('/interests/travel')}
+                            className={`
+                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
+                ${activeTab === 'travel'
+                                    ? 'border-[#FFA300] text-[#FFA300]'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
+              `}
+                        >
+                            <Plane size={20} />
+                            <span>Travel</span>
                         </button>
                     </div>
                 </div>
@@ -1081,50 +1082,50 @@ export const Interests: React.FC = () => {
                                                                             const museumToOpen = museums.find((m: ArtMuseum) => m.artworks && m.artworks.length > 0) || museums[0];
 
                                                                             return (
-                                                                            <Marker key={`pin-${coordKey}-${idx}`} coordinates={museum.coordinates}>
-                                                                                <g
-                                                                                    transform="scale(0.5) translate(-12, -24)"
-                                                                                    onMouseEnter={() => setHoveredPin(pinId)}
-                                                                                    onMouseLeave={() => setHoveredPin(null)}
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation();
-                                                                                        setSelectedMuseum(museumToOpen);
-                                                                                    }}
-                                                                                    style={{ cursor: 'pointer' }}
-                                                                                >
-                                                                                    <path
-                                                                                        d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
-                                                                                        fill="#DC2626"
-                                                                                        stroke="#FFFFFF"
-                                                                                        strokeWidth="1"
-                                                                                        style={{ pointerEvents: 'auto' }}
-                                                                                    />
-                                                                                </g>
-                                                                                {/* Tooltips - show first museum only */}
-                                                                                {hoveredPin === pinId && (
-                                                                                    <g transform="translate(0, -35)">
-                                                                                        <foreignObject x="-100" y="-40" width="200" height="50">
-                                                                                            <div style={{
-                                                                                                background: 'transparent',
-                                                                                                padding: '6px 10px',
-                                                                                                borderRadius: '8px',
-                                                                                                fontSize: '11px',
-                                                                                                textAlign: 'center',
-                                                                                                pointerEvents: 'none',
-                                                                                                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                                                                                lineHeight: '1.3'
-                                                                                            }}>
-                                                                                                <div style={{ color: '#000', fontWeight: '600' }}>
-                                                                                                    {museumToOpen.museum_name}
-                                                                                                </div>
-                                                                                                <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                                                                                    {museum.city_name || museum.city}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </foreignObject>
+                                                                                <Marker key={`pin-${coordKey}-${idx}`} coordinates={museum.coordinates}>
+                                                                                    <g
+                                                                                        transform="scale(0.5) translate(-12, -24)"
+                                                                                        onMouseEnter={() => setHoveredPin(pinId)}
+                                                                                        onMouseLeave={() => setHoveredPin(null)}
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                            setSelectedMuseum(museumToOpen);
+                                                                                        }}
+                                                                                        style={{ cursor: 'pointer' }}
+                                                                                    >
+                                                                                        <path
+                                                                                            d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
+                                                                                            fill="#DC2626"
+                                                                                            stroke="#FFFFFF"
+                                                                                            strokeWidth="1"
+                                                                                            style={{ pointerEvents: 'auto' }}
+                                                                                        />
                                                                                     </g>
-                                                                                )}
-                                                                            </Marker>
+                                                                                    {/* Tooltips - show first museum only */}
+                                                                                    {hoveredPin === pinId && (
+                                                                                        <g transform="translate(0, -35)">
+                                                                                            <foreignObject x="-100" y="-40" width="200" height="50">
+                                                                                                <div style={{
+                                                                                                    background: 'transparent',
+                                                                                                    padding: '6px 10px',
+                                                                                                    borderRadius: '8px',
+                                                                                                    fontSize: '11px',
+                                                                                                    textAlign: 'center',
+                                                                                                    pointerEvents: 'none',
+                                                                                                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                                                                                    lineHeight: '1.3'
+                                                                                                }}>
+                                                                                                    <div style={{ color: '#000', fontWeight: '600' }}>
+                                                                                                        {museumToOpen.museum_name}
+                                                                                                    </div>
+                                                                                                    <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                                                                                        {museum.city_name || museum.city}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </foreignObject>
+                                                                                        </g>
+                                                                                    )}
+                                                                                </Marker>
                                                                             );
                                                                         });
                                                                     })()}
@@ -1231,50 +1232,175 @@ export const Interests: React.FC = () => {
                     )}
 
                     {activeTab === 'data' && (
-                        <div className="animate-fadeIn space-y-8">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Data Analysis</h3>
-                                    <p className="text-slate-500 text-lg">Detailed analysis and visualization (formerly Topic 1).</p>
-                                </div>
-                                <div className="flex gap-3">
-                                    <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
-                                        <option>Option A</option>
-                                        <option>Option B</option>
-                                        <option>Option C</option>
-                                    </select>
+                        <div className="animate-fadeIn flex gap-6">
+                            {/* Left Navigation - Similar to Tech Blog */}
+                            <div className="w-64 flex-shrink-0 space-y-3">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Insights</h3>
+                                <div className="space-y-3">
+                                    <div
+                                        onClick={() => setActiveDataTab('urban')}
+                                        className={`
+                                            group cursor-pointer transition-all duration-200
+                                            bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                            hover:bg-orange-50 hover:border-orange-200
+                                            ${activeDataTab === 'urban' ? 'bg-orange-50 border-orange-200' : ''}
+                                        `}
+                                    >
+                                        <p className={`
+                                            text-sm font-medium text-slate-600 truncate
+                                            group-hover:text-orange-600
+                                            ${activeDataTab === 'urban' ? 'text-orange-600' : ''}
+                                        `}>
+                                            Real Estate Time Series
+                                        </p>
+                                    </div>
+                                    <div
+                                        onClick={() => setActiveDataTab('fc26')}
+                                        className={`
+                                            group cursor-pointer transition-all duration-200
+                                            bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                            hover:bg-orange-50 hover:border-orange-200
+                                            ${activeDataTab === 'fc26' ? 'bg-orange-50 border-orange-200' : ''}
+                                        `}
+                                    >
+                                        <p className={`
+                                            text-sm font-medium text-slate-600 truncate
+                                            group-hover:text-orange-600
+                                            ${activeDataTab === 'fc26' ? 'text-orange-600' : ''}
+                                        `}>
+                                            FC Series Data Analytics
+                                        </p>
+                                    </div>
+                                    <div
+                                        onClick={() => setActiveDataTab('weather')}
+                                        className={`
+                                            group cursor-pointer transition-all duration-200
+                                            bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                            hover:bg-orange-50 hover:border-orange-200
+                                            ${activeDataTab === 'weather' ? 'bg-orange-50 border-orange-200' : ''}
+                                        `}
+                                    >
+                                        <p className={`
+                                            text-sm font-medium text-slate-600 truncate
+                                            group-hover:text-orange-600
+                                            ${activeDataTab === 'weather' ? 'text-orange-600' : ''}
+                                        `}>
+                                            Weather & Baseball Relation
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="h-[400px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <ComposedChart data={mockInteractionData}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                                        <XAxis dataKey="pos" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                                        <Tooltip
-                                            contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
-                                        />
-                                        <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                                        <Bar dataKey="enhancer" barSize={30} fill="#FFE0B2" name="Metric A" radius={[4, 4, 0, 0]} />
-                                        <Line type="monotone" dataKey="interaction" stroke="#FFA300" strokeWidth={4} name="Metric B" dot={false} />
-                                    </ComposedChart>
-                                </ResponsiveContainer>
-                            </div>
+                            {/* Right Content Area */}
+                            <div className="flex-1 space-y-8">
+                                {activeDataTab === 'urban' && (
+                                    <>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-slate-900 mb-2">Real Estate Time Series</h3>
+                                                <p className="text-slate-500 text-lg">Detailed analysis and visualization</p>
+                                            </div>
+                                            <div className="flex gap-3">
+                                                <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
+                                                    <option>Option A</option>
+                                                    <option>Option B</option>
+                                                    <option>Option C</option>
+                                                </select>
+                                            </div>
+                                        </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
-                                    <h4 className="font-bold text-orange-900 mb-2">Key Insight 1</h4>
-                                    <p className="text-sm text-orange-800/80">Description of the first key insight derived from the data analysis.</p>
-                                </div>
-                                <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
-                                    <h4 className="font-bold text-orange-900 mb-2">Key Insight 2</h4>
-                                    <p className="text-sm text-orange-800/80">Description of the second key insight derived from the data analysis.</p>
-                                </div>
-                                <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
-                                    <h4 className="font-bold text-orange-900 mb-2">Key Insight 3</h4>
-                                    <p className="text-sm text-orange-800/80">Description of the third key insight derived from the data analysis.</p>
-                                </div>
+                                        <div className="h-[400px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <ComposedChart data={mockInteractionData}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                                                    <XAxis dataKey="pos" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                                                    <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                                                    <Tooltip
+                                                        contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                                                    />
+                                                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                                    <Bar dataKey="enhancer" barSize={30} fill="#FFE0B2" name="Metric A" radius={[4, 4, 0, 0]} />
+                                                    <Line type="monotone" dataKey="interaction" stroke="#FFA300" strokeWidth={4} name="Metric B" dot={false} />
+                                                </ComposedChart>
+                                            </ResponsiveContainer>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+                                                <h4 className="font-bold text-orange-900 mb-2">Key Insight 1</h4>
+                                                <p className="text-sm text-orange-800/80">Description of the first key insight derived from the data analysis.</p>
+                                            </div>
+                                            <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+                                                <h4 className="font-bold text-orange-900 mb-2">Key Insight 2</h4>
+                                                <p className="text-sm text-orange-800/80">Description of the second key insight derived from the data analysis.</p>
+                                            </div>
+                                            <div className="p-6 bg-orange-50 rounded-2xl border border-orange-100">
+                                                <h4 className="font-bold text-orange-900 mb-2">Key Insight 3</h4>
+                                                <p className="text-sm text-orange-800/80">Description of the third key insight derived from the data analysis.</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {activeDataTab === 'weather' && (
+                                    <>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-slate-900 mb-2">Weather & Baseball Relation</h3>
+                                                <p className="text-slate-500 text-lg">Detailed analysis and visualization</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="h-[400px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-center">
+                                            <p className="text-slate-400 text-lg">Weather & Baseball Relation content coming soon...</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                                                <h4 className="font-bold text-blue-900 mb-2">Weather Pattern</h4>
+                                                <p className="text-sm text-blue-800/80">Analysis of weather patterns and their impact.</p>
+                                            </div>
+                                            <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                                                <h4 className="font-bold text-blue-900 mb-2">Baseball Statistics</h4>
+                                                <p className="text-sm text-blue-800/80">Correlation between weather and game outcomes.</p>
+                                            </div>
+                                            <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                                                <h4 className="font-bold text-blue-900 mb-2">Predictive Model</h4>
+                                                <p className="text-sm text-blue-800/80">Machine learning insights for predictions.</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {activeDataTab === 'fc26' && (
+                                    <>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-slate-900 mb-2">FC Series Data Analytics</h3>
+                                                <p className="text-slate-500 text-lg">Detailed analysis and visualization</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="h-[400px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-center">
+                                            <p className="text-slate-400 text-lg">FC Series Data Analytics content coming soon...</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="p-6 bg-green-50 rounded-2xl border border-green-100">
+                                                <h4 className="font-bold text-green-900 mb-2">FC26 Metric 1</h4>
+                                                <p className="text-sm text-green-800/80">Key performance indicator analysis.</p>
+                                            </div>
+                                            <div className="p-6 bg-green-50 rounded-2xl border border-green-100">
+                                                <h4 className="font-bold text-green-900 mb-2">FC26 Metric 2</h4>
+                                                <p className="text-sm text-green-800/80">Trend analysis and forecasting.</p>
+                                            </div>
+                                            <div className="p-6 bg-green-50 rounded-2xl border border-green-100">
+                                                <h4 className="font-bold text-green-900 mb-2">FC26 Metric 3</h4>
+                                                <p className="text-sm text-green-800/80">Comparative analytics and insights.</p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     )}
