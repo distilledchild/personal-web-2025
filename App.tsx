@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, Navigate } from 'react-router-dom';
 import { Dna, Mail, Github, MapPin, Loader2, Plus, X } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ThreeDNA } from './components/ThreeDNA';
 import { Research } from './pages/Research';
 import { Interests } from './pages/Interests';
@@ -309,7 +311,7 @@ const Tech: React.FC = () => {
           post._id === updatedPost._id ? updatedPost : post
         ));
         setIsEditMode(false);
-        setSelectedPost(null);
+        // Keep selectedPost to stay on detail page
       }
     } catch (error) {
       console.error('Failed to update post:', error);
@@ -462,6 +464,37 @@ const Tech: React.FC = () => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  // Strip markdown syntax for preview
+  const stripMarkdown = (markdown: string) => {
+    if (!markdown) return '';
+
+    return markdown
+      // Remove headers (# ## ###)
+      .replace(/^#{1,6}\s+/gm, '')
+      // Remove bold (**text** or __text__)
+      .replace(/(\*\*|__)(.*?)\1/g, '$2')
+      // Remove italic (*text* or _text_)
+      .replace(/(\*|_)(.*?)\1/g, '$2')
+      // Remove links [text](url) -> text
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+      // Remove images ![alt](url)
+      .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
+      // Remove inline code `code`
+      .replace(/`([^`]+)`/g, '$1')
+      // Remove code blocks ```code```
+      .replace(/```[\s\S]*?```/g, '')
+      // Remove blockquotes (>)
+      .replace(/^>\s+/gm, '')
+      // Remove horizontal rules (---, ___, ***)
+      .replace(/^([-_*]){3,}$/gm, '')
+      // Remove list markers (-, *, +, 1.)
+      .replace(/^[\s]*[-*+]\s+/gm, '')
+      .replace(/^[\s]*\d+\.\s+/gm, '')
+      // Remove extra whitespace
+      .replace(/\n\s*\n/g, '\n')
+      .trim();
+  };
+
   return (
     <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
@@ -515,7 +548,7 @@ const Tech: React.FC = () => {
                       {post.title}
                     </h3>
                     <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
-                      {post.content?.substring(0, 150)}...
+                      {stripMarkdown(post.content || '').substring(0, 150)}...
                     </p>
 
                     {/* Footer with likes, date */}
@@ -564,8 +597,51 @@ const Tech: React.FC = () => {
               </h2>
             </div>
             <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
-              <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed whitespace-pre-line">
-                {posts[selectedPost].content}
+              <div className="markdown-content text-slate-700 leading-relaxed">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    // Headings
+                    h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mb-4 mt-6 text-slate-900" {...props} />,
+                    h2: ({ node, ...props }) => <h2 className="text-2xl font-bold mb-3 mt-5 text-slate-900 border-b pb-2" {...props} />,
+                    h3: ({ node, ...props }) => <h3 className="text-xl font-bold mb-2 mt-4 text-slate-900" {...props} />,
+                    h4: ({ node, ...props }) => <h4 className="text-lg font-bold mb-2 mt-3 text-slate-900" {...props} />,
+                    h5: ({ node, ...props }) => <h5 className="text-base font-bold mb-2 mt-3 text-slate-900" {...props} />,
+                    h6: ({ node, ...props }) => <h6 className="text-sm font-bold mb-2 mt-3 text-slate-900" {...props} />,
+                    // Paragraphs
+                    p: ({ node, ...props }) => <p className="mb-4 leading-7" {...props} />,
+                    // Lists
+                    ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 ml-4 space-y-2" {...props} />,
+                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 ml-4 space-y-2" {...props} />,
+                    li: ({ node, ...props }) => <li className="leading-7" {...props} />,
+                    // Links
+                    a: ({ node, ...props }) => <a className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                    // Code
+                    code: ({ node, inline, ...props }: any) =>
+                      inline
+                        ? <code className="bg-slate-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                        : <code className="block bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono mb-4" {...props} />,
+                    pre: ({ node, ...props }) => <pre className="mb-4" {...props} />,
+                    // Blockquotes
+                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-slate-300 pl-4 italic my-4 text-slate-600" {...props} />,
+                    // Horizontal rule
+                    hr: ({ node, ...props }) => <hr className="my-6 border-slate-300" {...props} />,
+                    // Tables
+                    table: ({ node, ...props }) => <table className="min-w-full border-collapse border border-slate-300 mb-4" {...props} />,
+                    thead: ({ node, ...props }) => <thead className="bg-slate-100" {...props} />,
+                    tbody: ({ node, ...props }) => <tbody {...props} />,
+                    tr: ({ node, ...props }) => <tr className="border-b border-slate-300" {...props} />,
+                    th: ({ node, ...props }) => <th className="border border-slate-300 px-4 py-2 text-left font-bold" {...props} />,
+                    td: ({ node, ...props }) => <td className="border border-slate-300 px-4 py-2" {...props} />,
+                    // Images
+                    img: ({ node, ...props }) => <img className="max-w-full h-auto rounded-lg my-4" {...props} />,
+                    // Strong and emphasis
+                    strong: ({ node, ...props }) => <strong className="font-bold text-slate-900" {...props} />,
+                    em: ({ node, ...props }) => <em className="italic" {...props} />,
+                  }}
+                >
+                  {posts[selectedPost].content}
+                </ReactMarkdown>
               </div>
 
               {/* Footer in modal */}
@@ -585,22 +661,6 @@ const Tech: React.FC = () => {
               </div>
 
               <div className={`flex mt-8 ${isAuthor(posts[selectedPost]) ? 'justify-between' : 'justify-start'}`}>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => setSelectedPost(null)}
-                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                  >
-                    Close
-                  </button>
-                  {isAuthor(posts[selectedPost]) && (
-                    <button
-                      onClick={handleEdit}
-                      className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                    >
-                      Update
-                    </button>
-                  )}
-                </div>
                 {isAuthor(posts[selectedPost]) && (
                   <button
                     onClick={handleDelete}
@@ -609,6 +669,20 @@ const Tech: React.FC = () => {
                     Delete
                   </button>
                 )}
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleEdit}
+                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => setSelectedPost(null)}
+                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -658,16 +732,16 @@ const Tech: React.FC = () => {
 
               <div className="flex justify-between mt-8">
                 <button
-                  onClick={handleSave}
-                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                >
-                  Save
-                </button>
-                <button
                   onClick={handleCloseEdit}
                   className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                >
+                  Save
                 </button>
               </div>
             </div>
@@ -1149,7 +1223,7 @@ const Contact: React.FC = () => {
               onClick={handleCopy}
               className="w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100 cursor-pointer text-left"
             >
-              <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
+              <div className="bg-white p-4 rounded-full shadow-sm text-black group-hover:text-[#9332EA] transition-colors">
                 <Mail size={32} />
               </div>
               <div className="ml-6 text-left">
@@ -1159,7 +1233,7 @@ const Contact: React.FC = () => {
             </button>
 
             <a href={`https://${contactInfo?.GitHub}`} target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100">
-              <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
+              <div className="bg-white p-4 rounded-full shadow-sm text-black group-hover:text-black transition-colors">
                 <Github size={32} />
               </div>
               <div className="ml-6 text-left">
@@ -1169,7 +1243,7 @@ const Contact: React.FC = () => {
             </a>
 
             <a href={`https://${contactInfo?.LinkedIn}`} target="_blank" rel="noopener noreferrer" className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100">
-              <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
+              <div className="bg-white p-4 rounded-full shadow-sm text-black group-hover:text-[#2362BC] transition-colors">
                 <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                 </svg>
@@ -1181,7 +1255,7 @@ const Contact: React.FC = () => {
             </a>
 
             <div className="flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100">
-              <div className="bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors">
+              <div className="bg-white p-4 rounded-full shadow-sm text-black group-hover:text-[#DC2726] transition-colors">
                 <MapPin size={32} />
               </div>
               <div className="ml-6 text-left">
