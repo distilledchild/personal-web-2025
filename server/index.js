@@ -5,8 +5,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pkg from 'pg';
-const { Pool } = pkg;
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,10 +77,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-// Postgres connection
-const pool = new Pool({
-    connectionString: process.env.POSTGRES_URL,
-});
+
 
 const stateSchema = new mongoose.Schema({
     code: String,
@@ -1757,70 +1753,7 @@ app.post('/api/workouts/sync', async (req, res) => {
     }
 });
 
-// Create Team Endpoint
-app.post('/api/teams', async (req, res) => {
-    try {
-        const { name, owner_id, description } = req.body;
 
-        if (!name || !owner_id) {
-            return res.status(400).json({ error: 'Name and owner_id are required' });
-        }
-
-        const query = `
-            INSERT INTO "litmers-vibecoding-contest-2025"."teams" (name, owner_id, created_at, description)
-            VALUES ($1, $2, NOW(), $3)
-            RETURNING *
-        `;
-
-        const values = [name, owner_id, description];
-        const result = await pool.query(query, values);
-
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error('Error creating team:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Get User Teams Endpoint
-app.get('/api/teams/user/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        if (!userId) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-
-        const query = `
-            SELECT 
-                t.id AS team_id,
-                t.name AS team_name,
-                t.description,
-                COUNT(DISTINCT tm_all.user_id) AS member_count,
-                COUNT(DISTINCT p.id) AS project_count,
-                tm.role AS my_role
-            FROM "litmers-vibecoding-contest-2025"."teams" t
-            JOIN "litmers-vibecoding-contest-2025"."team_members" tm 
-                ON t.id = tm.team_id
-                AND tm.user_id = $1
-            LEFT JOIN "litmers-vibecoding-contest-2025"."team_members" tm_all 
-                ON t.id = tm_all.team_id
-            LEFT JOIN "litmers-vibecoding-contest-2025"."projects" p 
-                ON t.id = p.team_id 
-                AND p.deleted_at IS NULL
-            WHERE t.deleted_at IS NULL
-            GROUP BY t.id, t.name, t.description, tm.role
-            ORDER BY t.id;
-        `;
-
-        const result = await pool.query(query, [userId]);
-
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Error fetching user teams:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
 
 // Contact Schema
 const contactSchema = new mongoose.Schema({
