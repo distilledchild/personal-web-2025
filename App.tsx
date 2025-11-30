@@ -124,6 +124,8 @@ const Tech: React.FC = () => {
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [isCreateMode, setIsCreateMode] = React.useState(false);
   const [showValidationDialog, setShowValidationDialog] = React.useState(false);
+  const [uploadingImage, setUploadingImage] = React.useState(false);
+  const [isDragging, setIsDragging] = React.useState(false);
 
   React.useEffect(() => {
     // Fetch blog posts
@@ -442,6 +444,72 @@ const Tech: React.FC = () => {
     setIsCreateMode(false);
     setShowDiscardDialog(false);
     setEditData({ category: '', title: '', content: '' });
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:4000'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`${API_URL}/api/tech-blog/upload-image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Insert markdown image syntax at cursor position
+        const imageMarkdown = `\n![${file.name}](${data.url})\n`;
+        setEditData({ ...editData, content: editData.content + imageMarkdown });
+      } else {
+        alert('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      alert('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleImageUpload(files[0]);
+    }
+  };
+
+  // Handle file input change
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleImageUpload(files[0]);
+    }
   };
 
   // Unified Color Theme: All Pink
@@ -843,25 +911,60 @@ const Tech: React.FC = () => {
             </div>
 
             <div className="p-8 overflow-y-auto max-h-[calc(85vh-300px)]">
+              {/* Image Upload Area */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  isDragging
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
+                }`}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label htmlFor="image-upload" className="cursor-pointer">
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    {uploadingImage ? (
+                      <p className="text-blue-600 font-medium">Uploading...</p>
+                    ) : (
+                      <>
+                        <p className="text-slate-600 font-medium">Click to upload or drag and drop</p>
+                        <p className="text-slate-400 text-sm">PNG, JPG, GIF up to 5MB</p>
+                      </>
+                    )}
+                  </div>
+                </label>
+              </div>
+
               <textarea
                 value={editData.content}
                 onChange={(e) => setEditData({ ...editData, content: e.target.value })}
                 className="w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                placeholder="Write your content here..."
+                placeholder="Write your content here... (Images will be inserted as markdown)"
               />
 
-              <div className="flex justify-between mt-8">
-                <button
-                  onClick={handleCreateSave}
-                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                >
-                  Save
-                </button>
+              <div className="flex justify-end gap-4 mt-8">
                 <button
                   onClick={handleCreateCancel}
                   className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={handleCreateSave}
+                  className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                >
+                  Save
                 </button>
               </div>
             </div>

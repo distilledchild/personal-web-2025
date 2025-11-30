@@ -5,6 +5,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -72,6 +73,21 @@ if (process.env.GCP_PROJECT_ID) {
 }
 
 const storage = new Storage(storageConfig);
+
+// Configure multer for memory storage
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        // Accept images only
+        if (!file.mimetype.startsWith('image/')) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
+});
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
@@ -143,16 +159,25 @@ app.get('/api/interests/art-museums', async (req, res) => {
                     // List files in the bucket for this museum
                     const bucket = storage.bucket(GCS_BUCKET_NAME);
                     const [files] = await bucket.getFiles({
-                        prefix: `${museum.museum_code}/`,
+                        prefix: `interests/art/${museum.museum_code}/`,
                         delimiter: '/'
                     });
 
-                    // Filter image files and generate public URLs
-                    artworks = files
+                    // Filter image files and generate signed URLs (valid for 1 hour)
+                    const signedUrlPromises = files
                         .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name))
-                        .map(file => `${GCS_BUCKET_URL}/${file.name}`);
+                        .map(async (file) => {
+                            const [signedUrl] = await file.getSignedUrl({
+                                version: 'v4',
+                                action: 'read',
+                                expires: Date.now() + 60 * 60 * 1000, // 1 hour from now
+                            });
+                            return signedUrl;
+                        });
 
-                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS`);
+                    artworks = await Promise.all(signedUrlPromises);
+
+                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (signed URLs)`);
                 } catch (error) {
                     console.log(`Error reading GCS bucket for ${museum.museum_code}:`, error.message);
                 }
@@ -454,6 +479,55 @@ app.post('/api/tech-blog', async (req, res) => {
         res.status(201).json(newBlog);
     } catch (err) {
         console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Upload image to GCS for Tech Blog
+app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image file provided' });
+        }
+
+        const file = req.file;
+        const timestamp = Date.now();
+        const fileName = `${timestamp}-${file.originalname.replace(/\s+/g, '-')}`;
+        const bucketName = process.env.GCS_BUCKET_NAME || 'distilledchild';
+        const bucket = storage.bucket(bucketName);
+        const blob = bucket.file(`tech/${fileName}`);
+
+        // Create a write stream
+        const blobStream = blob.createWriteStream({
+            resumable: false,
+            metadata: {
+                contentType: file.mimetype,
+            },
+        });
+
+        blobStream.on('error', (err) => {
+            console.error('Upload error:', err);
+            res.status(500).json({ error: 'Failed to upload image' });
+        });
+
+        blobStream.on('finish', async () => {
+            // Make the file public
+            await blob.makePublic();
+
+            // Generate public URL
+            const publicUrl = `https://storage.googleapis.com/${bucketName}/tech/${fileName}`;
+
+            res.json({
+                success: true,
+                url: publicUrl,
+                fileName: fileName
+            });
+        });
+
+        // Write the file buffer to GCS
+        blobStream.end(file.buffer);
+    } catch (err) {
+        console.error('Image upload error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
