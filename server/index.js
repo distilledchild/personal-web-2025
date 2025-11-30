@@ -32,7 +32,9 @@ app.use(express.json());
 
 // Load environment variables
 import dotenv from 'dotenv';
-dotenv.config();
+
+// Load .env from parent directory (project root)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -430,7 +432,7 @@ app.get('/api/travel/states', async (req, res) => {
     }
 });
 
-// Tech Blog Endpoint
+// Tech and Bio Endpoint
 app.get('/api/tech-blog', async (req, res) => {
     try {
         const blogs = await TechBlog.find({ isPublished: true, show: 'Y' })
@@ -442,18 +444,22 @@ app.get('/api/tech-blog', async (req, res) => {
     }
 });
 
-// Create Tech Blog Post
+// Create Tech and Bio Post
 app.post('/api/tech-blog', async (req, res) => {
     try {
+        console.log('[TECH-BLOG] POST request received:', req.body);
+        console.log('[TECH-BLOG] Tags received:', req.body.tags, 'Type:', typeof req.body.tags);
         const { category, title, content, author } = req.body;
 
         if (!category || !title || !content || !author || !author.email) {
+            console.error('[TECH-BLOG] Missing required fields');
             return res.status(400).json({ error: 'Category, title, content, and author are required' });
         }
 
         // Check if user is authorized (distilledchild or wellclouder)
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
         if (!authorizedEmails.includes(author.email)) {
+            console.error('[TECH-BLOG] Unauthorized email:', author.email);
             return res.status(403).json({ error: 'Unauthorized: Only authorized users can create posts' });
         }
 
@@ -472,18 +478,64 @@ app.post('/api/tech-blog', async (req, res) => {
             updatedAt: new Date(),
             isPublished: true,
             show: 'Y',
-            likedBy: []
+            likedBy: [],
+            tags: req.body.tags || []
         });
 
-        await newBlog.save();
-        res.status(201).json(newBlog);
+        const savedBlog = await newBlog.save();
+        console.log('[TECH-BLOG] Post saved successfully:', savedBlog._id);
+        console.log('[TECH-BLOG] Saved tags:', savedBlog.tags);
+        res.status(201).json(savedBlog);
     } catch (err) {
-        console.error(err);
+        console.error('[TECH-BLOG] Error creating post:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// Upload image to GCS for Tech Blog
+// ... (skip upload-image, opal-generate, like)
+
+// Update Tech and Bio Post
+app.put('/api/tech-blog/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(`[TECH-BLOG] PUT request for id: ${id}`, req.body);
+        console.log('[TECH-BLOG] Tags received:', req.body.tags, 'Type:', typeof req.body.tags);
+        const { category, title, content, email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const blog = await TechBlog.findById(id);
+        if (!blog) {
+            console.error('[TECH-BLOG] Post not found:', id);
+            return res.status(404).json({ error: 'Blog post not found' });
+        }
+
+        // Check if user is the author
+        if (blog.author.email !== email) {
+            console.error('[TECH-BLOG] Unauthorized update attempt by:', email);
+            return res.status(403).json({ error: 'Unauthorized: Only author can update' });
+        }
+
+        // Update fields
+        if (category) blog.category = category;
+        if (title) blog.title = title;
+        if (content) blog.content = content;
+        if (req.body.tags) blog.tags = req.body.tags;
+        blog.updatedAt = new Date();
+
+        const updatedBlog = await blog.save();
+        console.log('[TECH-BLOG] Post updated successfully:', updatedBlog._id);
+        console.log('[TECH-BLOG] Updated tags:', updatedBlog.tags);
+        res.json(updatedBlog);
+    } catch (err) {
+        console.error('[TECH-BLOG] Error updating post:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Upload image to GCS for Tech and Bio
 app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
@@ -532,7 +584,61 @@ app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res)
     }
 });
 
-// Like/Unlike Tech Blog Post
+// OPAL Workflow API
+app.post('/api/tech-blog/opal-generate', async (req, res) => {
+    try {
+        const { category, title, content } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ error: 'Title is required for OPAL workflow' });
+        }
+
+        const OPAL_FLOW_ID = process.env.OPAL_FLOW_ID || 'testtest';
+        const OPAL_ACCESS_TOKEN = process.env.OPAL_ACCESS_TOKEN;
+
+        if (!OPAL_ACCESS_TOKEN) {
+            return res.status(500).json({ error: 'OPAL access token not configured' });
+        }
+
+        // Call OPAL API
+        const opalResponse = await fetch(`https://opal.googleapis.com/v1/flows/${OPAL_FLOW_ID}/execute`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${OPAL_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                input: {
+                    topic: title,
+                    style: 'blogpost',
+                    length: 'medium'
+                }
+            })
+        });
+
+        if (!opalResponse.ok) {
+            const errorText = await opalResponse.text();
+            console.error('OPAL API error:', errorText);
+            return res.status(opalResponse.status).json({
+                error: 'OPAL workflow failed',
+                details: errorText
+            });
+        }
+
+        const opalData = await opalResponse.json();
+
+        res.json({
+            success: true,
+            message: 'OPAL workflow executed successfully',
+            data: opalData
+        });
+    } catch (err) {
+        console.error('OPAL workflow error:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
+// Like/Unlike Tech and Bio Post
 app.post('/api/tech-blog/:id/like', async (req, res) => {
     try {
         const { id } = req.params;
@@ -578,41 +684,9 @@ app.post('/api/tech-blog/:id/like', async (req, res) => {
     }
 });
 
-// Update Tech Blog Post
-app.put('/api/tech-blog/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { category, title, content, email } = req.body;
 
-        if (!email) {
-            return res.status(400).json({ error: 'Email is required' });
-        }
 
-        const blog = await TechBlog.findById(id);
-        if (!blog) {
-            return res.status(404).json({ error: 'Blog post not found' });
-        }
-
-        // Check if user is the author
-        if (blog.author.email !== email) {
-            return res.status(403).json({ error: 'Unauthorized: Only author can update' });
-        }
-
-        // Update fields
-        if (category) blog.category = category;
-        if (title) blog.title = title;
-        if (content) blog.content = content;
-        blog.updatedAt = new Date();
-
-        await blog.save();
-        res.json(blog);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Delete (Soft Delete) Tech Blog Post
+// Delete (Soft Delete) Tech and Bio Post
 app.delete('/api/tech-blog/:id', async (req, res) => {
     try {
         const { id } = req.params;

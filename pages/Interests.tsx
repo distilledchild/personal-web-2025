@@ -1233,7 +1233,7 @@ export const Interests: React.FC = () => {
 
                     {activeTab === 'data' && (
                         <div className="animate-fadeIn flex gap-6">
-                            {/* Left Navigation - Similar to Tech Blog */}
+                            {/* Left Navigation - Similar to Tech and Bio */}
                             <div className="w-64 flex-shrink-0 space-y-3">
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Insights</h3>
                                 <div className="space-y-3">
