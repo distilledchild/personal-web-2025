@@ -119,13 +119,17 @@ const Tech: React.FC = () => {
   const [toastMessage, setToastMessage] = React.useState('');
   const [toastPos, setToastPos] = React.useState({ x: 0, y: 0 });
   const [isEditMode, setIsEditMode] = React.useState(false);
-  const [editData, setEditData] = React.useState({ category: '', title: '', content: '' });
+  const [editData, setEditData] = React.useState({ category: '', title: '', content: '', tags: '' });
   const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [isCreateMode, setIsCreateMode] = React.useState(false);
   const [showValidationDialog, setShowValidationDialog] = React.useState(false);
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [useOpal, setUseOpal] = React.useState(false);
+  const [showOpalDialog, setShowOpalDialog] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const postsPerPage = 4;
 
   React.useEffect(() => {
     // Fetch blog posts
@@ -278,11 +282,12 @@ const Tech: React.FC = () => {
 
   // Handle edit button click
   const handleEdit = () => {
-    if (selectedPost !== null && posts[selectedPost]) {
+    if (selectedPost !== null && allPosts[selectedPost]) {
       setEditData({
-        category: posts[selectedPost].category || '',
-        title: posts[selectedPost].title || '',
-        content: posts[selectedPost].content || ''
+        category: allPosts[selectedPost].category || '',
+        title: allPosts[selectedPost].title || '',
+        content: allPosts[selectedPost].content || '',
+        tags: allPosts[selectedPost].tags ? allPosts[selectedPost].tags.join('; ') : ''
       });
       setIsEditMode(true);
     }
@@ -290,18 +295,22 @@ const Tech: React.FC = () => {
 
   // Handle save
   const handleSave = async () => {
-    if (selectedPost === null || !posts[selectedPost]) return;
+    if (selectedPost === null || !allPosts[selectedPost]) return;
 
     try {
       const API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
-      const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
+      const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
+      console.log('[FRONTEND] Sending UPDATE with tags:', tagsArray);
+
+      const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...editData,
+          tags: tagsArray,
           email: user.email
         })
       });
@@ -344,14 +353,14 @@ const Tech: React.FC = () => {
 
   // Handle confirm delete
   const handleConfirmDelete = async () => {
-    if (selectedPost === null || !posts[selectedPost]) return;
+    if (selectedPost === null || !allPosts[selectedPost]) return;
 
     try {
       const API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
-      const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
+      const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -361,7 +370,7 @@ const Tech: React.FC = () => {
 
       if (response.ok) {
         // Remove from local state
-        setBlogPosts(prev => prev.filter(post => post._id !== posts[selectedPost]._id));
+        setBlogPosts(prev => prev.filter(post => post._id !== allPosts[selectedPost]._id));
         setShowDeleteDialog(false);
         setSelectedPost(null);
       }
@@ -383,16 +392,23 @@ const Tech: React.FC = () => {
 
   // Handle create button click
   const handleCreate = () => {
-    setEditData({ category: '', title: '', content: '' });
+    setEditData({ category: '', title: '', content: '', tags: '' });
     setIsCreateMode(true);
   };
 
   // Handle create save
   const handleCreateSave = async () => {
-    // Validation check
-    if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
-      setShowValidationDialog(true);
-      return;
+    // Validation check (relaxed for OPAL - only title required)
+    if (useOpal) {
+      if (!editData.title.trim()) {
+        setShowValidationDialog(true);
+        return;
+      }
+    } else {
+      if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
+        setShowValidationDialog(true);
+        return;
+      }
     }
 
     try {
@@ -400,28 +416,56 @@ const Tech: React.FC = () => {
         ? 'http://localhost:4000'
         : 'https://personal-web-2025-production.up.railway.app';
 
-      const response = await fetch(`${API_URL}/api/tech-blog`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...editData,
-          author: {
-            name: user.name,
-            email: user.email,
-            avatar: user.picture
-          }
-        })
-      });
+      // If OPAL is checked, call OPAL API
+      if (useOpal) {
+        const opalResponse = await fetch(`${API_URL}/api/tech-blog/opal-generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: editData.category,
+            title: editData.title,
+            content: editData.content
+          })
+        });
 
-      if (response.ok) {
-        const newPost = await response.json();
-        // Add to local state
-        setBlogPosts(prev => [newPost, ...prev]);
-        setIsCreateMode(false);
-        setEditData({ category: '', title: '', content: '' });
+        if (opalResponse.ok) {
+          // Show success dialog
+          setShowOpalDialog(true);
+        } else {
+          const errorData = await opalResponse.json();
+          alert(`OPAL workflow failed: ${errorData.error || 'Unknown error'}`);
+        }
+      } else {
+        // Normal save (unchecked OPAL)
+        const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
+        console.log('[FRONTEND] Sending CREATE with tags:', tagsArray);
+
+        const response = await fetch(`${API_URL}/api/tech-blog`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...editData,
+            tags: tagsArray,
+            author: {
+              name: user.name,
+              email: user.email,
+              avatar: user.picture
+            }
+          })
+        });
+
+        if (response.ok) {
+          const newPost = await response.json();
+          // Add to local state
+          setBlogPosts(prev => [newPost, ...prev]);
+          setIsCreateMode(false);
+          setEditData({ category: '', title: '', content: '', tags: '' });
+          setUseOpal(false);
+        }
       }
     } catch (error) {
       console.error('Failed to create post:', error);
+      alert('Failed to save post. Please try again.');
     }
   };
 
@@ -435,7 +479,7 @@ const Tech: React.FC = () => {
     } else {
       // No content, just close
       setIsCreateMode(false);
-      setEditData({ category: '', title: '', content: '' });
+      setEditData({ category: '', title: '', content: '', tags: '' });
     }
   };
 
@@ -443,7 +487,26 @@ const Tech: React.FC = () => {
   const handleDiscardCreate = () => {
     setIsCreateMode(false);
     setShowDiscardDialog(false);
-    setEditData({ category: '', title: '', content: '' });
+    setEditData({ category: '', title: '', content: '', tags: '' });
+  };
+
+  // Handle tag input with auto-formatting
+  const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val.endsWith(' ') && !val.endsWith('; ')) {
+      setEditData({ ...editData, tags: val.trim() + '; ' });
+    } else {
+      setEditData({ ...editData, tags: val });
+    }
+  };
+
+  // Handle tag input blur to remove trailing semicolon
+  const handleTagBlur = () => {
+    let val = editData.tags.trim();
+    if (val.endsWith(';')) {
+      val = val.slice(0, -1);
+    }
+    setEditData({ ...editData, tags: val });
   };
 
   // Handle image upload
@@ -469,9 +532,9 @@ const Tech: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // Insert markdown image syntax at cursor position
-        const imageMarkdown = `\n![${file.name}](${data.url})\n`;
-        setEditData({ ...editData, content: editData.content + imageMarkdown });
+        // Insert markdown image syntax at the beginning of content (after title)
+        const imageMarkdown = `![${file.name}](${data.url})\n\n`;
+        setEditData({ ...editData, content: imageMarkdown + editData.content });
       } else {
         alert('Failed to upload image');
       }
@@ -521,10 +584,27 @@ const Tech: React.FC = () => {
   ];
 
   // Combine blog posts with themes
-  const posts = blogPosts.map((post, i) => ({
+  const allPosts = blogPosts.map((post, i) => ({
     ...post,
     ...colorThemes[i % colorThemes.length]
   }));
+
+  // Pagination logic
+  const totalPages = Math.ceil(allPosts.length / postsPerPage);
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const posts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Get global index for selectedPost (since posts is now paginated)
+  const getGlobalIndex = (localIndex: number) => {
+    return indexOfFirstPost + localIndex;
+  };
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    setSelectedPost(null); // Close any open post when changing pages
+  };
 
   // Format date helper
   const formatDate = (dateString: string) => {
@@ -537,20 +617,20 @@ const Tech: React.FC = () => {
     if (!markdown) return '';
 
     return markdown
+      // Remove images ![alt](url) - MUST be before links to avoid conflicts
+      .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
       // Remove headers (# ## ###)
       .replace(/^#{1,6}\s+/gm, '')
+      // Remove code blocks ```code``` - MUST be before inline code
+      .replace(/```[\s\S]*?```/g, '')
+      // Remove inline code `code`
+      .replace(/`([^`]+)`/g, '$1')
+      // Remove links [text](url) -> text
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       // Remove bold (**text** or __text__)
       .replace(/(\*\*|__)(.*?)\1/g, '$2')
       // Remove italic (*text* or _text_)
       .replace(/(\*|_)(.*?)\1/g, '$2')
-      // Remove links [text](url) -> text
-      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
-      // Remove images ![alt](url)
-      .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
-      // Remove inline code `code`
-      .replace(/`([^`]+)`/g, '$1')
-      // Remove code blocks ```code```
-      .replace(/```[\s\S]*?```/g, '')
       // Remove blockquotes (>)
       .replace(/^>\s+/gm, '')
       // Remove horizontal rules (---, ___, ***)
@@ -558,96 +638,186 @@ const Tech: React.FC = () => {
       // Remove list markers (-, *, +, 1.)
       .replace(/^[\s]*[-*+]\s+/gm, '')
       .replace(/^[\s]*\d+\.\s+/gm, '')
-      // Remove extra whitespace
-      .replace(/\n\s*\n/g, '\n')
+      // Remove extra whitespace and newlines
+      .replace(/\n\s*\n/g, ' ')
+      .replace(/\s+/g, ' ')
       .trim();
   };
 
   return (
-    <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
-        <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech Blog</h2>
+    <>
+      <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
+          <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech & Bio</h2>
 
-        {loading ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-slate-400">Loading posts...</div>
-          </div>
-        ) : posts.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-slate-400">No blog posts found.</div>
-          </div>
-        ) : (
-          <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
-            {/* Sidebar TOC */}
-            <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Latest Posts</h3>
-              {posts.map((post, i) => (
-                <div
-                  key={post._id || i}
-                  onClick={() => setSelectedPost(i)}
-                  className={`
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-slate-400">Loading posts...</div>
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-slate-400">No posts found.</div>
+            </div>
+          ) : (
+            <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+              {/* Sidebar TOC */}
+              {/* Sidebar TOC */}
+              <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Latest Posts</h3>
+                <hr className="border-slate-200 my-2" />
+
+                {/* Tech Section */}
+                <h4 className="text-sm font-bold text-pink-500 mb-2">Tech</h4>
+                {allPosts
+                  .map((post, index) => ({ ...post, originalIndex: index }))
+                  .filter(post => post.category === 'Computer Science')
+                  .slice(0, 3)
+                  .map((post) => (
+                    <div
+                      key={post._id || post.originalIndex}
+                      onClick={() => setSelectedPost(post.originalIndex)}
+                      className={`
                     group cursor-pointer transition-all duration-200
                     bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                     hover:${post.color} hover:${post.borderColor}
                   `}
-                >
-                  <p className={`
+                    >
+                      <p className={`
                     text-sm font-medium text-slate-600 truncate
                     group-hover:${post.textColor}
                   `}>
-                    {post.title}
-                  </p>
-                </div>
-              ))}
-            </div>
+                        {post.title}
+                      </p>
+                    </div>
+                  ))}
 
-            {/* Grid */}
-            <div className="hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
-              {posts.map((post, i) => (
-                <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
-                  {/* Header */}
-                  <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
-                    <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="p-5 flex-1 flex flex-col min-h-0">
-                    <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
-                      {stripMarkdown(post.content || '').substring(0, 150)}...
-                    </p>
+                <hr className="border-slate-200 my-4" />
 
-                    {/* Footer with likes, date */}
-                    <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xl ${isLikedByUser(post) ? 'text-red-500' : 'text-gray-400'}`}>
-                          {isLikedByUser(post) ? '❤️' : '🤍'}
-                        </span>
-                        <span className="font-medium text-slate-700">{post.likes || 0}</span>
+                {/* Bio Section */}
+                <h4 className="text-sm font-bold text-pink-500 mb-2">Bio</h4>
+                {allPosts
+                  .map((post, index) => ({ ...post, originalIndex: index }))
+                  .filter(post => post.category === 'Biology')
+                  .slice(0, 3)
+                  .map((post) => (
+                    <div
+                      key={post._id || post.originalIndex}
+                      onClick={() => setSelectedPost(post.originalIndex)}
+                      className={`
+                    group cursor-pointer transition-all duration-200
+                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                    hover:${post.color} hover:${post.borderColor}
+                  `}
+                    >
+                      <p className={`
+                    text-sm font-medium text-slate-600 truncate
+                    group-hover:${post.textColor}
+                  `}>
+                        {post.title}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Grid */}
+              <div className="hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+                {posts.map((post, i) => (
+                  <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+                    {/* Header */}
+                    <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
+                        {post.category}
+                      </span>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col min-h-0">
+                      <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
+                        {stripMarkdown(post.content || '').substring(0, 150)}...
+                      </p>
+
+                      {/* Footer with likes, date */}
+                      <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xl ${isLikedByUser(post) ? 'text-red-500' : 'text-gray-400'}`}>
+                            {isLikedByUser(post) ? '❤️' : '🤍'}
+                          </span>
+                          <span className="font-medium text-slate-700">{post.likes || 0}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>{formatDate(post.createdAt)}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span>{formatDate(post.createdAt)}</span>
+
+                      <div className="mt-4 flex items-center justify-between">
+                        <button
+                          onClick={() => setSelectedPost(getGlobalIndex(i))}
+                          className={`text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors flex items-center gap-1`}
+                        >
+                          Read Article &rarr;
+                        </button>
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex gap-1">
+                            {post.tags.slice(0, 3).map((tag: string, idx: number) => (
+                              <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-
-                    <button
-                      onClick={() => setSelectedPost(i)}
-                      className={`mt-4 text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors self-start flex items-center gap-1`}
-                    >
-                      Read Article &rarr;
-                    </button>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && allPosts.length > postsPerPage && (
+            <div className="flex justify-center items-center gap-2 mt-6 pb-4 flex-shrink-0">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
+              >
+                Previous
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
+                    ? 'bg-pink-500 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal Popup - View/Edit Mode */}
-      {selectedPost !== null && posts[selectedPost] && !isEditMode && (
+      {selectedPost !== null && allPosts[selectedPost] && !isEditMode && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modalBackdrop"
           onClick={() => setSelectedPost(null)}
@@ -656,12 +826,12 @@ const Tech: React.FC = () => {
             className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl animate-modalContent"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`${posts[selectedPost].color} p-8`}>
-              <span className={`text-xs font-bold uppercase tracking-wider ${posts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}>
-                {posts[selectedPost].category}
+            <div className={`${allPosts[selectedPost].color} p-8`}>
+              <span className={`text-xs font-bold uppercase tracking-wider ${allPosts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}>
+                {allPosts[selectedPost].category}
               </span>
               <h2 className="text-3xl font-bold text-slate-900 mt-4">
-                {posts[selectedPost].title}
+                {allPosts[selectedPost].title}
               </h2>
             </div>
             <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
@@ -708,28 +878,41 @@ const Tech: React.FC = () => {
                     em: ({ node, ...props }) => <em className="italic" {...props} />,
                   }}
                 >
-                  {posts[selectedPost].content}
+                  {allPosts[selectedPost].content}
                 </ReactMarkdown>
               </div>
 
+              {/* Tags Section */}
+              {allPosts[selectedPost].tags && allPosts[selectedPost].tags.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-slate-200">
+                  <div className="flex flex-wrap gap-2">
+                    {allPosts[selectedPost].tags.map((tag: string, idx: number) => (
+                      <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Footer in modal */}
-              <div className="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between">
+              <div className={`mt-4 flex items-center justify-between ${!allPosts[selectedPost].tags || allPosts[selectedPost].tags.length === 0 ? 'pt-6 border-t border-slate-200' : ''}`}>
                 <button
-                  onClick={(e) => handleLike(posts[selectedPost]._id, e)}
+                  onClick={(e) => handleLike(allPosts[selectedPost]._id, e)}
                   className="flex items-center gap-3 cursor-pointer hover:scale-110 transition-transform"
                 >
-                  <span className={`text-2xl ${isLikedByUser(posts[selectedPost]) ? 'text-red-500' : 'text-gray-400'}`}>
-                    {isLikedByUser(posts[selectedPost]) ? '❤️' : '🤍'}
+                  <span className={`text-2xl ${isLikedByUser(allPosts[selectedPost]) ? 'text-red-500' : 'text-gray-400'}`}>
+                    {isLikedByUser(allPosts[selectedPost]) ? '❤️' : '🤍'}
                   </span>
-                  <span className="font-medium text-slate-700 text-base">{posts[selectedPost].likes || 0}</span>
+                  <span className="font-medium text-slate-700 text-base">{allPosts[selectedPost].likes || 0}</span>
                 </button>
                 <div className="flex items-center gap-3">
-                  <span className="text-slate-500">{formatDate(posts[selectedPost].createdAt)}</span>
+                  <span className="text-slate-500">{formatDate(allPosts[selectedPost].createdAt)}</span>
                 </div>
               </div>
 
-              <div className={`flex mt-8 ${isAuthor(posts[selectedPost]) ? 'justify-between' : 'justify-start'}`}>
-                {isAuthor(posts[selectedPost]) && (
+              <div className={`flex mt-8 ${isAuthor(allPosts[selectedPost]) ? 'justify-between' : 'justify-start'}`}>
+                {isAuthor(allPosts[selectedPost]) && (
                   <button
                     onClick={handleDelete}
                     className="px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
@@ -758,7 +941,7 @@ const Tech: React.FC = () => {
       )}
 
       {/* Edit Mode Modal */}
-      {selectedPost !== null && posts[selectedPost] && isEditMode && (
+      {selectedPost !== null && allPosts[selectedPost] && isEditMode && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={(e) => e.stopPropagation()}
@@ -767,16 +950,20 @@ const Tech: React.FC = () => {
             className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl relative"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`${posts[selectedPost].color} p-8`}>
+            <div className={`${allPosts[selectedPost].color} p-8`}>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-bold text-slate-700 w-24">Category:</label>
-                  <input
-                    type="text"
+                  <select
                     value={editData.category}
                     onChange={(e) => setEditData({ ...editData, category: e.target.value })}
                     className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                    title="Select post category"
+                  >
+                    <option value="">Select category...</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Computer Science">Computer Science</option>
+                  </select>
                 </div>
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-bold text-slate-700 w-24">Title:</label>
@@ -787,15 +974,60 @@ const Tech: React.FC = () => {
                     className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">Tags:</label>
+                  <input
+                    type="text"
+                    value={editData.tags}
+                    onChange={handleTagInput}
+                    onBlur={handleTagBlur}
+                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="tag1; tag2; tag3"
+                  />
+                </div>
               </div>
             </div>
 
             <div className="p-8 overflow-y-auto max-h-[calc(85vh-300px)]">
+              {/* Image Upload Area */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
+                  }`}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="image-upload-edit"
+                />
+                <label htmlFor="image-upload-edit" className="cursor-pointer">
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    {uploadingImage ? (
+                      <p className="text-blue-600 font-medium">Uploading...</p>
+                    ) : (
+                      <>
+                        <p className="text-slate-600 font-medium">Click to upload or drag and drop</p>
+                        <p className="text-slate-400 text-sm">PNG, JPG, GIF up to 5MB</p>
+                      </>
+                    )}
+                  </div>
+                </label>
+              </div>
+
               <textarea
                 value={editData.content}
                 onChange={(e) => setEditData({ ...editData, content: e.target.value })}
                 className="w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                placeholder="Content..."
+                placeholder="Write your content here... (Images will be inserted as markdown)"
               />
 
               <div className="flex justify-between mt-8">
@@ -856,7 +1088,7 @@ const Tech: React.FC = () => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
             <h3 className="text-xl font-bold text-slate-900 mb-4">Delete Post Permanently?</h3>
-            <p className="text-slate-600 mb-6">This action will permanently delete this blog post. Are you sure you want to continue?</p>
+            <p className="text-slate-600 mb-6">This action will permanently delete this post. Are you sure you want to continue?</p>
             <div className="flex gap-4 justify-end">
               <button
                 onClick={handleCancelDelete}
@@ -889,13 +1121,16 @@ const Tech: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-bold text-slate-700 w-24">Category:</label>
-                  <input
-                    type="text"
+                  <select
                     value={editData.category}
                     onChange={(e) => setEditData({ ...editData, category: e.target.value })}
                     className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Technology, Tutorial, etc."
-                  />
+                    title="Select post category"
+                  >
+                    <option value="">Select category...</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Computer Science">Computer Science</option>
+                  </select>
                 </div>
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-bold text-slate-700 w-24">Title:</label>
@@ -907,6 +1142,32 @@ const Tech: React.FC = () => {
                     placeholder="Enter post title..."
                   />
                 </div>
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">Tags:</label>
+                  <input
+                    type="text"
+                    value={editData.tags}
+                    onChange={handleTagInput}
+                    onBlur={handleTagBlur}
+                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="tag1; tag2; tag3"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-bold text-slate-700 w-24">OPAL:</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="use-opal"
+                      checked={useOpal}
+                      onChange={(e) => setUseOpal(e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <label htmlFor="use-opal" className="text-sm text-slate-600 cursor-pointer">
+                      Use OPAL workflow to generate content
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -916,11 +1177,10 @@ const Tech: React.FC = () => {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                  isDragging
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
-                }`}
+                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
+                  }`}
               >
                 <input
                   type="file"
@@ -972,6 +1232,30 @@ const Tech: React.FC = () => {
         </div>
       )}
 
+      {/* OPAL Success Dialog */}
+      {showOpalDialog && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">✅</span>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Request Sent to OPAL</h3>
+            <p className="text-slate-600 mb-8">Your request has been successfully sent to the OPAL workflow.</p>
+            <button
+              onClick={() => {
+                setShowOpalDialog(false);
+                setIsCreateMode(false);
+                setEditData({ category: '', title: '', content: '' });
+                setUseOpal(false);
+              }}
+              className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Validation Dialog */}
       {showValidationDialog && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
@@ -1015,7 +1299,7 @@ const Tech: React.FC = () => {
           {toastMessage}
         </div>
       )}
-    </div>
+    </>
   );
 };
 
@@ -1626,7 +1910,7 @@ const Layout: React.FC = () => {
                 Research
               </Link>
               <Link to="/tech" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
-                Tech
+                Blog
               </Link>
               <Link to="/interests/travel" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
                 Interests
@@ -1664,7 +1948,7 @@ const Layout: React.FC = () => {
           />
           <LiquidTab
             to="/tech"
-            label="Tech"
+            label="Blog"
             active={location.pathname === '/tech'}
             colorClass="text-pink-500 hover:text-pink-300"
           />
