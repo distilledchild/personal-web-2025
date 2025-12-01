@@ -47,61 +47,549 @@ const Home: React.FC = () => (
 
 
 const Test: React.FC = () => {
-  const [userData, setUserData] = React.useState<any>(null);
+  const [todos, setTodos] = React.useState<any[]>([]);
+  const [user, setUser] = React.useState<any>(null);
+  const [isAuthorized, setIsAuthorized] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
+  const [newTodo, setNewTodo] = React.useState({
+    title: '',
+    description: '',
+    priority: 'medium',
+    due_date: ''
+  });
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [editingTodos, setEditingTodos] = React.useState<{ [key: string]: any }>({});
+  const [showSuccessPopup, setShowSuccessPopup] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState('');
 
   React.useEffect(() => {
-    const stored = localStorage.getItem('user_profile');
-    if (stored) {
+    // Get user data
+    const userData = localStorage.getItem('user_profile');
+    if (userData) {
       try {
-        setUserData(JSON.parse(stored));
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+
+        // Check authorization
+        const API_URL = window.location.hostname === 'localhost'
+          ? 'http://localhost:4000'
+          : 'https://personal-web-2025-production.up.railway.app';
+
+        fetch(`${API_URL}/api/member/role/${parsedUser.email}`)
+          .then(res => res.json())
+          .then(data => {
+            setIsAuthorized(data.authorized);
+          });
       } catch (e) {
         console.error('Failed to parse user data', e);
       }
     }
+
+    // Fetch todos
+    fetchTodos();
   }, []);
+
+  const fetchTodos = async () => {
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:4000'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/todos`);
+      if (response.ok) {
+        const data = await response.json();
+        setTodos(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch todos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateTodo = async () => {
+    if (!user || !user.email) {
+      alert('Please login to create a TODO');
+      return;
+    }
+
+    if (!newTodo.title.trim() || !newTodo.description.trim()) {
+      alert('Title and Description are required');
+      return;
+    }
+
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:4000'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/todos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newTodo,
+          email: user.email
+        })
+      });
+
+      if (response.ok) {
+        const createdTodo = await response.json();
+        setTodos([createdTodo, ...todos]);
+        setShowCreateModal(false);
+        setNewTodo({ title: '', description: '', priority: 'medium', due_date: '' });
+      }
+    } catch (error) {
+      console.error('Failed to create todo:', error);
+    }
+  };
+
+  const handleStatusChange = (todoId: string, newStatus: string) => {
+    setEditingTodos({
+      ...editingTodos,
+      [todoId]: {
+        ...editingTodos[todoId],
+        status: newStatus
+      }
+    });
+  };
+
+  const handlePriorityChange = (todoId: string, newPriority: string) => {
+    setEditingTodos({
+      ...editingTodos,
+      [todoId]: {
+        ...editingTodos[todoId],
+        priority: newPriority
+      }
+    });
+  };
+
+  const handleDeadlineChange = (todoId: string, newDeadline: string) => {
+    setEditingTodos({
+      ...editingTodos,
+      [todoId]: {
+        ...editingTodos[todoId],
+        due_date: newDeadline
+      }
+    });
+  };
+
+  const handleUpdateTodo = async (todoId: string) => {
+    if (!user || !user.email) {
+      alert('Please login to update TODO');
+      return;
+    }
+
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:4000'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const editedData = editingTodos[todoId] || {};
+      const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          ...editedData
+        })
+      });
+
+      if (response.ok) {
+        const updatedTodo = await response.json();
+        setTodos(todos.map(t => t._id === todoId ? updatedTodo : t));
+        // Clear editing state for this todo
+        const newEditingTodos = { ...editingTodos };
+        delete newEditingTodos[todoId];
+        setEditingTodos(newEditingTodos);
+        // Show success message
+        setSuccessMessage('TODO has been updated successfully!');
+        setShowSuccessPopup(true);
+      }
+    } catch (error) {
+      console.error('Failed to update todo:', error);
+    }
+  };
+
+  const handleDeleteTodo = async (todoId: string) => {
+    if (!user || !user.email) {
+      alert('Please login to delete TODO');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this TODO?')) {
+      return;
+    }
+
+    try {
+      const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:4000'
+        : 'https://personal-web-2025-production.up.railway.app';
+
+      const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email
+        })
+      });
+
+      if (response.ok) {
+        setTodos(todos.filter(t => t._id !== todoId));
+        // Show success message
+        setSuccessMessage('TODO has been deleted successfully!');
+        setShowSuccessPopup(true);
+      }
+    } catch (error) {
+      console.error('Failed to delete todo:', error);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  // Get dates with todos for calendar highlighting
+  const todoDates = todos.map(todo => {
+    if (todo.due_date) {
+      const date = new Date(todo.due_date);
+      return date.toDateString();
+    }
+    return null;
+  }).filter(Boolean);
+
+  const renderCalendar = () => {
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    const today = new Date();
+    const todayString = today.toDateString();
+
+    const days = [];
+    // Empty cells before first day
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(<div key={`empty-${i}`} className="h-12"></div>);
+    }
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDate = new Date(year, month, day);
+      const dateString = currentDate.toDateString();
+      const hasTodo = todoDates.includes(dateString);
+      const isToday = dateString === todayString;
+
+      days.push(
+        <div
+          key={day}
+          className={`h-12 flex items-center justify-center rounded-lg cursor-pointer transition-colors ${hasTodo ? 'bg-blue-100 text-blue-700 font-bold' : 'hover:bg-slate-100'
+            } ${isToday ? 'border-2 border-gray-500 rounded-full' : ''}`}
+        >
+          {day}
+        </div>
+      );
+    }
+
+    return days;
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'text-red-600 font-bold';
+      case 'medium': return 'text-yellow-600 font-medium';
+      case 'low': return 'text-green-600';
+      default: return 'text-slate-600';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-50 border-green-200';
+      case 'in_progress': return 'bg-blue-50 border-blue-200';
+      case 'cancelled': return 'bg-red-50 border-red-200';
+      default: return 'bg-slate-50 border-slate-200';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-20 px-6 animate-fadeIn">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-slate-900 mb-12 text-center border-b border-slate-100 pb-6">
-          OAuth User Data Test
+          TODO
         </h2>
 
-        {userData ? (
-          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-200">
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">Logged In User Data:</h3>
-            <pre className="bg-slate-900 text-green-400 p-6 rounded-lg overflow-auto text-sm font-mono">
-              {JSON.stringify(userData, null, 2)}
-            </pre>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-slate-500">Loading...</p>
+          </div>
+        ) : (
+          <div className="flex gap-8">
+            {/* Left: Calendar */}
+            <div className="w-1/3">
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <button
+                    onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1))}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    ←
+                  </button>
+                  <h3 className="text-lg font-bold text-slate-900">
+                    {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </h3>
+                  <button
+                    onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1))}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="grid grid-cols-7 gap-2 mb-2">
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="text-xs font-bold text-slate-500 text-center">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-2">
+                  {renderCalendar()}
+                </div>
+              </div>
+            </div>
 
-            <div className="mt-8 space-y-4">
-              <div className="flex items-center gap-4">
-                <span className="font-bold text-slate-700 w-32">Name:</span>
-                <span className="text-slate-900">{userData.name || 'N/A'}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="font-bold text-slate-700 w-32">Email:</span>
-                <span className="text-slate-900">{userData.email || 'N/A'}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="font-bold text-slate-700 w-32">User ID:</span>
-                <span className="text-slate-900 font-mono text-sm">{userData.sub || userData.id || 'N/A'}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="font-bold text-slate-700 w-32">Avatar:</span>
-                {userData.picture && (
-                  <img src={userData.picture} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-slate-300" />
-                )}
-              </div>
-              <div className="flex items-start gap-4">
-                <span className="font-bold text-slate-700 w-32">Avatar URL:</span>
-                <span className="text-slate-900 text-xs font-mono break-all">{userData.picture || 'N/A'}</span>
+            {/* Right: TODO Table */}
+            <div className="flex-1 max-w-6xl">
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <table className="w-full">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-bold text-slate-700">Title</th>
+                      <th className="px-4 py-3 text-left text-sm font-bold text-slate-700">Description</th>
+                      <th className="px-4 py-3 text-left text-sm font-bold text-slate-700">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-bold text-slate-700">Priority</th>
+                      <th className="px-4 py-3 text-left text-sm font-bold text-slate-700">Deadline</th>
+                      <th className="px-4 py-3 text-center text-sm font-bold text-slate-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {todos.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-12 text-center text-slate-500">
+                          No TODO items found
+                        </td>
+                      </tr>
+                    ) : (
+                      todos.map((todo) => {
+                        const editedTodo = editingTodos[todo._id] || {};
+                        const currentStatus = editedTodo.status !== undefined ? editedTodo.status : todo.status;
+                        const currentPriority = editedTodo.priority !== undefined ? editedTodo.priority : todo.priority;
+                        const currentDueDate = editedTodo.due_date !== undefined ? editedTodo.due_date : todo.due_date;
+                        const isStrikethrough = currentStatus === 'completed' || currentStatus === 'cancelled';
+
+                        // Check if there are any changes
+                        const hasChanges = (
+                          (editedTodo.status !== undefined && editedTodo.status !== todo.status) ||
+                          (editedTodo.priority !== undefined && editedTodo.priority !== todo.priority) ||
+                          (editedTodo.due_date !== undefined && editedTodo.due_date !== todo.due_date)
+                        );
+
+                        return (
+                          <tr key={todo._id} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${getStatusColor(currentStatus)}`}>
+                            <td className={`px-4 py-3 ${isStrikethrough ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                              {todo.title}
+                            </td>
+                            <td className={`px-4 py-3 ${isStrikethrough ? 'line-through text-slate-400' : 'text-slate-600'} text-sm`}>
+                              {todo.description}
+                            </td>
+                            <td className="px-4 py-3">
+                              <select
+                                value={currentStatus}
+                                onChange={(e) => handleStatusChange(todo._id, e.target.value)}
+                                className="px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                aria-label="Change status"
+                                title="Change status"
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                            </td>
+                            <td className="px-4 py-3">
+                              <select
+                                value={currentPriority}
+                                onChange={(e) => handlePriorityChange(todo._id, e.target.value)}
+                                className={`px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${getPriorityColor(currentPriority)}`}
+                                aria-label="Change priority"
+                                title="Change priority"
+                              >
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                              </select>
+                            </td>
+                            <td className="px-4 py-3">
+                              <input
+                                type="date"
+                                value={currentDueDate ? new Date(currentDueDate).toISOString().split('T')[0] : ''}
+                                onChange={(e) => handleDeadlineChange(todo._id, e.target.value)}
+                                className="px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                aria-label="Change deadline"
+                                title="Change deadline"
+                              />
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex gap-2 justify-center">
+                                <button
+                                  onClick={() => handleUpdateTodo(todo._id)}
+                                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${hasChanges
+                                      ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                  title="Update TODO"
+                                  disabled={!hasChanges}
+                                >
+                                  Update
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteTodo(todo._id)}
+                                  className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
+                                  title="Delete TODO"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-slate-500 text-lg">No user logged in. Please login with Google OAuth.</p>
+        )}
+
+        {/* Create Button (Admin/Editor only) */}
+        {isAuthorized && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40"
+            title="Create new TODO"
+          >
+            <Plus size={28} />
+          </button>
+        )}
+
+        {/* Create Modal */}
+        {showCreateModal && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowCreateModal(false)}
+          >
+            <div
+              className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">Create New TODO</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Title *</label>
+                  <input
+                    type="text"
+                    value={newTodo.title}
+                    onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter title"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Description *</label>
+                  <textarea
+                    value={newTodo.description}
+                    onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
+                    placeholder="Enter description"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Priority</label>
+                  <select
+                    value={newTodo.priority}
+                    onChange={(e) => setNewTodo({ ...newTodo, priority: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Select priority"
+                    title="Select priority"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Deadline</label>
+                  <input
+                    type="date"
+                    value={newTodo.due_date}
+                    onChange={(e) => setNewTodo({ ...newTodo, due_date: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Select deadline"
+                    title="Select deadline"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 mt-8">
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setNewTodo({ title: '', description: '', priority: 'medium', due_date: '' });
+                  }}
+                  className="px-6 py-3 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateTodo}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Popup */}
+        {showSuccessPopup && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowSuccessPopup(false)}
+          >
+            <div
+              className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Success</h3>
+              <p className="text-slate-600 mb-6">{successMessage}</p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowSuccessPopup(false)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -524,6 +1012,8 @@ const Tech: React.FC = () => {
 
       const formData = new FormData();
       formData.append('image', file);
+      // Add category for server-side path determination
+      formData.append('category', editData.category);
 
       const response = await fetch(`${API_URL}/api/tech-blog/upload-image`, {
         method: 'POST',
@@ -670,7 +1160,7 @@ const Tech: React.FC = () => {
                 <h4 className="text-sm font-bold text-pink-500 mb-2">Tech</h4>
                 {allPosts
                   .map((post, index) => ({ ...post, originalIndex: index }))
-                  .filter(post => post.category === 'Computer Science')
+                  .filter(post => post.category === 'Tech')
                   .slice(0, 3)
                   .map((post) => (
                     <div
@@ -962,7 +1452,7 @@ const Tech: React.FC = () => {
                   >
                     <option value="">Select category...</option>
                     <option value="Biology">Biology</option>
-                    <option value="Computer Science">Computer Science</option>
+                    <option value="Tech">Tech</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-4">
@@ -1129,7 +1619,7 @@ const Tech: React.FC = () => {
                   >
                     <option value="">Select category...</option>
                     <option value="Biology">Biology</option>
-                    <option value="Computer Science">Computer Science</option>
+                    <option value="Tech">Tech</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-4">
@@ -1912,7 +2402,7 @@ const Layout: React.FC = () => {
               <Link to="/tech" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
                 Blog
               </Link>
-              <Link to="/interests/travel" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
+              <Link to="/interests/data" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
                 Interests
               </Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2">
@@ -1929,7 +2419,7 @@ const Layout: React.FC = () => {
           {window.location.hostname === 'localhost' && (
             <LiquidTab
               to="/test"
-              label="Test"
+              label="TODO"
               active={location.pathname === '/test'}
               colorClass="text-gray-500 hover:text-gray-300"
             />
@@ -1953,7 +2443,7 @@ const Layout: React.FC = () => {
             colorClass="text-pink-500 hover:text-pink-300"
           />
           <LiquidTab
-            to="/interests/travel"
+            to="/interests/data"
             label="Interests"
             active={location.pathname.startsWith('/interests')}
             colorClass="text-[#FFA300] hover:text-[#FFD180]"
@@ -1974,7 +2464,7 @@ const Layout: React.FC = () => {
         <Route path="/research" element={<Navigate to="/research/peinteractions" replace />} />
         <Route path="/research/:submenu" element={<Research />} />
         <Route path="/tech" element={<Tech />} />
-        <Route path="/interests" element={<Navigate to="/interests/travel" replace />} />
+        <Route path="/interests" element={<Navigate to="/interests/data" replace />} />
         <Route path="/interests/:submenu" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/strava/callback" element={<StravaCallback />} />

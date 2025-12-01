@@ -547,7 +547,21 @@ app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res)
         const fileName = `${timestamp}-${file.originalname.replace(/\s+/g, '-')}`;
         const bucketName = process.env.GCS_BUCKET_NAME || 'distilledchild';
         const bucket = storage.bucket(bucketName);
-        const blob = bucket.file(`tech/${fileName}`);
+        console.log('Request body:', req.body);   // 바디 전체 확인
+        // 카테고리 분기
+        const category = req.body.category; // 클라이언트에서 전달
+        console.log('Received category:', category);
+        let prefix;
+        if (category === 'Biology') {
+            prefix = 'blog/bio';
+        } else if (category === 'Tech') {
+            prefix = 'blog/tech';
+        } else {
+            // 기본값
+            prefix = 'blog/misc';
+        }
+
+        const blob = bucket.file(`${prefix}/${fileName}`);
 
         // Create a write stream
         const blobStream = blob.createWriteStream({
@@ -567,7 +581,7 @@ app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res)
             await blob.makePublic();
 
             // Generate public URL
-            const publicUrl = `https://storage.googleapis.com/${bucketName}/tech/${fileName}`;
+            const publicUrl = `https://storage.googleapis.com/${bucketName}/${prefix}/${fileName}`;
 
             res.json({
                 success: true,
@@ -581,60 +595,6 @@ app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res)
     } catch (err) {
         console.error('Image upload error:', err);
         res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// OPAL Workflow API
-app.post('/api/tech-blog/opal-generate', async (req, res) => {
-    try {
-        const { category, title, content } = req.body;
-
-        if (!title) {
-            return res.status(400).json({ error: 'Title is required for OPAL workflow' });
-        }
-
-        const OPAL_FLOW_ID = process.env.OPAL_FLOW_ID || 'testtest';
-        const OPAL_ACCESS_TOKEN = process.env.OPAL_ACCESS_TOKEN;
-
-        if (!OPAL_ACCESS_TOKEN) {
-            return res.status(500).json({ error: 'OPAL access token not configured' });
-        }
-
-        // Call OPAL API
-        const opalResponse = await fetch(`https://opal.googleapis.com/v1/flows/${OPAL_FLOW_ID}/execute`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${OPAL_ACCESS_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                input: {
-                    topic: title,
-                    style: 'blogpost',
-                    length: 'medium'
-                }
-            })
-        });
-
-        if (!opalResponse.ok) {
-            const errorText = await opalResponse.text();
-            console.error('OPAL API error:', errorText);
-            return res.status(opalResponse.status).json({
-                error: 'OPAL workflow failed',
-                details: errorText
-            });
-        }
-
-        const opalData = await opalResponse.json();
-
-        res.json({
-            success: true,
-            message: 'OPAL workflow executed successfully',
-            data: opalData
-        });
-    } catch (err) {
-        console.error('OPAL workflow error:', err);
-        res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
 
