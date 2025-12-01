@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 
 
@@ -2095,9 +2095,9 @@ app.post('/api/todos', async (req, res) => {
             description,
             status: 'pending',
             priority: priority || 'medium',
-            due_date: due_date ? zonedTimeToUtc(due_date, timeZone) : null,
-            start_time: start_time ? zonedTimeToUtc(start_time, timeZone) : null,
-            end_time: end_time ? zonedTimeToUtc(end_time, timeZone) : null,
+            due_date: due_date ? fromZonedTime(due_date, timeZone) : null,
+            start_time: start_time ? fromZonedTime(start_time, timeZone) : null,
+            end_time: end_time ? fromZonedTime(end_time, timeZone) : null,
             completed: false,
             show: 'Y',
             created_at: new Date(),
@@ -2138,9 +2138,9 @@ app.put('/api/todos/:id', async (req, res) => {
         if (description !== undefined) todo.description = description;
         if (status !== undefined) todo.status = status;
         if (priority !== undefined) todo.priority = priority;
-        if (due_date !== undefined) todo.due_date = due_date ? zonedTimeToUtc(due_date, timeZone) : null;
-        if (start_time !== undefined) todo.start_time = start_time ? zonedTimeToUtc(start_time, timeZone) : null;
-        if (end_time !== undefined) todo.end_time = end_time ? zonedTimeToUtc(end_time, timeZone) : null;
+        if (due_date !== undefined) todo.due_date = due_date ? fromZonedTime(due_date, timeZone) : null;
+        if (start_time !== undefined) todo.start_time = start_time ? fromZonedTime(start_time, timeZone) : null;
+        if (end_time !== undefined) todo.end_time = end_time ? fromZonedTime(end_time, timeZone) : null;
         if (completed !== undefined) todo.completed = completed;
         todo.updated_at = new Date();
 

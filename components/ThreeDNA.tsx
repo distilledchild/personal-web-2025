@@ -113,13 +113,14 @@ const DNAStrand = ({ length, radius, isDragging, isFlashing }: { length: number,
   return (
     <group ref={groupRef}>
       {data.map((d, i) => (
+        <group key={i}>
         <FlashSphere
-          key={i}
           d={d}
           ballRadius={ballRadius}
           radius={radius}
           flashIntensityRef={flashIntensityRef}
         />
+        </group>
       ))}
     </group>
   );

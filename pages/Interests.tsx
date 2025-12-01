@@ -1068,7 +1068,7 @@ export const Interests: React.FC = () => {
                                                                     {/* Museum Pins - only show when expanded */}
                                                                     {isExpanded && (() => {
                                                                         // Group museums by coordinates to avoid duplicate pins
-                                                                        const groupedMuseums = stateMuseums.reduce((acc: Record<string, ArtMuseum[]>, museum: ArtMuseum) => {
+                                                                        const groupedMuseums = stateMuseums.reduce<Record<string, ArtMuseum[]>>((acc, museum: ArtMuseum) => {
                                                                             if (!museum.coordinates) return acc;
                                                                             const key = `${museum.coordinates[0]},${museum.coordinates[1]}`;
                                                                             if (!acc[key]) {
