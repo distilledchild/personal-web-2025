@@ -248,6 +248,24 @@ const workoutSchema = new mongoose.Schema({
 
 const Workout = mongoose.model('Workout', workoutSchema);
 
+// TODO List Schema
+const todoListSchema = new mongoose.Schema({
+    email: { type: String, required: true },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    status: { type: String, enum: ['pending', 'in_progress', 'completed', 'cancelled'], default: 'pending' },
+    priority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
+    due_date: Date,
+    start_time: Date,
+    end_time: Date,
+    completed: { type: Boolean, default: false },
+    show: { type: String, default: 'Y' },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+}, { collection: 'TODO_LIST' });
+
+const TodoList = mongoose.model('TodoList', todoListSchema);
+
 // Access Info Schema for tracking website visitors
 const accessInfoSchema = new mongoose.Schema({
     ip_address: String,
@@ -408,10 +426,15 @@ app.post('/api/auth/google', async (req, res) => {
             return res.status(500).json({ error: 'Failed to get user info' });
         }
 
+        // 3. Check Member Role
+        const member = await Member.findOne({ email: userData.email });
+        const role = member ? member.role : 'guest';
+
         res.json({
             name: userData.name,
             email: userData.email,
             picture: userData.picture,
+            role: role
         });
 
     } catch (error) {
@@ -2028,6 +2051,130 @@ app.get('/api/member/role/:email', async (req, res) => {
         });
     } catch (err) {
         console.error('Failed to check member role:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// --- TODO List Endpoints ---
+
+// Get all TODO items
+app.get('/api/todos', async (req, res) => {
+    try {
+        const todos = await TodoList.find({ show: 'Y' }).sort({ created_at: -1 });
+        res.json(todos);
+    } catch (err) {
+        console.error('Error fetching todos:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create new TODO
+app.post('/api/todos', async (req, res) => {
+    try {
+        const { email, title, description, priority, due_date, start_time, end_time } = req.body;
+
+        if (!email || !title || !description) {
+            return res.status(400).json({ error: 'Email, title, and description are required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const newTodo = new TodoList({
+            email,
+            title,
+            description,
+            status: 'pending',
+            priority: priority || 'medium',
+            due_date: due_date ? new Date(due_date) : null,
+            start_time: start_time ? new Date(start_time) : null,
+            end_time: end_time ? new Date(end_time) : null,
+            completed: false,
+            show: 'Y',
+            created_at: new Date(),
+            updated_at: new Date()
+        });
+
+        await newTodo.save();
+        res.status(201).json(newTodo);
+    } catch (err) {
+        console.error('Error creating todo:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update TODO
+app.put('/api/todos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email, title, description, status, priority, due_date, start_time, end_time, completed } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const todo = await TodoList.findById(id);
+        if (!todo) {
+            return res.status(404).json({ error: 'TODO not found' });
+        }
+
+        // Update fields
+        if (title !== undefined) todo.title = title;
+        if (description !== undefined) todo.description = description;
+        if (status !== undefined) todo.status = status;
+        if (priority !== undefined) todo.priority = priority;
+        if (due_date !== undefined) todo.due_date = due_date ? new Date(due_date) : null;
+        if (start_time !== undefined) todo.start_time = start_time ? new Date(start_time) : null;
+        if (end_time !== undefined) todo.end_time = end_time ? new Date(end_time) : null;
+        if (completed !== undefined) todo.completed = completed;
+        todo.updated_at = new Date();
+
+        await todo.save();
+        res.json(todo);
+    } catch (err) {
+        console.error('Error updating todo:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Delete TODO (Soft Delete)
+app.delete('/api/todos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const todo = await TodoList.findById(id);
+        if (!todo) {
+            return res.status(404).json({ error: 'TODO not found' });
+        }
+
+        // Soft delete: set show to 'N'
+        todo.show = 'N';
+        todo.updated_at = new Date();
+        await todo.save();
+
+        res.json({ message: 'TODO deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting todo:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

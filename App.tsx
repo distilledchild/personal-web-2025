@@ -447,8 +447,8 @@ const Test: React.FC = () => {
                                 <button
                                   onClick={() => handleUpdateTodo(todo._id)}
                                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${hasChanges
-                                      ? 'bg-blue-500 text-white hover:bg-blue-600'
-                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     }`}
                                   title="Update TODO"
                                   disabled={!hasChanges}
@@ -2308,6 +2308,19 @@ const Layout: React.FC = () => {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [userRole, setUserRole] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem('user_profile');
+    if (stored) {
+      try {
+        const userData = JSON.parse(stored);
+        setUserRole(userData.role);
+      } catch (e) {
+        console.error("Failed to parse user profile", e);
+      }
+    }
+  }, []);
 
   // Google Analytics - Track page views on route change
   useEffect(() => {
@@ -2416,7 +2429,7 @@ const Layout: React.FC = () => {
       {/* Navigation Bar - Desktop Only */}
       <nav className="fixed top-0 right-0 w-full z-50 p-4 md:p-8 justify-end pointer-events-none hidden lg:flex">
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
-          {window.location.hostname === 'localhost' && (
+          {(window.location.hostname === 'localhost' || userRole === 'admin') && (
             <LiquidTab
               to="/test"
               label="TODO"
