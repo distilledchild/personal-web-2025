@@ -1,5 +1,3 @@
 {
-    "build": {
-        "rootDirectory": "/server"
-    }
+    "$schema": "https://railway.app/railway.schema.json"
 }
