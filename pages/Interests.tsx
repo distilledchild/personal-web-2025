@@ -313,17 +313,21 @@ export const Interests: React.FC = () => {
                 } else {
                     // Fallback to localStorage if API fails
                     console.warn('Failed to fetch from DB, checking localStorage');
-                    const storedActivities = localStorage.getItem('strava_activities');
-                    if (storedActivities) {
-                        setStravaActivities(JSON.parse(storedActivities));
+                    if (typeof window !== 'undefined' && window.localStorage) {
+                        const storedActivities = localStorage.getItem('strava_activities');
+                        if (storedActivities) {
+                            setStravaActivities(JSON.parse(storedActivities));
+                        }
                     }
                 }
             } catch (error) {
                 console.error('Failed to load Strava activities:', error);
                 // Fallback to localStorage
-                const storedActivities = localStorage.getItem('strava_activities');
-                if (storedActivities) {
-                    setStravaActivities(JSON.parse(storedActivities));
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const storedActivities = localStorage.getItem('strava_activities');
+                    if (storedActivities) {
+                        setStravaActivities(JSON.parse(storedActivities));
+                    }
                 }
             } finally {
                 setLoadingStrava(false);
