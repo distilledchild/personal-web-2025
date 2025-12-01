@@ -2464,9 +2464,9 @@ const Layout: React.FC = () => {
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
           {(window.location.hostname === 'localhost' || isAuthorized) && (
             <LiquidTab
-              to="/test"
+              to="/todo"
               label="TODO"
-              active={location.pathname === '/test'}
+              active={location.pathname === '/todo'}
               colorClass="text-gray-500 hover:text-gray-300"
             />
           )}
@@ -2505,7 +2505,7 @@ const Layout: React.FC = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/todo" element={<Test />} />
         <Route path="/about" element={<About />} />
         <Route path="/research" element={<Navigate to="/research/peinteractions" replace />} />
         <Route path="/research/:submenu" element={<Research />} />
@@ -2523,6 +2523,8 @@ const Layout: React.FC = () => {
 
 const GoogleLogin: React.FC = () => {
   const [user, setUser] = useState<{ picture: string; name: string } | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem('user_profile');
@@ -2541,6 +2543,9 @@ const GoogleLogin: React.FC = () => {
       if (confirm('Do you want to logout?')) {
         localStorage.removeItem('user_profile');
         setUser(null);
+        if (location.pathname === '/todo') {
+          navigate('/');
+        }
       }
       return;
     }
