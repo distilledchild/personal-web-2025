@@ -6,6 +6,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import { zonedTimeToUtc } from 'date-fns-tz';
+
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -156,7 +158,7 @@ app.get('/api/interests/art-museums', async (req, res) => {
             // Load artworks from GCS bucket
             let artworks = [];
 
-            if (museum.museum_code && GCS_BUCKET_URL) {
+            if (museum.museum_code) {
                 try {
                     // List files in the bucket for this museum
                     const bucket = storage.bucket(GCS_BUCKET_NAME);
@@ -2055,6 +2057,10 @@ app.get('/api/member/role/:email', async (req, res) => {
     }
 });
 
+const timeZone = 'America/Chicago'; // US Central Time
+
+// ... (rest of the file)
+
 // --- TODO List Endpoints ---
 
 // Get all TODO items
@@ -2089,9 +2095,9 @@ app.post('/api/todos', async (req, res) => {
             description,
             status: 'pending',
             priority: priority || 'medium',
-            due_date: due_date ? new Date(due_date) : null,
-            start_time: start_time ? new Date(start_time) : null,
-            end_time: end_time ? new Date(end_time) : null,
+            due_date: due_date ? zonedTimeToUtc(due_date, timeZone) : null,
+            start_time: start_time ? zonedTimeToUtc(start_time, timeZone) : null,
+            end_time: end_time ? zonedTimeToUtc(end_time, timeZone) : null,
             completed: false,
             show: 'Y',
             created_at: new Date(),
@@ -2132,9 +2138,9 @@ app.put('/api/todos/:id', async (req, res) => {
         if (description !== undefined) todo.description = description;
         if (status !== undefined) todo.status = status;
         if (priority !== undefined) todo.priority = priority;
-        if (due_date !== undefined) todo.due_date = due_date ? new Date(due_date) : null;
-        if (start_time !== undefined) todo.start_time = start_time ? new Date(start_time) : null;
-        if (end_time !== undefined) todo.end_time = end_time ? new Date(end_time) : null;
+        if (due_date !== undefined) todo.due_date = due_date ? zonedTimeToUtc(due_date, timeZone) : null;
+        if (start_time !== undefined) todo.start_time = start_time ? zonedTimeToUtc(start_time, timeZone) : null;
+        if (end_time !== undefined) todo.end_time = end_time ? zonedTimeToUtc(end_time, timeZone) : null;
         if (completed !== undefined) todo.completed = completed;
         todo.updated_at = new Date();
 

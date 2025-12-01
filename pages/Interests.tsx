@@ -173,7 +173,7 @@ export const Interests: React.FC = () => {
     const [expandedState, setExpandedState] = useState<string | null>(null);
     const [clickPosition, setClickPosition] = useState<{ x: number; y: number } | null>(null);
     const [expandedCentroid, setExpandedCentroid] = useState<{ x: number, y: number } | null>(null);
-    const [hoveredPin, setHoveredPin] = useState<number | null>(null);
+    const [hoveredPin, setHoveredPin] = useState<string | null>(null);
     const [selectedMuseum, setSelectedMuseum] = useState<ArtMuseum | null>(null);
     const [selectedArtwork, setSelectedArtwork] = useState<string | null>(null);
     const [stateData, setStateData] = useState<StateInfo[]>([]);
@@ -254,11 +254,16 @@ export const Interests: React.FC = () => {
             }
 
             const results = await Promise.all(artworkPromises);
-            const artworks = results.filter((path): path is string => path !== null);
+            const localArtworks = results.filter((path): path is string => path !== null);
+
+            // Merge with existing artworks (from backend/GCS)
+            const existingArtworks = museum.artworks || [];
+            // distinct artworks
+            const allArtworks = Array.from(new Set([...existingArtworks, ...localArtworks]));
 
             return {
                 ...museum,
-                artworks
+                artworks: allArtworks
             };
         } catch (error) {
             console.error('Failed to load artworks for museum:', museum.museum_name, error);
@@ -1082,16 +1087,12 @@ export const Interests: React.FC = () => {
                                                                             const museumToOpen = museums.find((m: ArtMuseum) => m.artworks && m.artworks.length > 0) || museums[0];
 
                                                                             return (
-                                                                                <Marker key={`pin-${coordKey}-${idx}`} coordinates={museum.coordinates}>
+                                                                                <Marker key={museum.id} coordinates={museum.coordinates as [number, number]}>
                                                                                     <g
                                                                                         transform="scale(0.5) translate(-12, -24)"
                                                                                         onMouseEnter={() => setHoveredPin(pinId)}
                                                                                         onMouseLeave={() => setHoveredPin(null)}
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation();
-                                                                                            setSelectedMuseum(museumToOpen);
-                                                                                        }}
-                                                                                        style={{ cursor: 'pointer' }}
+                                                                                        onClick={() => handleMuseumClick(museumToOpen)}
                                                                                     >
                                                                                         <path
                                                                                             d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
@@ -1104,25 +1105,29 @@ export const Interests: React.FC = () => {
                                                                                     {/* Tooltips - show first museum only */}
                                                                                     {hoveredPin === pinId && (
                                                                                         <g transform="translate(0, -35)">
-                                                                                            <foreignObject x="-100" y="-40" width="200" height="50">
-                                                                                                <div style={{
-                                                                                                    background: 'transparent',
-                                                                                                    padding: '6px 10px',
-                                                                                                    borderRadius: '8px',
-                                                                                                    fontSize: '11px',
-                                                                                                    textAlign: 'center',
-                                                                                                    pointerEvents: 'none',
+                                                                                            <text
+                                                                                                textAnchor="middle"
+                                                                                                y={-10}
+                                                                                                style={{
                                                                                                     fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                                                                                                    lineHeight: '1.3'
-                                                                                                }}>
-                                                                                                    <div style={{ color: '#000', fontWeight: '600' }}>
-                                                                                                        {museumToOpen.museum_name}
-                                                                                                    </div>
-                                                                                                    <div style={{ fontSize: '10px', color: '#64748b' }}>
-                                                                                                        {museum.city_name || museum.city}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </foreignObject>
+                                                                                                    fill: '#000',
+                                                                                                    fontWeight: '600',
+                                                                                                    fontSize: '11px'
+                                                                                                }}
+                                                                                            >
+                                                                                                {museumToOpen.museum_name}
+                                                                                            </text>
+                                                                                            <text
+                                                                                                textAnchor="middle"
+                                                                                                y={0}
+                                                                                                style={{
+                                                                                                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                                                                                    fill: '#64748b',
+                                                                                                    fontSize: '10px'
+                                                                                                }}
+                                                                                            >
+                                                                                                {museum.city_name || museum.city}
+                                                                                            </text>
                                                                                         </g>
                                                                                     )}
                                                                                 </Marker>
