@@ -46,6 +46,61 @@ const Home: React.FC = () => (
 
 
 
+const AnalogClock: React.FC<{ timezone: string; label: string }> = ({ timezone, label }) => {
+  const [time, setTime] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const dateInTimezone = new Date(time.toLocaleString('en-US', { timeZone: timezone }));
+  const hours = dateInTimezone.getHours();
+  const minutes = dateInTimezone.getMinutes();
+
+  const hourDeg = (hours % 12) * 30 + minutes * 0.5;
+  const minuteDeg = minutes * 6;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="relative w-24 h-24 border-4 border-slate-200 rounded-full bg-white shadow-inner">
+        {/* Markers */}
+        <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-2 bg-slate-300" />
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-2 bg-slate-300" />
+        <div className="absolute left-1 top-1/2 -translate-y-1/2 w-2 h-1 bg-slate-300" />
+        <div className="absolute right-1 top-1/2 -translate-y-1/2 w-2 h-1 bg-slate-300" />
+
+        {/* Hour Hand */}
+        <div
+          className="absolute w-1.5 h-6 bg-slate-800 left-1/2 top-1/2 origin-bottom rounded-full"
+          style={{
+            transform: `translateX(-50%) translateY(-100%) rotate(${hourDeg}deg)`
+          }}
+        />
+
+        {/* Minute Hand */}
+        <div
+          className="absolute w-1 h-8 bg-slate-500 left-1/2 top-1/2 origin-bottom rounded-full"
+          style={{
+            transform: `translateX(-50%) translateY(-100%) rotate(${minuteDeg}deg)`
+          }}
+        />
+
+        {/* Center Dot */}
+        <div className="absolute w-2 h-2 bg-slate-800 rounded-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+      </div>
+      <div className="mt-3 text-center">
+        <div className="text-sm font-bold text-slate-700">{label}</div>
+        <div className="text-xs text-slate-500 font-mono">
+          {dateInTimezone.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Test: React.FC = () => {
   const navigate = useNavigate();
   const [todos, setTodos] = React.useState<any[]>([]);
@@ -339,7 +394,7 @@ const Test: React.FC = () => {
         ) : (
           <div className="flex gap-8">
             {/* Left: Calendar */}
-            <div className="w-1/3">
+            <div className="w-1/3 flex flex-col gap-6">
               <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <button
@@ -367,6 +422,15 @@ const Test: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-7 gap-2">
                   {renderCalendar()}
+                </div>
+              </div>
+
+              {/* World Clocks */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-900 mb-4 text-center border-b border-slate-100 pb-2">World Time</h3>
+                <div className="grid grid-cols-2 gap-4 justify-items-center">
+                  <AnalogClock timezone="America/Chicago" label="Chicago" />
+                  <AnalogClock timezone="Asia/Seoul" label="Seoul" />
                 </div>
               </div>
             </div>

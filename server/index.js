@@ -2065,7 +2065,33 @@ const timeZone = 'America/Chicago'; // US Central Time
 // Get all TODO items
 app.get('/api/todos', async (req, res) => {
     try {
-        const todos = await TodoList.find({ show: 'Y' }).sort({ created_at: -1 });
+        const todos = await TodoList.aggregate([
+            { $match: { show: 'Y' } },
+            {
+                $addFields: {
+                    priorityWeight: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ["$priority", "high"] }, then: 1 },
+                                { case: { $eq: ["$priority", "medium"] }, then: 2 },
+                                { case: { $eq: ["$priority", "low"] }, then: 3 }
+                            ],
+                            default: 4
+                        }
+                    },
+                    hasDueDate: {
+                        $cond: { if: { $ifNull: ["$due_date", false] }, then: 0, else: 1 }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    priorityWeight: 1,
+                    hasDueDate: 1,
+                    due_date: 1
+                }
+            }
+        ]);
         res.json(todos);
     } catch (err) {
         console.error('Error fetching todos:', err);
