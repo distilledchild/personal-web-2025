@@ -1411,12 +1411,15 @@ const Tech: React.FC = () => {
                   </button>
                 )}
                 <div className="flex gap-4">
-                  <button
-                    onClick={handleEdit}
-                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                  >
-                    Update
-                  </button>
+                  {/* Update button */}
+                  {(user && isAuthorized) && (
+                    <button
+                      onClick={handleEdit}
+                      className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                    >
+                      Update
+                    </button>
+                  )}
                   <button
                     onClick={() => setSelectedPost(null)}
                     className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
