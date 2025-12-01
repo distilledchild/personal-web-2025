@@ -139,8 +139,7 @@ app.get('/api/interests/art-museums', async (req, res) => {
         const museums = await ArtMuseum.find({ show: 'Y' });
 
         // Google Cloud Storage bucket configuration
-        const GCS_BUCKET_URL = process.env.GCS_BUCKET_URL || null;
-        const GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME || 'distilledchild-art-images';
+        const GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME || 'distilledchild';
 
         // Enrich museums with city data (coordinates and full name) and state data (fips_code)
         const enrichedMuseums = await Promise.all(museums.map(async (museum) => {
