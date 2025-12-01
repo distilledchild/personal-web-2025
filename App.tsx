@@ -2309,17 +2309,50 @@ const Layout: React.FC = () => {
   const isHome = location.pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [userRole, setUserRole] = React.useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = React.useState(false);
 
-  React.useEffect(() => {
-    const stored = localStorage.getItem('user_profile');
-    if (stored) {
-      try {
-        const userData = JSON.parse(stored);
-        setUserRole(userData.role);
-      } catch (e) {
-        console.error("Failed to parse user profile", e);
+    React.useEffect(() => {
+    const checkAuth = async () => {
+      const stored = localStorage.getItem('user_profile');
+      if (stored) {
+        try {
+          const userData = JSON.parse(stored);
+          setUserRole(userData.role);
+
+          // Check authorization from MEMBER collection
+          const API_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:4000'
+            : 'https://personal-web-2025-production.up.railway.app';
+
+          const response = await fetch(`${API_URL}/api/member/role/${userData.email}`);
+          if (response.ok) {
+            const data = await response.json();
+            setIsAuthorized(data.authorized);
+          } else {
+            setIsAuthorized(false);
+          }
+        } catch (e) {
+          console.error("Failed to parse user profile or check authorization", e);
+          setIsAuthorized(false);
+        }
+      } else {
+        setUserRole(null);
+        setIsAuthorized(false);
       }
-    }
+    };
+
+    checkAuth();
+
+    // Listen for storage changes (works across tabs)
+    window.addEventListener('storage', checkAuth);
+
+    // Poll for changes in same tab (since storage event doesn't fire in same tab)
+    const interval = setInterval(checkAuth, 1000);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      clearInterval(interval);
+    };
   }, []);
 
   // Google Analytics - Track page views on route change
@@ -2429,7 +2462,7 @@ const Layout: React.FC = () => {
       {/* Navigation Bar - Desktop Only */}
       <nav className="fixed top-0 right-0 w-full z-50 p-4 md:p-8 justify-end pointer-events-none hidden lg:flex">
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
-          {(window.location.hostname === 'localhost' || userRole === 'admin') && (
+          {(window.location.hostname === 'localhost' || isAuthorized) && (
             <LiquidTab
               to="/test"
               label="TODO"
