@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { Dna, Mail, Github, MapPin, Loader2, Plus, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -47,10 +47,12 @@ const Home: React.FC = () => (
 
 
 const Test: React.FC = () => {
+  const navigate = useNavigate();
   const [todos, setTodos] = React.useState<any[]>([]);
   const [user, setUser] = React.useState<any>(null);
   const [isAuthorized, setIsAuthorized] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+  const [authLoading, setAuthLoading] = React.useState(true);
   const [showCreateModal, setShowCreateModal] = React.useState(false);
   const [newTodo, setNewTodo] = React.useState({
     title: '',
@@ -64,31 +66,39 @@ const Test: React.FC = () => {
   const [successMessage, setSuccessMessage] = React.useState('');
 
   React.useEffect(() => {
-    // Get user data
-    const userData = localStorage.getItem('user_profile');
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
+    const checkAuth = async () => {
+      // Get user data
+      const userData = localStorage.getItem('user_profile');
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
 
-        // Check authorization
-        const API_URL = window.location.hostname === 'localhost'
-          ? 'http://localhost:4000'
-          : 'https://personal-web-2025-production.up.railway.app';
+          // Check authorization
+          const API_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:4000'
+            : 'https://personal-web-2025-production.up.railway.app';
 
-        fetch(`${API_URL}/api/member/role/${parsedUser.email}`)
-          .then(res => res.json())
-          .then(data => {
-            setIsAuthorized(data.authorized);
-          });
-      } catch (e) {
-        console.error('Failed to parse user data', e);
+          const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
+          const data = await response.json();
+          setIsAuthorized(data.authorized);
+        } catch (e) {
+          console.error('Failed to parse user data', e);
+        }
       }
-    }
+      setAuthLoading(false);
+    };
 
+    checkAuth();
     // Fetch todos
     fetchTodos();
   }, []);
+
+  React.useEffect(() => {
+    if (!authLoading && !isAuthorized) {
+      navigate('/');
+    }
+  }, [authLoading, isAuthorized, navigate]);
 
   const fetchTodos = async () => {
     try {
@@ -2314,7 +2324,7 @@ const Layout: React.FC = () => {
   const [userRole, setUserRole] = React.useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = React.useState(false);
 
-    React.useEffect(() => {
+  React.useEffect(() => {
     const checkAuth = async () => {
       const stored = localStorage.getItem('user_profile');
       if (stored) {
@@ -2465,7 +2475,7 @@ const Layout: React.FC = () => {
       {/* Navigation Bar - Desktop Only */}
       <nav className="fixed top-0 right-0 w-full z-50 p-4 md:p-8 justify-end pointer-events-none hidden lg:flex">
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
-          {(window.location.hostname === 'localhost' || isAuthorized) && (
+          {isAuthorized && (
             <LiquidTab
               to="/todo"
               label="TODO"
@@ -2517,6 +2527,7 @@ const Layout: React.FC = () => {
         <Route path="/interests/:submenu" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/strava/callback" element={<StravaCallback />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
       <GoogleLogin />
