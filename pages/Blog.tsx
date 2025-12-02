@@ -1176,8 +1176,8 @@ export const Blog: React.FC = () => {
                 </div>
             )}
 
-            {/* Create Button (+ icon) - Tech page only */}
-            {canCreatePost() && location.pathname === '/tech' && !isCreateMode && !isEditMode && selectedPost === null && (
+            {/* Create Button (+ icon) - Blog page only */}
+            {canCreatePost() && location.pathname === '/blog' && !isCreateMode && !isEditMode && selectedPost === null && (
                 <button
                     onClick={handleCreate}
                     className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40"

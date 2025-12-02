@@ -290,6 +290,7 @@ const Layout: React.FC = () => {
       </Routes>
 
       <GoogleLogin />
+      <CalComButton isAuthorized={isAuthorized} />
     </div>
   );
 };
@@ -414,6 +415,35 @@ const OAuthCallback: React.FC = () => {
   );
 };
 
+import { getCalApi } from "@calcom/embed-react";
+import { Calendar } from 'lucide-react';
+
+const CalComButton: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
+  const location = useLocation();
+  const isTodoPage = location.pathname === '/todo';
+
+  useEffect(() => {
+    (async function () {
+      const cal = await getCalApi({});
+      cal("ui", { "styles": { "branding": { "brandColor": "#000000" } }, "hideEventTypeDetails": false, "layout": "month_view" });
+    })();
+  }, []);
+
+  // Only show for authorized users (admins) AND only on /todo page
+  if (!isAuthorized || !isTodoPage) return null;
+
+  return (
+    <button
+      data-cal-link="petekim/15min"
+      data-cal-config='{"layout":"month_view"}'
+      className="fixed left-6 z-[60] w-[58px] h-[58px] bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 border border-slate-100 transition-all duration-300 hover:scale-105 flex items-center justify-center bottom-44"
+      title="Schedule a meeting"
+    >
+      <Calendar size={24} color="white" />
+    </button>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -421,10 +451,6 @@ const App: React.FC = () => {
         <Route path="/oauth/google/callback" element={<OAuthCallback />} />
         <Route path="*" element={<Layout />} />
       </Routes>
-      {/* Google Login is part of Layout logically, but since we have a catch-all route for Layout, 
-          we can put it here to ensure it's on every page except maybe the callback page if we wanted.
-          But Layout wraps everything else. Let's put it inside Layout.
-      */}
     </Router>
   );
 };

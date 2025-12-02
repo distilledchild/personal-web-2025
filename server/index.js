@@ -67,6 +67,10 @@ if (process.env.GCP_SERVICE_ACCOUNT_KEY) {
     // Local: file path
     console.log('Using GCS credentials from GOOGLE_APPLICATION_CREDENTIALS file');
     storageConfig.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+} else if (fs.existsSync(path.resolve(__dirname, '../service-account-key.json'))) {
+    // Local: automatic detection of service-account-key.json in root
+    console.log('Using GCS credentials from local service-account-key.json');
+    storageConfig.keyFilename = path.resolve(__dirname, '../service-account-key.json');
 } else {
     // Default: Application Default Credentials (gcloud auth)
     console.log('Using GCS default credentials');

@@ -2,11 +2,9 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# Run and deploy this app
 
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1R10sHTriX92WcSdUFALnCSQaWvg8jSKH
+This contains everything you need to run this app locally.
 
 ## Run Locally
 
@@ -32,6 +30,7 @@ This document outlines the modern full-stack architecture used in the **Distille
 | **Styling** | **Tailwind CSS** | Utility-first CSS framework for rapid, consistent, and responsive UI development. |
 | **3D Graphics** | **Three.js (R3F)** | Implements the interactive 3D DNA double-helix visualization using `@react-three/fiber`. |
 | **Data Viz** | **Recharts** | React-based composable charting library used for the Research page visualizations. |
+| **Hi-C Browser** | **D3.js + HTML5 Canvas** | Custom-built genome browser for visualizing chromatin loops and gene regulation using `d3-scale` and Canvas API for high performance. |
 | **Backend** | **Node.js + Socket.io** | Custom server handling real-time bidirectional communication for the chat feature. |
 | **Database** | **MongoDB** | NoSQL database used for storing Tech and Bio posts and user interactions (likes, views). |
 

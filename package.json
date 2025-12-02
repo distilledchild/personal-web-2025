@@ -12,6 +12,7 @@
     "vercel-build": "npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {
+    "@calcom/embed-react": "^1.5.3",
     "@google-cloud/storage": "^7.17.3",
     "@google/genai": "^1.30.0",
     "@react-three/drei": "^10.7.7",
