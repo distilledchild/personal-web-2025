@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
-import { FileText, GitBranch, Database, Sliders } from 'lucide-react';
+import { FileText, GitBranch, Database, Sliders, Search } from 'lucide-react';
+import { GenomeVisualizationEnhanced as GenomeVisualization } from '../components/GenomeVisualizationEnhanced';
 
 const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
   name: `Loc ${i * 10}kb`,
@@ -19,11 +20,11 @@ const mockScatterData = Array.from({ length: 100 }, () => ({
 
 // Removed "card" styling (bg-white, border, shadow) to make it look like a full page section
 const PEInteractions = () => (
-  <div className="space-y-8 animate-fadeIn py-4">
+  <div className="space-y-8 animate-fadeIn">
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6">
       <div>
         <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-          <GitBranch size={24} className="text-blue-600" />
+          <GitBranch size={24} className="text-teal-500" />
           Promoter–Enhancer Interaction Mapping
         </h3>
         <p className="text-slate-500 mt-2 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
@@ -73,10 +74,10 @@ const PEInteractions = () => (
 );
 
 const SingleCell = () => (
-  <div className="space-y-8 animate-fadeIn py-4">
+  <div className="space-y-8 animate-fadeIn">
     <div className="border-b border-slate-100 pb-6">
       <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-        <Database size={24} className="text-green-600" />
+        <Database size={24} className="text-teal-500" />
         Single-cell Sequencing Analysis
       </h3>
       <p className="text-slate-500 mt-2 text-lg">Dimensionality reduction (UMAP) and clustering of 10k PBMCs.</p>
@@ -108,10 +109,10 @@ const SingleCell = () => (
 );
 
 const EnhancerID = () => (
-  <div className="space-y-8 animate-fadeIn py-4">
+  <div className="space-y-8 animate-fadeIn">
     <div className="border-b border-slate-100 pb-6">
       <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-        <FileText size={24} className="text-pink-600" />
+        <FileText size={24} className="text-teal-500" />
         Computational Enhancer Identification
       </h3>
       <p className="text-slate-500 mt-2 text-lg">Deep learning prediction of enhancer regions using sequence motifs and conservation.</p>
@@ -167,13 +168,37 @@ export const Research: React.FC = () => {
   const tabs = [
     { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
     { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
-    { label: 'Enhancer ID', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
-    { label: 'LLM', icon: Sliders, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'llm' },
+    { label: 'DL & Enhancer', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
+    { label: 'Hi-C Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' },
   ];
 
   // Determine active tab from URL, default to first tab
   const activeTabIndex = tabs.findIndex(tab => tab.slug === submenu);
   const activeTab = activeTabIndex !== -1 ? activeTabIndex : 0;
+
+  // Prefetch initial genome data (chr1) in background when Research page loads
+  React.useEffect(() => {
+    const prefetchInitialData = async () => {
+      try {
+        // Import dynamically to avoid blocking main bundle if possible, 
+        // but here we just use the imported functions if we were to import them at top level.
+        // Since we need to modify imports, let's assume we'll add imports at the top.
+        const { loadChromosomeData, loadLoopDataForChr, loadGeneDataForChr } = await import('../utils/csvLoader');
+
+        // Load chromosome list and chr1 data (default view)
+        await Promise.all([
+          loadChromosomeData(),
+          loadLoopDataForChr('chr1'),
+          loadGeneDataForChr('chr1')
+        ]);
+        console.log('Initial genome data prefetched');
+      } catch (error) {
+        console.error('Failed to prefetch genome data:', error);
+      }
+    };
+
+    prefetchInitialData();
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -210,9 +235,6 @@ export const Research: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 pb-4">
-      </div>
-
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto px-6 pb-20">
         <div className="max-w-7xl mx-auto pt-8">
@@ -220,12 +242,20 @@ export const Research: React.FC = () => {
           {activeTab === 1 && <SingleCell />}
           {activeTab === 2 && <EnhancerID />}
           {activeTab === 3 && (
-            <div className='p-8'>
-              <h3 className='text-2xl font-bold mb-4 flex items-center gap-3'>
-                <Sliders size={24} className="text-purple-600" />
-                LLM Research
-              </h3>
-              <p className='text-slate-600'>Content for LLM research goes here.</p>
+            <div className='space-y-8 animate-fadeIn'>
+              <div className="border-b border-slate-100 pb-6">
+                <h3 className='text-2xl font-bold text-slate-900 flex items-center gap-3'>
+                  <Search size={24} className="text-teal-500" />
+                  Hi-C Browser - Chromatin Loops & Gene Regulation
+                </h3>
+                <p className='text-slate-500 mt-2 text-lg'>
+                  Interactive visualization of chromatin loops, TSS/Promoter locations, and gene exon positions
+                </p>
+              </div>
+
+              <div className='h-[500px] flex flex-col'>
+                <GenomeVisualization />
+              </div>
             </div>
           )}
         </div>

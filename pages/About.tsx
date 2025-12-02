@@ -329,8 +329,11 @@ export const About: React.FC = () => {
     const openMilestoneModal = (milestone?: Milestone) => {
         if (milestone) {
             setEditingMilestone(milestone);
-            const date = new Date(milestone.date);
-            const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            // Extract year-month from ISO date string to avoid timezone issues
+            const dateStr = milestone.date;
+            const date = new Date(dateStr);
+            // Use UTC methods to avoid timezone conversion issues
+            const yearMonth = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
             setMilestoneForm({
                 date: yearMonth,
                 title: milestone.title,
@@ -521,7 +524,12 @@ export const About: React.FC = () => {
                                                     {/* Responsive Content Layout */}
                                                     <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
                                                         <span className="text-xs font-bold text-slate-400 mb-2 lg:mb-0 lg:whitespace-nowrap">
-                                                            {new Date(milestone.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+                                                            {(() => {
+                                                                const d = new Date(milestone.date);
+                                                                const year = d.getUTCFullYear();
+                                                                const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+                                                                return `${month} ${year}`;
+                                                            })()}
                                                         </span>
                                                         <div className="lg:border-l lg:border-slate-300 lg:pl-4 flex-1">
                                                             <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
@@ -548,7 +556,12 @@ export const About: React.FC = () => {
                                                     {/* Responsive Content Layout */}
                                                     <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
                                                         <span className="text-xs font-bold text-slate-400 mb-2 lg:mb-0 lg:whitespace-nowrap">
-                                                            {new Date(milestone.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
+                                                            {(() => {
+                                                                const d = new Date(milestone.date);
+                                                                const year = d.getUTCFullYear();
+                                                                const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+                                                                return `${month} ${year}`;
+                                                            })()}
                                                         </span>
                                                         <div className="lg:border-l lg:border-slate-300 lg:pl-4 flex-1">
                                                             <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>

@@ -38,7 +38,7 @@ const Home: React.FC = () => (
     {/* Instruction Text - Centered and Animated */}
     <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none hidden md:block">
       <p className="text-lg md:text-xl text-white font-light animate-double-blink">
-        Drag or Zoom to interact
+        Drag or Scroll to Interact!!
       </p>
     </div>
   </div>
@@ -2490,7 +2490,15 @@ const Layout: React.FC = () => {
       {/* Branding Logo - Visible on ALL pages top left */}
       <div className="fixed top-0 left-0 z-50 p-4 md:p-8 flex items-center">
         <Link to="/" className="font-extrabold tracking-tighter flex items-center text-slate-900" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.4rem)' }}>
-          <span className="text-green-500">Distilled</span>
+          {/* <span className="text-green-500">Distilled</span> */}
+          <span
+            className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-purple-400 animate-gradient"
+            style={{
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}
+          >Distilled</span>
           <span className="text-[#0D1584]">Child</span>
         </Link>
       </div>
