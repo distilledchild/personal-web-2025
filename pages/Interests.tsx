@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plane, Dumbbell, Gamepad2, BarChart3, ChevronLeft, ChevronRight, PersonStanding, Footprints, Bike, Palette, MapPin, X } from 'lucide-react';
+import { Plane, Dumbbell, BarChart3, ChevronLeft, ChevronRight, PersonStanding, Footprints, Bike, Palette, MapPin, X } from 'lucide-react';
 import { ComposableMap, Geographies, Geography, Marker, Annotation } from 'react-simple-maps';
 import { geoCentroid, geoAlbersUsa } from 'd3-geo';
 import {
@@ -26,15 +26,6 @@ const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
     interaction: Math.abs(Math.cos(i * 0.1) * 0.8) + Math.random() * 0.1,
     ctcf: Math.random() > 0.8 ? 1 : 0
 }));
-
-// State capitals coordinates (for test)
-// const stateCapitals: { [key: string]: { name: string; coordinates: [number, number] } } = {
-//     "NY": { name: "Albany", coordinates: [-73.7562, 42.6526] },
-//     "MA": { name: "Boston", coordinates: [-71.0589, 42.3601] },
-//     "PA": { name: "Harrisburg", coordinates: [-76.8867, 40.2732] },
-//     "CA": { name: "Sacramento", coordinates: [-121.4944, 38.5816] },
-//     "TX": { name: "Austin", coordinates: [-97.7431, 30.2672] },
-// };
 
 // Art museums interface and data
 interface ArtMuseum {
