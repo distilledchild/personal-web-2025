@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Bell } from 'lucide-react';
+import { Plus, Bell, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
 
 const AnalogClock: React.FC<{ timezone: string; label: string }> = ({ timezone, label }) => {
     const [time, setTime] = React.useState(new Date());
@@ -57,6 +57,113 @@ const AnalogClock: React.FC<{ timezone: string; label: string }> = ({ timezone, 
     );
 };
 
+
+
+const WeatherWidget: React.FC = () => {
+    const [weather, setWeather] = React.useState<any>(null);
+    const [locationName, setLocationName] = React.useState('Loading...');
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchWeather = async () => {
+            try {
+                let lat = 37.5665;
+                let lon = 126.9780;
+                let name = 'Seoul';
+
+                try {
+                    // 1. Get location from Contact API
+                    const API_URL = window.location.hostname === 'localhost'
+                        ? 'http://localhost:4000'
+                        : 'https://personal-web-2025-production.up.railway.app';
+
+                    const contactResponse = await fetch(`${API_URL}/api/contact`);
+                    if (contactResponse.ok) {
+                        const contactData = await contactResponse.json();
+                        if (contactData?.Location) {
+                            // Prefer explicit coordinates if available
+                            if (contactData.Location.latitude && contactData.Location.longitude) {
+                                lat = contactData.Location.latitude;
+                                lon = contactData.Location.longitude;
+                            }
+                            // Construct location name
+                            const parts = [contactData.Location.city, contactData.Location.state].filter(Boolean);
+                            if (parts.length > 0) {
+                                name = parts.join(', ');
+                            } else if (contactData.Location.country) {
+                                name = contactData.Location.country;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Failed to get contact location, defaulting to Seoul');
+                }
+
+                setLocationName(name);
+
+                // 2. Fetch weather
+                const response = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`
+                );
+                const data = await response.json();
+                setWeather(data.daily);
+            } catch (error) {
+                console.error('Failed to fetch weather:', error);
+                setLocationName('Error');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchWeather();
+    }, []);
+
+    const fixedClass = "fixed bottom-[21rem] left-6 w-14 h-14 bg-white rounded-full transition-all hover:scale-110 flex items-center justify-center z-[100] cursor-pointer group";
+    const strongShadow = { boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)' };
+
+    if (loading) return (
+        <div className={fixedClass} style={strongShadow}>
+            <div className="w-6 h-6 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>
+    );
+
+    if (!weather) return null;
+
+    const code = weather.weather_code[0];
+    const maxTemp = Math.round(weather.temperature_2m_max[0]);
+    const minTemp = Math.round(weather.temperature_2m_min[0]);
+
+    const getWeatherIcon = (code: number) => {
+        if (code === 0) return <Sun className="w-6 h-6 text-yellow-500" />;
+        if (code >= 1 && code <= 3) return <Cloud className="w-6 h-6 text-slate-500" />;
+        if (code >= 45 && code <= 48) return <CloudFog className="w-6 h-6 text-slate-400" />;
+        if (code >= 51 && code <= 67) return <CloudRain className="w-6 h-6 text-blue-500" />;
+        if (code >= 71 && code <= 77) return <CloudSnow className="w-6 h-6 text-blue-300" />;
+        if (code >= 80 && code <= 82) return <CloudRain className="w-6 h-6 text-blue-600" />;
+        if (code >= 85 && code <= 86) return <CloudSnow className="w-6 h-6 text-blue-400" />;
+        if (code >= 95) return <CloudLightning className="w-6 h-6 text-purple-500" />;
+        return <Sun className="w-6 h-6 text-yellow-500" />;
+    };
+
+    return (
+        <div
+            className={fixedClass}
+            style={strongShadow}
+            title={`${locationName} Weather`}
+        >
+            <div className="flex flex-col items-center justify-center">
+                {getWeatherIcon(code)}
+                <span className="text-[10px] font-bold text-slate-700 mt-[-2px]">{maxTemp}°</span>
+            </div>
+
+            {/* Tooltip */}
+            <div className="absolute left-16 bg-slate-800 text-white text-xs font-bold py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                {locationName}: {maxTemp}° / {minTemp}°
+            </div>
+        </div>
+    );
+};
+
 export const Todo: React.FC = () => {
     const navigate = useNavigate();
     const [todos, setTodos] = React.useState<any[]>([]);
@@ -89,6 +196,8 @@ export const Todo: React.FC = () => {
     // Filter State
     const [filterDate, setFilterDate] = React.useState<Date | null>(null);
     const [filterMode, setFilterMode] = React.useState<'all' | 'until_date' | 'today'>('all');
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [isSearching, setIsSearching] = React.useState(false);
 
     const sortTodos = (todosToSort: any[]) => {
         return [...todosToSort].sort((a, b) => {
@@ -289,26 +398,64 @@ export const Todo: React.FC = () => {
     };
 
     // Filter Logic
+    // Filter Logic
     const filteredTodos = React.useMemo(() => {
-        if (filterMode === 'all') return todos;
+        let result = todos;
 
-        return todos.filter(todo => {
-            if (!todo.due_date) return false;
-            const todoDate = new Date(todo.due_date);
+        // 1. Apply Search Filter if active
+        if (isSearching && searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(todo =>
+                todo.title.toLowerCase().includes(query) ||
+                todo.description.toLowerCase().includes(query)
+            );
+        }
 
-            if (filterMode === 'until_date' && filterDate) {
-                // Compare dates (exact match)
-                return todoDate.toDateString() === filterDate.toDateString();
-            }
+        // 2. Apply Date/Mode Filters
+        if (filterMode !== 'all') {
+            result = result.filter(todo => {
+                if (!todo.due_date) return false;
+                const todoDate = new Date(todo.due_date);
 
-            if (filterMode === 'today') {
-                const today = new Date();
-                return todoDate.toDateString() === today.toDateString();
-            }
+                if (filterMode === 'until_date' && filterDate) {
+                    return todoDate.toDateString() === filterDate.toDateString();
+                }
 
-            return true;
-        });
-    }, [todos, filterMode, filterDate]);
+                if (filterMode === 'today') {
+                    const today = new Date();
+                    return todoDate.toDateString() === today.toDateString();
+                }
+
+                return true;
+            });
+        }
+
+        // 3. Sort Results
+        // If searching, prioritize deadline (closest first)
+        if (isSearching) {
+            return [...result].sort((a, b) => {
+                const dateA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+                const dateB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+                return dateA - dateB;
+            });
+        }
+
+        // Otherwise use default sorting (Priority > Deadline > Status)
+        // Note: 'todos' is already sorted by default fetch, but filtering might need re-sort if we want strict order
+        // However, filter preserves order, so we can just return result
+        return result;
+    }, [todos, filterMode, filterDate, isSearching, searchQuery]);
+
+    // Handle Search
+    const handleSearch = () => {
+        if (searchQuery.trim()) {
+            setIsSearching(true);
+            setCurrentPage(1);
+        } else {
+            setIsSearching(false);
+            setCurrentPage(1);
+        }
+    };
 
     // Pagination Logic
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -448,9 +595,10 @@ export const Todo: React.FC = () => {
                                     </div>
                                 </div>
 
+
+
                                 {/* World Clocks */}
                                 <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                                    <h3 className="text-lg font-bold text-slate-900 mb-4 text-center border-b border-slate-100 pb-2">World Time</h3>
                                     <div className="grid grid-cols-2 gap-4 justify-items-center">
                                         <AnalogClock timezone="America/Chicago" label="Chicago" />
                                         <AnalogClock timezone="Asia/Seoul" label="Seoul" />
@@ -520,37 +668,114 @@ export const Todo: React.FC = () => {
                                     </table>
                                 </div>
 
-                                {/* Pagination Controls */}
                                 {filteredTodos.length > itemsPerPage && (
-                                    <div className="flex justify-center items-center gap-2 mt-4">
-                                        <button
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                            disabled={currentPage === 1}
-                                            className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50"
-                                        >
-                                            Previous
-                                        </button>
+                                    <div className="flex justify-between items-center gap-4 mt-4">
+                                        {/* Empty spacer for alignment */}
+                                        <div className="flex-1 max-w-sm"></div>
 
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                        {/* Pagination Controls */}
+                                        <div className="flex justify-center items-center gap-2">
                                             <button
-                                                key={page}
-                                                onClick={() => handlePageChange(page)}
-                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page
-                                                    ? 'bg-gray-500 text-white'
-                                                    : 'text-slate-600 hover:bg-slate-100'
-                                                    }`}
+                                                onClick={() => handlePageChange(currentPage - 1)}
+                                                disabled={currentPage === 1}
+                                                className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50"
                                             >
-                                                {page}
+                                                Previous
                                             </button>
-                                        ))}
 
-                                        <button
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                            disabled={currentPage === totalPages}
-                                            className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50"
-                                        >
-                                            Next
-                                        </button>
+                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                                <button
+                                                    key={page}
+                                                    onClick={() => handlePageChange(page)}
+                                                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page
+                                                        ? 'bg-gray-500 text-white'
+                                                        : 'text-slate-600 hover:bg-slate-100'
+                                                        }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            ))}
+
+                                            <button
+                                                onClick={() => handlePageChange(currentPage + 1)}
+                                                disabled={currentPage === totalPages}
+                                                className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50"
+                                            >
+                                                Next
+                                            </button>
+                                        </div>
+
+                                        {/* Search Section */}
+                                        <div className="flex items-center gap-2 flex-1 max-w-sm justify-end">
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleSearch();
+                                                    }
+                                                }}
+                                                placeholder="Search..."
+                                                className="w-48 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm"
+                                            />
+                                            <button
+                                                onClick={handleSearch}
+                                                className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-slate-400 transition-all flex items-center justify-center group"
+                                                title="Search"
+                                            >
+                                                <svg
+                                                    className="w-5 h-5 text-slate-500"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 20 20"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Search Section (Visible even if no pagination, but only if there are items or searching) */}
+                                {filteredTodos.length <= itemsPerPage && (todos.length > 0 || isSearching) && (
+                                    <div className="flex justify-end items-center gap-2 mt-4">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        handleSearch();
+                                                    }
+                                                }}
+                                                placeholder="Search..."
+                                                className="w-48 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm"
+                                            />
+                                            <button
+                                                onClick={handleSearch}
+                                                className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-slate-400 transition-all flex items-center justify-center group"
+                                                title="Search"
+                                            >
+                                                <svg
+                                                    className="w-5 h-5 text-slate-500"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 20 20"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -558,14 +783,18 @@ export const Todo: React.FC = () => {
                     )}
                 </div>
 
+                {/* Weather Widget (Always visible) */}
+                <WeatherWidget />
+
                 {/* Create Button (Admin/Editor only) */}
                 {isAuthorized && (
                     <>
                         {/* Notification Bell Button - Above Cal.com (bottom-64 approx) */}
                         <button
                             onClick={() => setFilterMode(prev => prev === 'today' ? 'all' : 'today')}
-                            className={`fixed bottom-64 left-6 w-14 h-14 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center z-40
+                            className={`fixed bottom-64 left-6 w-14 h-14 rounded-full transition-all hover:scale-110 flex items-center justify-center z-40
                                 ${filterMode === 'today' ? 'bg-blue-600 text-white' : 'bg-gray-500 text-white hover:bg-gray-600'}`}
+                            style={{ boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)' }}
                             title="Show today's tasks"
                         >
                             <div className="relative">
@@ -580,7 +809,8 @@ export const Todo: React.FC = () => {
 
                         <button
                             onClick={() => setShowCreateModal(true)}
-                            className="fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40"
+                            className="fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40"
+                            style={{ boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)' }}
                             title="Create new TODO"
                         >
                             <Plus size={28} />
