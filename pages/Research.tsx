@@ -249,7 +249,7 @@ export const Research: React.FC = () => {
                   Hi-C Browser - Chromatin Loops & Gene Regulation
                 </h3>
                 <p className='text-slate-500 mt-2 text-lg'>
-                  Interactive visualization of chromatin loops, TSS/Promoter locations, and gene exon positions
+                  Interactive visualization of chromatin loops, transcription start site (TSS)/promoter locations, and gene last exon positions
                 </p>
               </div>
 

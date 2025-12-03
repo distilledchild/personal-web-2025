@@ -687,11 +687,11 @@ export const GenomeVisualizationEnhanced: React.FC = () => {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 bg-pink-500" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
-                                    <span className="text-slate-600">TSS Gene</span>
+                                    <span className="text-slate-600">Genes from TSS</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 bg-purple-600" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}></div>
-                                    <span className="text-slate-600">Promoter Gene</span>
+                                    <span className="text-slate-600">Genes from Promoter</span>
                                 </div>
                             </div>
                         </div>

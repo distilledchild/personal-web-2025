@@ -25,6 +25,8 @@ export const Blog: React.FC = () => {
     const [useOpal, setUseOpal] = React.useState(false);
     const [showOpalDialog, setShowOpalDialog] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [isSearching, setIsSearching] = React.useState(false);
     const postsPerPage = 4;
 
     React.useEffect(() => {
@@ -487,21 +489,54 @@ export const Blog: React.FC = () => {
         ...colorThemes[i % colorThemes.length]
     }));
 
+    // Filter posts based on search query (button/enter triggered)
+    const filteredPosts = isSearching
+        ? allPosts.map((post, index) => ({ ...post, globalIndex: index })).filter(post => {
+            const searchLower = searchQuery.toLowerCase();
+            const titleMatch = post.title?.toLowerCase().includes(searchLower);
+            const contentMatch = post.content?.toLowerCase().includes(searchLower);
+            const tagsMatch = post.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower));
+            return titleMatch || contentMatch || tagsMatch;
+        }).sort((a, b) => {
+            // Sort by createdAt descending (most recent first)
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateB - dateA;
+        })
+        : allPosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
+            // Always sort by createdAt descending (most recent first)
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return dateB - dateA;
+        });
+
     // Pagination logic
-    const totalPages = Math.ceil(allPosts.length / postsPerPage);
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const posts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
+    const posts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
     // Get global index for selectedPost (since posts is now paginated)
     const getGlobalIndex = (localIndex: number) => {
-        return indexOfFirstPost + localIndex;
+        const post = posts[localIndex];
+        return post?.globalIndex ?? indexOfFirstPost + localIndex;
     };
 
     // Handle page change
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
         setSelectedPost(null); // Close any open post when changing pages
+    };
+
+    // Handle search - triggered by button click or enter key
+    const handleSearch = () => {
+        if (searchQuery.trim()) {
+            setIsSearching(true);
+            setCurrentPage(1); // Reset to first page when searching
+        } else {
+            setIsSearching(false);
+            setCurrentPage(1);
+        }
     };
 
     // Format date helper
@@ -566,7 +601,7 @@ export const Blog: React.FC = () => {
 
                                 {/* Tech Section */}
                                 <h4 className="text-sm font-bold text-pink-500 mb-2">Tech</h4>
-                                {allPosts
+                                {filteredPosts
                                     .map((post, index) => ({ ...post, originalIndex: index }))
                                     .filter(post => post.category === 'Tech')
                                     .slice(0, 3)
@@ -593,7 +628,7 @@ export const Blog: React.FC = () => {
 
                                 {/* Bio Section */}
                                 <h4 className="text-sm font-bold text-pink-500 mb-2">Bio</h4>
-                                {allPosts
+                                {filteredPosts
                                     .map((post, index) => ({ ...post, originalIndex: index }))
                                     .filter(post => post.category === 'Biology')
                                     .slice(0, 3)
@@ -672,43 +707,88 @@ export const Blog: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Pagination Controls */}
-                    {!loading && allPosts.length > postsPerPage && (
-                        <div className="flex justify-center items-center gap-2 mt-6 pb-4 flex-shrink-0">
-                            <button
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
-                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                    }`}
-                            >
-                                Previous
-                            </button>
+                    {/* Pagination Controls with Search */}
+                    {!loading && allPosts.length > 0 && (
+                        <div className="flex justify-between items-center gap-4 mt-6 pb-4 flex-shrink-0">
+                            {/* Empty spacer for alignment */}
+                            <div className="flex-1 max-w-sm"></div>
 
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                            {/* Pagination Section */}
+                            {filteredPosts.length > postsPerPage && (
+                                <div className="flex justify-center items-center gap-2">
+                                    <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
+                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                            }`}
+                                    >
+                                        Previous
+                                    </button>
+
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => handlePageChange(pageNum)}
+                                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
+                                                ? 'bg-pink-500 text-white'
+                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                                }`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    ))}
+
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
+                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                            }`}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Search Section */}
+                            <div className="flex items-center gap-2 flex-1 max-w-sm">
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleSearch();
+                                        }
+                                    }}
+                                    placeholder="Search posts by title, content, or tags..."
+                                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
+                                />
+                                {/* Search button - always shows magnifying glass */}
                                 <button
-                                    key={pageNum}
-                                    onClick={() => handlePageChange(pageNum)}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
-                                        ? 'bg-pink-500 text-white'
-                                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                        }`}
+                                    onClick={handleSearch}
+                                    className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-pink-300 transition-all flex items-center justify-center group"
+                                    title="Search"
                                 >
-                                    {pageNum}
+                                    {/* Magnifying glass icon */}
+                                    <svg
+                                        className="w-5 h-5 text-pink-500"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
                                 </button>
-                            ))}
 
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
-                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                    }`}
-                            >
-                                Next
-                            </button>
+                            </div>
                         </div>
                     )}
                 </div>
