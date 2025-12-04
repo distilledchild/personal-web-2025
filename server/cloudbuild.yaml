@@ -35,6 +35,7 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+      - '--update-secrets=/app/gcs-key.json=gcs-service-account-key:latest'
 
 images:
   - 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA'
