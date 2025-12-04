@@ -21,7 +21,8 @@ const corsOptions = {
         'http://localhost:3000',
         'http://localhost:5173',
         'https://www.distilledchild.space',
-        'https://distilledchild.space'
+        'https://distilledchild.space',
+        'https://personal-web-2025-mauve.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -922,7 +923,13 @@ app.put('/api/about-academic/:id', async (req, res) => {
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173", "http://localhost:3000", "https://www.distilledchild.space"], // Added production domain
+        origin: [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://www.distilledchild.space",
+            "https://distilledchild.space",
+            "https://personal-web-2025-mauve.vercel.app"
+        ],
         methods: ["GET", "POST"]
     }
 });
