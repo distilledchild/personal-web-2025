@@ -7,7 +7,9 @@ steps:
       - 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA'
       - '-t'
       - 'gcr.io/$PROJECT_ID/backend:latest'
-      - '.'
+      - '-f'
+      - 'server/Dockerfile'
+      - 'server'
 
   # Step 2: push to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
