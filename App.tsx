@@ -128,49 +128,6 @@ const Layout: React.FC = () => {
     }
   }, [location]);
 
-  // Log access information
-  useEffect(() => {
-    const logAccess = async () => {
-      try {
-        const API_URL = window.location.hostname === 'localhost'
-          ? 'http://localhost:4000'
-          : 'https://personal-web-2025-production.up.railway.app';
-
-        // Generate or retrieve session ID
-        let sessionId = sessionStorage.getItem('session_id');
-        if (!sessionId) {
-          sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          sessionStorage.setItem('session_id', sessionId);
-        }
-
-        const payload = {
-          page_url: window.location.href,
-          referrer: document.referrer,
-          session_id: sessionId
-        };
-
-        console.log('[CLIENT] Logging access:', payload);
-
-        const response = await fetch(`${API_URL}/api/access/log`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-          console.error('[CLIENT] Access logging failed:', response.status, response.statusText);
-        } else {
-          const data = await response.json();
-          console.log('[CLIENT] Access logged successfully:', data);
-        }
-      } catch (error) {
-        console.error('[CLIENT] Access logging error:', error);
-      }
-    };
-
-    logAccess();
-  }, [location.pathname]); // Log on every page change
-
 
   return (
     <div className="min-h-screen font-sans text-slate-900">
@@ -318,7 +275,8 @@ const GoogleLogin: React.FC = () => {
       if (confirm('Do you want to logout?')) {
         localStorage.removeItem('user_profile');
         setUser(null);
-        if (location.pathname === '/todo') {
+        // Redirect to home if on any /todo page (including /todo/personal, /todo/dev)
+        if (location.pathname.startsWith('/todo')) {
           navigate('/');
         }
       }

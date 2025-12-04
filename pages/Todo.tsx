@@ -615,6 +615,14 @@ export const Todo: React.FC = () => {
             return;
         }
 
+        // Default deadline logic: 7 days from now if not set
+        let finalDueDate = newTodo.due_date;
+        if (!finalDueDate) {
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            finalDueDate = nextWeek.toISOString().split('T')[0];
+        }
+
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
@@ -622,6 +630,7 @@ export const Todo: React.FC = () => {
 
             const todoData = {
                 ...newTodo,
+                due_date: finalDueDate,
                 email: user.email
             };
 
