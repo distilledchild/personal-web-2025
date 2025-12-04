@@ -277,7 +277,8 @@ const Layout: React.FC = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/todo" element={<Todo />} />
+        <Route path="/todo" element={<Navigate to="/todo/personal" replace />} />
+        <Route path="/todo/:tab" element={<Todo />} />
         <Route path="/about" element={<About />} />
         <Route path="/research" element={<Navigate to="/research/peinteractions" replace />} />
         <Route path="/research/:submenu" element={<Research />} />
@@ -420,7 +421,7 @@ import { Calendar } from 'lucide-react';
 
 const CalComButton: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
   const location = useLocation();
-  const isTodoPage = location.pathname === '/todo';
+  const isTodoPage = location.pathname.startsWith('/todo');
 
   useEffect(() => {
     (async function () {

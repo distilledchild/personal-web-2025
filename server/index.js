@@ -256,6 +256,7 @@ const Workout = mongoose.model('Workout', workoutSchema);
 // TODO List Schema
 const todoListSchema = new mongoose.Schema({
     email: { type: String, required: true },
+    category: { type: String, enum: ['personal', 'dev'], default: 'personal' },
     title: { type: String, required: true },
     description: { type: String, required: true },
     status: { type: String, enum: ['pending', 'in_progress', 'completed', 'cancelled'], default: 'pending' },
@@ -265,11 +266,30 @@ const todoListSchema = new mongoose.Schema({
     end_time: Date,
     completed: { type: Boolean, default: false },
     show: { type: String, default: 'Y' },
+    sort: String, // Project ID for dev todos
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 }, { collection: 'TODO_LIST' });
 
 const TodoList = mongoose.model('TodoList', todoListSchema);
+
+// Contact Schema
+const contactSchema = new mongoose.Schema({
+    Email: { type: String, required: true },
+    GitHub: String,
+    LinkedIn: String,
+    Location: {
+        city: String,
+        state: String,
+        country: String,
+        latitude: Number,
+        longitude: Number,
+        ip: String,
+        timezone: String
+    }
+}, { collection: 'CONTACT' });
+
+const Contact = mongoose.model('Contact', contactSchema);
 
 // Access Info Schema for tracking website visitors
 const accessInfoSchema = new mongoose.Schema({
@@ -373,6 +393,10 @@ app.post('/api/access/log', async (req, res) => {
         const Model = isLocalIP(ip_address) ? AccessInfoDev : AccessInfo;
         const collectionName = isLocalIP(ip_address) ? 'ACCESS_INFO_DEV' : 'ACCESS_INFO';
 
+        // Get timezone from Contact for timestamp
+        const contact = await Contact.findOne();
+        const timezone = contact?.Location?.timezone || 'UTC';
+
         // Create access info entry
         const accessInfo = new Model({
             ip_address,
@@ -382,7 +406,7 @@ app.post('/api/access/log', async (req, res) => {
             session_id: session_id || '',
             status_code: 200,
             location: location || '',
-            timestamp: new Date()
+            timestamp: toZonedTime(new Date(), timezone)
         });
 
         console.log(`[ACCESS LOG] Saving to ${collectionName}:`, accessInfo.toObject());
@@ -1891,22 +1915,7 @@ app.post('/api/workouts/sync', async (req, res) => {
 
 
 
-// Contact Schema
-const contactSchema = new mongoose.Schema({
-    Email: { type: String, required: true },
-    GitHub: String,
-    LinkedIn: String,
-    Location: {
-        city: String,
-        state: String,
-        country: String,
-        latitude: Number,
-        longitude: Number,
-        ip: String
-    }
-}, { collection: 'CONTACT' });
 
-const Contact = mongoose.model('Contact', contactSchema);
 
 // Member Schema
 const memberSchema = new mongoose.Schema({
@@ -1970,7 +1979,7 @@ app.put('/api/contact/:id', async (req, res) => {
 
                 // Try to get coordinates from IP geolocation API
                 try {
-                    const ipUrl = userIp ? `http://ip-api.com/json/${userIp}` : 'http://ip-api.com/json/';
+                    const ipUrl = userIp ? `http://ip-api.com/json/${userIp}?fields=status,message,city,regionName,country,lat,lon,query,timezone` : 'http://ip-api.com/json/?fields=status,message,city,regionName,country,lat,lon,query,timezone';
                     console.log('Fetching IP geolocation from:', ipUrl);
 
                     const ipResponse = await fetch(ipUrl);
@@ -1986,6 +1995,7 @@ app.put('/api/contact/:id', async (req, res) => {
                             Location.city = ipData.city;
                             Location.state = ipData.regionName;
                             Location.country = ipData.country;
+                            Location.timezone = ipData.timezone;
                             console.log('IP geolocation successful:', Location);
                         } else {
                             console.log('IP geolocation failed:', ipData.message);
@@ -2016,6 +2026,18 @@ app.put('/api/contact/:id', async (req, res) => {
                             Location.latitude = parseFloat(geocodeData[0].lat);
                             Location.longitude = parseFloat(geocodeData[0].lon);
                             console.log('Geocoding successful:', { latitude: Location.latitude, longitude: Location.longitude });
+
+                            // Fetch timezone for coordinates
+                            try {
+                                const tzResponse = await fetch(`https://timeapi.io/api/TimeZone/coordinate?latitude=${Location.latitude}&longitude=${Location.longitude}`);
+                                if (tzResponse.ok) {
+                                    const tzData = await tzResponse.json();
+                                    Location.timezone = tzData.timeZone;
+                                    console.log('Timezone fetch successful:', Location.timezone);
+                                }
+                            } catch (tzErr) {
+                                console.error('Failed to fetch timezone:', tzErr);
+                            }
                         } else {
                             console.log('No geocoding results found for address:', address);
                         }
@@ -2069,8 +2091,14 @@ const timeZone = 'America/Chicago'; // US Central Time
 // Get all TODO items
 app.get('/api/todos', async (req, res) => {
     try {
+        const { category } = req.query;
+        const matchStage = { show: 'Y' };
+        if (category) {
+            matchStage.category = category;
+        }
+
         const todos = await TodoList.aggregate([
-            { $match: { show: 'Y' } },
+            { $match: matchStage },
             {
                 $addFields: {
                     priorityWeight: {
@@ -2106,7 +2134,7 @@ app.get('/api/todos', async (req, res) => {
 // Create new TODO
 app.post('/api/todos', async (req, res) => {
     try {
-        const { email, title, description, priority, due_date, start_time, end_time } = req.body;
+        const { email, category, title, description, priority, due_date, start_time, end_time, sort } = req.body;
 
         if (!email || !title || !description) {
             return res.status(400).json({ error: 'Email, title, and description are required' });
@@ -2120,6 +2148,7 @@ app.post('/api/todos', async (req, res) => {
 
         const newTodo = new TodoList({
             email,
+            category: category || 'personal',
             title,
             description,
             status: 'pending',
@@ -2129,10 +2158,12 @@ app.post('/api/todos', async (req, res) => {
             end_time: end_time ? fromZonedTime(end_time, timeZone) : null,
             completed: false,
             show: 'Y',
+            sort: sort || null,
             created_at: new Date(),
             updated_at: new Date()
         });
 
+        console.log('[TODO] Creating new todo with sort:', sort);
         await newTodo.save();
         res.status(201).json(newTodo);
     } catch (err) {
@@ -2145,7 +2176,7 @@ app.post('/api/todos', async (req, res) => {
 app.put('/api/todos/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { email, title, description, status, priority, due_date, start_time, end_time, completed } = req.body;
+        const { email, category, title, description, status, priority, due_date, start_time, end_time, completed, sort } = req.body;
 
         if (!email) {
             return res.status(400).json({ error: 'Email is required' });
@@ -2163,6 +2194,7 @@ app.put('/api/todos/:id', async (req, res) => {
         }
 
         // Update fields
+        if (category !== undefined) todo.category = category;
         if (title !== undefined) todo.title = title;
         if (description !== undefined) todo.description = description;
         if (status !== undefined) todo.status = status;
@@ -2171,8 +2203,10 @@ app.put('/api/todos/:id', async (req, res) => {
         if (start_time !== undefined) todo.start_time = start_time ? fromZonedTime(start_time, timeZone) : null;
         if (end_time !== undefined) todo.end_time = end_time ? fromZonedTime(end_time, timeZone) : null;
         if (completed !== undefined) todo.completed = completed;
+        if (sort !== undefined) todo.sort = sort || null;
         todo.updated_at = new Date();
 
+        console.log('[TODO] Updating todo with sort:', sort);
         await todo.save();
         res.json(todo);
     } catch (err) {
@@ -2210,6 +2244,184 @@ app.delete('/api/todos/:id', async (req, res) => {
         res.json({ message: 'TODO deleted successfully' });
     } catch (err) {
         console.error('Error deleting todo:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// --- PROJECT Endpoints ---
+
+// Project Schema
+const projectSchema = new mongoose.Schema({
+    project_name: { type: String, required: true },
+    github_url: String,
+    web_url: String,
+    created_at: { type: Date, default: Date.now },
+    expected_end_at: Date,
+    actual_end_at: Date,
+    description: String,
+    status: { type: String, enum: ['ongoing', 'completed', 'paused'], default: 'ongoing' },
+    team_members: [{
+        name: String,
+        role: String,
+        email: String
+    }],
+    technologies: [String],
+    tags: [String],
+    budget: Number,
+    progress_percent: { type: Number, default: 0 },
+    last_updated: { type: Date, default: Date.now },
+    show: { type: String, default: 'Y' }
+}, { collection: 'PROJECT' });
+
+const Project = mongoose.model('Project', projectSchema);
+
+// Get all Projects
+app.get('/api/projects', async (req, res) => {
+    try {
+        // Find projects where show is 'Y' or show field doesn't exist
+        const projects = await Project.find({
+            $or: [
+                { show: 'Y' },
+                { show: { $exists: false } }
+            ]
+        }).sort({ created_at: -1 });
+        console.log('[API] Fetched projects:', projects.length);
+        res.json(projects);
+    } catch (err) {
+        console.error('Error fetching projects:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get single Project by ID
+app.get('/api/projects/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const project = await Project.findById(id);
+        if (!project || project.show === 'N') {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        res.json(project);
+    } catch (err) {
+        console.error('Error fetching project:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create new Project
+app.post('/api/projects', async (req, res) => {
+    try {
+        const { email, project_name, github_url, web_url, expected_end_at, description, status, team_members, technologies, tags, budget, progress_percent } = req.body;
+
+        if (!email || !project_name) {
+            return res.status(400).json({ error: 'Email and project_name are required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const newProject = new Project({
+            project_name,
+            github_url,
+            web_url,
+            expected_end_at: expected_end_at ? new Date(expected_end_at) : null,
+            description,
+            status: status || 'ongoing',
+            team_members: team_members || [],
+            technologies: technologies || [],
+            tags: tags || [],
+            budget,
+            progress_percent: progress_percent || 0,
+            show: 'Y',
+            created_at: new Date(),
+            last_updated: new Date()
+        });
+
+        await newProject.save();
+        res.status(201).json(newProject);
+    } catch (err) {
+        console.error('Error creating project:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update Project
+app.put('/api/projects/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email, project_name, github_url, web_url, expected_end_at, actual_end_at, description, status, team_members, technologies, tags, budget, progress_percent } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const project = await Project.findById(id);
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        // Update fields
+        if (project_name !== undefined) project.project_name = project_name;
+        if (github_url !== undefined) project.github_url = github_url;
+        if (web_url !== undefined) project.web_url = web_url;
+        if (expected_end_at !== undefined) project.expected_end_at = expected_end_at ? new Date(expected_end_at) : null;
+        if (actual_end_at !== undefined) project.actual_end_at = actual_end_at ? new Date(actual_end_at) : null;
+        if (description !== undefined) project.description = description;
+        if (status !== undefined) project.status = status;
+        if (team_members !== undefined) project.team_members = team_members;
+        if (technologies !== undefined) project.technologies = technologies;
+        if (tags !== undefined) project.tags = tags;
+        if (budget !== undefined) project.budget = budget;
+        if (progress_percent !== undefined) project.progress_percent = progress_percent;
+        project.last_updated = new Date();
+
+        await project.save();
+        res.json(project);
+    } catch (err) {
+        console.error('Error updating project:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Delete Project (Soft Delete)
+app.delete('/api/projects/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const project = await Project.findById(id);
+        if (!project) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        // Soft delete: set show to 'N'
+        console.log(`[PROJECT] Soft deleting project ${id} (setting show='N')`);
+        project.show = 'N';
+        project.last_updated = new Date();
+        await project.save();
+
+        res.json({ message: 'Project deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting project:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
