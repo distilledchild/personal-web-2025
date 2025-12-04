@@ -176,21 +176,12 @@ app.get('/api/interests/art-museums', async (req, res) => {
                         delimiter: '/'
                     });
 
-                    // Filter image files and generate signed URLs (valid for 1 hour)
-                    const signedUrlPromises = files
+                    // Filter image files and use public URLs
+                    artworks = files
                         .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name))
-                        .map(async (file) => {
-                            const [signedUrl] = await file.getSignedUrl({
-                                version: 'v4',
-                                action: 'read',
-                                expires: Date.now() + 60 * 60 * 1000, // 1 hour from now
-                            });
-                            return signedUrl;
-                        });
+                        .map(file => `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${file.name}`);
 
-                    artworks = await Promise.all(signedUrlPromises);
-
-                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (signed URLs)`);
+                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (public URLs)`);
                 } catch (error) {
                     console.log(`Error reading GCS bucket for ${museum.museum_code}:`, error.message);
                 }
