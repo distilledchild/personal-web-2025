@@ -73,6 +73,10 @@ if (process.env.GCP_SERVICE_ACCOUNT_KEY) {
     // Local: file path
     console.log('Using GCS credentials from GOOGLE_APPLICATION_CREDENTIALS file');
     storageConfig.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+} else if (fs.existsSync('/app/gcs-key.json')) {
+    // Cloud Run: Secret Manager mounted key
+    console.log('Using GCS credentials from Cloud Run Secret Manager (/app/gcs-key.json)');
+    storageConfig.keyFilename = '/app/gcs-key.json';
 } else if (fs.existsSync(path.resolve(__dirname, '../service-account-key.json'))) {
     // Local: automatic detection of service-account-key.json in root
     console.log('Using GCS credentials from local service-account-key.json');
@@ -176,12 +180,21 @@ app.get('/api/interests/art-museums', async (req, res) => {
                         delimiter: '/'
                     });
 
-                    // Filter image files and use public URLs
-                    artworks = files
+                    // Filter image files and generate signed URLs (valid for 1 hour)
+                    const signedUrlPromises = files
                         .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name))
-                        .map(file => `https://storage.googleapis.com/${GCS_BUCKET_NAME}/${file.name}`);
+                        .map(async (file) => {
+                            const [signedUrl] = await file.getSignedUrl({
+                                version: 'v4',
+                                action: 'read',
+                                expires: Date.now() + 60 * 60 * 1000, // 1 hour
+                            });
+                            return signedUrl;
+                        });
 
-                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (public URLs)`);
+                    artworks = await Promise.all(signedUrlPromises);
+
+                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (signed URLs)`);
                 } catch (error) {
                     console.log(`Error reading GCS bucket for ${museum.museum_code}:`, error.message);
                 }
