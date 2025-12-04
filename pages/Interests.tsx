@@ -180,7 +180,8 @@ export const Interests: React.FC = () => {
     useEffect(() => {
         const API_URL = window.location.hostname === 'localhost'
             ? 'http://localhost:4000'
-            : 'https://personal-web-2025-production.up.railway.app';
+            // : 'https://api.distilledchild.space';
+            : 'https://api.distilledchild.space';
 
         if (activeTab === 'art') {
             // Reset expanded state when entering Art submenu
@@ -271,7 +272,8 @@ export const Interests: React.FC = () => {
     useEffect(() => {
         const API_URL = window.location.hostname === 'localhost'
             ? 'http://localhost:4000'
-            : 'https://personal-web-2025-production.up.railway.app';
+            // : 'https://api.distilledchild.space';
+            : 'https://api.distilledchild.space';
 
         const fetchStates = async () => {
             try {

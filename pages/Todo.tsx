@@ -75,7 +75,8 @@ const WeatherWidget: React.FC = () => {
                     // 1. Get location from Contact API
                     const API_URL = window.location.hostname === 'localhost'
                         ? 'http://localhost:4000'
-                        : 'https://personal-web-2025-production.up.railway.app';
+                        // : 'https://api.distilledchild.space';
+                        : 'https://api.distilledchild.space';
 
                     const contactResponse = await fetch(`${API_URL}/api/contact`);
                     if (contactResponse.ok) {
@@ -478,7 +479,8 @@ export const Todo: React.FC = () => {
                     // Check authorization
                     const API_URL = window.location.hostname === 'localhost'
                         ? 'http://localhost:4000'
-                        : 'https://personal-web-2025-production.up.railway.app';
+                        // : 'https://api.distilledchild.space';
+                        : 'https://api.distilledchild.space';
 
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     const data = await response.json();
@@ -494,7 +496,8 @@ export const Todo: React.FC = () => {
             try {
                 const API_URL = window.location.hostname === 'localhost'
                     ? 'http://localhost:4000'
-                    : 'https://personal-web-2025-production.up.railway.app';
+                    // : 'https://api.distilledchild.space';
+                    : 'https://api.distilledchild.space';
 
                 const response = await fetch(`${API_URL}/api/contact`);
                 if (response.ok) {
@@ -565,7 +568,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const response = await fetch(`${API_URL}/api/todos`);
             if (response.ok) {
@@ -583,7 +587,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             console.log('[TODO] Fetching projects from:', `${API_URL}/api/projects`);
             const response = await fetch(`${API_URL}/api/projects`);
@@ -626,7 +631,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const todoData = {
                 ...newTodo,
@@ -680,7 +686,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const response = await fetch(`${API_URL}/api/todos/${selectedTodo._id}`, {
                 method: 'PUT',
@@ -717,7 +724,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
                 method: 'DELETE',
@@ -803,7 +811,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const method = selectedProject ? 'PUT' : 'POST';
             const url = selectedProject
@@ -845,7 +854,8 @@ export const Todo: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const response = await fetch(`${API_URL}/api/projects/${projectId}`, {
                 method: 'DELETE',
@@ -1331,7 +1341,8 @@ export const Todo: React.FC = () => {
                                                 try {
                                                     const API_URL = window.location.hostname === 'localhost'
                                                         ? 'http://localhost:4000'
-                                                        : 'https://personal-web-2025-production.up.railway.app';
+                                                        // : 'https://api.distilledchild.space';
+                                                        : 'https://api.distilledchild.space';
 
                                                     const todo = todos.find(t => t._id === todoId);
                                                     const response = await fetch(`${API_URL}/api/todos/${todoId}`, {

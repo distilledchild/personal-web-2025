@@ -119,7 +119,8 @@ export const About: React.FC = () => {
                 try {
                     const API_URL = window.location.hostname === 'localhost'
                         ? 'http://localhost:4000'
-                        : 'https://personal-web-2025-production.up.railway.app';
+                        // : 'https://api.distilledchild.space';
+                        : 'https://api.distilledchild.space';
 
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     if (response.ok) {
@@ -165,7 +166,8 @@ export const About: React.FC = () => {
 
     const API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:4000'
-        : 'https://personal-web-2025-production.up.railway.app';
+        // : 'https://api.distilledchild.space';
+        : 'https://api.distilledchild.space';
 
     // Fetch functions
     const fetchMilestones = async () => {

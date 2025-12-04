@@ -31,7 +31,8 @@ export const StravaCallback: React.FC = () => {
             try {
                 const API_URL = window.location.hostname === 'localhost'
                     ? 'http://localhost:4000'
-                    : 'https://personal-web-2025-production.up.railway.app';
+                    // : 'https://api.distilledchild.space';
+                    : 'https://api.distilledchild.space';
 
                 // Exchange code for access token
                 const tokenResponse = await fetch(`${API_URL}/api/strava/exchange_token`, {

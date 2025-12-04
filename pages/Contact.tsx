@@ -21,7 +21,8 @@ export const Contact: React.FC = () => {
 
     const API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:4000'
-        : 'https://personal-web-2025-production.up.railway.app';
+        // : 'https://api.distilledchild.space';
+        : 'https://api.distilledchild.space';
 
     // Fetch user's IP-based location
     useEffect(() => {

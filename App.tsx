@@ -86,7 +86,7 @@ const Layout: React.FC = () => {
           // Check authorization from MEMBER collection
           const API_URL = window.location.hostname === 'localhost'
             ? 'http://localhost:4000'
-            : 'https://personal-web-2025-production.up.railway.app';
+            : 'https://api.distilledchild.space';
 
           const response = await fetch(`${API_URL}/api/member/role/${userData.email}`);
           if (response.ok) {
@@ -285,7 +285,7 @@ const GoogleLogin: React.FC = () => {
 
     const isProduction = window.location.hostname !== 'localhost';
     const redirectUri = isProduction
-      ? 'https://www.distilledchild.space/oauth/google/callback'
+      ? 'https://api.distilledchild.space/api/auth/google'
       : 'http://localhost:3000/oauth/google/callback';
 
     const params = new URLSearchParams({
@@ -333,7 +333,7 @@ const OAuthCallback: React.FC = () => {
     if (code) {
       const API_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:4000/api/auth/google'
-        : 'https://personal-web-2025-production.up.railway.app/api/auth/google';
+        : 'https://api.distilledchild.space/api/auth/google';
 
       fetch(API_URL, {
         method: 'POST',

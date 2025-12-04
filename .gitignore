@@ -26,3 +26,4 @@ dist-ssr
 *-key.json
 public/data
 queries/
+GCP_RUN_SETUP_GUIDE.md

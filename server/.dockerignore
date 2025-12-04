@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+*.md
+chat_logs
+nixpacks.toml
+railway.json
+seed_milestones.js
+update-projects.js

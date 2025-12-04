@@ -35,7 +35,8 @@ export const Blog: React.FC = () => {
             try {
                 const API_URL = window.location.hostname === 'localhost'
                     ? 'http://localhost:4000'
-                    : 'https://personal-web-2025-production.up.railway.app';
+                    // : 'https://api.distilledchild.space';
+                    : 'https://api.distilledchild.space';
 
                 console.log('Fetching from:', `${API_URL}/api/tech-blog`);
                 const response = await fetch(`${API_URL}/api/tech-blog`);
@@ -73,7 +74,8 @@ export const Blog: React.FC = () => {
                     // Check authorization from MEMBER collection
                     const API_URL = window.location.hostname === 'localhost'
                         ? 'http://localhost:4000'
-                        : 'https://personal-web-2025-production.up.railway.app';
+                        // : 'https://api.distilledchild.space';
+                        : 'https://api.distilledchild.space';
 
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     if (response.ok) {
@@ -137,7 +139,8 @@ export const Blog: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const response = await fetch(`${API_URL}/api/tech-blog/${postId}/like`, {
                 method: 'POST',
@@ -198,7 +201,8 @@ export const Blog: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
             console.log('[FRONTEND] Sending UPDATE with tags:', tagsArray);
@@ -256,7 +260,8 @@ export const Blog: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
                 method: 'DELETE',
@@ -312,7 +317,8 @@ export const Blog: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             // If OPAL is checked, call OPAL API
             if (useOpal) {
@@ -418,7 +424,8 @@ export const Blog: React.FC = () => {
         try {
             const API_URL = window.location.hostname === 'localhost'
                 ? 'http://localhost:4000'
-                : 'https://personal-web-2025-production.up.railway.app';
+                // : 'https://api.distilledchild.space';
+                : 'https://api.distilledchild.space';
 
             const formData = new FormData();
             formData.append('image', file);

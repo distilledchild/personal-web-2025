@@ -32,6 +32,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Root route for health check
+app.get('/', (req, res) => {
+    res.send('Hello from Cloud Run! 🚀 Server is running correctly.');
+});
+
 // Load environment variables
 import dotenv from 'dotenv';
 
