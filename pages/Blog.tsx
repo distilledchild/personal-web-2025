@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BlogPostModal } from '../components/BlogPostModal';
+import { API_URL } from '../utils/apiConfig';
 
 export const Blog: React.FC = () => {
     const location = useLocation();
@@ -34,11 +35,6 @@ export const Blog: React.FC = () => {
         // Fetch blog posts
         const fetchBlogs = async () => {
             try {
-                const API_URL = window.location.hostname === 'localhost'
-                    ? 'http://localhost:4000'
-                    // : 'https://api.distilledchild.space';
-                    : 'https://api.distilledchild.space';
-
                 console.log('Fetching from:', `${API_URL}/api/tech-blog`);
                 const response = await fetch(`${API_URL}/api/tech-blog`);
                 console.log('Response status:', response.status);
@@ -73,10 +69,7 @@ export const Blog: React.FC = () => {
                     });
 
                     // Check authorization from MEMBER collection
-                    const API_URL = window.location.hostname === 'localhost'
-                        ? 'http://localhost:4000'
-                        // : 'https://api.distilledchild.space';
-                        : 'https://api.distilledchild.space';
+
 
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     if (response.ok) {
@@ -138,10 +131,7 @@ export const Blog: React.FC = () => {
         }
 
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                // : 'https://api.distilledchild.space';
-                : 'https://api.distilledchild.space';
+
 
             const response = await fetch(`${API_URL}/api/tech-blog/${postId}/like`, {
                 method: 'POST',
@@ -210,10 +200,7 @@ export const Blog: React.FC = () => {
         if (selectedPost === null || !allPosts[selectedPost]) return;
 
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                // : 'https://api.distilledchild.space';
-                : 'https://api.distilledchild.space';
+
 
             const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
             console.log('[FRONTEND] Sending UPDATE with tags:', tagsArray);
@@ -269,10 +256,7 @@ export const Blog: React.FC = () => {
         if (selectedPost === null || !allPosts[selectedPost]) return;
 
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                // : 'https://api.distilledchild.space';
-                : 'https://api.distilledchild.space';
+
 
             const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
                 method: 'DELETE',
@@ -326,10 +310,7 @@ export const Blog: React.FC = () => {
         }
 
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                // : 'https://api.distilledchild.space';
-                : 'https://api.distilledchild.space';
+
 
             // If OPAL is checked, call OPAL API
             if (useOpal) {
@@ -433,10 +414,7 @@ export const Blog: React.FC = () => {
 
         setUploadingImage(true);
         try {
-            const API_URL = window.location.hostname === 'localhost'
-                ? 'http://localhost:4000'
-                // : 'https://api.distilledchild.space';
-                : 'https://api.distilledchild.space';
+
 
             const formData = new FormData();
             formData.append('image', file);

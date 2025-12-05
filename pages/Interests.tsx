@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Plane, Dumbbell, BarChart3, ChevronLeft, ChevronRight, PersonStanding, Footprints, Bike, Palette, MapPin, X } from 'lucide-react';
 import { ComposableMap, Geographies, Geography, Marker, Annotation } from 'react-simple-maps';
 import { geoCentroid, geoAlbersUsa } from 'd3-geo';
+import { API_URL } from '../utils/apiConfig';
 import {
     ComposedChart,
     Line,
@@ -178,11 +179,6 @@ export const Interests: React.FC = () => {
     const [activeDataTab, setActiveDataTab] = useState<'urban' | 'weather' | 'fc26'>('urban');
 
     useEffect(() => {
-        const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:4000'
-            // : 'https://api.distilledchild.space';
-            : 'https://api.distilledchild.space';
-
         if (activeTab === 'art') {
             // Reset expanded state when entering Art submenu
             setExpandedState(null);
@@ -219,11 +215,6 @@ export const Interests: React.FC = () => {
     };
 
     useEffect(() => {
-        const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:4000'
-            // : 'https://api.distilledchild.space';
-            : 'https://api.distilledchild.space';
-
         const fetchStates = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/travel/states`);

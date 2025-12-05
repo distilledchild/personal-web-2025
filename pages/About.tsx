@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, Trash2 } from 'lucide-react';
+import { API_URL } from '../utils/apiConfig';
 
 interface Milestone {
     _id: string;
@@ -117,11 +118,6 @@ export const About: React.FC = () => {
 
                 // Check authorization from MEMBER collection
                 try {
-                    const API_URL = window.location.hostname === 'localhost'
-                        ? 'http://localhost:4000'
-                        // : 'https://api.distilledchild.space';
-                        : 'https://api.distilledchild.space';
-
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     if (response.ok) {
                         const data = await response.json();
@@ -163,11 +159,6 @@ export const About: React.FC = () => {
             fetchAboutAcademic();
         }
     }, [activeTab]);
-
-    const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:4000'
-        // : 'https://api.distilledchild.space';
-        : 'https://api.distilledchild.space';
 
     // Fetch functions
     const fetchMilestones = async () => {

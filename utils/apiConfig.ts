@@ -6,7 +6,7 @@
 /**
  * Get the API base URL based on environment
  * - Development (localhost): http://localhost:4000
- * - Production: https://personal-web-backend-495733529369.us-central1.run.app
+ * - Production: https://api.distilledchild.space
  */
 export const getApiUrl = (): string => {
     // Check if we're in development (localhost)
@@ -14,11 +14,12 @@ export const getApiUrl = (): string => {
         return 'http://localhost:4000';
     }
 
-    // Production URL
-    return 'https://personal-web-backend-495733529369.us-central1.run.app';
+    // Production URL (custom domain with CORS configured)
+    return 'https://api.distilledchild.space';
 };
 
 /**
  * API_URL constant for convenience
  */
 export const API_URL = getApiUrl();
+

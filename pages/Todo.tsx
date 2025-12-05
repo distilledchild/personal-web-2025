@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { TodoPersonal } from './TodoPersonal';
 import { TodoDev } from './TodoDev';
-import { getApiUrl } from '../components/TodoComponents';
+import { API_URL } from '../utils/apiConfig';
 
 export const Todo: React.FC = () => {
     // ============================================================================
@@ -36,7 +36,6 @@ export const Todo: React.FC = () => {
                     setUser(parsedUser);
 
                     // Check authorization
-                    const API_URL = getApiUrl();
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     const data = await response.json();
                     setIsAuthorized(data.authorized);
@@ -49,7 +48,6 @@ export const Todo: React.FC = () => {
 
         const fetchProjects = async () => {
             try {
-                const API_URL = getApiUrl();
                 const response = await fetch(`${API_URL}/api/projects`);
                 if (response.ok) {
                     const data = await response.json();

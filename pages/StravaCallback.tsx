@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { API_URL } from '../utils/apiConfig';
 
 export const StravaCallback: React.FC = () => {
     const navigate = useNavigate();
@@ -29,11 +30,6 @@ export const StravaCallback: React.FC = () => {
             }
 
             try {
-                const API_URL = window.location.hostname === 'localhost'
-                    ? 'http://localhost:4000'
-                    // : 'https://api.distilledchild.space';
-                    : 'https://api.distilledchild.space';
-
                 // Exchange code for access token
                 const tokenResponse = await fetch(`${API_URL}/api/strava/exchange_token`, {
                     method: 'POST',

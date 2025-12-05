@@ -9,6 +9,7 @@ import { Blog } from './pages/Blog';
 import { Interests } from './pages/Interests';
 import { Contact } from './pages/Contact';
 import { StravaCallback } from './pages/StravaCallback';
+import { API_URL } from './utils/apiConfig';
 
 const Home: React.FC = () => (
   <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
@@ -84,10 +85,6 @@ const Layout: React.FC = () => {
           setUserRole(userData.role);
 
           // Check authorization from MEMBER collection
-          const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:4000'
-            : 'https://api.distilledchild.space';
-
           const response = await fetch(`${API_URL}/api/member/role/${userData.email}`);
           if (response.ok) {
             const data = await response.json();
@@ -336,11 +333,7 @@ const OAuthCallback: React.FC = () => {
 
   useEffect(() => {
     if (code) {
-      const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:4000/api/auth/google'
-        : 'https://api.distilledchild.space/api/auth/google';
-
-      fetch(API_URL, {
+      fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })

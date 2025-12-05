@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
+import { API_URL } from '../utils/apiConfig';
 
 // ============================================================================
 // ANALOG CLOCK COMPONENT
@@ -76,10 +77,6 @@ export const WeatherWidget: React.FC = () => {
 
                 try {
                     // 1. Get location from Contact API
-                    const API_URL = window.location.hostname === 'localhost'
-                        ? 'http://localhost:4000'
-                        : 'https://api.distilledchild.space';
-
                     const contactResponse = await fetch(`${API_URL}/api/contact`);
                     if (contactResponse.ok) {
                         const contactData = await contactResponse.json();
@@ -351,12 +348,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
-export const getApiUrl = () => {
-    return window.location.hostname === 'localhost'
-        ? 'http://localhost:4000'
-        : 'https://api.distilledchild.space';
-};
-
 export const sortTodos = (todosToSort: any[]) => {
     return [...todosToSort].sort((a, b) => {
         // 1. Priority: High > Medium > Low

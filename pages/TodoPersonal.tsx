@@ -3,7 +3,6 @@ import { Plus, Bell } from 'lucide-react';
 import {
     AnalogClock,
     WeatherWidget,
-    getApiUrl,
     sortTodos,
     formatDate,
     getPriorityColor,
@@ -14,6 +13,7 @@ import {
     SuccessPopup,
     TodoFormData
 } from '../components/TodoComponents';
+import { API_URL } from '../utils/apiConfig';
 
 interface TodoPersonalProps {
     user: any;
@@ -68,7 +68,6 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
     // ============================================================================
     const fetchTodos = async () => {
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/todos`);
             if (response.ok) {
                 const data = await response.json();
@@ -85,7 +84,6 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
 
     const fetchLocationTimezone = async () => {
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/contact`);
             if (response.ok) {
                 const data = await response.json();
@@ -145,7 +143,6 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
         }
 
         try {
-            const API_URL = getApiUrl();
             const todoData = {
                 ...formData,
                 due_date: finalDueDate,
@@ -186,7 +183,6 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
         if (!selectedTodo || !user || !user.email) return;
 
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/todos/${selectedTodo._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -225,7 +221,6 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
         }
 
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },

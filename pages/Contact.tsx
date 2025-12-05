@@ -1,5 +1,6 @@
 import { Github, Mail, MapPin, Plus, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../utils/apiConfig';
 
 export const Contact: React.FC = () => {
     const [showCopied, setShowCopied] = useState(false);
@@ -18,11 +19,6 @@ export const Contact: React.FC = () => {
         state: '',
         country: ''
     });
-
-    const API_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:4000'
-        // : 'https://api.distilledchild.space';
-        : 'https://api.distilledchild.space';
 
     // Fetch user's IP-based location
     useEffect(() => {

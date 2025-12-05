@@ -6,7 +6,6 @@ import {
     AnalogClock,
     WeatherWidget,
     KanbanBoard,
-    getApiUrl,
     sortTodos,
     formatDate,
     getPriorityColor,
@@ -16,6 +15,7 @@ import {
     SuccessPopup,
     TodoFormData
 } from '../components/TodoComponents';
+import { API_URL } from '../utils/apiConfig';
 
 interface TodoDevProps {
     user: any;
@@ -107,7 +107,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
     // ============================================================================
     const fetchTodos = async () => {
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/todos`);
             if (response.ok) {
                 const data = await response.json();
@@ -124,7 +123,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
 
     const fetchProjects = async () => {
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/projects`);
             if (response.ok) {
                 const data = await response.json();
@@ -137,7 +135,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
 
     const fetchLocationTimezone = async () => {
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/contact`);
             if (response.ok) {
                 const data = await response.json();
@@ -197,7 +194,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
         }
 
         try {
-            const API_URL = getApiUrl();
             const todoData = {
                 ...formData,
                 due_date: finalDueDate,
@@ -238,7 +234,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
         if (!selectedTodo || !user || !user.email) return;
 
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/todos/${selectedTodo._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -277,7 +272,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
         }
 
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -298,7 +292,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
     const handleUpdateStatus = async (todoId: string, newStatus: string) => {
         if (!user || !user.email) return;
         try {
-            const API_URL = getApiUrl();
             const todo = todos.find(t => t._id === todoId);
             const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
                 method: 'PUT',
@@ -380,7 +373,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
         }
 
         try {
-            const API_URL = getApiUrl();
             const projectData = {
                 ...projectFormData,
                 email: user.email,
@@ -421,7 +413,6 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
         }
 
         try {
-            const API_URL = getApiUrl();
             const response = await fetch(`${API_URL}/api/projects/${projectId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
