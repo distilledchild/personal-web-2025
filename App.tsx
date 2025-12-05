@@ -290,7 +290,7 @@ const GoogleLogin: React.FC = () => {
 
     const isProduction = window.location.hostname !== 'localhost';
     const redirectUri = isProduction
-      ? 'https://api.distilledchild.space/api/auth/google'
+      ? 'https://www.distilledchild.space/oauth/google/callback'
       : 'http://localhost:3000/oauth/google/callback';
 
     const params = new URLSearchParams({
