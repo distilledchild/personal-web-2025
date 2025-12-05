@@ -27,3 +27,7 @@ dist-ssr
 public/data
 queries/
 GCP_RUN_SETUP_GUIDE.md
+
+# Davia
+.davia/
+.claude/skills/davia-documentation/SKILL.md

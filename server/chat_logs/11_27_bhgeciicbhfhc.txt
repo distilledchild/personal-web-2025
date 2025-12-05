@@ -1,8 +1,0 @@
-
-=== Chat Session: 2025-11-28T00:03:50.189Z ===
-User: bhgeciicbhfhc
-Session ID: 1764288217572-rsvfrf1yi
-
-[bhgeciicbhfhc]: 안녕
-
-=== End of Session ===
