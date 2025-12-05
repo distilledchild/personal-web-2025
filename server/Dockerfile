@@ -12,6 +12,8 @@ RUN npm ci --only=production
 
 # Copy application code
 COPY index.js ./
+COPY sync-artworks.js ./
+COPY utils ./utils
 
 # Set environment variables
 ENV NODE_ENV=production
