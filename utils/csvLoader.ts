@@ -1,7 +1,10 @@
 // Utility functions to load and parse CSV data
+import { getSignedUrl } from './signedUrlHelper';
 
-// Base URL for CSV data files
-const CSV_BASE_URL = 'https://storage.googleapis.com/distilledchild/research/hic-browser/';
+// Wrapper function for research category
+async function getResearchSignedUrl(fileName: string): Promise<string> {
+    return getSignedUrl('research', fileName);
+}
 
 export interface LoopDataRow {
     loop_id: string;
@@ -85,7 +88,8 @@ export async function loadLoopData(): Promise<LoopDataRow[]> {
     if (dataCache.loops['all']) return dataCache.loops['all'];
 
     try {
-        const response = await fetch(`${CSV_BASE_URL}loop_data.csv`);
+        const url = await getResearchSignedUrl('loop_data.csv');
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to load loop data');
 
         const csvText = await response.text();
@@ -123,7 +127,8 @@ export async function loadChromosomeData(): Promise<ChromosomeDataRow[]> {
     if (dataCache.chromosomes) return dataCache.chromosomes;
 
     try {
-        const response = await fetch(`${CSV_BASE_URL}chromosome_data.csv`);
+        const url = await getResearchSignedUrl('chromosome_data.csv');
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to load chromosome data');
 
         const csvText = await response.text();
@@ -148,7 +153,8 @@ export async function loadGeneData(): Promise<GeneDataRow[]> {
     if (dataCache.genes['all']) return dataCache.genes['all'];
 
     try {
-        const response = await fetch(`${CSV_BASE_URL}gene_tss_and_pro.csv`);
+        const url = await getResearchSignedUrl('gene_tss_and_pro.csv');
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to load gene data');
 
         const csvText = await response.text();
@@ -183,7 +189,8 @@ export async function loadLoopDataForChr(chr: string): Promise<LoopDataRow[]> {
     if (dataCache.loops[chr]) return dataCache.loops[chr];
 
     try {
-        const response = await fetch(`${CSV_BASE_URL}loop_data_${chr}.csv`);
+        const url = await getResearchSignedUrl(`loop_data_${chr}.csv`);
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`Failed to load loop data for ${chr}`);
 
         const csvText = await response.text();
@@ -221,7 +228,8 @@ export async function loadGeneDataForChr(chr: string): Promise<GeneDataRow[]> {
     if (dataCache.genes[chr]) return dataCache.genes[chr];
 
     try {
-        const response = await fetch(`${CSV_BASE_URL}gene_tss_and_pro_${chr}.csv`);
+        const url = await getResearchSignedUrl(`gene_tss_and_pro_${chr}.csv`);
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`Failed to load gene data for ${chr}`);
 
         const csvText = await response.text();

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { FileText, GitBranch, Database, Sliders, Search } from 'lucide-react';
-import { GenomeVisualizationEnhanced as GenomeVisualization } from '../components/GenomeVisualizationEnhanced';
+import { ResearchHiCBrowser } from './ResearchHiCBrowser';
 
 const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
   name: `Loc ${i * 10}kb`,
@@ -166,10 +166,10 @@ export const Research: React.FC = () => {
   const navigate = useNavigate();
 
   const tabs = [
+    { label: 'Hi-C Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' },
     { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
     { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
     { label: 'DL & Enhancer', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
-    { label: 'Hi-C Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' },
   ];
 
   // Determine active tab from URL, default to first tab
@@ -238,26 +238,10 @@ export const Research: React.FC = () => {
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto px-6 pb-20">
         <div className="max-w-7xl mx-auto pt-8">
-          {activeTab === 0 && <PEInteractions />}
-          {activeTab === 1 && <SingleCell />}
-          {activeTab === 2 && <EnhancerID />}
-          {activeTab === 3 && (
-            <div className='space-y-8 animate-fadeIn'>
-              <div className="border-b border-slate-100 pb-6">
-                <h3 className='text-2xl font-bold text-slate-900 flex items-center gap-3'>
-                  <Search size={24} className="text-teal-500" />
-                  Hi-C Browser - Chromatin Loops & Gene Regulation
-                </h3>
-                <p className='text-slate-500 mt-2 text-lg'>
-                  Interactive visualization of chromatin loops, transcription start site (TSS)/promoter locations, and gene last exon positions
-                </p>
-              </div>
-
-              <div className='h-[500px] flex flex-col'>
-                <GenomeVisualization />
-              </div>
-            </div>
-          )}
+          {activeTab === 0 && <ResearchHiCBrowser />}
+          {activeTab === 1 && <PEInteractions />}
+          {activeTab === 2 && <SingleCell />}
+          {activeTab === 3 && <EnhancerID />}
         </div>
       </div>
     </div>

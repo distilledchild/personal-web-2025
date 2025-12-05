@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { generateSignedUrl, generateSignedUrlsForPrefix, isValidFilePath } from './utils/gcsHelper.js';
 
 
 
@@ -173,26 +174,14 @@ app.get('/api/interests/art-museums', async (req, res) => {
 
             if (museum.museum_code) {
                 try {
-                    // List files in the bucket for this museum
-                    const bucket = storage.bucket(GCS_BUCKET_NAME);
-                    const [files] = await bucket.getFiles({
-                        prefix: `interests/art/${museum.museum_code}/`,
-                        delimiter: '/'
-                    });
-
-                    // Filter image files and generate signed URLs (valid for 1 hour)
-                    const signedUrlPromises = files
-                        .filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name))
-                        .map(async (file) => {
-                            const [signedUrl] = await file.getSignedUrl({
-                                version: 'v4',
-                                action: 'read',
-                                expires: Date.now() + 60 * 60 * 1000, // 1 hour
-                            });
-                            return signedUrl;
-                        });
-
-                    artworks = await Promise.all(signedUrlPromises);
+                    // Generate signed URLs for all images in museum folder
+                    artworks = await generateSignedUrlsForPrefix(
+                        storage,
+                        GCS_BUCKET_NAME,
+                        `interests/art/${museum.museum_code}/`,
+                        /\.(png|jpg|jpeg|gif|webp)$/i,
+                        60 // 1 hour expiry
+                    );
 
                     console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (signed URLs)`);
                 } catch (error) {
@@ -216,6 +205,39 @@ app.get('/api/interests/art-museums', async (req, res) => {
         res.json(enrichedMuseums);
     } catch (err) {
         console.error('Error fetching art museums:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get Signed URLs for HiC Browser data files
+app.get('/api/research/hic-data', async (req, res) => {
+    try {
+        const { fileName } = req.query;
+
+        if (!fileName) {
+            return res.status(400).json({ error: 'fileName parameter is required' });
+        }
+
+        // Validate fileName to prevent path traversal
+        if (!isValidFilePath(fileName)) {
+            return res.status(400).json({ error: 'Invalid fileName' });
+        }
+
+        const GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME || 'distilledchild';
+        const filePath = `research/hic-browser/${fileName}`;
+
+        // Generate signed URL using helper function
+        const signedUrl = await generateSignedUrl(storage, GCS_BUCKET_NAME, filePath, 60);
+
+        res.json({ url: signedUrl });
+    } catch (err) {
+        console.error('Error generating signed URL for HiC data:', err);
+
+        // Return appropriate error based on error message
+        if (err.message && err.message.includes('not found')) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
         res.status(500).json({ error: 'Internal server error' });
     }
 });

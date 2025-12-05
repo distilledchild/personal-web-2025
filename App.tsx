@@ -39,7 +39,7 @@ const Home: React.FC = () => (
     {/* Instruction Text - Centered and Animated */}
     <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none hidden md:block">
       <p className="text-lg md:text-xl text-white font-light animate-double-blink">
-        Drag or Scroll to Interact!!
+        Drag or Scroll to Interact
       </p>
     </div>
   </div>
@@ -147,10 +147,10 @@ const Layout: React.FC = () => {
         </Link>
       </div>
 
-      {/* Hamburger Menu Button - Mobile Only */}
+      {/* Hamburger Menu Button - Visible on screens smaller than xl */}
       <button
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="fixed top-0 right-0 z-50 p-6 lg:hidden pointer-events-auto"
+        className="fixed top-0 right-0 z-50 p-6 xl:hidden pointer-events-auto"
         aria-label="Toggle menu"
       >
         <div className="w-8 h-8 flex flex-col justify-center items-center gap-1.5">
@@ -163,15 +163,20 @@ const Layout: React.FC = () => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden animate-modalBackdrop"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 xl:hidden animate-modalBackdrop"
           onClick={() => setMobileMenuOpen(false)}
         >
           <div className="fixed top-20 right-4 bg-white rounded-3xl shadow-2xl p-6 animate-modalContent" onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col gap-4">
+              {isAuthorized && (
+                <Link to="/todo" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-gray-500 hover:text-gray-300 transition-colors px-4 py-2">
+                  TODO
+                </Link>
+              )}
               <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-blue-500 hover:text-blue-300 transition-colors px-4 py-2">
                 About
               </Link>
-              <Link to="/research/peinteractions" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-teal-500 hover:text-teal-300 transition-colors px-4 py-2">
+              <Link to="/research/hicbrowser" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-teal-500 hover:text-teal-300 transition-colors px-4 py-2">
                 Research
               </Link>
               <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
@@ -188,8 +193,8 @@ const Layout: React.FC = () => {
         </div>
       )}
 
-      {/* Navigation Bar - Desktop Only */}
-      <nav className="fixed top-0 right-0 w-full z-50 p-4 md:p-8 justify-end pointer-events-none hidden lg:flex">
+      {/* Navigation Bar - Desktop Only - Hidden on small screens */}
+      <nav className="fixed top-0 right-0 w-full z-50 p-4 md:p-8 justify-end pointer-events-none hidden xl:flex">
         <div className="pointer-events-auto flex gap-3 items-center bg-white/0 backdrop-blur-none">
           {isAuthorized && (
             <LiquidTab
@@ -206,7 +211,7 @@ const Layout: React.FC = () => {
             colorClass="text-blue-500 hover:text-blue-300"
           />
           <LiquidTab
-            to="/research/peinteractions"
+            to="/research/hicbrowser"
             label="Research"
             active={location.pathname.startsWith('/research')}
             colorClass="text-teal-500 hover:text-teal-300"
@@ -237,7 +242,7 @@ const Layout: React.FC = () => {
         <Route path="/todo" element={<Navigate to="/todo/personal" replace />} />
         <Route path="/todo/:tab" element={<Todo />} />
         <Route path="/about" element={<About />} />
-        <Route path="/research" element={<Navigate to="/research/peinteractions" replace />} />
+        <Route path="/research" element={<Navigate to="/research/hicbrowser" replace />} />
         <Route path="/research/:submenu" element={<Research />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/interests" element={<Navigate to="/interests/data" replace />} />

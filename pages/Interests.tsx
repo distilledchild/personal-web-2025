@@ -211,62 +211,11 @@ export const Interests: React.FC = () => {
         }
     };
 
-    // Function to load artworks from public/art-images/{museum_code} folder
-    const loadArtworksForMuseum = async (museum: ArtMuseum): Promise<ArtMuseum> => {
-        const museumCode = museum.museum_code;
-        const basePath = `/art-images/${museumCode}`;
-
-        try {
-            // We can't directly list files in a static folder from the frontend,
-            // so we'll try to load images by convention (e.g., NOMA1.JPG, NOMA2.JPG, etc.)
-            // We'll try up to 50 images and filter out the ones that don't exist
-            const artworkPromises: Promise<string | null>[] = [];
-
-            // Try loading images with common naming patterns
-            for (let i = 1; i <= 50; i++) {
-                // Try both .JPG and .jpg extensions
-                const imagePathJPG = `${basePath}/${museumCode}${i}.JPG`;
-                const imagePathJpg = `${basePath}/${museumCode}${i}.jpg`;
-                const imagePathPNG = `${basePath}/${museumCode}${i}.PNG`;
-                const imagePathPng = `${basePath}/${museumCode}${i}.png`;
-
-                // Create a promise that resolves to the path if image exists, null otherwise
-                const checkImage = async (path: string): Promise<string | null> => {
-                    return new Promise((resolve) => {
-                        const img = new Image();
-                        img.onload = () => resolve(path);
-                        img.onerror = () => resolve(null);
-                        img.src = path;
-                    });
-                };
-
-                artworkPromises.push(
-                    checkImage(imagePathJPG).then(result => result || checkImage(imagePathJpg)).then(result => result || checkImage(imagePathPNG)).then(result => result || checkImage(imagePathPng))
-                );
-            }
-
-            const results = await Promise.all(artworkPromises);
-            const localArtworks = results.filter((path): path is string => path !== null);
-
-            // Merge with existing artworks (from backend/GCS)
-            const existingArtworks = museum.artworks || [];
-            // distinct artworks
-            const allArtworks = Array.from(new Set([...existingArtworks, ...localArtworks]));
-
-            return {
-                ...museum,
-                artworks: allArtworks
-            };
-        } catch (error) {
-            console.error('Failed to load artworks for museum:', museum.museum_name, error);
-            return museum;
-        }
-    };
 
     // Handler for museum pin click
     const handleMuseumClick = async (museum: ArtMuseum) => {
-        const museumWithArtworks = await loadArtworksForMuseum(museum);
-        setSelectedMuseum(museumWithArtworks);
+        // Artworks are already loaded from backend API
+        setSelectedMuseum(museum);
     };
 
     useEffect(() => {

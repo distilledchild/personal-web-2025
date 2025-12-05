@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { BlogPostModal } from '../components/BlogPostModal';
 
 export const Blog: React.FC = () => {
     const location = useLocation();
@@ -15,7 +16,7 @@ export const Blog: React.FC = () => {
     const [toastMessage, setToastMessage] = React.useState('');
     const [toastPos, setToastPos] = React.useState({ x: 0, y: 0 });
     const [isEditMode, setIsEditMode] = React.useState(false);
-    const [editData, setEditData] = React.useState({ category: '', title: '', content: '', tags: '' });
+    const [editData, setEditData] = React.useState({ category: '', title: '', content: '', tags: '', existingImages: [] as string[] });
     const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
     const [isCreateMode, setIsCreateMode] = React.useState(false);
@@ -184,11 +185,21 @@ export const Blog: React.FC = () => {
     // Handle edit button click
     const handleEdit = () => {
         if (selectedPost !== null && allPosts[selectedPost]) {
+            const content = allPosts[selectedPost].content || '';
+            // Extract existing images from markdown content
+            const imageRegex = /!\[.*?\]\((https?:\/\/[^\)]+)\)/g;
+            const existingImages: string[] = [];
+            let match: RegExpExecArray | null;
+            while ((match = imageRegex.exec(content)) !== null) {
+                existingImages.push(match[1]);
+            }
+
             setEditData({
                 category: allPosts[selectedPost].category || '',
                 title: allPosts[selectedPost].title || '',
-                content: allPosts[selectedPost].content || '',
-                tags: allPosts[selectedPost].tags ? allPosts[selectedPost].tags.join('; ') : ''
+                content: content,
+                tags: allPosts[selectedPost].tags ? allPosts[selectedPost].tags.join('; ') : '',
+                existingImages: existingImages
             });
             setIsEditMode(true);
         }
@@ -295,7 +306,7 @@ export const Blog: React.FC = () => {
 
     // Handle create button click
     const handleCreate = () => {
-        setEditData({ category: '', title: '', content: '', tags: '' });
+        setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
         setIsCreateMode(true);
     };
 
@@ -363,7 +374,7 @@ export const Blog: React.FC = () => {
                     // Add to local state
                     setBlogPosts(prev => [newPost, ...prev]);
                     setIsCreateMode(false);
-                    setEditData({ category: '', title: '', content: '', tags: '' });
+                    setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
                     setUseOpal(false);
                 }
             }
@@ -383,7 +394,7 @@ export const Blog: React.FC = () => {
         } else {
             // No content, just close
             setIsCreateMode(false);
-            setEditData({ category: '', title: '', content: '', tags: '' });
+            setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
         }
     };
 
@@ -391,7 +402,7 @@ export const Blog: React.FC = () => {
     const handleDiscardCreate = () => {
         setIsCreateMode(false);
         setShowDiscardDialog(false);
-        setEditData({ category: '', title: '', content: '', tags: '' });
+        setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
     };
 
     // Handle tag input with auto-formatting
@@ -441,7 +452,11 @@ export const Blog: React.FC = () => {
                 const data = await response.json();
                 // Insert markdown image syntax at the beginning of content (after title)
                 const imageMarkdown = `![${file.name}](${data.url})\n\n`;
-                setEditData({ ...editData, content: imageMarkdown + editData.content });
+                setEditData({
+                    ...editData,
+                    content: imageMarkdown + editData.content,
+                    existingImages: [...editData.existingImages, data.url]
+                });
             } else {
                 alert('Failed to upload image');
             }
@@ -480,6 +495,22 @@ export const Blog: React.FC = () => {
         if (files && files.length > 0) {
             handleImageUpload(files[0]);
         }
+    };
+
+    // Handle removing existing image
+    const handleRemoveImage = (imageUrl: string) => {
+        // Remove image markdown from content
+        const imageMarkdownPattern = new RegExp(`!\\[.*?\\]\\(${imageUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)\\n*`, 'g');
+        const newContent = editData.content.replace(imageMarkdownPattern, '');
+
+        // Remove from existingImages array
+        const newExistingImages = editData.existingImages.filter((img: string) => img !== imageUrl);
+
+        setEditData({
+            ...editData,
+            content: newContent,
+            existingImages: newExistingImages
+        });
     };
 
     // Unified Color Theme: All Pink
@@ -929,117 +960,39 @@ export const Blog: React.FC = () => {
             )}
 
             {/* Edit Mode Modal */}
-            {selectedPost !== null && allPosts[selectedPost] && isEditMode && (
-                <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <div
-                        className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl relative"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className={`${allPosts[selectedPost].color} p-8`}>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">Category:</label>
-                                    <select
-                                        value={editData.category}
-                                        onChange={(e) => setEditData({ ...editData, category: e.target.value })}
-                                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        title="Select post category"
-                                    >
-                                        <option value="">Select category...</option>
-                                        <option value="Biology">Biology</option>
-                                        <option value="Tech">Tech</option>
-                                    </select>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">Title:</label>
-                                    <input
-                                        type="text"
-                                        value={editData.title}
-                                        onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">Tags:</label>
-                                    <input
-                                        type="text"
-                                        value={editData.tags}
-                                        onChange={handleTagInput}
-                                        onBlur={handleTagBlur}
-                                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="tag1; tag2; tag3"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-8 overflow-y-auto max-h-[calc(85vh-300px)]">
-                            {/* Image Upload Area */}
-                            <div
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
-                                    }`}
-                            >
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileSelect}
-                                    className="hidden"
-                                    id="image-upload-edit"
-                                />
-                                <label htmlFor="image-upload-edit" className="cursor-pointer">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                        </svg>
-                                        {uploadingImage ? (
-                                            <p className="text-blue-600 font-medium">Uploading...</p>
-                                        ) : (
-                                            <>
-                                                <p className="text-slate-600 font-medium">Click to upload or drag and drop</p>
-                                                <p className="text-slate-400 text-sm">PNG, JPG, GIF up to 5MB</p>
-                                            </>
-                                        )}
-                                    </div>
-                                </label>
-                            </div>
-
-                            <textarea
-                                value={editData.content}
-                                onChange={(e) => setEditData({ ...editData, content: e.target.value })}
-                                className="w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                                placeholder="Write your content here... (Images will be inserted as markdown)"
-                            />
-
-                            <div className="flex justify-between mt-8">
-                                <button
-                                    onClick={handleCloseEdit}
-                                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {selectedPost !== null && allPosts[selectedPost] && (
+                <BlogPostModal
+                    mode="edit"
+                    isOpen={isEditMode}
+                    editData={editData}
+                    postColor={allPosts[selectedPost].color}
+                    uploadingImage={uploadingImage}
+                    isDragging={isDragging}
+                    onClose={handleCloseEdit}
+                    onSave={handleSave}
+                    onCategoryChange={(category: string) => setEditData({ ...editData, category })}
+                    onTitleChange={(title: string) => setEditData({ ...editData, title })}
+                    onContentChange={(content: string) => setEditData({ ...editData, content })}
+                    onTagInput={handleTagInput}
+                    onTagBlur={handleTagBlur}
+                    onImageUpload={handleFileSelect}
+                    onRemoveImage={handleRemoveImage}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                />
             )}
 
             {/* Discard Confirmation Dialog */}
             {showDiscardDialog && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                <div
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+                    onKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === 'Enter') {
+                            isCreateMode ? handleDiscardCreate() : handleDiscard();
+                        }
+                    }}
+                >
                     <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
                         <button
                             onClick={isCreateMode ? () => setShowDiscardDialog(false) : handleContinueEdit}
@@ -1096,129 +1049,28 @@ export const Blog: React.FC = () => {
             )}
 
             {/* Create Mode Modal */}
-            {isCreateMode && (
-                <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <div
-                        className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl relative"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="bg-blue-50 p-8">
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">Category:</label>
-                                    <select
-                                        value={editData.category}
-                                        onChange={(e) => setEditData({ ...editData, category: e.target.value })}
-                                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        title="Select post category"
-                                    >
-                                        <option value="">Select category...</option>
-                                        <option value="Biology">Biology</option>
-                                        <option value="Tech">Tech</option>
-                                    </select>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">Title:</label>
-                                    <input
-                                        type="text"
-                                        value={editData.title}
-                                        onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="Enter post title..."
-                                    />
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">Tags:</label>
-                                    <input
-                                        type="text"
-                                        value={editData.tags}
-                                        onChange={handleTagInput}
-                                        onBlur={handleTagBlur}
-                                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        placeholder="tag1; tag2; tag3"
-                                    />
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <label className="text-sm font-bold text-slate-700 w-24">OPAL:</label>
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            id="use-opal"
-                                            checked={useOpal}
-                                            onChange={(e) => setUseOpal(e.target.checked)}
-                                            className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                                        />
-                                        <label htmlFor="use-opal" className="text-sm text-slate-600 cursor-pointer">
-                                            Use OPAL workflow to generate content
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-8 overflow-y-auto max-h-[calc(85vh-300px)]">
-                            {/* Image Upload Area */}
-                            <div
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
-                                    }`}
-                            >
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileSelect}
-                                    className="hidden"
-                                    id="image-upload"
-                                />
-                                <label htmlFor="image-upload" className="cursor-pointer">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                        </svg>
-                                        {uploadingImage ? (
-                                            <p className="text-blue-600 font-medium">Uploading...</p>
-                                        ) : (
-                                            <>
-                                                <p className="text-slate-600 font-medium">Click to upload or drag and drop</p>
-                                                <p className="text-slate-400 text-sm">PNG, JPG, GIF up to 5MB</p>
-                                            </>
-                                        )}
-                                    </div>
-                                </label>
-                            </div>
-
-                            <textarea
-                                value={editData.content}
-                                onChange={(e) => setEditData({ ...editData, content: e.target.value })}
-                                className="w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                                placeholder="Write your content here... (Images will be inserted as markdown)"
-                            />
-
-                            <div className="flex justify-end gap-4 mt-8">
-                                <button
-                                    onClick={handleCreateCancel}
-                                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleCreateSave}
-                                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <BlogPostModal
+                mode="create"
+                isOpen={isCreateMode}
+                editData={editData}
+                postColor="bg-pink-50"
+                useOpal={useOpal}
+                uploadingImage={uploadingImage}
+                isDragging={isDragging}
+                onClose={handleCreateCancel}
+                onSave={handleCreateSave}
+                onCategoryChange={(category: string) => setEditData({ ...editData, category })}
+                onTitleChange={(title: string) => setEditData({ ...editData, title })}
+                onContentChange={(content: string) => setEditData({ ...editData, content })}
+                onTagInput={handleTagInput}
+                onTagBlur={handleTagBlur}
+                onOpalChange={setUseOpal}
+                onImageUpload={handleFileSelect}
+                onRemoveImage={handleRemoveImage}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            />
 
             {/* OPAL Success Dialog */}
             {showOpalDialog && (
@@ -1233,7 +1085,7 @@ export const Blog: React.FC = () => {
                             onClick={() => {
                                 setShowOpalDialog(false);
                                 setIsCreateMode(false);
-                                setEditData({ category: '', title: '', content: '', tags: '' });
+                                setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
                                 setUseOpal(false);
                             }}
                             className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
