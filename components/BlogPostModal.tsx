@@ -29,6 +29,8 @@ interface BlogPostModalProps {
     onDrop: (e: React.DragEvent) => void;
 }
 
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
+
 export const BlogPostModal: React.FC<BlogPostModalProps> = ({
     mode,
     isOpen,
@@ -54,6 +56,8 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({
     if (!isOpen) return null;
 
     const isCreateMode = mode === 'create';
+
+    useLockBodyScroll(isOpen);
 
     return (
         <div

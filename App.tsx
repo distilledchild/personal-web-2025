@@ -243,7 +243,7 @@ const Layout: React.FC = () => {
         <Route path="/research/:submenu" element={<Research />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/interests" element={<Navigate to="/interests/data" replace />} />
-        <Route path="/interests/:submenu" element={<Interests />} />
+        <Route path="/interests/:submenu" element={<Interests isAuthorized={isAuthorized} />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/strava/callback" element={<StravaCallback />} />
         <Route path="*" element={<Navigate to="/" replace />} />

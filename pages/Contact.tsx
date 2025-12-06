@@ -1,6 +1,7 @@
 import { Github, Mail, MapPin, Plus, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../utils/apiConfig';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 export const Contact: React.FC = () => {
     const [showCopied, setShowCopied] = useState(false);
@@ -127,6 +128,9 @@ export const Contact: React.FC = () => {
         setIsModalOpen(false);
         setStateSuggestions([]);
     };
+
+    // Lock body scroll when modal is open
+    useLockBodyScroll(isModalOpen);
 
     // Geocode location to get coordinates
     const geocodeLocation = async (city: string, state: string, country: string): Promise<{ lat: number; lon: number } | null> => {

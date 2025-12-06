@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, Trash2 } from 'lucide-react';
 import { API_URL } from '../utils/apiConfig';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 interface Milestone {
     _id: string;
@@ -159,6 +160,9 @@ export const About: React.FC = () => {
             fetchAboutAcademic();
         }
     }, [activeTab]);
+
+    // Lock body scroll when modal is open
+    useLockBodyScroll(isModalOpen);
 
     // Fetch functions
     const fetchMilestones = async () => {

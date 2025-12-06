@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BlogPostModal } from '../components/BlogPostModal';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import { API_URL } from '../utils/apiConfig';
 
 export const Blog: React.FC = () => {
@@ -117,6 +118,8 @@ export const Blog: React.FC = () => {
             return () => window.removeEventListener('keydown', handleEsc);
         }
     }, [selectedPost]);
+
+    useLockBodyScroll(selectedPost !== null && !isEditMode);
 
     // Handle like/unlike
     const handleLike = async (postId: string, e: React.MouseEvent) => {
@@ -595,7 +598,7 @@ export const Blog: React.FC = () => {
 
     return (
         <>
-            <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
+            <div className="min-h-screen lg:h-screen bg-white pt-32 pb-4 px-6 flex flex-col lg:overflow-hidden">
                 <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
                     <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech & Bio</h2>
 
@@ -611,7 +614,7 @@ export const Blog: React.FC = () => {
                         <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
                             {/* Sidebar TOC */}
                             {/* Sidebar TOC */}
-                            <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
+                            <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto pr-2">
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Latest Posts</h3>
                                 <hr className="border-slate-200 my-2" />
 
@@ -669,7 +672,7 @@ export const Blog: React.FC = () => {
                             </div>
 
                             {/* Grid */}
-                            <div className="hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+                            <div className="grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
                                 {posts.map((post, i) => (
                                     <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
                                         {/* Header */}

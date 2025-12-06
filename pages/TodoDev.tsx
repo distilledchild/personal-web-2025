@@ -16,6 +16,7 @@ import {
     TodoFormData
 } from '../components/TodoComponents';
 import { API_URL } from '../utils/apiConfig';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 interface TodoDevProps {
     user: any;
@@ -91,16 +92,7 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
     }, [initialProjects]);
 
     // Lock body scroll when modal is open
-    React.useEffect(() => {
-        if (selectedProject || showProjectModal) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [selectedProject, showProjectModal]);
+    useLockBodyScroll(!!selectedProject || showProjectModal);
 
     // ============================================================================
     // API FUNCTIONS
@@ -320,6 +312,55 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
         setIsProjectEditMode(false);
     };
 
+    // Handle Technologies input with auto-formatting (semicolon separator)
+    const [technologiesString, setTechnologiesString] = React.useState('');
+    const [tagsString, setTagsString] = React.useState('');
+
+    const handleTechnologiesInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        if (val.endsWith(' ') && !val.endsWith('; ')) {
+            setTechnologiesString(val.trim() + '; ');
+        } else {
+            setTechnologiesString(val);
+        }
+    };
+
+    const handleTechnologiesBlur = () => {
+        let val = technologiesString.trim();
+        if (val.endsWith(';')) {
+            val = val.slice(0, -1).trim();
+        }
+        setTechnologiesString(val);
+        // Update formData array
+        setProjectFormData({
+            ...projectFormData,
+            technologies: val.split(';').map((t: string) => t.trim()).filter(Boolean)
+        });
+    };
+
+    // Handle Tags input with auto-formatting (semicolon separator)
+    const handleTagsInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        if (val.endsWith(' ') && !val.endsWith('; ')) {
+            setTagsString(val.trim() + '; ');
+        } else {
+            setTagsString(val);
+        }
+    };
+
+    const handleTagsBlur = () => {
+        let val = tagsString.trim();
+        if (val.endsWith(';')) {
+            val = val.slice(0, -1).trim();
+        }
+        setTagsString(val);
+        // Update formData array
+        setProjectFormData({
+            ...projectFormData,
+            tags: val.split(';').map((t: string) => t.trim()).filter(Boolean)
+        });
+    };
+
     const handleAddProjectClick = () => {
         setProjectFormData({
             project_name: '',
@@ -335,6 +376,8 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
             budget: '',
             progress_percent: 0
         });
+        setTechnologiesString('');
+        setTagsString('');
         setIsProjectEditMode(true);
         setSelectedProject(null);
         setShowProjectModal(true);
@@ -342,6 +385,8 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
 
     const handleEditProjectClick = () => {
         if (selectedProject) {
+            const techs = selectedProject.technologies || [];
+            const projectTags = selectedProject.tags || [];
             setProjectFormData({
                 project_name: selectedProject.project_name || '',
                 github_url: selectedProject.github_url || '',
@@ -351,11 +396,14 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
                 description: selectedProject.description || '',
                 status: selectedProject.status || 'ongoing',
                 team_members: selectedProject.team_members || [],
-                technologies: selectedProject.technologies || [],
-                tags: selectedProject.tags || [],
+                technologies: techs,
+                tags: projectTags,
                 budget: selectedProject.budget?.toString() || '',
                 progress_percent: selectedProject.progress_percent || 0
             });
+            // Initialize string states with semicolon-separated values
+            setTechnologiesString(techs.join('; '));
+            setTagsString(projectTags.join('; '));
             setIsProjectEditMode(true);
             setShowProjectModal(true);
         }
@@ -947,31 +995,27 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-bold text-slate-700 mb-2">Technologies (comma-separated)</label>
+                                            <label className="block text-sm font-bold text-slate-700 mb-2">Technologies (space to add semicolon)</label>
                                             <input
                                                 type="text"
-                                                value={projectFormData.technologies.join(', ')}
-                                                onChange={(e) => setProjectFormData({
-                                                    ...projectFormData,
-                                                    technologies: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
-                                                })}
+                                                value={technologiesString}
+                                                onChange={handleTechnologiesInput}
+                                                onBlur={handleTechnologiesBlur}
                                                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                                placeholder="React, Node.js, MongoDB"
+                                                placeholder="React; Node.js; MongoDB"
                                                 aria-label="Technologies"
                                             />
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-bold text-slate-700 mb-2">Tags (comma-separated)</label>
+                                            <label className="block text-sm font-bold text-slate-700 mb-2">Tags (space to add semicolon)</label>
                                             <input
                                                 type="text"
-                                                value={projectFormData.tags.join(', ')}
-                                                onChange={(e) => setProjectFormData({
-                                                    ...projectFormData,
-                                                    tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
-                                                })}
+                                                value={tagsString}
+                                                onChange={handleTagsInput}
+                                                onBlur={handleTagsBlur}
                                                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                                placeholder="web, frontend, backend"
+                                                placeholder="web; frontend; backend"
                                                 aria-label="Tags"
                                             />
                                         </div>

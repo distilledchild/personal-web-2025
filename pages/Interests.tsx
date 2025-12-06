@@ -148,7 +148,7 @@ const generateCalendarDays = () => {
     return days;
 };
 
-export const Interests: React.FC = () => {
+export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
     const { submenu } = useParams<{ submenu?: string }>();
     const navigate = useNavigate();
 
@@ -496,7 +496,7 @@ export const Interests: React.FC = () => {
                                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Workout Activities</h3>
                                     <p className="text-slate-500 text-lg">My workout activities from Strava</p>
                                 </div>
-                                {import.meta.env.DEV && (
+                                {isAuthorized && (
                                     <button
                                         onClick={handleStravaAuth}
                                         className="px-6 py-3 bg-gradient-to-r from-[#FFA300] to-[#FF8C00] text-white font-bold rounded-xl hover:from-[#FF8C00] hover:to-[#FF7700] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"

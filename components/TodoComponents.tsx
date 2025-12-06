@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
 import { API_URL } from '../utils/apiConfig';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 
 // ============================================================================
 // ANALOG CLOCK COMPONENT
@@ -442,6 +443,8 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
         }
     }, [show, defaultCategory]);
 
+    useLockBodyScroll(show);
+
     if (!show) return null;
 
     const handleSubmit = () => {
@@ -606,6 +609,9 @@ export const TodoDetailModal: React.FC<TodoDetailModalProps> = ({
 }) => {
     if (!todo) return null;
 
+    // Lock body scroll when modal is open
+    useLockBodyScroll(true);
+
     const getSortDisplay = () => {
         if (!todo.sort) return null;
         if (todo.category === 'dev') {
@@ -766,6 +772,9 @@ export const EditTodoModal: React.FC<EditTodoModalProps> = ({
             });
         }
     }, [todo]);
+
+    // Lock body scroll when modal is open
+    useLockBodyScroll(!!todo);
 
     if (!todo) return null;
 
@@ -955,6 +964,9 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({ show, message, onClo
             return () => window.removeEventListener('keydown', handleKeyDown);
         }
     }, [show, onClose]);
+
+    // Lock body scroll when popup is open
+    useLockBodyScroll(show);
 
     if (!show) return null;
 
