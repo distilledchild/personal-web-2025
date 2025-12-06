@@ -5,7 +5,8 @@ import { GenomeVisualizationEnhanced as GenomeVisualization } from '../component
 export const ResearchHiCBrowser: React.FC = () => {
     return (
         <div className='space-y-8 animate-fadeIn'>
-            <div className="border-b border-slate-100 pb-6">
+            <div>
+                {/* <div className="border-b border-slate-100 pb-6"> */}
                 <h3 className='text-2xl font-bold text-slate-900 flex items-center gap-3'>
                     <Search size={24} className="text-teal-500" />
                     Hi-C Browser - Chromatin Loops & Gene Regulation

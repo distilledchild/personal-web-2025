@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../utils/apiConfig';
 
@@ -7,8 +7,16 @@ export const StravaCallback: React.FC = () => {
     const location = useLocation();
     const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
     const [errorMessage, setErrorMessage] = useState('');
+    const hasProcessed = useRef(false); // Prevent duplicate execution in React Strict Mode
 
     useEffect(() => {
+        // Prevent duplicate execution
+        if (hasProcessed.current) {
+            console.log('Callback already processed, skipping...');
+            return;
+        }
+        hasProcessed.current = true;
+
         const handleCallback = async () => {
             // Parse URL parameters
             const params = new URLSearchParams(location.search);
@@ -18,18 +26,20 @@ export const StravaCallback: React.FC = () => {
             if (error) {
                 setStatus('error');
                 setErrorMessage('Authorization was denied or failed');
-                setTimeout(() => navigate('/interests'), 3000);
+                setTimeout(() => navigate('/interests/workout'), 3000);
                 return;
             }
 
             if (!code) {
                 setStatus('error');
                 setErrorMessage('No authorization code received');
-                setTimeout(() => navigate('/interests'), 3000);
+                setTimeout(() => navigate('/interests/workout'), 3000);
                 return;
             }
 
             try {
+                console.log('Exchanging Strava authorization code for token...');
+
                 // Exchange code for access token
                 const tokenResponse = await fetch(`${API_URL}/api/strava/exchange_token`, {
                     method: 'POST',
@@ -38,11 +48,14 @@ export const StravaCallback: React.FC = () => {
                 });
 
                 if (!tokenResponse.ok) {
-                    throw new Error('Failed to exchange token');
+                    const errorData = await tokenResponse.json();
+                    console.error('Token exchange failed:', errorData);
+                    throw new Error(errorData.error || 'Failed to exchange token');
                 }
 
                 const tokenData = await tokenResponse.json();
                 const accessToken = tokenData.access_token;
+                console.log('Token exchange successful, syncing activities...');
 
                 // Sync activities to database
                 const syncResponse = await fetch(`${API_URL}/api/workouts/sync`, {
@@ -52,7 +65,9 @@ export const StravaCallback: React.FC = () => {
                 });
 
                 if (!syncResponse.ok) {
-                    throw new Error('Failed to sync activities');
+                    const syncError = await syncResponse.json();
+                    console.error('Sync failed:', syncError);
+                    throw new Error(syncError.error || 'Failed to sync activities');
                 }
 
                 const syncData = await syncResponse.json();
@@ -68,13 +83,14 @@ export const StravaCallback: React.FC = () => {
             } catch (err) {
                 console.error('Error during Strava callback:', err);
                 setStatus('error');
-                setErrorMessage('Failed to complete authorization');
-                setTimeout(() => navigate('/interests'), 3000);
+                setErrorMessage(err instanceof Error ? err.message : 'Failed to complete authorization');
+                setTimeout(() => navigate('/interests/workout'), 3000);
             }
         };
 
         handleCallback();
-    }, [location, navigate]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only run once on mount
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-slate-100">

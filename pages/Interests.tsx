@@ -197,7 +197,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
 
     const handleStravaAuth = async () => {
         try {
-            const response = await fetch('/api/strava/auth');
+            const response = await fetch(`${API_URL}/api/strava/auth`);
             const data = await response.json();
 
             // Redirect to Strava authorization page
@@ -323,16 +323,16 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     // Removed unused tooltip handlers
 
     return (
-        <div className="flex flex-col h-screen bg-white">
+        <div className="flex flex-col h-screen bg-white overflow-hidden">
             {/* Fixed Header Section */}
-            <div className="pt-32 pb-6 px-6 bg-white border-b border-slate-100">
+            <div className="pt-32 pb-0 px-6 bg-white flex-shrink-0">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-4xl font-bold text-slate-900 mb-8 text-center">
+                    <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">
                         Topics
                     </h2>
 
                     {/* Tabs Navigation */}
-                    <div className="flex flex-wrap justify-center gap-2">
+                    <div className="flex flex-wrap justify-center gap-2 mb-6">
                         <button
                             onClick={() => navigate('/interests/data')}
                             className={`
@@ -382,17 +382,19 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                             <span>Travel</span>
                         </button>
                     </div>
+                    <hr className="border-slate-100" />
                 </div>
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto px-6 pb-20">
+            <div className="flex-1 overflow-y-auto scrollbar-hide px-6 pb-20">
                 <div className="max-w-7xl mx-auto pt-8">
                     {activeTab === 'travel' && (
                         <div className="animate-fadeIn space-y-8">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Travel Map</h3>
+                                    <p className="text-slate-500 text-lg">Conquer the map, one color at a time</p>
                                 </div>
                             </div>
 

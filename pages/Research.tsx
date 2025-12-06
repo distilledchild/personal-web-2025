@@ -21,7 +21,8 @@ const mockScatterData = Array.from({ length: 100 }, () => ({
 // Removed "card" styling (bg-white, border, shadow) to make it look like a full page section
 const PEInteractions = () => (
   <div className="space-y-8 animate-fadeIn">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6"> */}
       <div>
         <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
           <GitBranch size={24} className="text-teal-500" />
@@ -75,7 +76,8 @@ const PEInteractions = () => (
 
 const SingleCell = () => (
   <div className="space-y-8 animate-fadeIn">
-    <div className="border-b border-slate-100 pb-6">
+    {/* <div className="border-b border-slate-100 pb-6"> */}
+    <div>
       <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
         <Database size={24} className="text-teal-500" />
         Single-cell Sequencing Analysis
@@ -110,7 +112,8 @@ const SingleCell = () => (
 
 const EnhancerID = () => (
   <div className="space-y-8 animate-fadeIn">
-    <div className="border-b border-slate-100 pb-6">
+    {/* <div className="border-b border-slate-100 pb-6"> */}
+    <div>
       <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
         <FileText size={24} className="text-teal-500" />
         Computational Enhancer Identification
@@ -201,17 +204,16 @@ export const Research: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white overflow-hidden">
       {/* Fixed Header Section */}
-      <div className="pt-32 pb-6 px-6 bg-white border-b border-slate-100">
+      <div className="pt-32 pb-0 px-6 bg-white flex-shrink-0">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Projects</h2>
-
+          <div className="text-center mb-6">
+            <h2 className="text-4xl font-bold text-slate-900">Projects</h2>
           </div>
 
           {/* Responsive Tabs Grid */}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
             {tabs.map((tab, idx) => {
               // Extract the base color class (e.g., 'text-blue-600') to use for border
               const textColorClass = tab.color.split(' ')[0];
@@ -232,11 +234,12 @@ export const Research: React.FC = () => {
               );
             })}
           </div>
+          <hr className="border-slate-100" />
         </div>
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto px-6 pb-20">
+      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 pb-20">
         <div className="max-w-7xl mx-auto pt-8">
           {activeTab === 0 && <ResearchHiCBrowser />}
           {activeTab === 1 && <PEInteractions />}

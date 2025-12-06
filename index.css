@@ -149,3 +149,14 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* Hide scrollbar globally for entire page */
+body, html {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}

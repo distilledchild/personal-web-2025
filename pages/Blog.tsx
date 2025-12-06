@@ -598,9 +598,13 @@ export const Blog: React.FC = () => {
 
     return (
         <>
-            <div className="min-h-screen lg:h-screen bg-white pt-32 pb-4 px-6 flex flex-col lg:overflow-hidden">
-                <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
-                    <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0">Tech & Bio</h2>
+            <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
+                <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0">
+                    {/* Fixed Header */}
+                    <div className="flex-shrink-0">
+                        <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">Tech & Bio</h2>
+                        <hr className="border-slate-100 mb-6" />
+                    </div>
 
                     {loading ? (
                         <div className="flex-1 flex items-center justify-center">
@@ -611,11 +615,10 @@ export const Blog: React.FC = () => {
                             <div className="text-slate-400">No posts found.</div>
                         </div>
                     ) : (
-                        <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+                        <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 overflow-y-auto scrollbar-hide lg:overflow-hidden">
                             {/* Sidebar TOC */}
-                            {/* Sidebar TOC */}
-                            <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto pr-2">
-                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Latest Posts</h3>
+                            <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2 z-10">Latest Posts</h3>
                                 <hr className="border-slate-200 my-2" />
 
                                 {/* Tech Section */}
@@ -672,56 +675,58 @@ export const Blog: React.FC = () => {
                             </div>
 
                             {/* Grid */}
-                            <div className="grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
-                                {posts.map((post, i) => (
-                                    <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
-                                        {/* Header */}
-                                        <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
-                                            <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
-                                                {post.category}
-                                            </span>
-                                        </div>
-                                        <div className="p-5 flex-1 flex flex-col min-h-0">
-                                            <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2">
-                                                {post.title}
-                                            </h3>
-                                            <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
-                                                {stripMarkdown(post.content || '').substring(0, 150)}...
-                                            </p>
-
-                                            {/* Footer with likes, date */}
-                                            <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-xl ${isLikedByUser(post) ? 'text-red-500' : 'text-gray-400'}`}>
-                                                        {isLikedByUser(post) ? '❤️' : '🤍'}
-                                                    </span>
-                                                    <span className="font-medium text-slate-700">{post.likes || 0}</span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <span>{formatDate(post.createdAt)}</span>
-                                                </div>
+                            <div className="flex-1 flex flex-col min-h-0 lg:overflow-y-auto scrollbar-hide">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20 lg:pb-0">
+                                    {posts.map((post, i) => (
+                                        <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+                                            {/* Header */}
+                                            <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
+                                                <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
+                                                    {post.category}
+                                                </span>
                                             </div>
+                                            <div className="p-5 flex-1 flex flex-col min-h-0">
+                                                <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2">
+                                                    {post.title}
+                                                </h3>
+                                                <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
+                                                    {stripMarkdown(post.content || '').substring(0, 150)}...
+                                                </p>
 
-                                            <div className="mt-4 flex items-center justify-between">
-                                                <button
-                                                    onClick={() => setSelectedPost(getGlobalIndex(i))}
-                                                    className={`text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors flex items-center gap-1`}
-                                                >
-                                                    Read Article &rarr;
-                                                </button>
-                                                {post.tags && post.tags.length > 0 && (
-                                                    <div className="flex gap-1">
-                                                        {post.tags.slice(0, 3).map((tag: string, idx: number) => (
-                                                            <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">
-                                                                {tag}
-                                                            </span>
-                                                        ))}
+                                                {/* Footer with likes, date */}
+                                                <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-xl ${isLikedByUser(post) ? 'text-red-500' : 'text-gray-400'}`}>
+                                                            {isLikedByUser(post) ? '❤️' : '🤍'}
+                                                        </span>
+                                                        <span className="font-medium text-slate-700">{post.likes || 0}</span>
                                                     </div>
-                                                )}
+                                                    <div className="flex items-center gap-2">
+                                                        <span>{formatDate(post.createdAt)}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-4 flex items-center justify-between">
+                                                    <button
+                                                        onClick={() => setSelectedPost(getGlobalIndex(i))}
+                                                        className={`text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors flex items-center gap-1`}
+                                                    >
+                                                        Read Article &rarr;
+                                                    </button>
+                                                    {post.tags && post.tags.length > 0 && (
+                                                        <div className="flex gap-1">
+                                                            {post.tags.slice(0, 3).map((tag: string, idx: number) => (
+                                                                <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">
+                                                                    {tag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}

@@ -1462,9 +1462,17 @@ function updateVisitorStatus(socketId) {
 
 // Strava OAuth - Initiate Authorization
 app.get('/api/strava/auth', (req, res) => {
-    const clientId = process.env.STRAVA_CLIENT_ID || '187016';
-    const redirectUri = encodeURIComponent('http://localhost:3000/strava/callback');
+    const clientId = process.env.STRAVA_CLIENT_ID;
+    // Use environment-based redirect URI (same as Google OAuth pattern)
+    const stravaRedirectUri = isProduction
+        ? 'https://www.distilledchild.space/strava/callback'
+        : (process.env.STRAVA_REDIRECT_URI || 'http://localhost:3000/strava/callback');
+    const redirectUri = encodeURIComponent(stravaRedirectUri);
     const scope = 'read,activity:read_all,profile:read_all,read_all';
+
+    if (!clientId) {
+        return res.status(500).json({ error: 'Strava client ID not configured' });
+    }
 
     const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&approval_prompt=force&scope=${scope}`;
 
@@ -1480,8 +1488,12 @@ app.post('/api/strava/exchange_token', async (req, res) => {
             return res.status(400).json({ error: 'Authorization code is required' });
         }
 
-        const clientId = process.env.STRAVA_CLIENT_ID || '187016';
-        const clientSecret = process.env.STRAVA_CLIENT_SECRET || '021ca34790af66291ff4b82a8e02101744080353';
+        const clientId = process.env.STRAVA_CLIENT_ID;
+        const clientSecret = process.env.STRAVA_CLIENT_SECRET;
+
+        if (!clientId || !clientSecret) {
+            return res.status(500).json({ error: 'Strava credentials not configured' });
+        }
 
         const response = await fetch('https://www.strava.com/oauth/token', {
             method: 'POST',
