@@ -618,7 +618,7 @@ export const Blog: React.FC = () => {
                         <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 overflow-y-auto scrollbar-hide lg:overflow-hidden">
                             {/* Sidebar TOC */}
                             <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
-                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2 z-10">Latest Posts</h3>
+                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Latest Posts</h3>
                                 <hr className="border-slate-200 my-2" />
 
                                 {/* Tech Section */}

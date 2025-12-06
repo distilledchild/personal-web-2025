@@ -239,7 +239,7 @@ export const Research: React.FC = () => {
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide px-6 pb-20">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-6 pb-20">
         <div className="max-w-7xl mx-auto pt-8">
           {activeTab === 0 && <ResearchHiCBrowser />}
           {activeTab === 1 && <PEInteractions />}

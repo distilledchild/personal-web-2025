@@ -1465,7 +1465,7 @@ app.get('/api/strava/auth', (req, res) => {
     const clientId = process.env.STRAVA_CLIENT_ID;
     // Use environment-based redirect URI (same as Google OAuth pattern)
     const stravaRedirectUri = isProduction
-        ? 'https://www.distilledchild.space/strava/callback'
+        ? 'https://distilledchild.space/strava/callback'
         : (process.env.STRAVA_REDIRECT_URI || 'http://localhost:3000/strava/callback');
     const redirectUri = encodeURIComponent(stravaRedirectUri);
     const scope = 'read,activity:read_all,profile:read_all,read_all';
