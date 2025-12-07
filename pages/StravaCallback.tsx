@@ -79,9 +79,9 @@ export const StravaCallback: React.FC = () => {
 
                 setStatus('success');
 
-                // Redirect back to workout page using window.location to preserve Google session
+                // Use React Router navigate to preserve Google session in both local and production
                 setTimeout(() => {
-                    window.location.href = '/interests/workout';
+                    navigate('/interests/workout', { replace: true });
                 }, 1500);
 
             } catch (err) {

@@ -176,9 +176,6 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     const itemsPerPage = 5;
 
     const [artMuseums, setArtMuseums] = useState<ArtMuseum[]>([]);
-
-    // Track if data has been loaded to prevent duplicate fetches
-    const hasLoadedActivities = React.useRef(false);
     const [activeDataTab, setActiveDataTab] = useState<'urban' | 'weather' | 'fc26'>('urban');
 
     useEffect(() => {
@@ -232,12 +229,6 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
         };
 
         const loadStravaActivities = async () => {
-            // Prevent duplicate fetches
-            if (hasLoadedActivities.current) {
-                console.log('[WORKOUT] Activities already loaded, skipping fetch');
-                return;
-            }
-
             setLoadingStrava(true);
             try {
                 // Try fetching from database first
@@ -252,7 +243,6 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                         }))
                         .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
                     setStravaActivities(activities);
-                    hasLoadedActivities.current = true;
                     console.log(`[WORKOUT] Loaded ${activities.length} activities from DB`);
                 } else {
                     // Fallback to localStorage if API fails
@@ -261,7 +251,6 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                         const storedActivities = localStorage.getItem('strava_activities');
                         if (storedActivities) {
                             setStravaActivities(JSON.parse(storedActivities));
-                            hasLoadedActivities.current = true;
                         }
                     }
                 }
@@ -272,7 +261,6 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                     const storedActivities = localStorage.getItem('strava_activities');
                     if (storedActivities) {
                         setStravaActivities(JSON.parse(storedActivities));
-                        hasLoadedActivities.current = true;
                     }
                 }
             } finally {
