@@ -499,7 +499,8 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Workout Activities</h3>
                                     <p className="text-slate-500 text-lg">My workout activities from Strava</p>
                                 </div>
-                                {isAuthorized && (
+                                {/* Show Strava sync button only in development (localhost) */}
+                                {isAuthorized && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
                                     <button
                                         onClick={handleStravaAuth}
                                         className="px-6 py-3 bg-gradient-to-r from-[#FFA300] to-[#FF8C00] text-white font-bold rounded-xl hover:from-[#FF8C00] hover:to-[#FF7700] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
