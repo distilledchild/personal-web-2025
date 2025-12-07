@@ -78,7 +78,11 @@ export const StravaCallback: React.FC = () => {
                 localStorage.setItem('strava_athlete', JSON.stringify(tokenData.athlete));
 
                 setStatus('success');
-                setTimeout(() => navigate('/interests/workout'), 1500);
+
+                // Redirect back to workout page using window.location to preserve Google session
+                setTimeout(() => {
+                    window.location.href = '/interests/workout';
+                }, 1500);
 
             } catch (err) {
                 console.error('Error during Strava callback:', err);

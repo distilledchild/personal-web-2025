@@ -396,12 +396,12 @@ export const About: React.FC = () => {
                         </h2>
                     </div>
 
-                    {/* Tabs - Equal spacing */}
-                    <div className="flex justify-center gap-4">
+                    {/* Tabs - Responsive: 3 columns on desktop, 1 column on mobile */}
+                    <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-4">
                         <button
                             onClick={() => setActiveTab('me')}
                             className={`
-                                flex items-center gap-2 px-8 py-4 border-b-2 text-lg font-bold transition-all duration-300
+                                flex items-center justify-center gap-2 px-8 py-4 border-b-2 md:border-b-2 text-lg font-bold transition-all duration-300
                                 ${activeTab === 'me'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
@@ -412,7 +412,7 @@ export const About: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('website')}
                             className={`
-                                flex items-center gap-2 px-8 py-4 border-b-2 text-lg font-bold transition-all duration-300
+                                flex items-center justify-center gap-2 px-8 py-4 border-b-2 md:border-b-2 text-lg font-bold transition-all duration-300
                                 ${activeTab === 'website'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
@@ -423,7 +423,7 @@ export const About: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('cv')}
                             className={`
-                                flex items-center gap-2 px-8 py-4 border-b-2 text-lg font-bold transition-all duration-300
+                                flex items-center justify-center gap-2 px-8 py-4 border-b-2 md:border-b-2 text-lg font-bold transition-all duration-300
                                 ${activeTab === 'cv'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}

@@ -383,7 +383,6 @@ export const Contact: React.FC = () => {
                                     marginWidth={0}
                                     src={getMapUrl()}
                                     title="Location Map"
-                                    className="filter grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
                                 ></iframe>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-slate-400">
