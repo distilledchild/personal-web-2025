@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
-import { FileText, GitBranch, Database, Sliders, Search } from 'lucide-react';
+import { FileText, GitBranch, Database, Sliders, Search, Cat } from 'lucide-react';
 import { ResearchHiCBrowser } from './ResearchHiCBrowser';
+import { ResearchBreedchain } from './ResearchBreedchain';
 
 const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
   name: `Loc ${i * 10}kb`,
@@ -170,6 +171,7 @@ export const Research: React.FC = () => {
 
   const tabs = [
     { label: 'Hi-C Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' },
+    { label: 'Breedchain', icon: Cat, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'breedchain' },
     { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
     { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
     { label: 'DL & Enhancer', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
@@ -242,9 +244,10 @@ export const Research: React.FC = () => {
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-6 pb-20">
         <div className="max-w-7xl mx-auto pt-8">
           {activeTab === 0 && <ResearchHiCBrowser />}
-          {activeTab === 1 && <PEInteractions />}
-          {activeTab === 2 && <SingleCell />}
-          {activeTab === 3 && <EnhancerID />}
+          {activeTab === 1 && <ResearchBreedchain />}
+          {activeTab === 2 && <PEInteractions />}
+          {activeTab === 3 && <SingleCell />}
+          {activeTab === 4 && <EnhancerID />}
         </div>
       </div>
     </div>
