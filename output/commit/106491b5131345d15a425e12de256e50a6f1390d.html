@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1. change name of menu: Blog from Tech 2. file upload using multer 3. tags in posts in Blog 4. change left side of Blog 5. pagenation in Blog · personal-web-2025@106491b</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>106491b</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-11-30</span> <span class="nowrap">17:25:50</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                1. change name of menu: Blog from Tech 2. file upload using multer 3. tags in posts in Blog 4. change left side of Blog 5. pagenation in Blog
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="c43bacfd1cc69c2e94521ab9a1c281c9ecc3d76d.html"><code>c43bacf</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (2)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2fpackage.json" class="file-name">
+                    package.json
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="server/package.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/package.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -12,6 +12,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;dotenv&#34;: &#34;^17.2.3&#34;,
+</span></span><span class="line"><span class="cl">         &#34;express&#34;: &#34;^4.19.2&#34;,
+</span></span><span class="line"><span class="cl">         &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gi">+        &#34;multer&#34;: &#34;^1.4.5-lts.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &#34;socket.io&#34;: &#34;^4.8.1&#34;
+</span></span><span class="line"><span class="cl">     }
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl">\ No newline at end of file
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -119,13 +119,17 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   const [toastMessage, setToastMessage] = React.useState(&#39;&#39;);
+</span></span><span class="line"><span class="cl">   const [toastPos, setToastPos] = React.useState({ x: 0, y: 0 });
+</span></span><span class="line"><span class="cl">   const [isEditMode, setIsEditMode] = React.useState(false);
+</span></span><span class="line"><span class="cl"><span class="gd">-  const [editData, setEditData] = React.useState({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  const [editData, setEditData] = React.useState({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39;, tags: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [isCreateMode, setIsCreateMode] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [showValidationDialog, setShowValidationDialog] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [uploadingImage, setUploadingImage] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [isDragging, setIsDragging] = React.useState(false);
+</span></span><span class="line"><span class="cl"><span class="gi">+  const [useOpal, setUseOpal] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [showOpalDialog, setShowOpalDialog] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [currentPage, setCurrentPage] = React.useState(1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const postsPerPage = 4;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">   React.useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl">     // Fetch blog posts
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -278,11 +282,12 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">   // Handle edit button click
+</span></span><span class="line"><span class="cl">   const handleEdit = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    if (selectedPost !== null &amp;&amp; posts[selectedPost]) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    if (selectedPost !== null &amp;&amp; allPosts[selectedPost]) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       setEditData({
+</span></span><span class="line"><span class="cl"><span class="gd">-        category: posts[selectedPost].category || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        title: posts[selectedPost].title || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        content: posts[selectedPost].content || &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        category: allPosts[selectedPost].category || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: allPosts[selectedPost].title || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        content: allPosts[selectedPost].content || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        tags: allPosts[selectedPost].tags ? allPosts[selectedPost].tags.join(&#39;; &#39;) : &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       });
+</span></span><span class="line"><span class="cl">       setIsEditMode(true);
+</span></span><span class="line"><span class="cl">     }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -290,18 +295,22 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">   // Handle save
+</span></span><span class="line"><span class="cl">   const handleSave = async () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    if (selectedPost === null || !posts[selectedPost]) return;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    if (selectedPost === null || !allPosts[selectedPost]) return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     try {
+</span></span><span class="line"><span class="cl">       const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span><span class="line"><span class="cl">         ? &#39;http://localhost:4000&#39;
+</span></span><span class="line"><span class="cl">         : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-      const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      const tagsArray = editData.tags.split(&#39;;&#39;).map(t =&gt; t.trim()).filter(t =&gt; t);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      console.log(&#39;[FRONTEND] Sending UPDATE with tags:&#39;, tagsArray);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         method: &#39;PUT&#39;,
+</span></span><span class="line"><span class="cl">         headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span><span class="line"><span class="cl">         body: JSON.stringify({
+</span></span><span class="line"><span class="cl">           ...editData,
+</span></span><span class="line"><span class="cl"><span class="gi">+          tags: tagsArray,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>           email: user.email
+</span></span><span class="line"><span class="cl">         })
+</span></span><span class="line"><span class="cl">       });
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -344,14 +353,14 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">   // Handle confirm delete
+</span></span><span class="line"><span class="cl">   const handleConfirmDelete = async () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    if (selectedPost === null || !posts[selectedPost]) return;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    if (selectedPost === null || !allPosts[selectedPost]) return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     try {
+</span></span><span class="line"><span class="cl">       const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span><span class="line"><span class="cl">         ? &#39;http://localhost:4000&#39;
+</span></span><span class="line"><span class="cl">         : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-      const response = await fetch(`${API_URL}/api/tech-blog/${posts[selectedPost]._id}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         method: &#39;DELETE&#39;,
+</span></span><span class="line"><span class="cl">         headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span><span class="line"><span class="cl">         body: JSON.stringify({
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -361,7 +370,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">       if (response.ok) {
+</span></span><span class="line"><span class="cl">         // Remove from local state
+</span></span><span class="line"><span class="cl"><span class="gd">-        setBlogPosts(prev =&gt; prev.filter(post =&gt; post._id !== posts[selectedPost]._id));
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        setBlogPosts(prev =&gt; prev.filter(post =&gt; post._id !== allPosts[selectedPost]._id));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         setShowDeleteDialog(false);
+</span></span><span class="line"><span class="cl">         setSelectedPost(null);
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -383,16 +392,23 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">   // Handle create button click
+</span></span><span class="line"><span class="cl">   const handleCreate = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39;, tags: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     setIsCreateMode(true);
+</span></span><span class="line"><span class="cl">   };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">   // Handle create save
+</span></span><span class="line"><span class="cl">   const handleCreateSave = async () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    // Validation check
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      setShowValidationDialog(true);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      return;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    // Validation check (relaxed for OPAL - only title required)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (useOpal) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (!editData.title.trim()) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setShowValidationDialog(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setShowValidationDialog(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     }
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     try {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -400,28 +416,56 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         ? &#39;http://localhost:4000&#39;
+</span></span><span class="line"><span class="cl">         : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-      const response = await fetch(`${API_URL}/api/tech-blog`, {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          ...editData,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          author: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            name: user.name,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            email: user.email,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            avatar: user.picture
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        })
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      // If OPAL is checked, call OPAL API
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (useOpal) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const opalResponse = await fetch(`${API_URL}/api/tech-blog/opal-generate`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            category: editData.category,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            title: editData.title,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            content: editData.content
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-      if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const newPost = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        // Add to local state
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setBlogPosts(prev =&gt; [newPost, ...prev]);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setIsCreateMode(false);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        if (opalResponse.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          // Show success dialog
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          setShowOpalDialog(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          const errorData = await opalResponse.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          alert(`OPAL workflow failed: ${errorData.error || &#39;Unknown error&#39;}`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Normal save (unchecked OPAL)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const tagsArray = editData.tags.split(&#39;;&#39;).map(t =&gt; t.trim()).filter(t =&gt; t);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(&#39;[FRONTEND] Sending CREATE with tags:&#39;, tagsArray);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const response = await fetch(`${API_URL}/api/tech-blog`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ...editData,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            tags: tagsArray,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            author: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              name: user.name,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              email: user.email,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              avatar: user.picture
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          const newPost = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          // Add to local state
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          setBlogPosts(prev =&gt; [newPost, ...prev]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          setIsCreateMode(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39;, tags: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          setUseOpal(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       }
+</span></span><span class="line"><span class="cl">     } catch (error) {
+</span></span><span class="line"><span class="cl">       console.error(&#39;Failed to create post:&#39;, error);
+</span></span><span class="line"><span class="cl"><span class="gi">+      alert(&#39;Failed to save post. Please try again.&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     }
+</span></span><span class="line"><span class="cl">   };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -435,7 +479,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     } else {
+</span></span><span class="line"><span class="cl">       // No content, just close
+</span></span><span class="line"><span class="cl">       setIsCreateMode(false);
+</span></span><span class="line"><span class="cl"><span class="gd">-      setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39;, tags: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     }
+</span></span><span class="line"><span class="cl">   };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -443,7 +487,26 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   const handleDiscardCreate = () =&gt; {
+</span></span><span class="line"><span class="cl">     setIsCreateMode(false);
+</span></span><span class="line"><span class="cl">     setShowDiscardDialog(false);
+</span></span><span class="line"><span class="cl"><span class="gd">-    setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39;, tags: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Handle tag input with auto-formatting
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleTagInput = (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const val = e.target.value;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (val.endsWith(&#39; &#39;) &amp;&amp; !val.endsWith(&#39;; &#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      setEditData({ ...editData, tags: val.trim() + &#39;; &#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      setEditData({ ...editData, tags: val });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Handle tag input blur to remove trailing semicolon
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleTagBlur = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    let val = editData.tags.trim();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (val.endsWith(&#39;;&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      val = val.slice(0, -1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setEditData({ ...editData, tags: val });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">   // Handle image upload
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -469,9 +532,9 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">       if (response.ok) {
+</span></span><span class="line"><span class="cl">         const data = await response.json();
+</span></span><span class="line"><span class="cl"><span class="gd">-        // Insert markdown image syntax at cursor position
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const imageMarkdown = `\n![${file.name}](${data.url})\n`;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setEditData({ ...editData, content: editData.content + imageMarkdown });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        // Insert markdown image syntax at the beginning of content (after title)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const imageMarkdown = `![${file.name}](${data.url})\n\n`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setEditData({ ...editData, content: imageMarkdown + editData.content });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       } else {
+</span></span><span class="line"><span class="cl">         alert(&#39;Failed to upload image&#39;);
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -521,11 +584,28 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   ];
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">   // Combine blog posts with themes
+</span></span><span class="line"><span class="cl"><span class="gd">-  const posts = blogPosts.map((post, i) =&gt; ({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  const allPosts = blogPosts.map((post, i) =&gt; ({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     ...post,
+</span></span><span class="line"><span class="cl">     ...colorThemes[i % colorThemes.length]
+</span></span><span class="line"><span class="cl">   }));
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+  // Pagination logic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const totalPages = Math.ceil(allPosts.length / postsPerPage);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const indexOfLastPost = currentPage * postsPerPage;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const posts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Get global index for selectedPost (since posts is now paginated)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const getGlobalIndex = (localIndex: number) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return indexOfFirstPost + localIndex;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Handle page change
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handlePageChange = (pageNumber: number) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setCurrentPage(pageNumber);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setSelectedPost(null); // Close any open post when changing pages
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   // Format date helper
+</span></span><span class="line"><span class="cl">   const formatDate = (dateString: string) =&gt; {
+</span></span><span class="line"><span class="cl">     const date = new Date(dateString);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -537,20 +617,20 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     if (!markdown) return &#39;&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     return markdown
+</span></span><span class="line"><span class="cl"><span class="gi">+      // Remove images ![alt](url) - MUST be before links to avoid conflicts
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      .replace(/!\[[^\]]*\]\([^)]+\)/g, &#39;&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       // Remove headers (# ## ###)
+</span></span><span class="line"><span class="cl">       .replace(/^#{1,6}\s+/gm, &#39;&#39;)
+</span></span><span class="line"><span class="cl"><span class="gi">+      // Remove code blocks ```code``` - MUST be before inline code
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      .replace(/```[\s\S]*?```/g, &#39;&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      // Remove inline code `code`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      .replace(/`([^`]+)`/g, &#39;$1&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      // Remove links [text](url) -&gt; text
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      .replace(/\[([^\]]+)\]\([^)]+\)/g, &#39;$1&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       // Remove bold (**text** or __text__)
+</span></span><span class="line"><span class="cl">       .replace(/(\*\*|__)(.*?)\1/g, &#39;$2&#39;)
+</span></span><span class="line"><span class="cl">       // Remove italic (*text* or _text_)
+</span></span><span class="line"><span class="cl">       .replace(/(\*|_)(.*?)\1/g, &#39;$2&#39;)
+</span></span><span class="line"><span class="cl"><span class="gd">-      // Remove links [text](url) -&gt; text
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      .replace(/\[([^\]]+)\]\([^\)]+\)/g, &#39;$1&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      // Remove images ![alt](url)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      .replace(/!\[([^\]]*)\]\([^\)]+\)/g, &#39;&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      // Remove inline code `code`
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      .replace(/`([^`]+)`/g, &#39;$1&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      // Remove code blocks ```code```
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      .replace(/```[\s\S]*?```/g, &#39;&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>       // Remove blockquotes (&gt;)
+</span></span><span class="line"><span class="cl">       .replace(/^&gt;\s+/gm, &#39;&#39;)
+</span></span><span class="line"><span class="cl">       // Remove horizontal rules (---, ___, ***)
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -558,96 +638,186 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       // Remove list markers (-, *, +, 1.)
+</span></span><span class="line"><span class="cl">       .replace(/^[\s]*[-*+]\s+/gm, &#39;&#39;)
+</span></span><span class="line"><span class="cl">       .replace(/^[\s]*\d+\.\s+/gm, &#39;&#39;)
+</span></span><span class="line"><span class="cl"><span class="gd">-      // Remove extra whitespace
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      .replace(/\n\s*\n/g, &#39;\n&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      // Remove extra whitespace and newlines
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      .replace(/\n\s*\n/g, &#39; &#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      .replace(/\s+/g, &#39; &#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       .trim();
+</span></span><span class="line"><span class="cl">   };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">   return (
+</span></span><span class="line"><span class="cl"><span class="gd">-    &lt;div className=&#34;h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &lt;div className=&#34;max-w-7xl mx-auto w-full flex-1 flex flex-col&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0&#34;&gt;Tech Blog&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        {loading ? (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;flex-1 flex items-center justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;div className=&#34;text-slate-400&#34;&gt;Loading posts...&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        ) : posts.length === 0 ? (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;flex-1 flex items-center justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;div className=&#34;text-slate-400&#34;&gt;No blog posts found.&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;flex flex-col lg:flex-row gap-8 flex-1 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            {/* Sidebar TOC */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;div className=&#34;lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              &lt;h3 className=&#34;text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2&#34;&gt;Latest Posts&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              {posts.map((post, i) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  key={post._id || i}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  onClick={() =&gt; setSelectedPost(i)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  className={`
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &lt;div className=&#34;h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div className=&#34;max-w-7xl mx-auto w-full flex-1 flex flex-col&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0&#34;&gt;Tech &amp; Bio&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          {loading ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;flex-1 flex items-center justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;text-slate-400&#34;&gt;Loading posts...&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          ) : posts.length === 0 ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;flex-1 flex items-center justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;text-slate-400&#34;&gt;No posts found.&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;flex flex-col lg:flex-row gap-8 flex-1 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              {/* Sidebar TOC */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              {/* Sidebar TOC */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;h3 className=&#34;text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2&#34;&gt;Latest Posts&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;hr className=&#34;border-slate-200 my-2&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {/* Tech Section */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;h4 className=&#34;text-sm font-bold text-pink-500 mb-2&#34;&gt;Tech&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {allPosts
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .map((post, index) =&gt; ({ ...post, originalIndex: index }))
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .filter(post =&gt; post.category === &#39;Computer Science&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .slice(0, 3)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .map((post) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      key={post._id || post.originalIndex}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      onClick={() =&gt; setSelectedPost(post.originalIndex)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      className={`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                     group cursor-pointer transition-all duration-200
+</span></span><span class="line"><span class="cl">                     bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+</span></span><span class="line"><span class="cl">                     hover:${post.color} hover:${post.borderColor}
+</span></span><span class="line"><span class="cl">                   `}
+</span></span><span class="line"><span class="cl"><span class="gd">-                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  &lt;p className={`
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;p className={`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                     text-sm font-medium text-slate-600 truncate
+</span></span><span class="line"><span class="cl">                     group-hover:${post.textColor}
+</span></span><span class="line"><span class="cl">                   `}&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    {post.title}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              ))}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                        {post.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;hr className=&#34;border-slate-200 my-4&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {/* Bio Section */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;h4 className=&#34;text-sm font-bold text-pink-500 mb-2&#34;&gt;Bio&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {allPosts
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .map((post, index) =&gt; ({ ...post, originalIndex: index }))
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .filter(post =&gt; post.category === &#39;Biology&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .slice(0, 3)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  .map((post) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      key={post._id || post.originalIndex}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      onClick={() =&gt; setSelectedPost(post.originalIndex)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      className={`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    group cursor-pointer transition-all duration-200
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    hover:${post.color} hover:${post.borderColor}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  `}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;p className={`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    text-sm font-medium text-slate-600 truncate
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    group-hover:${post.textColor}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  `}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        {post.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            {/* Grid */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;div className=&#34;hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              {posts.map((post, i) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;div key={post._id || i} className=&#34;group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  {/* Header */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  &lt;div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      {post.category}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  &lt;div className=&#34;p-5 flex-1 flex flex-col min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;h3 className=&#34;text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      {post.title}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;p className=&#34;text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      {stripMarkdown(post.content || &#39;&#39;).substring(0, 150)}...
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    {/* Footer with likes, date */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;div className=&#34;mt-4 flex items-center justify-between text-xs text-slate-500&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;span className={`text-xl ${isLikedByUser(post) ? &#39;text-red-500&#39; : &#39;text-gray-400&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                          {isLikedByUser(post) ? &#39;❤️&#39; : &#39;🤍&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;span className=&#34;font-medium text-slate-700&#34;&gt;{post.likes || 0}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              {/* Grid */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {posts.map((post, i) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;div key={post._id || i} className=&#34;group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {/* Header */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        {post.category}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div className=&#34;p-5 flex-1 flex flex-col min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;h3 className=&#34;text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        {post.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;p className=&#34;text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        {stripMarkdown(post.content || &#39;&#39;).substring(0, 150)}...
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      {/* Footer with likes, date */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;div className=&#34;mt-4 flex items-center justify-between text-xs text-slate-500&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;span className={`text-xl ${isLikedByUser(post) ? &#39;text-red-500&#39; : &#39;text-gray-400&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {isLikedByUser(post) ? &#39;❤️&#39; : &#39;🤍&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;span className=&#34;font-medium text-slate-700&#34;&gt;{post.likes || 0}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;span&gt;{formatDate(post.createdAt)}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                       &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                      &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;span&gt;{formatDate(post.createdAt)}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;div className=&#34;mt-4 flex items-center justify-between&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          onClick={() =&gt; setSelectedPost(getGlobalIndex(i))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          className={`text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors flex items-center gap-1`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          Read Article &amp;rarr;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        {post.tags &amp;&amp; post.tags.length &gt; 0 &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;div className=&#34;flex gap-1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {post.tags.slice(0, 3).map((tag: string, idx: number) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;span key={idx} className=&#34;bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {tag}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                       &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      onClick={() =&gt; setSelectedPost(i)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      className={`mt-4 text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors self-start flex items-center gap-1`}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                      Read Article &amp;rarr;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>                   &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          {/* Pagination Controls */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          {!loading &amp;&amp; allPosts.length &gt; postsPerPage &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;flex justify-center items-center gap-2 mt-6 pb-4 flex-shrink-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onClick={() =&gt; handlePageChange(currentPage - 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                disabled={currentPage === 1}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ? &#39;bg-slate-100 text-slate-400 cursor-not-allowed&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  : &#39;bg-slate-200 text-slate-700 hover:bg-slate-300&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                Previous
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              {Array.from({ length: totalPages }, (_, i) =&gt; i + 1).map((pageNum) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  key={pageNum}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  onClick={() =&gt; handlePageChange(pageNum)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ? &#39;bg-pink-500 text-white&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    : &#39;bg-slate-200 text-slate-700 hover:bg-slate-300&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  {pageNum}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               ))}
+</span></span><span class="line"><span class="cl"><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onClick={() =&gt; handlePageChange(currentPage + 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                disabled={currentPage === totalPages}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ? &#39;bg-slate-100 text-slate-400 cursor-not-allowed&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  : &#39;bg-slate-200 text-slate-700 hover:bg-slate-300&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                Next
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        )}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+          )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">       {/* Modal Popup - View/Edit Mode */}
+</span></span><span class="line"><span class="cl"><span class="gd">-      {selectedPost !== null &amp;&amp; posts[selectedPost] &amp;&amp; !isEditMode &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      {selectedPost !== null &amp;&amp; allPosts[selectedPost] &amp;&amp; !isEditMode &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;div
+</span></span><span class="line"><span class="cl">           className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modalBackdrop&#34;
+</span></span><span class="line"><span class="cl">           onClick={() =&gt; setSelectedPost(null)}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -656,12 +826,12 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             className=&#34;bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl animate-modalContent&#34;
+</span></span><span class="line"><span class="cl">             onClick={(e) =&gt; e.stopPropagation()}
+</span></span><span class="line"><span class="cl">           &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-            &lt;div className={`${posts[selectedPost].color} p-8`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              &lt;span className={`text-xs font-bold uppercase tracking-wider ${posts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                {posts[selectedPost].category}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            &lt;div className={`${allPosts[selectedPost].color} p-8`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;span className={`text-xs font-bold uppercase tracking-wider ${allPosts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {allPosts[selectedPost].category}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/span&gt;
+</span></span><span class="line"><span class="cl">               &lt;h2 className=&#34;text-3xl font-bold text-slate-900 mt-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                {posts[selectedPost].title}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                {allPosts[selectedPost].title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/h2&gt;
+</span></span><span class="line"><span class="cl">             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             &lt;div className=&#34;p-8 overflow-y-auto max-h-[calc(85vh-200px)]&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -708,28 +878,41 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                     em: ({ node, ...props }) =&gt; &lt;em className=&#34;italic&#34; {...props} /&gt;,
+</span></span><span class="line"><span class="cl">                   }}
+</span></span><span class="line"><span class="cl">                 &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  {posts[selectedPost].content}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  {allPosts[selectedPost].content}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/ReactMarkdown&gt;
+</span></span><span class="line"><span class="cl">               &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+              {/* Tags Section */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              {allPosts[selectedPost].tags &amp;&amp; allPosts[selectedPost].tags.length &gt; 0 &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div className=&#34;mt-8 pt-6 border-t border-slate-200&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;div className=&#34;flex flex-wrap gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {allPosts[selectedPost].tags.map((tag: string, idx: number) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;span key={idx} className=&#34;bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        #{tag}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               {/* Footer in modal */}
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;div className=&#34;mt-8 pt-6 border-t border-slate-200 flex items-center justify-between&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              &lt;div className={`mt-4 flex items-center justify-between ${!allPosts[selectedPost].tags || allPosts[selectedPost].tags.length === 0 ? &#39;pt-6 border-t border-slate-200&#39; : &#39;&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;button
+</span></span><span class="line"><span class="cl"><span class="gd">-                  onClick={(e) =&gt; handleLike(posts[selectedPost]._id, e)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  onClick={(e) =&gt; handleLike(allPosts[selectedPost]._id, e)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   className=&#34;flex items-center gap-3 cursor-pointer hover:scale-110 transition-transform&#34;
+</span></span><span class="line"><span class="cl">                 &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  &lt;span className={`text-2xl ${isLikedByUser(posts[selectedPost]) ? &#39;text-red-500&#39; : &#39;text-gray-400&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    {isLikedByUser(posts[selectedPost]) ? &#39;❤️&#39; : &#39;🤍&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  &lt;span className={`text-2xl ${isLikedByUser(allPosts[selectedPost]) ? &#39;text-red-500&#39; : &#39;text-gray-400&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {isLikedByUser(allPosts[selectedPost]) ? &#39;❤️&#39; : &#39;🤍&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   &lt;/span&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  &lt;span className=&#34;font-medium text-slate-700 text-base&#34;&gt;{posts[selectedPost].likes || 0}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  &lt;span className=&#34;font-medium text-slate-700 text-base&#34;&gt;{allPosts[selectedPost].likes || 0}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/button&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-3&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  &lt;span className=&#34;text-slate-500&#34;&gt;{formatDate(posts[selectedPost].createdAt)}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  &lt;span className=&#34;text-slate-500&#34;&gt;{formatDate(allPosts[selectedPost].createdAt)}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">               &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;div className={`flex mt-8 ${isAuthor(posts[selectedPost]) ? &#39;justify-between&#39; : &#39;justify-start&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                {isAuthor(posts[selectedPost]) &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              &lt;div className={`flex mt-8 ${isAuthor(allPosts[selectedPost]) ? &#39;justify-between&#39; : &#39;justify-start&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {isAuthor(allPosts[selectedPost]) &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   &lt;button
+</span></span><span class="line"><span class="cl">                     onClick={handleDelete}
+</span></span><span class="line"><span class="cl">                     className=&#34;px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors&#34;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -758,7 +941,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       )}
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">       {/* Edit Mode Modal */}
+</span></span><span class="line"><span class="cl"><span class="gd">-      {selectedPost !== null &amp;&amp; posts[selectedPost] &amp;&amp; isEditMode &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      {selectedPost !== null &amp;&amp; allPosts[selectedPost] &amp;&amp; isEditMode &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;div
+</span></span><span class="line"><span class="cl">           className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;
+</span></span><span class="line"><span class="cl">           onClick={(e) =&gt; e.stopPropagation()}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -767,16 +950,20 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             className=&#34;bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl relative&#34;
+</span></span><span class="line"><span class="cl">             onClick={(e) =&gt; e.stopPropagation()}
+</span></span><span class="line"><span class="cl">           &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-            &lt;div className={`${posts[selectedPost].color} p-8`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            &lt;div className={`${allPosts[selectedPost].color} p-8`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span><span class="line"><span class="cl">                   &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;Category:&lt;/label&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                     value={editData.category}
+</span></span><span class="line"><span class="cl">                     onChange={(e) =&gt; setEditData({ ...editData, category: e.target.value })}
+</span></span><span class="line"><span class="cl">                     className=&#34;flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    title=&#34;Select post category&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;&#34;&gt;Select category...&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;Biology&#34;&gt;Biology&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;Computer Science&#34;&gt;Computer Science&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span><span class="line"><span class="cl">                   &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;Title:&lt;/label&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -787,15 +974,60 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                     className=&#34;flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span><span class="line"><span class="cl">                   /&gt;
+</span></span><span class="line"><span class="cl">                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+                &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;Tags:&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    value={editData.tags}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onChange={handleTagInput}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onBlur={handleTagBlur}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    placeholder=&#34;tag1; tag2; tag3&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">             &lt;div className=&#34;p-8 overflow-y-auto max-h-[calc(85vh-300px)]&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+              {/* Image Upload Area */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onDragOver={handleDragOver}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onDragLeave={handleDragLeave}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onDrop={handleDrop}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ? &#39;border-blue-500 bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  : &#39;border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  type=&#34;file&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  accept=&#34;image/*&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  onChange={handleFileSelect}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  className=&#34;hidden&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  id=&#34;image-upload-edit&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;label htmlFor=&#34;image-upload-edit&#34; className=&#34;cursor-pointer&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;div className=&#34;flex flex-col items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;svg className=&#34;w-12 h-12 text-slate-400&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; viewBox=&#34;0 0 24 24&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;path strokeLinecap=&#34;round&#34; strokeLinejoin=&#34;round&#34; strokeWidth={2} d=&#34;M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {uploadingImage ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;p className=&#34;text-blue-600 font-medium&#34;&gt;Uploading...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-600 font-medium&#34;&gt;Click to upload or drag and drop&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-400 text-sm&#34;&gt;PNG, JPG, GIF up to 5MB&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;textarea
+</span></span><span class="line"><span class="cl">                 value={editData.content}
+</span></span><span class="line"><span class="cl">                 onChange={(e) =&gt; setEditData({ ...editData, content: e.target.value })}
+</span></span><span class="line"><span class="cl">                 className=&#34;w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                placeholder=&#34;Content...&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                placeholder=&#34;Write your content here... (Images will be inserted as markdown)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               /&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">               &lt;div className=&#34;flex justify-between mt-8&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -856,7 +1088,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &lt;div className=&#34;fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4&#34;&gt;
+</span></span><span class="line"><span class="cl">           &lt;div className=&#34;bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative&#34;&gt;
+</span></span><span class="line"><span class="cl">             &lt;h3 className=&#34;text-xl font-bold text-slate-900 mb-4&#34;&gt;Delete Post Permanently?&lt;/h3&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-            &lt;p className=&#34;text-slate-600 mb-6&#34;&gt;This action will permanently delete this blog post. Are you sure you want to continue?&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            &lt;p className=&#34;text-slate-600 mb-6&#34;&gt;This action will permanently delete this post. Are you sure you want to continue?&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             &lt;div className=&#34;flex gap-4 justify-end&#34;&gt;
+</span></span><span class="line"><span class="cl">               &lt;button
+</span></span><span class="line"><span class="cl">                 onClick={handleCancelDelete}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -889,13 +1121,16 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>               &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span><span class="line"><span class="cl">                   &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;Category:&lt;/label&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                     value={editData.category}
+</span></span><span class="line"><span class="cl">                     onChange={(e) =&gt; setEditData({ ...editData, category: e.target.value })}
+</span></span><span class="line"><span class="cl">                     className=&#34;flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    placeholder=&#34;e.g., Technology, Tutorial, etc.&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    title=&#34;Select post category&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;&#34;&gt;Select category...&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;Biology&#34;&gt;Biology&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;Computer Science&#34;&gt;Computer Science&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span><span class="line"><span class="cl">                   &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;Title:&lt;/label&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -907,6 +1142,32 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                     placeholder=&#34;Enter post title...&#34;
+</span></span><span class="line"><span class="cl">                   /&gt;
+</span></span><span class="line"><span class="cl">                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+                &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;Tags:&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    value={editData.tags}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onChange={handleTagInput}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onBlur={handleTagBlur}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    placeholder=&#34;tag1; tag2; tag3&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;text-sm font-bold text-slate-700 w-24&#34;&gt;OPAL:&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      type=&#34;checkbox&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      id=&#34;use-opal&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      checked={useOpal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      onChange={(e) =&gt; setUseOpal(e.target.checked)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      className=&#34;w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;label htmlFor=&#34;use-opal&#34; className=&#34;text-sm text-slate-600 cursor-pointer&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      Use OPAL workflow to generate content
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -916,11 +1177,10 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 onDragOver={handleDragOver}
+</span></span><span class="line"><span class="cl">                 onDragLeave={handleDragLeave}
+</span></span><span class="line"><span class="cl">                 onDrop={handleDrop}
+</span></span><span class="line"><span class="cl"><span class="gd">-                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  isDragging
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    ? &#39;border-blue-500 bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    : &#39;border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                }`}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragging
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ? &#39;border-blue-500 bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  : &#39;border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &gt;
+</span></span><span class="line"><span class="cl">                 &lt;input
+</span></span><span class="line"><span class="cl">                   type=&#34;file&#34;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -972,6 +1232,30 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">       )}
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+      {/* OPAL Success Dialog */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      {showOpalDialog &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div className=&#34;fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;div className=&#34;bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;span className=&#34;text-3xl&#34;&gt;✅&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;h3 className=&#34;text-xl font-bold text-slate-900 mb-2&#34;&gt;Request Sent to OPAL&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;p className=&#34;text-slate-600 mb-8&#34;&gt;Your request has been successfully sent to the OPAL workflow.&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              onClick={() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setShowOpalDialog(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setIsCreateMode(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setUseOpal(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              className=&#34;w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              Confirm
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       {/* Validation Dialog */}
+</span></span><span class="line"><span class="cl">       {showValidationDialog &amp;&amp; (
+</span></span><span class="line"><span class="cl">         &lt;div className=&#34;fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1015,7 +1299,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>           {toastMessage}
+</span></span><span class="line"><span class="cl">         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">       )}
+</span></span><span class="line"><span class="cl"><span class="gd">-    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   );
+</span></span><span class="line"><span class="cl"> };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1626,7 +1910,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 Research
+</span></span><span class="line"><span class="cl">               &lt;/Link&gt;
+</span></span><span class="line"><span class="cl">               &lt;Link to=&#34;/tech&#34; onClick={() =&gt; setMobileMenuOpen(false)} className=&#34;text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                Tech
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                Blog
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/Link&gt;
+</span></span><span class="line"><span class="cl">               &lt;Link to=&#34;/interests/travel&#34; onClick={() =&gt; setMobileMenuOpen(false)} className=&#34;text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2&#34;&gt;
+</span></span><span class="line"><span class="cl">                 Interests
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1664,7 +1948,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>           /&gt;
+</span></span><span class="line"><span class="cl">           &lt;LiquidTab
+</span></span><span class="line"><span class="cl">             to=&#34;/tech&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-            label=&#34;Tech&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            label=&#34;Blog&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             active={location.pathname === &#39;/tech&#39;}
+</span></span><span class="line"><span class="cl">             colorClass=&#34;text-pink-500 hover:text-pink-300&#34;
+</span></span><span class="line"><span class="cl">           /&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

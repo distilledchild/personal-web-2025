@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>image issues in Interests-art &amp; time setting · personal-web-2025@484fdf8</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>484fdf8</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-12-01</span> <span class="nowrap">04:40:35</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                image issues in Interests-art &amp; time setting
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="0a970a067aa00b1a1e0308f9c0c1dc6d22eaec22.html"><code>0a970a0</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (5)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fInterests.tsx" class="file-name">
+                    Interests.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2fpackage-lock.json" class="file-name">
+                    package-lock.json
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2fpackage.json" class="file-name">
+                    package.json
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#.gitignore" class="file-name">
+                    .gitignore
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="pages/Interests.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Interests.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -173,7 +173,7 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     const [expandedState, setExpandedState] = useState&lt;string | null&gt;(null);
+</span></span><span class="line"><span class="cl">     const [clickPosition, setClickPosition] = useState&lt;{ x: number; y: number } | null&gt;(null);
+</span></span><span class="line"><span class="cl">     const [expandedCentroid, setExpandedCentroid] = useState&lt;{ x: number, y: number } | null&gt;(null);
+</span></span><span class="line"><span class="cl"><span class="gd">-    const [hoveredPin, setHoveredPin] = useState&lt;number | null&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const [hoveredPin, setHoveredPin] = useState&lt;string | null&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const [selectedMuseum, setSelectedMuseum] = useState&lt;ArtMuseum | null&gt;(null);
+</span></span><span class="line"><span class="cl">     const [selectedArtwork, setSelectedArtwork] = useState&lt;string | null&gt;(null);
+</span></span><span class="line"><span class="cl">     const [stateData, setStateData] = useState&lt;StateInfo[]&gt;([]);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -254,11 +254,16 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             }
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">             const results = await Promise.all(artworkPromises);
+</span></span><span class="line"><span class="cl"><span class="gd">-            const artworks = results.filter((path): path is string =&gt; path !== null);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            const localArtworks = results.filter((path): path is string =&gt; path !== null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Merge with existing artworks (from backend/GCS)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const existingArtworks = museum.artworks || [];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // distinct artworks
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const allArtworks = Array.from(new Set([...existingArtworks, ...localArtworks]));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">             return {
+</span></span><span class="line"><span class="cl">                 ...museum,
+</span></span><span class="line"><span class="cl"><span class="gd">-                artworks
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                artworks: allArtworks
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             };
+</span></span><span class="line"><span class="cl">         } catch (error) {
+</span></span><span class="line"><span class="cl">             console.error(&#39;Failed to load artworks for museum:&#39;, museum.museum_name, error);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1082,16 +1087,12 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                                                             const museumToOpen = museums.find((m: ArtMuseum) =&gt; m.artworks &amp;&amp; m.artworks.length &gt; 0) || museums[0];
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">                                                                             return (
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                                                &lt;Marker key={`pin-${coordKey}-${idx}`} coordinates={museum.coordinates}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                                                &lt;Marker key={museum.id} coordinates={museum.coordinates as [number, number]}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                                                     &lt;g
+</span></span><span class="line"><span class="cl">                                                                                         transform=&#34;scale(0.5) translate(-12, -24)&#34;
+</span></span><span class="line"><span class="cl">                                                                                         onMouseEnter={() =&gt; setHoveredPin(pinId)}
+</span></span><span class="line"><span class="cl">                                                                                         onMouseLeave={() =&gt; setHoveredPin(null)}
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                                                        onClick={(e) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                            e.stopPropagation();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                            setSelectedMuseum(museumToOpen);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                        }}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                        style={{ cursor: &#39;pointer&#39; }}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                                                        onClick={() =&gt; handleMuseumClick(museumToOpen)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                                                     &gt;
+</span></span><span class="line"><span class="cl">                                                                                         &lt;path
+</span></span><span class="line"><span class="cl">                                                                                             d=&#34;M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z&#34;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1104,25 +1105,29 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                                                                     {/* Tooltips - show first museum only */}
+</span></span><span class="line"><span class="cl">                                                                                     {hoveredPin === pinId &amp;&amp; (
+</span></span><span class="line"><span class="cl">                                                                                         &lt;g transform=&#34;translate(0, -35)&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                                                            &lt;foreignObject x=&#34;-100&#34; y=&#34;-40&#34; width=&#34;200&#34; height=&#34;50&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                &lt;div style={{
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    background: &#39;transparent&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    padding: &#39;6px 10px&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    borderRadius: &#39;8px&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    fontSize: &#39;11px&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    textAlign: &#39;center&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    pointerEvents: &#39;none&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                                                            &lt;text
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                textAnchor=&#34;middle&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                y={-10}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                style={{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                    fontFamily: &#39;system-ui, -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, Roboto, sans-serif&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                    fill: &#39;#000&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                    fontWeight: &#39;600&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                    fontSize: &#39;11px&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                {museumToOpen.museum_name}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                            &lt;/text&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                            &lt;text
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                textAnchor=&#34;middle&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                y={0}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                style={{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                                                                     fontFamily: &#39;system-ui, -apple-system, BlinkMacSystemFont, &#34;Segoe UI&#34;, Roboto, sans-serif&#39;,
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                                                                    lineHeight: &#39;1.3&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                }}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    &lt;div style={{ color: &#39;#000&#39;, fontWeight: &#39;600&#39; }}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                        {museumToOpen.museum_name}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    &lt;div style={{ fontSize: &#39;10px&#39;, color: &#39;#64748b&#39; }}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                        {museum.city_name || museum.city}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                                            &lt;/foreignObject&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                                                                    fill: &#39;#64748b&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                    fontSize: &#39;10px&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                                {museum.city_name || museum.city}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                                            &lt;/text&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                                                         &lt;/g&gt;
+</span></span><span class="line"><span class="cl">                                                                                     )}
+</span></span><span class="line"><span class="cl">                                                                                 &lt;/Marker&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -6,6 +6,8 @@ import fs from &#39;fs&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import path from &#39;path&#39;;
+</span></span><span class="line"><span class="cl"> import { fileURLToPath } from &#39;url&#39;;
+</span></span><span class="line"><span class="cl"> import multer from &#39;multer&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { zonedTimeToUtc } from &#39;date-fns-tz&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> const __filename = fileURLToPath(import.meta.url);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -156,7 +158,7 @@ app.get(&#39;/api/interests/art-museums&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             // Load artworks from GCS bucket
+</span></span><span class="line"><span class="cl">             let artworks = [];
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            if (museum.museum_code &amp;&amp; GCS_BUCKET_URL) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            if (museum.museum_code) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 try {
+</span></span><span class="line"><span class="cl">                     // List files in the bucket for this museum
+</span></span><span class="line"><span class="cl">                     const bucket = storage.bucket(GCS_BUCKET_NAME);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -2055,6 +2057,10 @@ app.get(&#39;/api/member/role/:email&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+const timeZone = &#39;America/Chicago&#39;; // US Central Time
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// ... (rest of the file)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> // --- TODO List Endpoints ---
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> // Get all TODO items
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -2089,9 +2095,9 @@ app.post(&#39;/api/todos&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             description,
+</span></span><span class="line"><span class="cl">             status: &#39;pending&#39;,
+</span></span><span class="line"><span class="cl">             priority: priority || &#39;medium&#39;,
+</span></span><span class="line"><span class="cl"><span class="gd">-            due_date: due_date ? new Date(due_date) : null,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            start_time: start_time ? new Date(start_time) : null,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            end_time: end_time ? new Date(end_time) : null,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            due_date: due_date ? zonedTimeToUtc(due_date, timeZone) : null,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            start_time: start_time ? zonedTimeToUtc(start_time, timeZone) : null,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            end_time: end_time ? zonedTimeToUtc(end_time, timeZone) : null,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             completed: false,
+</span></span><span class="line"><span class="cl">             show: &#39;Y&#39;,
+</span></span><span class="line"><span class="cl">             created_at: new Date(),
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -2132,9 +2138,9 @@ app.put(&#39;/api/todos/:id&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         if (description !== undefined) todo.description = description;
+</span></span><span class="line"><span class="cl">         if (status !== undefined) todo.status = status;
+</span></span><span class="line"><span class="cl">         if (priority !== undefined) todo.priority = priority;
+</span></span><span class="line"><span class="cl"><span class="gd">-        if (due_date !== undefined) todo.due_date = due_date ? new Date(due_date) : null;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (start_time !== undefined) todo.start_time = start_time ? new Date(start_time) : null;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (end_time !== undefined) todo.end_time = end_time ? new Date(end_time) : null;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        if (due_date !== undefined) todo.due_date = due_date ? zonedTimeToUtc(due_date, timeZone) : null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (start_time !== undefined) todo.start_time = start_time ? zonedTimeToUtc(start_time, timeZone) : null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (end_time !== undefined) todo.end_time = end_time ? zonedTimeToUtc(end_time, timeZone) : null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         if (completed !== undefined) todo.completed = completed;
+</span></span><span class="line"><span class="cl">         todo.updated_at = new Date();
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="server/package-lock.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/package-lock.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -10,6 +10,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             &#34;dependencies&#34;: {
+</span></span><span class="line"><span class="cl">                 &#34;@google-cloud/storage&#34;: &#34;^7.0.0&#34;,
+</span></span><span class="line"><span class="cl">                 &#34;cors&#34;: &#34;^2.8.5&#34;,
+</span></span><span class="line"><span class="cl"><span class="gi">+                &#34;date-fns-tz&#34;: &#34;^3.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &#34;dotenv&#34;: &#34;^17.2.3&#34;,
+</span></span><span class="line"><span class="cl">                 &#34;express&#34;: &#34;^4.19.2&#34;,
+</span></span><span class="line"><span class="cl">                 &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -585,6 +586,26 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 &#34;node&#34;: &#34;&gt;= 12&#34;
+</span></span><span class="line"><span class="cl">             }
+</span></span><span class="line"><span class="cl">         },
+</span></span><span class="line"><span class="cl"><span class="gi">+        &#34;node_modules/date-fns&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;version&#34;: &#34;4.1.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;resolved&#34;: &#34;https://registry.npmjs.org/date-fns/-/date-fns-4.1.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;integrity&#34;: &#34;sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;peer&#34;: true,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;funding&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &#34;type&#34;: &#34;github&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &#34;url&#34;: &#34;https://github.com/sponsors/kossnocorp&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node_modules/date-fns-tz&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;version&#34;: &#34;3.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;resolved&#34;: &#34;https://registry.npmjs.org/date-fns-tz/-/date-fns-tz-3.2.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;integrity&#34;: &#34;sha512-sg8HqoTEulcbbbVXeg84u5UnlsQa8GS5QXMqjjYIhS4abEVVKIUwe0/l/UhrZdKaL/W5eWZNlbTeEIiOXTcsBQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &#34;peerDependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &#34;date-fns&#34;: &#34;^3.0.0 || ^4.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &#34;node_modules/debug&#34;: {
+</span></span><span class="line"><span class="cl">             &#34;version&#34;: &#34;2.6.9&#34;,
+</span></span><span class="line"><span class="cl">             &#34;resolved&#34;: &#34;https://registry.npmjs.org/debug/-/debug-2.6.9.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1661,22 +1682,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 &#34;node&#34;: &#34;&gt;=18&#34;
+</span></span><span class="line"><span class="cl">             }
+</span></span><span class="line"><span class="cl">         },
+</span></span><span class="line"><span class="cl"><span class="gd">-        &#34;node_modules/mongoose/node_modules/gcp-metadata&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;version&#34;: &#34;7.0.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;resolved&#34;: &#34;https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-7.0.1.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;integrity&#34;: &#34;sha512-UcO3kefx6dCcZkgcTGgVOTFb7b1LlQ02hY1omMjjrrBzkajRMCFgYOjs7J71WqnuG1k2b+9ppGL7FsOfhZMQKQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;license&#34;: &#34;Apache-2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;optional&#34;: true,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;peer&#34;: true,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &#34;gaxios&#34;: &#34;^7.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &#34;google-logging-utils&#34;: &#34;^1.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &#34;json-bigint&#34;: &#34;^1.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &#34;node&#34;: &#34;&gt;=18&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>         &#34;node_modules/mongoose/node_modules/google-logging-utils&#34;: {
+</span></span><span class="line"><span class="cl">             &#34;version&#34;: &#34;1.1.3&#34;,
+</span></span><span class="line"><span class="cl">             &#34;resolved&#34;: &#34;https://registry.npmjs.org/google-logging-utils/-/google-logging-utils-1.1.3.tgz&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="server/package.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/package.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -9,10 +9,11 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     &#34;dependencies&#34;: {
+</span></span><span class="line"><span class="cl">         &#34;@google-cloud/storage&#34;: &#34;^7.0.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;cors&#34;: &#34;^2.8.5&#34;,
+</span></span><span class="line"><span class="cl"><span class="gi">+        &#34;date-fns-tz&#34;: &#34;^3.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &#34;dotenv&#34;: &#34;^17.2.3&#34;,
+</span></span><span class="line"><span class="cl">         &#34;express&#34;: &#34;^4.19.2&#34;,
+</span></span><span class="line"><span class="cl">         &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;multer&#34;: &#34;^1.4.5-lts.1&#34;,
+</span></span><span class="line"><span class="cl">         &#34;socket.io&#34;: &#34;^4.8.1&#34;
+</span></span><span class="line"><span class="cl">     }
+</span></span><span class="line"><span class="cl"><span class="gd">-}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>\ No newline at end of file
+</span></span><span class="line"><span class="cl"><span class="gi">+}
+</span></span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id=".gitignore" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">.gitignore</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -23,5 +23,4 @@ dist-ssr
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> *.sln
+</span></span><span class="line"><span class="cl"> *.sw?
+</span></span><span class="line"><span class="cl"> .env*
+</span></span><span class="line"><span class="cl"><span class="gd">-*-key.json
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-GEMINI.md
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>\ No newline at end of file
+</span></span><span class="line"><span class="cl"><span class="gi">+*-key.json
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>\ No newline at end of file
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

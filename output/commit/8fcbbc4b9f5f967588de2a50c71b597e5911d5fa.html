@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>fix: Remove all PostgreSQL dependencies and related code · personal-web-2025@8fcbbc4</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>8fcbbc4</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-11-29</span> <span class="nowrap">04:45:52</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                fix: Remove all PostgreSQL dependencies and related code
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="7e57d0f3108b9dc266efa70f782cbf401097cdfd.html"><code>7e57d0f</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (3)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package-lock.json" class="file-name">
+                    package-lock.json
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package.json" class="file-name">
+                    package.json
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -5,8 +5,7 @@ import cors from &#39;cors&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import fs from &#39;fs&#39;;
+</span></span><span class="line"><span class="cl"> import path from &#39;path&#39;;
+</span></span><span class="line"><span class="cl"> import { fileURLToPath } from &#39;url&#39;;
+</span></span><span class="line"><span class="cl"><span class="gd">-import pkg from &#39;pg&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-const { Pool } = pkg;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> const __filename = fileURLToPath(import.meta.url);
+</span></span><span class="line"><span class="cl"> const __dirname = path.dirname(__filename);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -78,10 +77,7 @@ mongoose.connect(process.env.MONGODB_URI)
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     .then(() =&gt; console.log(&#39;Connected to MongoDB&#39;))
+</span></span><span class="line"><span class="cl">     .catch(err =&gt; console.error(&#39;MongoDB connection error:&#39;, err));
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-// Postgres connection
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-const pool = new Pool({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    connectionString: process.env.POSTGRES_URL,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-});
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> const stateSchema = new mongoose.Schema({
+</span></span><span class="line"><span class="cl">     code: String,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1757,70 +1753,7 @@ app.post(&#39;/api/workouts/sync&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-// Create Team Endpoint
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-app.post(&#39;/api/teams&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    try {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const { name, owner_id, description } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!name || !owner_id) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            return res.status(400).json({ error: &#39;Name and owner_id are required&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-        const query = `
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            INSERT INTO &#34;litmers-vibecoding-contest-2025&#34;.&#34;teams&#34; (name, owner_id, created_at, description)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            VALUES ($1, $2, NOW(), $3)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            RETURNING *
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        `;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const values = [name, owner_id, description];
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const result = await pool.query(query, values);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        res.status(201).json(result.rows[0]);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        console.error(&#39;Error creating team:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-});
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-// Get User Teams Endpoint
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-app.get(&#39;/api/teams/user/:userId&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    try {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const { userId } = req.params;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!userId) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            return res.status(400).json({ error: &#39;User ID is required&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const query = `
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            SELECT 
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                t.id AS team_id,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                t.name AS team_name,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                t.description,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                COUNT(DISTINCT tm_all.user_id) AS member_count,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                COUNT(DISTINCT p.id) AS project_count,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                tm.role AS my_role
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            FROM &#34;litmers-vibecoding-contest-2025&#34;.&#34;teams&#34; t
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            JOIN &#34;litmers-vibecoding-contest-2025&#34;.&#34;team_members&#34; tm 
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ON t.id = tm.team_id
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                AND tm.user_id = $1
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            LEFT JOIN &#34;litmers-vibecoding-contest-2025&#34;.&#34;team_members&#34; tm_all 
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ON t.id = tm_all.team_id
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            LEFT JOIN &#34;litmers-vibecoding-contest-2025&#34;.&#34;projects&#34; p 
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ON t.id = p.team_id 
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                AND p.deleted_at IS NULL
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            WHERE t.deleted_at IS NULL
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            GROUP BY t.id, t.name, t.description, tm.role
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            ORDER BY t.id;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        `;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const result = await pool.query(query, [userId]);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        res.json(result.rows);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        console.error(&#39;Error fetching user teams:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-});
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span> 
+</span></span><span class="line"><span class="cl"> // Contact Schema
+</span></span><span class="line"><span class="cl"> const contactSchema = new mongoose.Schema({
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package-lock.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package-lock.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -19,7 +19,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;express&#34;: &#34;^5.1.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;lucide-react&#34;: &#34;^0.554.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gd">-        &#34;pg&#34;: &#34;^8.16.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>         &#34;prop-types&#34;: &#34;^15.8.1&#34;,
+</span></span><span class="line"><span class="cl">         &#34;react&#34;: &#34;^19.2.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;react-dom&#34;: &#34;^19.2.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -4352,95 +4351,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;url&#34;: &#34;https://opencollective.com/express&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gd">-    &#34;node_modules/pg&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;8.16.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg/-/pg-8.16.3.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-enxc1h0jA/aq5oSDMvqyW3q89ra6XIIDZgCX9vkMrnz5DFTw/Ny3Li2lFQ+pt3L6MCgm/5o2o8HW9hiJji+xvw==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-connection-string&#34;: &#34;^2.9.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-pool&#34;: &#34;^3.10.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-protocol&#34;: &#34;^1.10.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-types&#34;: &#34;2.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pgpass&#34;: &#34;1.0.5&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;= 16.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;optionalDependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-cloudflare&#34;: &#34;^1.2.7&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;peerDependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-native&#34;: &#34;&gt;=3.0.1&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;peerDependenciesMeta&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-native&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &#34;optional&#34;: true
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pg-cloudflare&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.2.7&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg-cloudflare/-/pg-cloudflare-1.2.7.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;optional&#34;: true
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pg-connection-string&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;2.9.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.9.1.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-nkc6NpDcvPVpZXxrreI/FOtX3XemeLl8E0qFr6F2Lrm/I8WOnaWNhIPK2Z7OHpw7gh5XJThi6j6ppgNoaT1w4w==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pg-int8&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.0.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg-int8/-/pg-int8-1.0.1.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;ISC&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=4.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pg-pool&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;3.10.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg-pool/-/pg-pool-3.10.1.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-Tu8jMlcX+9d8+QVzKIvM/uJtp07PKr82IUOYEphaWcoBhIYkoHpLXN3qO59nAI11ripznDsEzEv8nUxBVWajGg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;peerDependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg&#34;: &#34;&gt;=8.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pg-protocol&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.10.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg-protocol/-/pg-protocol-1.10.3.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-6DIBgBQaTKDJyxnXaLiLR8wBpQQcGWuAESkRBX/t6OwA8YsqP+iVSiond2EDy6Y/dsGk8rh/jtax3js5NeV7JQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pg-types&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;2.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pg-types/-/pg-types-2.2.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;pg-int8&#34;: &#34;1.0.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;postgres-array&#34;: &#34;~2.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;postgres-bytea&#34;: &#34;~1.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;postgres-date&#34;: &#34;~1.0.4&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;postgres-interval&#34;: &#34;^1.1.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/pgpass&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.0.5&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/pgpass/-/pgpass-1.0.5.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;split2&#34;: &#34;^4.1.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>     &#34;node_modules/picocolors&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;1.1.1&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -4490,45 +4400,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;node&#34;: &#34;^10 || ^12 || &gt;=14&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gd">-    &#34;node_modules/postgres-array&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;2.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/postgres-array/-/postgres-array-2.0.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/postgres-bytea&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/postgres-bytea/-/postgres-bytea-1.0.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-xy3pmLuQqRBZBXDULy7KbaitYqLcmxigw14Q5sj8QBVLqEwXfeybIKVWiqAXTlcvdvb0+xkOtDbfQMOf4lST1w==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=0.10.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/postgres-date&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.0.7&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.7.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=0.10.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &#34;node_modules/postgres-interval&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;1.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.2.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;xtend&#34;: &#34;^4.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=0.10.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>     &#34;node_modules/potpack&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;1.0.2&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/potpack/-/potpack-1.0.2.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -5451,15 +5322,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;memory-pager&#34;: &#34;^1.0.2&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gd">-    &#34;node_modules/split2&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;4.2.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/split2/-/split2-4.2.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;ISC&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;= 10.x&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>     &#34;node_modules/stats-gl&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;2.4.2&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/stats-gl/-/stats-gl-2.4.2.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -6330,15 +6192,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;node&#34;: &#34;&gt;=0.4.0&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gd">-    &#34;node_modules/xtend&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;version&#34;: &#34;4.0.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;resolved&#34;: &#34;https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;integrity&#34;: &#34;sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &#34;node&#34;: &#34;&gt;=0.4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>     &#34;node_modules/y18n&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;5.0.8&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -23,7 +23,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     &#34;express&#34;: &#34;^5.1.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;lucide-react&#34;: &#34;^0.554.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gd">-    &#34;pg&#34;: &#34;^8.16.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>     &#34;prop-types&#34;: &#34;^15.8.1&#34;,
+</span></span><span class="line"><span class="cl">     &#34;react&#34;: &#34;^19.2.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;react-dom&#34;: &#34;^19.2.0&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>feat: update UI consistency and enhance contact interaction · personal-web-2025@3bed887</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>3bed887</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-11-22</span> <span class="nowrap">14:46:14</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                feat: update UI consistency and enhance contact interaction
+                
+            </div>
+            
+                <div class="commit-body">- Update Research page icons and color themes for better visual consistency:
+  - PE Interactions: Use GitBranch icon (Blue)
+  - Single-cell Seq: Use Database icon (Green) and update chart colors to green theme
+  - Enhancer ID: Use FileText icon (Pink)
+  - LLM: Use Sliders icon (Purple) for both tab and section header
+- Update Single-cell scatter plot &#39;Cluster A&#39; color to #FFA300
+- Enhance Contact page email interaction:
+  - Replace mailto link with copy-to-clipboard functionality
+  - Add cursor-following toast notification upon successful copy
+</div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="9724b7d68e6526b2ce01545c560b855af70cf086.html"><code>9724b7d</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (5)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fResearch.tsx" class="file-name">
+                    Research.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#index.html" class="file-name">
+                    index.html
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package.json" class="file-name">
+                    package.json
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16" class="file-added">
+                            <use xlink:href="#file-added"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#TECH_STACK.md" class="file-name">
+                    TECH_STACK.md
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="pages/Research.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Research.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -22,7 +22,7 @@ const PEInteractions = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     &lt;div className=&#34;flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6&#34;&gt;
+</span></span><span class="line"><span class="cl">       &lt;div&gt;
+</span></span><span class="line"><span class="cl">         &lt;h3 className=&#34;text-2xl font-bold text-slate-900 flex items-center gap-3&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-          &lt;Sliders size={24} className=&#34;text-green-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+          &lt;GitBranch size={24} className=&#34;text-blue-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>           Promoter–Enhancer Interaction Mapping
+</span></span><span class="line"><span class="cl">         &lt;/h3&gt;
+</span></span><span class="line"><span class="cl">         &lt;p className=&#34;text-slate-500 mt-2 text-lg&#34;&gt;Interactive Visualization simulating R Shiny output from &lt;code className=&#34;bg-slate-100 px-2 py-1 rounded text-sm&#34;&gt;enhancer_promoter_interaction.R&lt;/code&gt;&lt;/p&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -75,7 +75,7 @@ const SingleCell = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   &lt;div className=&#34;space-y-8 animate-fadeIn py-4&#34;&gt;
+</span></span><span class="line"><span class="cl">     &lt;div className=&#34;border-b border-slate-100 pb-6&#34;&gt;
+</span></span><span class="line"><span class="cl">       &lt;h3 className=&#34;text-2xl font-bold text-slate-900 flex items-center gap-3&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;Database size={24} className=&#34;text-blue-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        &lt;Database size={24} className=&#34;text-green-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         Single-cell Sequencing Analysis
+</span></span><span class="line"><span class="cl">       &lt;/h3&gt;
+</span></span><span class="line"><span class="cl">       &lt;p className=&#34;text-slate-500 mt-2 text-lg&#34;&gt;Dimensionality reduction (UMAP) and clustering of 10k PBMCs.&lt;/p&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -90,8 +90,8 @@ const SingleCell = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>           &lt;ZAxis type=&#34;number&#34; dataKey=&#34;z&#34; range={[50, 400]} name=&#34;Expression&#34; /&gt;
+</span></span><span class="line"><span class="cl">           &lt;Tooltip cursor={{ strokeDasharray: &#39;3 3&#39; }} contentStyle={{ borderRadius: &#39;12px&#39; }} /&gt;
+</span></span><span class="line"><span class="cl">           &lt;Legend wrapperStyle={{ paddingTop: &#39;20px&#39; }} /&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-          &lt;Scatter name=&#34;Cluster A (Neural)&#34; data={mockScatterData.filter(d =&gt; d.cluster === &#39;Cluster A&#39;)} fill=&#34;#60a5fa&#34; shape=&#34;circle&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;Scatter name=&#34;Cluster B (Progenitor)&#34; data={mockScatterData.filter(d =&gt; d.cluster === &#39;Cluster B&#39;)} fill=&#34;#a78bfa&#34; shape=&#34;triangle&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+          &lt;Scatter name=&#34;Cluster A (Neural)&#34; data={mockScatterData.filter(d =&gt; d.cluster === &#39;Cluster A&#39;)} fill=&#34;#FFA300&#34; shape=&#34;circle&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;Scatter name=&#34;Cluster B (Progenitor)&#34; data={mockScatterData.filter(d =&gt; d.cluster === &#39;Cluster B&#39;)} fill=&#34;#4ade80&#34; shape=&#34;triangle&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;/ScatterChart&gt;
+</span></span><span class="line"><span class="cl">       &lt;/ResponsiveContainer&gt;
+</span></span><span class="line"><span class="cl">     &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -110,7 +110,7 @@ const EnhancerID = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   &lt;div className=&#34;space-y-8 animate-fadeIn py-4&#34;&gt;
+</span></span><span class="line"><span class="cl">     &lt;div className=&#34;border-b border-slate-100 pb-6&#34;&gt;
+</span></span><span class="line"><span class="cl">       &lt;h3 className=&#34;text-2xl font-bold text-slate-900 flex items-center gap-3&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;FileText size={24} className=&#34;text-purple-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        &lt;FileText size={24} className=&#34;text-pink-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         Computational Enhancer Identification
+</span></span><span class="line"><span class="cl">       &lt;/h3&gt;
+</span></span><span class="line"><span class="cl">       &lt;p className=&#34;text-slate-500 mt-2 text-lg&#34;&gt;Deep learning prediction of enhancer regions using sequence motifs and conservation.&lt;/p&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -164,9 +164,9 @@ export const Research: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">   const tabs = [
+</span></span><span class="line"><span class="cl">     { label: &#39;PE Interactions&#39;, icon: GitBranch, color: &#39;text-blue-600 border-blue-200&#39;, activeBg: &#39;bg-blue-50 ring-blue-200&#39; },
+</span></span><span class="line"><span class="cl"><span class="gd">-    { label: &#39;Single-cell Seq&#39;, icon: Database, color: &#39;text-teal-600 border-teal-200&#39;, activeBg: &#39;bg-teal-50 ring-teal-200&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    { label: &#39;Single-cell Seq&#39;, icon: Database, color: &#39;text-green-600 border-green-200&#39;, activeBg: &#39;bg-green-50 ring-green-200&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     { label: &#39;Enhancer ID&#39;, icon: FileText, color: &#39;text-pink-600 border-pink-200&#39;, activeBg: &#39;bg-pink-50 ring-pink-200&#39; },
+</span></span><span class="line"><span class="cl"><span class="gd">-    { label: &#39;LLM&#39;, icon: FileText, color: &#39;text-purple-600 border-purple-200&#39;, activeBg: &#39;bg-purple-50 ring-purple-200&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    { label: &#39;LLM&#39;, icon: Sliders, color: &#39;text-purple-600 border-purple-200&#39;, activeBg: &#39;bg-purple-50 ring-purple-200&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   ];
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">   return (
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -209,7 +209,10 @@ export const Research: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>           {activeTab === 2 &amp;&amp; &lt;EnhancerID /&gt;}
+</span></span><span class="line"><span class="cl">           {activeTab === 3 &amp;&amp; (
+</span></span><span class="line"><span class="cl">             &lt;div className=&#39;p-8&#39;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;h3 className=&#39;text-2xl font-bold mb-4&#39;&gt;LLM Research&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              &lt;h3 className=&#39;text-2xl font-bold mb-4 flex items-center gap-3&#39;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;Sliders size={24} className=&#34;text-purple-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                LLM Research
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;p className=&#39;text-slate-600&#39;&gt;Content for LLM research goes here.&lt;/p&gt;
+</span></span><span class="line"><span class="cl">             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">           )}
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -74,6 +74,7 @@ const About: React.FC = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>               &lt;li&gt;• Riding a bike&lt;/li&gt;
+</span></span><span class="line"><span class="cl">               &lt;li&gt;• Camping&lt;/li&gt;
+</span></span><span class="line"><span class="cl">               &lt;li&gt;• Traveling&lt;/li&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+              &lt;li&gt;• Playing Baduk (Go)&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             &lt;/ul&gt;
+</span></span><span class="line"><span class="cl">           &lt;/div&gt;
+</span></span><span class="line"><span class="cl">         &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -228,59 +229,87 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   );
+</span></span><span class="line"><span class="cl"> };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-const Contact: React.FC = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-  &lt;div className=&#34;min-h-screen bg-white pt-32 pb-20 px-6 flex flex-col items-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;div className=&#34;max-w-2xl w-full animate-fadeIn&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-16 text-center border-b border-slate-100 pb-8&#34;&gt;Get in Touch&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+const Contact: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [showCopied, setShowCopied] = useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-      &lt;div className=&#34;space-y-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &lt;a href=&#34;mailto:distilledchild@gmail.com&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group border border-slate-100 hover:border-blue-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-blue-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;Mail size={32} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;Email&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-xl text-slate-900 font-medium break-all&#34;&gt;distilledchild@gmail.com&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  const handleCopy = (e: React.MouseEvent) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setCursorPos({ x: e.clientX, y: e.clientY });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    navigator.clipboard.writeText(&#39;distilledchild@gmail.com&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setShowCopied(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setTimeout(() =&gt; setShowCopied(false), 2000);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;a href=&#34;https://github.com/distilledchild&#34; target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-green-50 transition-colors group border border-slate-100 hover:border-green-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-green-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;Github size={32} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;GitHub&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-xl text-slate-900 font-medium break-all&#34;&gt;github.com/distilledchild&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &lt;div className=&#34;min-h-screen bg-white pt-32 pb-20 px-6 flex flex-col items-center relative&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      {/* Notification Toast */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      {showCopied &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          className=&#34;fixed z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg animate-fadeIn flex items-center gap-2 pointer-events-none&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          style={{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            left: cursorPos.x + 16,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            top: cursorPos.y - 16
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;span&gt;✨ Email copied to clipboard!&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;a href=&#34;https://www.linkedin.com/in/pkim11/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-pink-50 transition-colors group border border-slate-100 hover:border-pink-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-pink-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;svg className=&#34;w-8 h-8&#34; fill=&#34;currentColor&#34; viewBox=&#34;0 0 24 24&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              &lt;path d=&#34;M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;LinkedIn&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-xl text-slate-900 font-medium break-all&#34;&gt;linkedin.com/in/distilledchild&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      &lt;div className=&#34;max-w-2xl w-full animate-fadeIn&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-16 text-center border-b border-slate-100 pb-8&#34;&gt;Get in Touch&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;a href=&#34;https://www.google.com/maps/place/Memphis,+TN&#34; target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group cursor-default border border-slate-100 hover:border-purple-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;MapPin size={32} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;Location&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-xl text-slate-900 font-medium&#34;&gt;Memphis, TN, USA&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        &lt;div className=&#34;space-y-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            onClick={handleCopy}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            className=&#34;w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group border border-slate-100 hover:border-blue-100 cursor-pointer text-left&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-blue-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;Mail size={32} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;Email&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-xl text-slate-900 font-medium break-all&#34;&gt;distilledchild@gmail.com&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;a href=&#34;https://github.com/distilledchild&#34; target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-green-50 transition-colors group border border-slate-100 hover:border-green-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-green-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;Github size={32} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;GitHub&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-xl text-slate-900 font-medium break-all&#34;&gt;github.com/distilledchild&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;a href=&#34;https://www.linkedin.com/in/pkim11/&#34; target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-pink-50 transition-colors group border border-slate-100 hover:border-pink-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-pink-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;svg className=&#34;w-8 h-8&#34; fill=&#34;currentColor&#34; viewBox=&#34;0 0 24 24&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;path d=&#34;M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;LinkedIn&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-xl text-slate-900 font-medium break-all&#34;&gt;linkedin.com/in/distilledchild&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gi">+          &lt;a href=&#34;https://www.google.com/maps/place/Memphis,+TN&#34; target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34; className=&#34;flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group cursor-default border border-slate-100 hover:border-purple-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;bg-white p-4 rounded-full shadow-sm text-slate-700 group-hover:text-purple-600 transition-colors&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;MapPin size={32} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;ml-6 text-left&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;&gt;Location&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-xl text-slate-900 font-medium&#34;&gt;Memphis, TN, USA&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       &lt;/div&gt;
+</span></span><span class="line"><span class="cl">     &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-  &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> // Liquid Crystal Tab Component - 95% of original size
+</span></span><span class="line"><span class="cl"> const LiquidTab = ({ to, label, active, colorClass, badgeCount }: { to: string; label: string; active: boolean; colorClass: string; badgeCount?: number }) =&gt; (
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -339,7 +368,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &lt;div className=&#34;fixed top-0 left-0 z-50 p-4 md:p-8 flex items-center&#34;&gt;
+</span></span><span class="line"><span class="cl">         &lt;Link to=&#34;/&#34; className=&#34;font-extrabold tracking-tighter flex items-center text-slate-900&#34; style={{ fontSize: &#39;clamp(1.5rem, 4vw, 2.4rem)&#39; }}&gt;
+</span></span><span class="line"><span class="cl">           &lt;span className=&#34;text-green-500&#34;&gt;Distilled&lt;/span&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-          &lt;span className=&#34;text-purple-500&#34;&gt;Child&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+          &lt;span className=&#34;text-[#0D1584]&#34;&gt;Child&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;/Link&gt;
+</span></span><span class="line"><span class="cl">       &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="index.html" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">index.html</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,43 +1,62 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> &lt;!DOCTYPE html&gt;
+</span></span><span class="line"><span class="cl"> &lt;html lang=&#34;en&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-  &lt;head&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;meta charset=&#34;UTF-8&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;title&gt;CompBio Portfolio&lt;/title&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;script src=&#34;https://cdn.tailwindcss.com&#34;&gt;&lt;/script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      tailwind.config = {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        theme: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          extend: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            colors: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              pastel: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                green: &#39;#d1fae5&#39;, // emerald-100
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                pink: &#39;#fce7f3&#39;, // pink-100
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                blue: &#39;#dbeafe&#39;, // blue-100
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                purple: &#39;#f3e8ff&#39;, // purple-100
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                darkGreen: &#39;#065f46&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                darkPink: &#39;#831843&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                darkBlue: &#39;#1e40af&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                darkPurple: &#39;#6b21a8&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            fontFamily: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              sans: [&#39;Inter&#39;, &#39;system-ui&#39;, &#39;sans-serif&#39;],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              mono: [&#39;Fira Code&#39;, &#39;monospace&#39;],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+&lt;head&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;meta charset=&#34;UTF-8&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;title&gt;DistilledChild&lt;/title&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;script src=&#34;https://cdn.tailwindcss.com&#34;&gt;&lt;/script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    tailwind.config = {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      theme: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        extend: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          colors: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            pastel: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              green: &#39;#d1fae5&#39;, // emerald-100
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              pink: &#39;#fce7f3&#39;, // pink-100
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              blue: &#39;#dbeafe&#39;, // blue-100
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              purple: &#39;#f3e8ff&#39;, // purple-100
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              darkGreen: &#39;#065f46&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              darkPink: &#39;#831843&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              darkBlue: &#39;#1e40af&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              darkPurple: &#39;#6b21a8&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             }
+</span></span><span class="line"><span class="cl"><span class="gi">+          },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          fontFamily: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            sans: [&#39;Inter&#39;, &#39;system-ui&#39;, &#39;sans-serif&#39;],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            mono: [&#39;Fira Code&#39;, &#39;monospace&#39;],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>           }
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl"><span class="gd">-    &lt;/script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;link href=&#34;https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Fira+Code:wght@400&amp;display=swap&#34; rel=&#34;stylesheet&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;style&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      body { margin: 0; overflow-x: hidden; }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      /* Custom scrollbar for scientific look */
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      ::-webkit-scrollbar { width: 8px; }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      ::-webkit-scrollbar-track { background: #f1f1f1; }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;/style&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;/script&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;link
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    href=&#34;https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;family=Fira+Code:wght@400&amp;display=swap&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    rel=&#34;stylesheet&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;style&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    body {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      margin: 0;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      overflow-x: hidden;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    /* Custom scrollbar for scientific look */
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    ::-webkit-scrollbar {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      width: 8px;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    ::-webkit-scrollbar-track {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      background: #f1f1f1;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    ::-webkit-scrollbar-thumb {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      background: #cbd5e1;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      border-radius: 4px;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    ::-webkit-scrollbar-thumb:hover {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      background: #94a3b8;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;/style&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   &lt;script type=&#34;importmap&#34;&gt;
+</span></span><span class="line"><span class="cl"> {
+</span></span><span class="line"><span class="cl">   &#34;imports&#34;: {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -54,10 +73,12 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   }
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl"> &lt;/script&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-&lt;link rel=&#34;stylesheet&#34; href=&#34;/index.css&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  &lt;link rel=&#34;stylesheet&#34; href=&#34;/index.css&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> &lt;/head&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-  &lt;body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    &lt;div id=&#34;root&#34;&gt;&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+&lt;body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  &lt;div id=&#34;root&#34;&gt;&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   &lt;script type=&#34;module&#34; src=&#34;/index.tsx&#34;&gt;&lt;/script&gt;
+</span></span><span class="line"><span class="cl"> &lt;/body&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> &lt;/html&gt;
+</span></span><span class="line"><span class="cl">\ No newline at end of file
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -29,4 +29,4 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     &#34;typescript&#34;: &#34;~5.8.2&#34;,
+</span></span><span class="line"><span class="cl">     &#34;vite&#34;: &#34;^6.2.0&#34;
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl"><span class="gd">-}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>\ No newline at end of file
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="TECH_STACK.md" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">TECH_STACK.md</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -0,0 +1,38 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span><span class="gi">+# 🛠️ Technical Stack
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+This document outlines the modern full-stack architecture used in the **DistilledChild** portfolio project. The application combines high-performance frontend rendering with real-time backend capabilities.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+## 💻 Core Technologies
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| Category | Technology | Description |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| :--- | :--- | :--- |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| **Language** | **TypeScript** | Provides static typing for enhanced code reliability and developer experience. (Node.js backend uses JavaScript). |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| **Frontend** | **React + Vite** | Utilizes Vite for lightning-fast builds and HMR, powering a modern React application. |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| **Styling** | **Tailwind CSS** | Utility-first CSS framework for rapid, consistent, and responsive UI development. |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| **3D Graphics** | **Three.js (R3F)** | Implements the interactive 3D DNA double-helix visualization using `@react-three/fiber`. |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| **Data Viz** | **Recharts** | React-based composable charting library used for the Research page visualizations. |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+| **Backend** | **Node.js + Socket.io** | Custom server handling real-time bidirectional communication for the chat feature. |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+## ☁️ Infrastructure &amp; Deployment
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+The application employs a decoupled architecture for optimal performance and cost-efficiency.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+### 1. Frontend Hosting: [Vercel](https://vercel.com)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Role**: Hosts the static assets and React application.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Domain**: `distilledchild.space`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Why Vercel**: Optimized for React/Vite, providing global CDN distribution and automatic deployments via GitHub integration.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+### 2. Backend Hosting: [Railway](https://railway.app)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Role**: Hosts the persistent Node.js server for Socket.io.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Why Railway**: Unlike serverless functions (which sleep), Railway provides a persistent environment required for maintaining active WebSocket connections for the real-time chat queue system.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+## 🎨 Design System
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Core**: Built on **Tailwind CSS** with a custom color palette (`pastel-green`, `pastel-blue`, etc.) to match the brand identity.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Animations**:
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  - **Native CSS Keyframes**: Used for lightweight, performant animations (e.g., blinking text, modal transitions) instead of heavy libraries like Framer Motion.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  - **Glassmorphism**: Applied semi-transparent, blurred backgrounds to UI elements like the chat interface and cards.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Icons**: **Lucide React** for clean, consistent, and lightweight SVG icons.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+---
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+*This project demonstrates a blend of domain expertise in Computational Biology (Data Visualization) with modern Web Engineering (3D Graphics, Real-time Systems).*
+</span></span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

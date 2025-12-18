@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>personal-web-2025/pages/Research.tsx at main</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+        .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .ln:target { background-color: #e5e5e5 }
+.chroma .lnt:target { background-color: #e5e5e5 }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9 }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1 }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+
+        [id] {
+          scroll-margin-top: var(--header-height);
+        }
+
+        pre {
+          border: 1px solid var(--c-border);
+          border-top: none;
+          border-bottom-left-radius: var(--border-radius);
+          border-bottom-right-radius: var(--border-radius);
+        }
+
+        pre {
+          margin: 0;
+          padding: 8px 16px;
+          overflow-x: auto;
+          white-space: pre;
+          word-spacing: normal;
+          word-break: normal;
+          word-wrap: normal;
+          tab-size: 4;
+          font-family: var(--font-family-mono), monospace;
+        }
+
+        pre > code {
+          display: block;
+          padding: 0 16px;
+          width: fit-content;
+          min-width: 100%;
+          line-height: var(--code-line-height);
+          font-size: var(--code-font-size);
+        }
+
+        .border {
+          border: 1px solid var(--c-border);
+          border-top: none;
+          border-bottom-left-radius: 6px;
+          border-bottom-right-radius: 6px;
+        }
+
+        .binary-file {
+          padding: 8px 16px;
+          font-style: italic;
+        }
+
+        .image {
+          padding: 8px 16px;
+          text-align: center;
+        }
+
+        .image img {
+          max-width: 100%;
+          height: auto;
+        }
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../../../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item selected">
+            <a href="../../../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    
+    <div class="header-container">
+        <header>
+            
+                <div class="header-ref" aria-label="Ref">main</div>
+            
+            
+                <nav class="breadcrumbs" aria-label="Breadcrumbs">
+                    
+                        
+                        
+                            <a href="./../index.html">personal-web-2025</a>
+                        
+                    
+                        
+                            <div>/</div>
+                        
+                        
+                            <a href="./index.html">pages</a>
+                        
+                    
+                        
+                            <div>/</div>
+                        
+                        
+                            <h1>Research.tsx</h1>
+                            
+                        
+                    
+                </nav>
+            
+            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#arrow-top"></use>
+                </svg>
+                Top
+            </button>
+        </header>
+    </div>
+
+    
+        <pre class="chroma"><code><span class="line"><span class="ln" id="L1"><a class="lnlinks" href="#L1">  1</a></span><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L2"><a class="lnlinks" href="#L2">  2</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useParams</span><span class="p">,</span> <span class="nx">useNavigate</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;react-router-dom&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L3"><a class="lnlinks" href="#L3">  3</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ResponsiveContainer</span><span class="p">,</span> <span class="nx">ComposedChart</span><span class="p">,</span> <span class="nx">Line</span><span class="p">,</span> <span class="nx">Bar</span><span class="p">,</span> <span class="nx">XAxis</span><span class="p">,</span> <span class="nx">YAxis</span><span class="p">,</span> <span class="nx">CartesianGrid</span><span class="p">,</span> <span class="nx">Tooltip</span><span class="p">,</span> <span class="nx">Legend</span><span class="p">,</span> <span class="nx">ScatterChart</span><span class="p">,</span> <span class="nx">Scatter</span><span class="p">,</span> <span class="nx">ZAxis</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;recharts&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L4"><a class="lnlinks" href="#L4">  4</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">FileText</span><span class="p">,</span> <span class="nx">GitBranch</span><span class="p">,</span> <span class="nx">Database</span><span class="p">,</span> <span class="nx">Sliders</span><span class="p">,</span> <span class="nx">Search</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;lucide-react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L5"><a class="lnlinks" href="#L5">  5</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ResearchHiCBrowser</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./ResearchHiCBrowser&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L6"><a class="lnlinks" href="#L6">  6</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L7"><a class="lnlinks" href="#L7">  7</a></span><span class="cl"><span class="kr">const</span> <span class="nx">mockInteractionData</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="p">{</span> <span class="nx">length</span>: <span class="kt">50</span> <span class="p">}</span><span class="p">,</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">(</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L8"><a class="lnlinks" href="#L8">  8</a></span><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="sb">`</span><span class="sb">Loc </span><span class="si">${</span><span class="nx">i</span> <span class="o">*</span> <span class="mi">10</span><span class="si">}</span><span class="sb">kb</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L9"><a class="lnlinks" href="#L9">  9</a></span><span class="cl">  <span class="nx">interaction</span>: <span class="kt">Math.abs</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">sin</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L10"><a class="lnlinks" href="#L10"> 10</a></span><span class="cl">  <span class="nx">ctcf</span>: <span class="kt">Math.abs</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">cos</span><span class="p">(</span><span class="nx">i</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L11"><a class="lnlinks" href="#L11"> 11</a></span><span class="cl">  <span class="nx">enhancer</span>: <span class="kt">i</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">35</span> <span class="o">?</span> <span class="nx">15</span> : <span class="kt">2</span>
+</span></span><span class="line"><span class="ln" id="L12"><a class="lnlinks" href="#L12"> 12</a></span><span class="cl"><span class="p">}</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L13"><a class="lnlinks" href="#L13"> 13</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L14"><a class="lnlinks" href="#L14"> 14</a></span><span class="cl"><span class="kr">const</span> <span class="nx">mockScatterData</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="p">{</span> <span class="nx">length</span>: <span class="kt">100</span> <span class="p">}</span><span class="p">,</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">(</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L15"><a class="lnlinks" href="#L15"> 15</a></span><span class="cl">  <span class="nx">x</span>: <span class="kt">Math.random</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L16"><a class="lnlinks" href="#L16"> 16</a></span><span class="cl">  <span class="nx">y</span>: <span class="kt">Math.random</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L17"><a class="lnlinks" href="#L17"> 17</a></span><span class="cl">  <span class="nx">z</span>: <span class="kt">Math.random</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="mi">500</span><span class="p">,</span> <span class="c1">// expression
+</span></span></span><span class="line"><span class="ln" id="L18"><a class="lnlinks" href="#L18"> 18</a></span><span class="cl"><span class="c1"></span>  <span class="nx">cluster</span>: <span class="kt">Math.random</span><span class="p">(</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="o">?</span> <span class="s1">&#39;Cluster A&#39;</span> <span class="o">:</span> <span class="s1">&#39;Cluster B&#39;</span>
+</span></span><span class="line"><span class="ln" id="L19"><a class="lnlinks" href="#L19"> 19</a></span><span class="cl"><span class="p">}</span><span class="p">)</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L20"><a class="lnlinks" href="#L20"> 20</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L21"><a class="lnlinks" href="#L21"> 21</a></span><span class="cl"><span class="c1">// Removed &#34;card&#34; styling (bg-white, border, shadow) to make it look like a full page section
+</span></span></span><span class="line"><span class="ln" id="L22"><a class="lnlinks" href="#L22"> 22</a></span><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">PEInteractions</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L23"><a class="lnlinks" href="#L23"> 23</a></span><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-8 animate-fadeIn&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L24"><a class="lnlinks" href="#L24"> 24</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col md:flex-row justify-between items-start md:items-center gap-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L25"><a class="lnlinks" href="#L25"> 25</a></span><span class="cl">      <span class="p">{</span><span class="cm">/* &lt;div className=&#34;flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6&#34;&gt; */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L26"><a class="lnlinks" href="#L26"> 26</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L27"><a class="lnlinks" href="#L27"> 27</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">h3</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl font-bold text-slate-900 flex items-center gap-3&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L28"><a class="lnlinks" href="#L28"> 28</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">GitBranch</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">24</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-teal-500&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L29"><a class="lnlinks" href="#L29"> 29</a></span><span class="cl">          <span class="nx">Promoter</span><span class="err">–</span><span class="nx">Enhancer</span> <span class="nx">Interaction</span> <span class="nx">Mapping</span>
+</span></span><span class="line"><span class="ln" id="L30"><a class="lnlinks" href="#L30"> 30</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L31"><a class="lnlinks" href="#L31"> 31</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-500 mt-2 text-lg&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Interactive</span> <span class="nx">Visualization</span> <span class="nx">simulating</span> <span class="nx">R</span> <span class="nx">Shiny</span> <span class="nx">output</span> <span class="kr">from</span> <span class="p">&lt;</span><span class="nt">code</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-slate-100 px-2 py-1 rounded text-sm&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">enhancer_promoter_interaction</span><span class="p">.</span><span class="nx">R</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">code</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L32"><a class="lnlinks" href="#L32"> 32</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L33"><a class="lnlinks" href="#L33"> 33</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex gap-3&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L34"><a class="lnlinks" href="#L34"> 34</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">select</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L35"><a class="lnlinks" href="#L35"> 35</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">option</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Gene</span>: <span class="kt">MYC</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L36"><a class="lnlinks" href="#L36"> 36</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">option</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Gene</span>: <span class="kt">SOX2</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L37"><a class="lnlinks" href="#L37"> 37</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">option</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Gene</span>: <span class="kt">TP53</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L38"><a class="lnlinks" href="#L38"> 38</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">select</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L39"><a class="lnlinks" href="#L39"> 39</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">select</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L40"><a class="lnlinks" href="#L40"> 40</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">option</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Res</span>: <span class="kt">5kb</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L41"><a class="lnlinks" href="#L41"> 41</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">option</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Res</span>: <span class="kt">10kb</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">option</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L42"><a class="lnlinks" href="#L42"> 42</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">select</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L43"><a class="lnlinks" href="#L43"> 43</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L44"><a class="lnlinks" href="#L44"> 44</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L45"><a class="lnlinks" href="#L45"> 45</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L46"><a class="lnlinks" href="#L46"> 46</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L47"><a class="lnlinks" href="#L47"> 47</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">ResponsiveContainer</span> <span class="na">width</span><span class="o">=</span><span class="s">&#34;100%&#34;</span> <span class="na">height</span><span class="o">=</span><span class="s">&#34;100%&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L48"><a class="lnlinks" href="#L48"> 48</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">ComposedChart</span> <span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">mockInteractionData</span><span class="p">}</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L49"><a class="lnlinks" href="#L49"> 49</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">CartesianGrid</span> <span class="na">strokeDasharray</span><span class="o">=</span><span class="s">&#34;3 3&#34;</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#e2e8f0&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L50"><a class="lnlinks" href="#L50"> 50</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">XAxis</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;name&#34;</span> <span class="na">tick</span><span class="o">=</span><span class="p">{</span><span class="p">{</span> <span class="nx">fontSize</span>: <span class="kt">12</span> <span class="p">}</span><span class="p">}</span> <span class="na">interval</span><span class="o">=</span><span class="p">{</span><span class="mi">4</span><span class="p">}</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#94a3b8&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L51"><a class="lnlinks" href="#L51"> 51</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">YAxis</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#94a3b8&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L52"><a class="lnlinks" href="#L52"> 52</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Tooltip</span>
+</span></span><span class="line"><span class="ln" id="L53"><a class="lnlinks" href="#L53"> 53</a></span><span class="cl">            <span class="na">contentStyle</span><span class="o">=</span><span class="p">{</span><span class="p">{</span> <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;rgba(255,255,255,0.95)&#39;</span><span class="p">,</span> <span class="nx">borderRadius</span><span class="o">:</span> <span class="s1">&#39;12px&#39;</span><span class="p">,</span> <span class="nx">border</span><span class="o">:</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="nx">boxShadow</span><span class="o">:</span> <span class="s1">&#39;0 10px 15px -3px rgba(0, 0, 0, 0.1)&#39;</span> <span class="p">}</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L54"><a class="lnlinks" href="#L54"> 54</a></span><span class="cl">          <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L55"><a class="lnlinks" href="#L55"> 55</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Legend</span> <span class="na">wrapperStyle</span><span class="o">=</span><span class="p">{</span><span class="p">{</span> <span class="nx">paddingTop</span><span class="o">:</span> <span class="s1">&#39;20px&#39;</span> <span class="p">}</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L56"><a class="lnlinks" href="#L56"> 56</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Bar</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;enhancer&#34;</span> <span class="na">barSize</span><span class="o">=</span><span class="p">{</span><span class="mi">30</span><span class="p">}</span> <span class="na">fill</span><span class="o">=</span><span class="s">&#34;#BFDBFE&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;Enhancer Signal&#34;</span> <span class="na">radius</span><span class="o">=</span><span class="p">{</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L57"><a class="lnlinks" href="#L57"> 57</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Line</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;monotone&#34;</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;interaction&#34;</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#2863EB&#34;</span> <span class="na">strokeWidth</span><span class="o">=</span><span class="p">{</span><span class="mi">4</span><span class="p">}</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;Interaction Freq&#34;</span> <span class="na">dot</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L58"><a class="lnlinks" href="#L58"> 58</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Line</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;step&#34;</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;ctcf&#34;</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#db2777&#34;</span> <span class="na">strokeWidth</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">}</span> <span class="na">strokeDasharray</span><span class="o">=</span><span class="s">&#34;5 5&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;CTCF Density&#34;</span> <span class="na">dot</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L59"><a class="lnlinks" href="#L59"> 59</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">ComposedChart</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L60"><a class="lnlinks" href="#L60"> 60</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">ResponsiveContainer</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L61"><a class="lnlinks" href="#L61"> 61</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L62"><a class="lnlinks" href="#L62"> 62</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L63"><a class="lnlinks" href="#L63"> 63</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L64"><a class="lnlinks" href="#L64"> 64</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-xl border border-slate-100&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L65"><a class="lnlinks" href="#L65"> 65</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">strong</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;block text-slate-900 mb-1&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">File</span> <span class="nx">Source</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="nx">data_chr8_myc</span><span class="p">.</span><span class="nx">tsv</span>
+</span></span><span class="line"><span class="ln" id="L66"><a class="lnlinks" href="#L66"> 66</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L67"><a class="lnlinks" href="#L67"> 67</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-xl border border-slate-100&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L68"><a class="lnlinks" href="#L68"> 68</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">strong</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;block text-slate-900 mb-1&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Significant</span> <span class="nx">Loops</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="mi">142</span> <span class="nx">detected</span> <span class="p">(</span><span class="nx">FDR</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="mf">0.05</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln" id="L69"><a class="lnlinks" href="#L69"> 69</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L70"><a class="lnlinks" href="#L70"> 70</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-xl border border-slate-100&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L71"><a class="lnlinks" href="#L71"> 71</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">strong</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;block text-slate-900 mb-1&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Algorithm</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="nx">Fit</span><span class="o">-</span><span class="nx">Hi</span><span class="o">-</span><span class="nx">C</span> <span class="o">/</span> <span class="nx">HiCCUPS</span>
+</span></span><span class="line"><span class="ln" id="L72"><a class="lnlinks" href="#L72"> 72</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L73"><a class="lnlinks" href="#L73"> 73</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L74"><a class="lnlinks" href="#L74"> 74</a></span><span class="cl">  <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L75"><a class="lnlinks" href="#L75"> 75</a></span><span class="cl"><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L76"><a class="lnlinks" href="#L76"> 76</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L77"><a class="lnlinks" href="#L77"> 77</a></span><span class="cl"><span class="kr">const</span> <span class="nx">SingleCell</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L78"><a class="lnlinks" href="#L78"> 78</a></span><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-8 animate-fadeIn&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L79"><a class="lnlinks" href="#L79"> 79</a></span><span class="cl">    <span class="p">{</span><span class="cm">/* &lt;div className=&#34;border-b border-slate-100 pb-6&#34;&gt; */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L80"><a class="lnlinks" href="#L80"> 80</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L81"><a class="lnlinks" href="#L81"> 81</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">h3</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl font-bold text-slate-900 flex items-center gap-3&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L82"><a class="lnlinks" href="#L82"> 82</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">Database</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">24</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-teal-500&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L83"><a class="lnlinks" href="#L83"> 83</a></span><span class="cl">        <span class="nx">Single</span><span class="o">-</span><span class="nx">cell</span> <span class="nx">Sequencing</span> <span class="nx">Analysis</span>
+</span></span><span class="line"><span class="ln" id="L84"><a class="lnlinks" href="#L84"> 84</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L85"><a class="lnlinks" href="#L85"> 85</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-500 mt-2 text-lg&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Dimensionality</span> <span class="nx">reduction</span> <span class="p">(</span><span class="nx">UMAP</span><span class="p">)</span> <span class="nx">and</span> <span class="nx">clustering</span> <span class="k">of</span> <span class="mi">10</span><span class="nx">k</span> <span class="nx">PBMCs</span><span class="p">.</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L86"><a class="lnlinks" href="#L86"> 86</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L87"><a class="lnlinks" href="#L87"> 87</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L88"><a class="lnlinks" href="#L88"> 88</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L89"><a class="lnlinks" href="#L89"> 89</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">ResponsiveContainer</span> <span class="na">width</span><span class="o">=</span><span class="s">&#34;100%&#34;</span> <span class="na">height</span><span class="o">=</span><span class="s">&#34;100%&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L90"><a class="lnlinks" href="#L90"> 90</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">ScatterChart</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L91"><a class="lnlinks" href="#L91"> 91</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">CartesianGrid</span> <span class="na">strokeDasharray</span><span class="o">=</span><span class="s">&#34;3 3&#34;</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#e2e8f0&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L92"><a class="lnlinks" href="#L92"> 92</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">XAxis</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;number&#34;</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;x&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;UMAP_1&#34;</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#94a3b8&#34;</span> <span class="na">tick</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L93"><a class="lnlinks" href="#L93"> 93</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">YAxis</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;number&#34;</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;y&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;UMAP_2&#34;</span> <span class="na">stroke</span><span class="o">=</span><span class="s">&#34;#94a3b8&#34;</span> <span class="na">tick</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L94"><a class="lnlinks" href="#L94"> 94</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">ZAxis</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;number&#34;</span> <span class="na">dataKey</span><span class="o">=</span><span class="s">&#34;z&#34;</span> <span class="na">range</span><span class="o">=</span><span class="p">{</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">400</span><span class="p">]</span><span class="p">}</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;Expression&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L95"><a class="lnlinks" href="#L95"> 95</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Tooltip</span> <span class="na">cursor</span><span class="o">=</span><span class="p">{</span><span class="p">{</span> <span class="nx">strokeDasharray</span><span class="o">:</span> <span class="s1">&#39;3 3&#39;</span> <span class="p">}</span><span class="p">}</span> <span class="na">contentStyle</span><span class="o">=</span><span class="p">{</span><span class="p">{</span> <span class="nx">borderRadius</span><span class="o">:</span> <span class="s1">&#39;12px&#39;</span> <span class="p">}</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L96"><a class="lnlinks" href="#L96"> 96</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Legend</span> <span class="na">wrapperStyle</span><span class="o">=</span><span class="p">{</span><span class="p">{</span> <span class="nx">paddingTop</span><span class="o">:</span> <span class="s1">&#39;20px&#39;</span> <span class="p">}</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L97"><a class="lnlinks" href="#L97"> 97</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Scatter</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;Cluster A (Neural)&#34;</span> <span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">mockScatterData</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">d</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">d</span><span class="p">.</span><span class="nx">cluster</span> <span class="o">===</span> <span class="s1">&#39;Cluster A&#39;</span><span class="p">)</span><span class="p">}</span> <span class="na">fill</span><span class="o">=</span><span class="s">&#34;#DB2777&#34;</span> <span class="na">shape</span><span class="o">=</span><span class="s">&#34;circle&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L98"><a class="lnlinks" href="#L98"> 98</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">Scatter</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;Cluster B (Progenitor)&#34;</span> <span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">mockScatterData</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">d</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">d</span><span class="p">.</span><span class="nx">cluster</span> <span class="o">===</span> <span class="s1">&#39;Cluster B&#39;</span><span class="p">)</span><span class="p">}</span> <span class="na">fill</span><span class="o">=</span><span class="s">&#34;#4ade80&#34;</span> <span class="na">shape</span><span class="o">=</span><span class="s">&#34;triangle&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L99"><a class="lnlinks" href="#L99"> 99</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">ScatterChart</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L100"><a class="lnlinks" href="#L100">100</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">ResponsiveContainer</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L101"><a class="lnlinks" href="#L101">101</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L102"><a class="lnlinks" href="#L102">102</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L103"><a class="lnlinks" href="#L103">103</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex gap-4 overflow-x-auto pb-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L104"><a class="lnlinks" href="#L104">104</a></span><span class="cl">      <span class="p">{</span><span class="p">[</span><span class="s1">&#39;QC Passed: 98%&#39;</span><span class="p">,</span> <span class="s1">&#39;Doublets Removed&#39;</span><span class="p">,</span> <span class="s1">&#39;Mito &lt; 5%&#39;</span><span class="p">]</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="p">(</span><span class="nx">tag</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L105"><a class="lnlinks" href="#L105">105</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">i</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border border-slate-200&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L106"><a class="lnlinks" href="#L106">106</a></span><span class="cl">          <span class="p">{</span><span class="nx">tag</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L107"><a class="lnlinks" href="#L107">107</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L108"><a class="lnlinks" href="#L108">108</a></span><span class="cl">      <span class="p">)</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L109"><a class="lnlinks" href="#L109">109</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L110"><a class="lnlinks" href="#L110">110</a></span><span class="cl">  <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L111"><a class="lnlinks" href="#L111">111</a></span><span class="cl"><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L112"><a class="lnlinks" href="#L112">112</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L113"><a class="lnlinks" href="#L113">113</a></span><span class="cl"><span class="kr">const</span> <span class="nx">EnhancerID</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L114"><a class="lnlinks" href="#L114">114</a></span><span class="cl">  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-8 animate-fadeIn&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L115"><a class="lnlinks" href="#L115">115</a></span><span class="cl">    <span class="p">{</span><span class="cm">/* &lt;div className=&#34;border-b border-slate-100 pb-6&#34;&gt; */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L116"><a class="lnlinks" href="#L116">116</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L117"><a class="lnlinks" href="#L117">117</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">h3</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl font-bold text-slate-900 flex items-center gap-3&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L118"><a class="lnlinks" href="#L118">118</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">FileText</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">24</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-teal-500&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L119"><a class="lnlinks" href="#L119">119</a></span><span class="cl">        <span class="nx">Computational</span> <span class="nx">Enhancer</span> <span class="nx">Identification</span>
+</span></span><span class="line"><span class="ln" id="L120"><a class="lnlinks" href="#L120">120</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L121"><a class="lnlinks" href="#L121">121</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-500 mt-2 text-lg&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Deep</span> <span class="nx">learning</span> <span class="nx">prediction</span> <span class="k">of</span> <span class="nx">enhancer</span> <span class="nx">regions</span> <span class="nx">using</span> <span class="nx">sequence</span> <span class="nx">motifs</span> <span class="nx">and</span> <span class="nx">conservation</span><span class="p">.</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L122"><a class="lnlinks" href="#L122">122</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L123"><a class="lnlinks" href="#L123">123</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L124"><a class="lnlinks" href="#L124">124</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;grid grid-cols-1 lg:grid-cols-2 gap-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L125"><a class="lnlinks" href="#L125">125</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L126"><a class="lnlinks" href="#L126">126</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">h4</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-lg font-bold text-slate-900 mb-4&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Model</span> <span class="nx">Architecture</span> <span class="o">&amp;</span> <span class="nx">Pipeline</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">h4</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L127"><a class="lnlinks" href="#L127">127</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-600 mb-6 leading-relaxed&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L128"><a class="lnlinks" href="#L128">128</a></span><span class="cl">          <span class="nx">We</span> <span class="nx">utilize</span> <span class="nx">a</span> <span class="nx">CNN</span><span class="o">-</span><span class="nx">LSTM</span> <span class="nx">hybrid</span> <span class="nx">architecture</span> <span class="nx">to</span> <span class="nx">capture</span> <span class="nx">both</span> <span class="nx">local</span> <span class="nx">motif</span> <span class="nx">patterns</span> <span class="nx">and</span> <span class="nx">long</span><span class="o">-</span><span class="nx">range</span> <span class="nx">sequence</span> <span class="nx">dependencies</span><span class="p">.</span> <span class="nx">Input</span> <span class="nx">features</span> <span class="nx">include</span> <span class="nx">one</span><span class="o">-</span><span class="nx">hot</span> <span class="nx">encoded</span> <span class="nx">DNA</span> <span class="nx">sequences</span><span class="p">,</span> <span class="nx">conservation</span> <span class="nx">scores</span> <span class="p">(</span><span class="nx">PhyloP</span><span class="p">)</span><span class="p">,</span> <span class="nx">and</span> <span class="nx">chromatin</span> <span class="nx">accessibility</span> <span class="nx">signals</span> <span class="p">(</span><span class="nx">ATAC</span><span class="o">-</span><span class="nx">seq</span><span class="p">)</span><span class="p">.</span>
+</span></span><span class="line"><span class="ln" id="L129"><a class="lnlinks" href="#L129">129</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L130"><a class="lnlinks" href="#L130">130</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L131"><a class="lnlinks" href="#L131">131</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-slate-900 rounded-2xl p-6 overflow-x-auto shadow-inner&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L132"><a class="lnlinks" href="#L132">132</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">code</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-mono leading-relaxed&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L133"><a class="lnlinks" href="#L133">133</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-purple-400&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">def</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">span</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-blue-400&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">predict_enhancer</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span><span class="p">(</span><span class="nx">sequence</span><span class="p">,</span> <span class="nx">atac_signal</span><span class="p">)</span><span class="o">:</span><span class="p">&lt;</span><span class="nt">br</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L134"><a class="lnlinks" href="#L134">134</a></span><span class="cl">            <span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="p">&lt;</span><span class="nt">span</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-500&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="err">#</span> <span class="nx">Load</span> <span class="nx">pre</span><span class="o">-</span><span class="nx">trained</span> <span class="nx">weights</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">br</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L135"><a class="lnlinks" href="#L135">135</a></span><span class="cl">            <span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="nx">model</span> <span class="o">=</span> <span class="nx">load_model</span><span class="p">(</span><span class="p">&lt;</span><span class="nt">span</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-yellow-300&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="s1">&#39;enhancer_net_v2.h5&#39;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span><span class="p">)</span><span class="p">&lt;</span><span class="nt">br</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L136"><a class="lnlinks" href="#L136">136</a></span><span class="cl">            <span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="p">&lt;</span><span class="nt">span</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-500&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="err">#</span> <span class="nx">Feature</span> <span class="nx">extraction</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">br</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L137"><a class="lnlinks" href="#L137">137</a></span><span class="cl">            <span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="nx">features</span> <span class="o">=</span> <span class="nx">extract_motifs</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span><span class="p">&lt;</span><span class="nt">br</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L138"><a class="lnlinks" href="#L138">138</a></span><span class="cl">            <span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="nx">conservation</span> <span class="o">=</span> <span class="nx">get_phyloP_score</span><span class="p">(</span><span class="nx">sequence</span><span class="p">)</span><span class="p">&lt;</span><span class="nt">br</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L139"><a class="lnlinks" href="#L139">139</a></span><span class="cl">            <span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">nbsp</span><span class="p">;</span><span class="p">&lt;</span><span class="nt">span</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-purple-400&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="k">return</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span> <span class="nx">model</span><span class="p">.</span><span class="nx">predict</span><span class="p">(</span><span class="p">[</span><span class="nx">features</span><span class="p">,</span> <span class="nx">conservation</span><span class="p">]</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln" id="L140"><a class="lnlinks" href="#L140">140</a></span><span class="cl">          <span class="p">&lt;</span><span class="p">/</span><span class="nt">code</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L141"><a class="lnlinks" href="#L141">141</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L142"><a class="lnlinks" href="#L142">142</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L143"><a class="lnlinks" href="#L143">143</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L144"><a class="lnlinks" href="#L144">144</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L145"><a class="lnlinks" href="#L145">145</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border border-slate-100 p-6 rounded-2xl&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L146"><a class="lnlinks" href="#L146">146</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">h4</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;font-bold text-slate-900 mb-3 text-lg&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Input</span> <span class="nx">Features</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">h4</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L147"><a class="lnlinks" href="#L147">147</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;list-disc list-inside text-slate-700 space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L148"><a class="lnlinks" href="#L148">148</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Sequence</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="mi">1</span><span class="nx">kb</span> <span class="nb">window</span> <span class="nx">centered</span> <span class="nx">on</span> <span class="nx">peak</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L149"><a class="lnlinks" href="#L149">149</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Accessibility</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="nx">ATAC</span><span class="o">-</span><span class="nx">seq</span> <span class="nx">peak</span> <span class="nx">intensity</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L150"><a class="lnlinks" href="#L150">150</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Epigenetics</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="nx">H3K27ac</span> <span class="nx">ChIP</span><span class="o">-</span><span class="nx">seq</span> <span class="nx">signal</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L151"><a class="lnlinks" href="#L151">151</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Conservation</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="mi">100</span><span class="o">-</span><span class="nx">way</span> <span class="nx">vertebrate</span> <span class="nx">alignment</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L152"><a class="lnlinks" href="#L152">152</a></span><span class="cl">          <span class="p">&lt;</span><span class="p">/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L153"><a class="lnlinks" href="#L153">153</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L154"><a class="lnlinks" href="#L154">154</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border border-slate-100 p-6 rounded-2xl&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L155"><a class="lnlinks" href="#L155">155</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">h4</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;font-bold text-slate-900 mb-3 text-lg&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Performance</span> <span class="nx">Metrics</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">h4</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L156"><a class="lnlinks" href="#L156">156</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;list-disc list-inside text-slate-700 space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L157"><a class="lnlinks" href="#L157">157</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">AUROC</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="mf">0.94</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L158"><a class="lnlinks" href="#L158">158</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">AUPR</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="mf">0.89</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L159"><a class="lnlinks" href="#L159">159</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">li</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="nt">strong</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Validation</span><span class="o">:</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">strong</span><span class="p">&gt;</span> <span class="nx">CRISPRi</span> <span class="nx">validated</span> <span class="nx">regions</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L160"><a class="lnlinks" href="#L160">160</a></span><span class="cl">          <span class="p">&lt;</span><span class="p">/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L161"><a class="lnlinks" href="#L161">161</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L162"><a class="lnlinks" href="#L162">162</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L163"><a class="lnlinks" href="#L163">163</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L164"><a class="lnlinks" href="#L164">164</a></span><span class="cl">  <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L165"><a class="lnlinks" href="#L165">165</a></span><span class="cl"><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L166"><a class="lnlinks" href="#L166">166</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L167"><a class="lnlinks" href="#L167">167</a></span><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Research</span>: <span class="kt">React.FC</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L168"><a class="lnlinks" href="#L168">168</a></span><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">submenu</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useParams</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">submenu?</span>: <span class="kt">string</span> <span class="p">}</span><span class="o">&gt;</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L169"><a class="lnlinks" href="#L169">169</a></span><span class="cl">  <span class="kr">const</span> <span class="nx">navigate</span> <span class="o">=</span> <span class="nx">useNavigate</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L170"><a class="lnlinks" href="#L170">170</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L171"><a class="lnlinks" href="#L171">171</a></span><span class="cl">  <span class="kr">const</span> <span class="nx">tabs</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="ln" id="L172"><a class="lnlinks" href="#L172">172</a></span><span class="cl">    <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;Hi-C Browser&#39;</span><span class="p">,</span> <span class="nx">icon</span>: <span class="kt">Search</span><span class="p">,</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;text-teal-500 border-teal-500&#39;</span><span class="p">,</span> <span class="nx">activeBg</span><span class="o">:</span> <span class="s1">&#39;bg-teal-50 ring-teal-200&#39;</span><span class="p">,</span> <span class="nx">slug</span><span class="o">:</span> <span class="s1">&#39;hicbrowser&#39;</span> <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L173"><a class="lnlinks" href="#L173">173</a></span><span class="cl">    <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;PE Interactions&#39;</span><span class="p">,</span> <span class="nx">icon</span>: <span class="kt">GitBranch</span><span class="p">,</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;text-teal-500 border-teal-500&#39;</span><span class="p">,</span> <span class="nx">activeBg</span><span class="o">:</span> <span class="s1">&#39;bg-teal-50 ring-teal-200&#39;</span><span class="p">,</span> <span class="nx">slug</span><span class="o">:</span> <span class="s1">&#39;peinteractions&#39;</span> <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L174"><a class="lnlinks" href="#L174">174</a></span><span class="cl">    <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;Single-cell Seq&#39;</span><span class="p">,</span> <span class="nx">icon</span>: <span class="kt">Database</span><span class="p">,</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;text-teal-500 border-teal-500&#39;</span><span class="p">,</span> <span class="nx">activeBg</span><span class="o">:</span> <span class="s1">&#39;bg-teal-50 ring-teal-200&#39;</span><span class="p">,</span> <span class="nx">slug</span><span class="o">:</span> <span class="s1">&#39;singlecellseq&#39;</span> <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L175"><a class="lnlinks" href="#L175">175</a></span><span class="cl">    <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;DL &amp; Enhancer&#39;</span><span class="p">,</span> <span class="nx">icon</span>: <span class="kt">FileText</span><span class="p">,</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;text-teal-500 border-teal-500&#39;</span><span class="p">,</span> <span class="nx">activeBg</span><span class="o">:</span> <span class="s1">&#39;bg-teal-50 ring-teal-200&#39;</span><span class="p">,</span> <span class="nx">slug</span><span class="o">:</span> <span class="s1">&#39;deeplearningenhancer&#39;</span> <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L176"><a class="lnlinks" href="#L176">176</a></span><span class="cl">  <span class="p">]</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L177"><a class="lnlinks" href="#L177">177</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L178"><a class="lnlinks" href="#L178">178</a></span><span class="cl">  <span class="c1">// Determine active tab from URL, default to first tab
+</span></span></span><span class="line"><span class="ln" id="L179"><a class="lnlinks" href="#L179">179</a></span><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">activeTabIndex</span> <span class="o">=</span> <span class="nx">tabs</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="nx">tab</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">tab</span><span class="p">.</span><span class="nx">slug</span> <span class="o">===</span> <span class="nx">submenu</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L180"><a class="lnlinks" href="#L180">180</a></span><span class="cl">  <span class="kr">const</span> <span class="nx">activeTab</span> <span class="o">=</span> <span class="nx">activeTabIndex</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">activeTabIndex</span> : <span class="kt">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L181"><a class="lnlinks" href="#L181">181</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L182"><a class="lnlinks" href="#L182">182</a></span><span class="cl">  <span class="c1">// Prefetch initial genome data (chr1) in background when Research page loads
+</span></span></span><span class="line"><span class="ln" id="L183"><a class="lnlinks" href="#L183">183</a></span><span class="cl"><span class="c1"></span>  <span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L184"><a class="lnlinks" href="#L184">184</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">prefetchInitialData</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L185"><a class="lnlinks" href="#L185">185</a></span><span class="cl">      <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L186"><a class="lnlinks" href="#L186">186</a></span><span class="cl">        <span class="c1">// Import dynamically to avoid blocking main bundle if possible, 
+</span></span></span><span class="line"><span class="ln" id="L187"><a class="lnlinks" href="#L187">187</a></span><span class="cl"><span class="c1"></span>        <span class="c1">// but here we just use the imported functions if we were to import them at top level.
+</span></span></span><span class="line"><span class="ln" id="L188"><a class="lnlinks" href="#L188">188</a></span><span class="cl"><span class="c1"></span>        <span class="c1">// Since we need to modify imports, let&#39;s assume we&#39;ll add imports at the top.
+</span></span></span><span class="line"><span class="ln" id="L189"><a class="lnlinks" href="#L189">189</a></span><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="p">{</span> <span class="nx">loadChromosomeData</span><span class="p">,</span> <span class="nx">loadLoopDataForChr</span><span class="p">,</span> <span class="nx">loadGeneDataForChr</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;../utils/csvLoader&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L190"><a class="lnlinks" href="#L190">190</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L191"><a class="lnlinks" href="#L191">191</a></span><span class="cl">        <span class="c1">// Load chromosome list and chr1 data (default view)
+</span></span></span><span class="line"><span class="ln" id="L192"><a class="lnlinks" href="#L192">192</a></span><span class="cl"><span class="c1"></span>        <span class="k">await</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="p">[</span>
+</span></span><span class="line"><span class="ln" id="L193"><a class="lnlinks" href="#L193">193</a></span><span class="cl">          <span class="nx">loadChromosomeData</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L194"><a class="lnlinks" href="#L194">194</a></span><span class="cl">          <span class="nx">loadLoopDataForChr</span><span class="p">(</span><span class="s1">&#39;chr1&#39;</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L195"><a class="lnlinks" href="#L195">195</a></span><span class="cl">          <span class="nx">loadGeneDataForChr</span><span class="p">(</span><span class="s1">&#39;chr1&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln" id="L196"><a class="lnlinks" href="#L196">196</a></span><span class="cl">        <span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L197"><a class="lnlinks" href="#L197">197</a></span><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Initial genome data prefetched&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L198"><a class="lnlinks" href="#L198">198</a></span><span class="cl">      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L199"><a class="lnlinks" href="#L199">199</a></span><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to prefetch genome data:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L200"><a class="lnlinks" href="#L200">200</a></span><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L201"><a class="lnlinks" href="#L201">201</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L202"><a class="lnlinks" href="#L202">202</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L203"><a class="lnlinks" href="#L203">203</a></span><span class="cl">    <span class="nx">prefetchInitialData</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L204"><a class="lnlinks" href="#L204">204</a></span><span class="cl">  <span class="p">}</span><span class="p">,</span> <span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L205"><a class="lnlinks" href="#L205">205</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L206"><a class="lnlinks" href="#L206">206</a></span><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L207"><a class="lnlinks" href="#L207">207</a></span><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col h-screen bg-white overflow-hidden&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L208"><a class="lnlinks" href="#L208">208</a></span><span class="cl">      <span class="p">{</span><span class="cm">/* Fixed Header Section */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L209"><a class="lnlinks" href="#L209">209</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;pt-32 pb-0 px-6 bg-white flex-shrink-0&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L210"><a class="lnlinks" href="#L210">210</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;max-w-7xl mx-auto&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L211"><a class="lnlinks" href="#L211">211</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-center mb-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L212"><a class="lnlinks" href="#L212">212</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">h2</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-4xl font-bold text-slate-900&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Projects</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L213"><a class="lnlinks" href="#L213">213</a></span><span class="cl">          <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L214"><a class="lnlinks" href="#L214">214</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L215"><a class="lnlinks" href="#L215">215</a></span><span class="cl">          <span class="p">{</span><span class="cm">/* Responsive Tabs Grid */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L216"><a class="lnlinks" href="#L216">216</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-wrap justify-center gap-2 mb-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L217"><a class="lnlinks" href="#L217">217</a></span><span class="cl">            <span class="p">{</span><span class="nx">tabs</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="p">(</span><span class="nx">tab</span><span class="p">,</span> <span class="nx">idx</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L218"><a class="lnlinks" href="#L218">218</a></span><span class="cl">              <span class="c1">// Extract the base color class (e.g., &#39;text-blue-600&#39;) to use for border
+</span></span></span><span class="line"><span class="ln" id="L219"><a class="lnlinks" href="#L219">219</a></span><span class="cl"><span class="c1"></span>              <span class="kr">const</span> <span class="nx">textColorClass</span> <span class="o">=</span> <span class="nx">tab</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L220"><a class="lnlinks" href="#L220">220</a></span><span class="cl">              <span class="kr">const</span> <span class="nx">borderColorClass</span> <span class="o">=</span> <span class="nx">textColorClass</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;text-&#39;</span><span class="p">,</span> <span class="s1">&#39;border-&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L221"><a class="lnlinks" href="#L221">221</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L222"><a class="lnlinks" href="#L222">222</a></span><span class="cl">              <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L223"><a class="lnlinks" href="#L223">223</a></span><span class="cl">                <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="ln" id="L224"><a class="lnlinks" href="#L224">224</a></span><span class="cl">                  <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">idx</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L225"><a class="lnlinks" href="#L225">225</a></span><span class="cl">                  <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">navigate</span><span class="p">(</span><span class="sb">`</span><span class="sb">/research/</span><span class="si">${</span><span class="nx">tab</span><span class="p">.</span><span class="nx">slug</span><span class="si">}</span><span class="sb">`</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L226"><a class="lnlinks" href="#L226">226</a></span><span class="cl">                  <span class="na">className</span><span class="o">=</span><span class="p">{</span><span class="sb">`</span><span class="sb">flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300 </span><span class="si">${</span><span class="nx">activeTab</span> <span class="o">===</span> <span class="nx">idx</span>
+</span></span><span class="line"><span class="ln" id="L227"><a class="lnlinks" href="#L227">227</a></span><span class="cl">                    <span class="o">?</span> <span class="sb">`</span><span class="si">${</span><span class="nx">textColorClass</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">borderColorClass</span><span class="si">}</span><span class="sb">`</span>
+</span></span><span class="line"><span class="ln" id="L228"><a class="lnlinks" href="#L228">228</a></span><span class="cl">                    <span class="o">:</span> <span class="s1">&#39;border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300&#39;</span>
+</span></span><span class="line"><span class="ln" id="L229"><a class="lnlinks" href="#L229">229</a></span><span class="cl">                    <span class="si">}</span><span class="sb">`</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L230"><a class="lnlinks" href="#L230">230</a></span><span class="cl">                <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L231"><a class="lnlinks" href="#L231">231</a></span><span class="cl">                  <span class="p">&lt;</span><span class="nt">tab.icon</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">20</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L232"><a class="lnlinks" href="#L232">232</a></span><span class="cl">                  <span class="p">&lt;</span><span class="nt">span</span><span class="p"></span><span class="p">&gt;</span><span class="p">{</span><span class="nx">tab</span><span class="p">.</span><span class="nx">label</span><span class="p">}</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L233"><a class="lnlinks" href="#L233">233</a></span><span class="cl">                <span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L234"><a class="lnlinks" href="#L234">234</a></span><span class="cl">              <span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L235"><a class="lnlinks" href="#L235">235</a></span><span class="cl">            <span class="p">}</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L236"><a class="lnlinks" href="#L236">236</a></span><span class="cl">          <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L237"><a class="lnlinks" href="#L237">237</a></span><span class="cl">          <span class="p">&lt;</span><span class="nt">hr</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border-slate-100&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L238"><a class="lnlinks" href="#L238">238</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L239"><a class="lnlinks" href="#L239">239</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L240"><a class="lnlinks" href="#L240">240</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L241"><a class="lnlinks" href="#L241">241</a></span><span class="cl">      <span class="p">{</span><span class="cm">/* Scrollable Content Area */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L242"><a class="lnlinks" href="#L242">242</a></span><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-1 min-h-0 overflow-y-auto scrollbar-hide px-6 pb-20&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L243"><a class="lnlinks" href="#L243">243</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;max-w-7xl mx-auto pt-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L244"><a class="lnlinks" href="#L244">244</a></span><span class="cl">          <span class="p">{</span><span class="nx">activeTab</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">ResearchHiCBrowser</span> <span class="p">/</span><span class="p">&gt;</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L245"><a class="lnlinks" href="#L245">245</a></span><span class="cl">          <span class="p">{</span><span class="nx">activeTab</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">PEInteractions</span> <span class="p">/</span><span class="p">&gt;</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L246"><a class="lnlinks" href="#L246">246</a></span><span class="cl">          <span class="p">{</span><span class="nx">activeTab</span> <span class="o">===</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">SingleCell</span> <span class="p">/</span><span class="p">&gt;</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L247"><a class="lnlinks" href="#L247">247</a></span><span class="cl">          <span class="p">{</span><span class="nx">activeTab</span> <span class="o">===</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">EnhancerID</span> <span class="p">/</span><span class="p">&gt;</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L248"><a class="lnlinks" href="#L248">248</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L249"><a class="lnlinks" href="#L249">249</a></span><span class="cl">      <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L250"><a class="lnlinks" href="#L250">250</a></span><span class="cl">    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L251"><a class="lnlinks" href="#L251">251</a></span><span class="cl">  <span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L252"><a class="lnlinks" href="#L252">252</a></span><span class="cl"><span class="p">}</span><span class="p">;</span></span></span></code></pre>
+    
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

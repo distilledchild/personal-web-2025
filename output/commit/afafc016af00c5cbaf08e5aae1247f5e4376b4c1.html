@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1. add TODO list 2. change category value in Blog · personal-web-2025@afafc01</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>afafc01</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-12-01</span> <span class="nowrap">00:05:52</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                1. add TODO list 2. change category value in Blog
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="5537865fdee5d98f5a9f4be37135e0ac3013dc3f.html"><code>5537865</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (2)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -547,7 +547,21 @@ app.post(&#39;/api/tech-blog/upload-image&#39;, upload.single(&#39;image&#39;), async (req, res)
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         const fileName = `${timestamp}-${file.originalname.replace(/\s+/g, &#39;-&#39;)}`;
+</span></span><span class="line"><span class="cl">         const bucketName = process.env.GCS_BUCKET_NAME || &#39;distilledchild&#39;;
+</span></span><span class="line"><span class="cl">         const bucket = storage.bucket(bucketName);
+</span></span><span class="line"><span class="cl"><span class="gd">-        const blob = bucket.file(`tech/${fileName}`);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        console.log(&#39;Request body:&#39;, req.body);   // 바디 전체 확인
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // 카테고리 분기
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const category = req.body.category; // 클라이언트에서 전달
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(&#39;Received category:&#39;, category);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        let prefix;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (category === &#39;Biology&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            prefix = &#39;blog/bio&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else if (category === &#39;Tech&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            prefix = &#39;blog/tech&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // 기본값
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            prefix = &#39;blog/misc&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const blob = bucket.file(`${prefix}/${fileName}`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">         // Create a write stream
+</span></span><span class="line"><span class="cl">         const blobStream = blob.createWriteStream({
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -567,7 +581,7 @@ app.post(&#39;/api/tech-blog/upload-image&#39;, upload.single(&#39;image&#39;), async (req, res)
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             await blob.makePublic();
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">             // Generate public URL
+</span></span><span class="line"><span class="cl"><span class="gd">-            const publicUrl = `https://storage.googleapis.com/${bucketName}/tech/${fileName}`;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            const publicUrl = `https://storage.googleapis.com/${bucketName}/${prefix}/${fileName}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">             res.json({
+</span></span><span class="line"><span class="cl">                 success: true,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -584,60 +598,6 @@ app.post(&#39;/api/tech-blog/upload-image&#39;, upload.single(&#39;image&#39;), async (req, res)
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-// OPAL Workflow API
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-app.post(&#39;/api/tech-blog/opal-generate&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    try {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const { category, title, content } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!title) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            return res.status(400).json({ error: &#39;Title is required for OPAL workflow&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const OPAL_FLOW_ID = process.env.OPAL_FLOW_ID || &#39;testtest&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const OPAL_ACCESS_TOKEN = process.env.OPAL_ACCESS_TOKEN;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!OPAL_ACCESS_TOKEN) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            return res.status(500).json({ error: &#39;OPAL access token not configured&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        // Call OPAL API
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const opalResponse = await fetch(`https://opal.googleapis.com/v1/flows/${OPAL_FLOW_ID}/execute`, {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            headers: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &#39;Authorization&#39;: `Bearer ${OPAL_ACCESS_TOKEN}`,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &#39;Content-Type&#39;: &#39;application/json&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            },
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                input: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    topic: title,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    style: &#39;blogpost&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    length: &#39;medium&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            })
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!opalResponse.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            const errorText = await opalResponse.text();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            console.error(&#39;OPAL API error:&#39;, errorText);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            return res.status(opalResponse.status).json({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                error: &#39;OPAL workflow failed&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                details: errorText
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        const opalData = await opalResponse.json();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        res.json({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            success: true,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            message: &#39;OPAL workflow executed successfully&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            data: opalData
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        console.error(&#39;OPAL workflow error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        res.status(500).json({ error: &#39;Internal server error&#39;, details: err.message });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-});
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span> // Like/Unlike Tech and Bio Post
+</span></span><span class="line"><span class="cl"> app.post(&#39;/api/tech-blog/:id/like&#39;, async (req, res) =&gt; {
+</span></span><span class="line"><span class="cl">     try {
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -47,61 +47,549 @@ const Home: React.FC = () =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> const Test: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-  const [userData, setUserData] = React.useState&lt;any&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+  const [todos, setTodos] = React.useState&lt;any[]&gt;([]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [user, setUser] = React.useState&lt;any&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [isAuthorized, setIsAuthorized] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [loading, setLoading] = React.useState(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [showCreateModal, setShowCreateModal] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [newTodo, setNewTodo] = React.useState({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    title: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    description: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    priority: &#39;medium&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    due_date: &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [editingTodos, setEditingTodos] = React.useState&lt;{ [key: string]: any }&gt;({});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [showSuccessPopup, setShowSuccessPopup] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [successMessage, setSuccessMessage] = React.useState(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">   React.useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    const stored = localStorage.getItem(&#39;user_profile&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    if (stored) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    // Get user data
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const userData = localStorage.getItem(&#39;user_profile&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (userData) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       try {
+</span></span><span class="line"><span class="cl"><span class="gd">-        setUserData(JSON.parse(stored));
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        const parsedUser = JSON.parse(userData);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setUser(parsedUser);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Check authorization
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        fetch(`${API_URL}/api/member/role/${parsedUser.email}`)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          .then(res =&gt; res.json())
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          .then(data =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setIsAuthorized(data.authorized);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       } catch (e) {
+</span></span><span class="line"><span class="cl">         console.error(&#39;Failed to parse user data&#39;, e);
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     }
+</span></span><span class="line"><span class="cl"><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Fetch todos
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    fetchTodos();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   }, []);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+  const fetchTodos = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/todos`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTodos(data);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      console.error(&#39;Failed to fetch todos:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } finally {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      setLoading(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleCreateTodo = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!user || !user.email) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      alert(&#39;Please login to create a TODO&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!newTodo.title.trim() || !newTodo.description.trim()) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      alert(&#39;Title and Description are required&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/todos`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          ...newTodo,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          email: user.email
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const createdTodo = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTodos([createdTodo, ...todos]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setShowCreateModal(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setNewTodo({ title: &#39;&#39;, description: &#39;&#39;, priority: &#39;medium&#39;, due_date: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      console.error(&#39;Failed to create todo:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleStatusChange = (todoId: string, newStatus: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setEditingTodos({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      ...editingTodos,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      [todoId]: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ...editingTodos[todoId],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        status: newStatus
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handlePriorityChange = (todoId: string, newPriority: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setEditingTodos({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      ...editingTodos,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      [todoId]: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ...editingTodos[todoId],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        priority: newPriority
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleDeadlineChange = (todoId: string, newDeadline: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setEditingTodos({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      ...editingTodos,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      [todoId]: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ...editingTodos[todoId],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        due_date: newDeadline
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleUpdateTodo = async (todoId: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!user || !user.email) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      alert(&#39;Please login to update TODO&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const editedData = editingTodos[todoId] || {};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        method: &#39;PUT&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          email: user.email,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          ...editedData
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const updatedTodo = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTodos(todos.map(t =&gt; t._id === todoId ? updatedTodo : t));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Clear editing state for this todo
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const newEditingTodos = { ...editingTodos };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        delete newEditingTodos[todoId];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setEditingTodos(newEditingTodos);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Show success message
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setSuccessMessage(&#39;TODO has been updated successfully!&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setShowSuccessPopup(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      console.error(&#39;Failed to update todo:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleDeleteTodo = async (todoId: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!user || !user.email) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      alert(&#39;Please login to delete TODO&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!confirm(&#39;Are you sure you want to delete this TODO?&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        method: &#39;DELETE&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          email: user.email
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTodos(todos.filter(t =&gt; t._id !== todoId));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Show success message
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setSuccessMessage(&#39;TODO has been deleted successfully!&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setShowSuccessPopup(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      console.error(&#39;Failed to delete todo:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const formatDate = (dateString: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!dateString) return &#39;N/A&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const date = new Date(dateString);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return date.toLocaleDateString(&#39;en-US&#39;, { month: &#39;short&#39;, day: &#39;numeric&#39;, year: &#39;numeric&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Get dates with todos for calendar highlighting
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const todoDates = todos.map(todo =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (todo.due_date) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const date = new Date(todo.due_date);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return date.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  }).filter(Boolean);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const renderCalendar = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const year = selectedDate.getFullYear();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const month = selectedDate.getMonth();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const firstDay = new Date(year, month, 1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const lastDay = new Date(year, month + 1, 0);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const daysInMonth = lastDay.getDate();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const startingDayOfWeek = firstDay.getDay();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const today = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const todayString = today.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const days = [];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Empty cells before first day
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    for (let i = 0; i &lt; startingDayOfWeek; i++) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      days.push(&lt;div key={`empty-${i}`} className=&#34;h-12&#34;&gt;&lt;/div&gt;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Days of month
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    for (let day = 1; day &lt;= daysInMonth; day++) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const currentDate = new Date(year, month, day);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const dateString = currentDate.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const hasTodo = todoDates.includes(dateString);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const isToday = dateString === todayString;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      days.push(
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          key={day}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          className={`h-12 flex items-center justify-center rounded-lg cursor-pointer transition-colors ${hasTodo ? &#39;bg-blue-100 text-blue-700 font-bold&#39; : &#39;hover:bg-slate-100&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } ${isToday ? &#39;border-2 border-gray-500 rounded-full&#39; : &#39;&#39;}`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          {day}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return days;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const getPriorityColor = (priority: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    switch (priority) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      case &#39;high&#39;: return &#39;text-red-600 font-bold&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      case &#39;medium&#39;: return &#39;text-yellow-600 font-medium&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      case &#39;low&#39;: return &#39;text-green-600&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      default: return &#39;text-slate-600&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const getStatusColor = (status: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    switch (status) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      case &#39;completed&#39;: return &#39;bg-green-50 border-green-200&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      case &#39;in_progress&#39;: return &#39;bg-blue-50 border-blue-200&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      case &#39;cancelled&#39;: return &#39;bg-red-50 border-red-200&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      default: return &#39;bg-slate-50 border-slate-200&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   return (
+</span></span><span class="line"><span class="cl">     &lt;div className=&#34;min-h-screen bg-white pt-32 pb-20 px-6 animate-fadeIn&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-      &lt;div className=&#34;max-w-4xl mx-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      &lt;div className=&#34;max-w-7xl mx-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-12 text-center border-b border-slate-100 pb-6&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-          OAuth User Data Test
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+          TODO
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;/h2&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-        {userData ? (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;bg-slate-50 p-8 rounded-2xl border border-slate-200&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;Logged In User Data:&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;pre className=&#34;bg-slate-900 text-green-400 p-6 rounded-lg overflow-auto text-sm font-mono&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              {JSON.stringify(userData, null, 2)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;/pre&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;div className=&#34;mt-8 space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;font-bold text-slate-700 w-32&#34;&gt;Name:&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;text-slate-900&#34;&gt;{userData.name || &#39;N/A&#39;}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-              &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;font-bold text-slate-700 w-32&#34;&gt;Email:&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;text-slate-900&#34;&gt;{userData.email || &#39;N/A&#39;}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        {loading ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;div className=&#34;text-center py-12&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;p className=&#34;text-slate-500&#34;&gt;Loading...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;div className=&#34;flex gap-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            {/* Left: Calendar */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;w-1/3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl p-6 shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div className=&#34;flex items-center justify-between mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onClick={() =&gt; setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;p-2 hover:bg-slate-100 rounded-lg transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ←
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;h3 className=&#34;text-lg font-bold text-slate-900&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {selectedDate.toLocaleDateString(&#39;en-US&#39;, { month: &#39;long&#39;, year: &#39;numeric&#39; })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onClick={() =&gt; setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;p-2 hover:bg-slate-100 rounded-lg transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    →
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div className=&#34;grid grid-cols-7 gap-2 mb-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  {[&#39;Sun&#39;, &#39;Mon&#39;, &#39;Tue&#39;, &#39;Wed&#39;, &#39;Thu&#39;, &#39;Fri&#39;, &#39;Sat&#39;].map(day =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div key={day} className=&#34;text-xs font-bold text-slate-500 text-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      {day}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div className=&#34;grid grid-cols-7 gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  {renderCalendar()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;font-bold text-slate-700 w-32&#34;&gt;User ID:&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;text-slate-900 font-mono text-sm&#34;&gt;{userData.sub || userData.id || &#39;N/A&#39;}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            {/* Right: TODO Table */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;flex-1 max-w-6xl&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;table className=&#34;w-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;thead className=&#34;bg-slate-50 border-b border-slate-200&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Title&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Description&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Status&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Priority&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Deadline&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;th className=&#34;px-4 py-3 text-center text-sm font-bold text-slate-700&#34;&gt;Actions&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/thead&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {todos.length === 0 ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;td colSpan={7} className=&#34;px-4 py-12 text-center text-slate-500&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          No TODO items found
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      todos.map((todo) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const editedTodo = editingTodos[todo._id] || {};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const currentStatus = editedTodo.status !== undefined ? editedTodo.status : todo.status;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const currentPriority = editedTodo.priority !== undefined ? editedTodo.priority : todo.priority;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const currentDueDate = editedTodo.due_date !== undefined ? editedTodo.due_date : todo.due_date;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const isStrikethrough = currentStatus === &#39;completed&#39; || currentStatus === &#39;cancelled&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        // Check if there are any changes
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const hasChanges = (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          (editedTodo.status !== undefined &amp;&amp; editedTodo.status !== todo.status) ||
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          (editedTodo.priority !== undefined &amp;&amp; editedTodo.priority !== todo.priority) ||
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          (editedTodo.due_date !== undefined &amp;&amp; editedTodo.due_date !== todo.due_date)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;tr key={todo._id} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${getStatusColor(currentStatus)}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;td className={`px-4 py-3 ${isStrikethrough ? &#39;line-through text-slate-400&#39; : &#39;text-slate-900&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              {todo.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;td className={`px-4 py-3 ${isStrikethrough ? &#39;line-through text-slate-400&#39; : &#39;text-slate-600&#39;} text-sm`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              {todo.description}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                value={currentStatus}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                onChange={(e) =&gt; handleStatusChange(todo._id, e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                className=&#34;px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                aria-label=&#34;Change status&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                title=&#34;Change status&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;pending&#34;&gt;Pending&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;in_progress&#34;&gt;In Progress&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;completed&#34;&gt;Completed&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;cancelled&#34;&gt;Cancelled&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                value={currentPriority}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                onChange={(e) =&gt; handlePriorityChange(todo._id, e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                className={`px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${getPriorityColor(currentPriority)}`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                aria-label=&#34;Change priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                title=&#34;Change priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;low&#34;&gt;Low&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;medium&#34;&gt;Medium&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;option value=&#34;high&#34;&gt;High&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                type=&#34;date&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                value={currentDueDate ? new Date(currentDueDate).toISOString().split(&#39;T&#39;)[0] : &#39;&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                onChange={(e) =&gt; handleDeadlineChange(todo._id, e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                className=&#34;px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                aria-label=&#34;Change deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                title=&#34;Change deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;div className=&#34;flex gap-2 justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  onClick={() =&gt; handleUpdateTodo(todo._id)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${hasChanges
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                      ? &#39;bg-blue-500 text-white hover:bg-blue-600&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                      : &#39;bg-gray-300 text-gray-500 cursor-not-allowed&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  title=&#34;Update TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  disabled={!hasChanges}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  Update
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  onClick={() =&gt; handleDeleteTodo(todo._id)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  className=&#34;px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  title=&#34;Delete TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                  Delete
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                          &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/table&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;font-bold text-slate-700 w-32&#34;&gt;Avatar:&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                {userData.picture &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                  &lt;img src={userData.picture} alt=&#34;Avatar&#34; className=&#34;w-16 h-16 rounded-full border-2 border-slate-300&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                )}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        {/* Create Button (Admin/Editor only) */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        {isAuthorized &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            onClick={() =&gt; setShowCreateModal(true)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            className=&#34;fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            title=&#34;Create new TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;Plus size={28} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        {/* Create Modal */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        {showCreateModal &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            onClick={() =&gt; setShowCreateModal(false)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              className=&#34;bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              onClick={(e) =&gt; e.stopPropagation()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;Create New TODO&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Title *&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    value={newTodo.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onChange={(e) =&gt; setNewTodo({ ...newTodo, title: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    placeholder=&#34;Enter title&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Description *&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    value={newTodo.description}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onChange={(e) =&gt; setNewTodo({ ...newTodo, description: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    placeholder=&#34;Enter description&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Priority&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    value={newTodo.priority}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onChange={(e) =&gt; setNewTodo({ ...newTodo, priority: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    aria-label=&#34;Select priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    title=&#34;Select priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;low&#34;&gt;Low&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;medium&#34;&gt;Medium&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;option value=&#34;high&#34;&gt;High&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Deadline&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    type=&#34;date&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    value={newTodo.due_date}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    onChange={(e) =&gt; setNewTodo({ ...newTodo, due_date: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    aria-label=&#34;Select deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    title=&#34;Select deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;div className=&#34;flex items-start gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;font-bold text-slate-700 w-32&#34;&gt;Avatar URL:&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;span className=&#34;text-slate-900 text-xs font-mono break-all&#34;&gt;{userData.picture || &#39;N/A&#39;}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;flex justify-end gap-4 mt-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  onClick={() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    setShowCreateModal(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    setNewTodo({ title: &#39;&#39;, description: &#39;&#39;, priority: &#39;medium&#39;, due_date: &#39;&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  className=&#34;px-6 py-3 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  onClick={handleCreateTodo}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  className=&#34;px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  Save
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">           &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-        ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          &lt;div className=&#34;text-center py-12&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;p className=&#34;text-slate-500 text-lg&#34;&gt;No user logged in. Please login with Google OAuth.&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        {/* Success Popup */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        {showSuccessPopup &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            onClick={() =&gt; setShowSuccessPopup(false)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+          &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              className=&#34;bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              onClick={(e) =&gt; e.stopPropagation()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-4&#34;&gt;Success&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;p className=&#34;text-slate-600 mb-6&#34;&gt;{successMessage}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div className=&#34;flex justify-end&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  onClick={() =&gt; setShowSuccessPopup(false)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  className=&#34;px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  OK
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>           &lt;/div&gt;
+</span></span><span class="line"><span class="cl">         )}
+</span></span><span class="line"><span class="cl">       &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -524,6 +1012,8 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">       const formData = new FormData();
+</span></span><span class="line"><span class="cl">       formData.append(&#39;image&#39;, file);
+</span></span><span class="line"><span class="cl"><span class="gi">+      // Add category for server-side path determination
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      formData.append(&#39;category&#39;, editData.category);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">       const response = await fetch(`${API_URL}/api/tech-blog/upload-image`, {
+</span></span><span class="line"><span class="cl">         method: &#39;POST&#39;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -670,7 +1160,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 &lt;h4 className=&#34;text-sm font-bold text-pink-500 mb-2&#34;&gt;Tech&lt;/h4&gt;
+</span></span><span class="line"><span class="cl">                 {allPosts
+</span></span><span class="line"><span class="cl">                   .map((post, index) =&gt; ({ ...post, originalIndex: index }))
+</span></span><span class="line"><span class="cl"><span class="gd">-                  .filter(post =&gt; post.category === &#39;Computer Science&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  .filter(post =&gt; post.category === &#39;Tech&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   .slice(0, 3)
+</span></span><span class="line"><span class="cl">                   .map((post) =&gt; (
+</span></span><span class="line"><span class="cl">                     &lt;div
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -962,7 +1452,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                   &gt;
+</span></span><span class="line"><span class="cl">                     &lt;option value=&#34;&#34;&gt;Select category...&lt;/option&gt;
+</span></span><span class="line"><span class="cl">                     &lt;option value=&#34;Biology&#34;&gt;Biology&lt;/option&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    &lt;option value=&#34;Computer Science&#34;&gt;Computer Science&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    &lt;option value=&#34;Tech&#34;&gt;Tech&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   &lt;/select&gt;
+</span></span><span class="line"><span class="cl">                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1129,7 +1619,7 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                   &gt;
+</span></span><span class="line"><span class="cl">                     &lt;option value=&#34;&#34;&gt;Select category...&lt;/option&gt;
+</span></span><span class="line"><span class="cl">                     &lt;option value=&#34;Biology&#34;&gt;Biology&lt;/option&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    &lt;option value=&#34;Computer Science&#34;&gt;Computer Science&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    &lt;option value=&#34;Tech&#34;&gt;Tech&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   &lt;/select&gt;
+</span></span><span class="line"><span class="cl">                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;flex items-center gap-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1912,7 +2402,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>               &lt;Link to=&#34;/tech&#34; onClick={() =&gt; setMobileMenuOpen(false)} className=&#34;text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2&#34;&gt;
+</span></span><span class="line"><span class="cl">                 Blog
+</span></span><span class="line"><span class="cl">               &lt;/Link&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;Link to=&#34;/interests/travel&#34; onClick={() =&gt; setMobileMenuOpen(false)} className=&#34;text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              &lt;Link to=&#34;/interests/data&#34; onClick={() =&gt; setMobileMenuOpen(false)} className=&#34;text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 Interests
+</span></span><span class="line"><span class="cl">               &lt;/Link&gt;
+</span></span><span class="line"><span class="cl">               &lt;Link to=&#34;/contact&#34; onClick={() =&gt; setMobileMenuOpen(false)} className=&#34;text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1929,7 +2419,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>           {window.location.hostname === &#39;localhost&#39; &amp;&amp; (
+</span></span><span class="line"><span class="cl">             &lt;LiquidTab
+</span></span><span class="line"><span class="cl">               to=&#34;/test&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-              label=&#34;Test&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              label=&#34;TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               active={location.pathname === &#39;/test&#39;}
+</span></span><span class="line"><span class="cl">               colorClass=&#34;text-gray-500 hover:text-gray-300&#34;
+</span></span><span class="line"><span class="cl">             /&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1953,7 +2443,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             colorClass=&#34;text-pink-500 hover:text-pink-300&#34;
+</span></span><span class="line"><span class="cl">           /&gt;
+</span></span><span class="line"><span class="cl">           &lt;LiquidTab
+</span></span><span class="line"><span class="cl"><span class="gd">-            to=&#34;/interests/travel&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            to=&#34;/interests/data&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             label=&#34;Interests&#34;
+</span></span><span class="line"><span class="cl">             active={location.pathname.startsWith(&#39;/interests&#39;)}
+</span></span><span class="line"><span class="cl">             colorClass=&#34;text-[#FFA300] hover:text-[#FFD180]&#34;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1974,7 +2464,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &lt;Route path=&#34;/research&#34; element={&lt;Navigate to=&#34;/research/peinteractions&#34; replace /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/research/:submenu&#34; element={&lt;Research /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/tech&#34; element={&lt;Tech /&gt;} /&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;Route path=&#34;/interests&#34; element={&lt;Navigate to=&#34;/interests/travel&#34; replace /&gt;} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        &lt;Route path=&#34;/interests&#34; element={&lt;Navigate to=&#34;/interests/data&#34; replace /&gt;} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;Route path=&#34;/interests/:submenu&#34; element={&lt;Interests /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/contact&#34; element={&lt;Contact /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/strava/callback&#34; element={&lt;StravaCallback /&gt;} /&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

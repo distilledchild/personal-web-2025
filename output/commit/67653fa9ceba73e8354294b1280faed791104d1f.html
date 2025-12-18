@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page Interest-Workout done 1. Sync from Strava 2. Pouring activity data into DB 3. AOuth 2.0 for Strava works with the button (invisible in production environment) · personal-web-2025@67653fa</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>67653fa</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-11-25</span> <span class="nowrap">23:46:08</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                Page Interest-Workout done 1. Sync from Strava 2. Pouring activity data into DB 3. AOuth 2.0 for Strava works with the button (invisible in production environment)
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="4ebb57c1838883c7b8634d961e2c2f74e3331d6b.html"><code>4ebb57c</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (6)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fInterests.tsx" class="file-name">
+                    Interests.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16" class="file-added">
+                            <use xlink:href="#file-added"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fStravaCallback.tsx" class="file-name">
+                    StravaCallback.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#README.md" class="file-name">
+                    README.md
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#tsconfig.json" class="file-name">
+                    tsconfig.json
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="pages/Interests.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Interests.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,5 +1,5 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import React, { useState, useEffect } from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"><span class="gd">-import { Plane, Bike, Gamepad2, Trophy } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+import { Plane, Dumbbell, Gamepad2, Trophy, ChevronLeft, ChevronRight, PersonStanding, Footprints, Bike } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> import { ComposableMap, Geographies, Geography, Marker, Annotation } from &#39;react-simple-maps&#39;;
+</span></span><span class="line"><span class="cl"> import { geoCentroid } from &#39;d3-geo&#39;;
+</span></span><span class="line"><span class="cl"> import {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -11,7 +11,9 @@ import {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     CartesianGrid,
+</span></span><span class="line"><span class="cl">     Tooltip,
+</span></span><span class="line"><span class="cl">     Legend,
+</span></span><span class="line"><span class="cl"><span class="gd">-    ResponsiveContainer
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    ResponsiveContainer,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    BarChart,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    Cell
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> } from &#39;recharts&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> const geoUrl = &#34;https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json&#34;;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -40,18 +42,135 @@ interface StateInfo {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     status: &#39;NOT_VISITED&#39; | &#39;VISITED&#39; | &#39;STAYED&#39;;
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+interface StravaActivity {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    id: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    name: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    distance: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    moving_time: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    elapsed_time: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    total_elevation_gain: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    type: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    sport_type: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    start_date: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    average_speed: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    max_speed: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+interface MonthlyStats {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    walk: { distance: number; count: number };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    bike: { distance: number; count: number };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    run: { distance: number; count: number };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Helper function to calculate monthly statistics
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const calculateMonthlyStats = (activities: StravaActivity[]): MonthlyStats =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const now = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const currentMonth = now.getMonth();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const currentYear = now.getFullYear();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const stats: MonthlyStats = {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        walk: { distance: 0, count: 0 },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        bike: { distance: 0, count: 0 },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        run: { distance: 0, count: 0 }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    activities.forEach(activity =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const activityDate = new Date(activity.start_date);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (activityDate.getMonth() === currentMonth &amp;&amp; activityDate.getFullYear() === currentYear) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const sportType = activity.sport_type.toLowerCase();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (sportType === &#39;walk&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                stats.walk.distance += activity.distance / 1000; // Convert to km
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                stats.walk.count += 1;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } else if (sportType === &#39;ride&#39; || sportType === &#39;bike&#39; || sportType === &#39;virtualride&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                stats.bike.distance += activity.distance / 1000;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                stats.bike.count += 1;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } else if (sportType === &#39;run&#39; || sportType === &#39;running&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                stats.run.distance += activity.distance / 1000;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                stats.run.count += 1;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return stats;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Helper function to get workout days in current month
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const getWorkoutDays = (activities: StravaActivity[]): Set&lt;number&gt; =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const now = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const currentMonth = now.getMonth();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const currentYear = now.getFullYear();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const workoutDays = new Set&lt;number&gt;();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    activities.forEach(activity =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const activityDate = new Date(activity.start_date);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (activityDate.getMonth() === currentMonth &amp;&amp; activityDate.getFullYear() === currentYear) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            workoutDays.add(activityDate.getDate());
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return workoutDays;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Helper function to generate calendar days
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const generateCalendarDays = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const now = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const year = now.getFullYear();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const month = now.getMonth();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Get first day of month (0 = Sunday, 1 = Monday, etc.)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const firstDay = new Date(year, month, 1).getDay();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Adjust so Monday = 0 (subtract 1, and handle Sunday)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const firstDayAdjusted = firstDay === 0 ? 6 : firstDay - 1;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Get total days in month
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const days: (number | null)[] = [];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Add empty cells for days before month starts
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    for (let i = 0; i &lt; firstDayAdjusted; i++) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        days.push(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Add days of month
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    for (let i = 1; i &lt;= daysInMonth; i++) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        days.push(i);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return days;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> export const Interests: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-    const [activeTab, setActiveTab] = useState&lt;&#39;travel&#39; | &#39;bike&#39; | &#39;games&#39; | &#39;topic4&#39;&gt;(&#39;travel&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const [activeTab, setActiveTab] = useState&lt;&#39;travel&#39; | &#39;workout&#39; | &#39;games&#39; | &#39;topic4&#39;&gt;(&#39;travel&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const [stateData, setStateData] = useState&lt;StateInfo[]&gt;([]);
+</span></span><span class="line"><span class="cl"><span class="gi">+    const [stravaActivities, setStravaActivities] = useState&lt;StravaActivity[]&gt;([]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [loadingStrava, setLoadingStrava] = useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [currentPage, setCurrentPage] = useState(1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const itemsPerPage = 5;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleStravaAuth = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const response = await fetch(`${API_URL}/api/strava/auth`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Redirect to Strava authorization page
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            window.location.href = data.authUrl;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Failed to initiate Strava auth:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gi">+        const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         const fetchStates = async () =&gt; {
+</span></span><span class="line"><span class="cl">             try {
+</span></span><span class="line"><span class="cl"><span class="gd">-                // Determine API URL based on environment
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>                 const response = await fetch(`${API_URL}/api/travel/states`);
+</span></span><span class="line"><span class="cl">                 if (response.ok) {
+</span></span><span class="line"><span class="cl">                     const data = await response.json();
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -62,11 +181,76 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             }
+</span></span><span class="line"><span class="cl">         };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+        const loadStravaActivities = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setLoadingStrava(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Try fetching from database first
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const response = await fetch(`${API_URL}/api/workouts`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    // Map DB activity_id to id for frontend compatibility
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const activities = data.map((activity: any) =&gt; ({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        ...activity,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        id: activity.activity_id || activity.id
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    }));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    setStravaActivities(activities);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    // Fallback to localStorage if API fails
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    console.warn(&#39;Failed to fetch from DB, checking localStorage&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const storedActivities = localStorage.getItem(&#39;strava_activities&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    if (storedActivities) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        setStravaActivities(JSON.parse(storedActivities));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                console.error(&#39;Failed to load Strava activities:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Fallback to localStorage
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const storedActivities = localStorage.getItem(&#39;strava_activities&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (storedActivities) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    setStravaActivities(JSON.parse(storedActivities));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } finally {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setLoadingStrava(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         if (activeTab === &#39;travel&#39;) {
+</span></span><span class="line"><span class="cl">             fetchStates();
+</span></span><span class="line"><span class="cl"><span class="gi">+        } else if (activeTab === &#39;workout&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            loadStravaActivities();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         }
+</span></span><span class="line"><span class="cl">     }, [activeTab]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Calculate monthly stats
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const monthlyStats = calculateMonthlyStats(stravaActivities);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const workoutDays = getWorkoutDays(stravaActivities);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const calendarDays = generateCalendarDays();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const today = new Date().getDate();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const chartData = [
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        { name: &#39;Walk&#39;, distance: monthlyStats.walk.distance, fill: &#39;url(#walkGradient)&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        { name: &#39;Run&#39;, distance: monthlyStats.run.distance, fill: &#39;url(#runGradient)&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        { name: &#39;Bike&#39;, distance: monthlyStats.bike.distance, fill: &#39;url(#bikeGradient)&#39; }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    ];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Pagination logic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const totalPages = Math.ceil(stravaActivities.length / itemsPerPage);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const startIndex = (currentPage - 1) * itemsPerPage;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const endIndex = startIndex + itemsPerPage;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const currentActivities = stravaActivities.slice(startIndex, endIndex);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleNextPage = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (currentPage &lt; totalPages) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setCurrentPage(currentPage + 1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handlePrevPage = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (currentPage &gt; 1) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setCurrentPage(currentPage - 1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     // Removed unused mapHandler and statesCustomConfig
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     // Removed unused tooltip handlers
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -95,16 +279,16 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                             &lt;span&gt;Travel&lt;/span&gt;
+</span></span><span class="line"><span class="cl">                         &lt;/button&gt;
+</span></span><span class="line"><span class="cl">                         &lt;button
+</span></span><span class="line"><span class="cl"><span class="gd">-                            onClick={() =&gt; setActiveTab(&#39;bike&#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            onClick={() =&gt; setActiveTab(&#39;workout&#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             className={`
+</span></span><span class="line"><span class="cl">                 flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
+</span></span><span class="line"><span class="cl"><span class="gd">-                ${activeTab === &#39;bike&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                ${activeTab === &#39;workout&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                     ? &#39;border-blue-500 text-blue-500&#39;
+</span></span><span class="line"><span class="cl">                                     : &#39;border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300&#39;}
+</span></span><span class="line"><span class="cl">               `}
+</span></span><span class="line"><span class="cl">                         &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;Bike size={20} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;span&gt;Bike&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            &lt;Dumbbell size={20} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;span&gt;Workout&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                         &lt;/button&gt;
+</span></span><span class="line"><span class="cl">                         &lt;button
+</span></span><span class="line"><span class="cl">                             onClick={() =&gt; setActiveTab(&#39;games&#39;)}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -240,18 +424,231 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                     )}
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                    {activeTab === &#39;bike&#39; &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    {activeTab === &#39;workout&#39; &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                         &lt;div className=&#34;animate-fadeIn space-y-8&#34;&gt;
+</span></span><span class="line"><span class="cl">                             &lt;div className=&#34;flex justify-between items-center&#34;&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                    &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-2&#34;&gt;Cycling Adventures&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;p className=&#34;text-slate-500 text-lg&#34;&gt;My favorite routes and rides.&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                    &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-2&#34;&gt;Workout Activities&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;p className=&#34;text-slate-500 text-lg&#34;&gt;My workout activities from Strava&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+                                {import.meta.env.DEV &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={handleStravaAuth}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Sync from Strava
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;div className=&#34;p-12 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-100 border-dashed&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;Bike size={48} className=&#34;mx-auto mb-4 opacity-50&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;p&gt;Content coming soon...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {loadingStrava ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;p-12 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;Dumbbell size={48} className=&#34;mx-auto mb-4 opacity-50 animate-pulse&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;p&gt;Loading activities...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            ) : stravaActivities.length &gt; 0 ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    {/* Statistics Section */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;grid grid-cols-1 lg:grid-cols-3 gap-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {/* Bar Chart - Monthly Distance */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;bg-white rounded-2xl border border-slate-200 shadow-sm p-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;h4 className=&#34;text-lg font-bold text-slate-900 mb-4&#34;&gt;This Month&#39;s Distance (km)&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;ResponsiveContainer width=&#34;100%&#34; height={250}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;BarChart data={chartData}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;defs&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;linearGradient id=&#34;walkGradient&#34; x1=&#34;0&#34; y1=&#34;0&#34; x2=&#34;0&#34; y2=&#34;1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;stop offset=&#34;0%&#34; stopColor=&#34;#93c5fd&#34; stopOpacity={1} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;stop offset=&#34;100%&#34; stopColor=&#34;#60a5fa&#34; stopOpacity={1} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;/linearGradient&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;linearGradient id=&#34;runGradient&#34; x1=&#34;0&#34; y1=&#34;0&#34; x2=&#34;0&#34; y2=&#34;1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;stop offset=&#34;0%&#34; stopColor=&#34;#3b82f6&#34; stopOpacity={1} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;stop offset=&#34;100%&#34; stopColor=&#34;#2563eb&#34; stopOpacity={1} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;/linearGradient&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;linearGradient id=&#34;bikeGradient&#34; x1=&#34;0&#34; y1=&#34;0&#34; x2=&#34;0&#34; y2=&#34;1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;stop offset=&#34;0%&#34; stopColor=&#34;#1d4ed8&#34; stopOpacity={1} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;stop offset=&#34;100%&#34; stopColor=&#34;#1e3a8a&#34; stopOpacity={1} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;/linearGradient&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/defs&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;CartesianGrid strokeDasharray=&#34;3 3&#34; stroke=&#34;#e2e8f0&#34; vertical={false} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;XAxis dataKey=&#34;name&#34; stroke=&#34;#94a3b8&#34; fontSize={12} tickLine={false} axisLine={false} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;YAxis stroke=&#34;#94a3b8&#34; fontSize={12} tickLine={false} axisLine={false} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;Tooltip
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        contentStyle={{ backgroundColor: &#39;rgba(255,255,255,0.95)&#39;, borderRadius: &#39;12px&#39;, border: &#39;none&#39;, boxShadow: &#39;0 10px 15px -3px rgba(0, 0, 0, 0.1)&#39; }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;Bar dataKey=&#34;distance&#34; radius={[8, 8, 0, 0]}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        {chartData.map((entry, index) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;Cell key={`cell-${index}`} fill={entry.fill} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/Bar&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/BarChart&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/ResponsiveContainer&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {/* Monthly Calendar */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;bg-white rounded-2xl border border-slate-200 shadow-sm p-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;h4 className=&#34;text-lg font-bold text-slate-900 mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {new Date().toLocaleDateString(&#39;en-US&#39;, { month: &#39;long&#39;, year: &#39;numeric&#39; })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;div className=&#34;grid grid-cols-7 gap-1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {/* Day headers */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {[&#39;Mon&#39;, &#39;Tue&#39;, &#39;Wed&#39;, &#39;Thu&#39;, &#39;Fri&#39;, &#39;Sat&#39;, &#39;Sun&#39;].map(day =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;div key={day} className=&#34;text-center text-xs font-bold text-slate-600 py-1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        {day}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {/* Calendar days */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {calendarDays.map((day, index) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        key={index}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        className={`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            aspect-square flex items-center justify-center text-sm rounded-lg
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            ${day === null ? &#39;&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                workoutDays.has(day) ? &#39;bg-[#080C54] text-white font-bold&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    day &gt; today ? &#39;text-slate-400&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                        &#39;text-black&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        `}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        {day}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {/* Activity Counters */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;bg-white rounded-2xl border border-slate-200 shadow-sm p-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;h4 className=&#34;text-lg font-bold text-slate-900 mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                Activity Count ({new Date().toLocaleDateString(&#39;en-US&#39;, { month: &#39;long&#39; })})
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;div className=&#34;grid grid-cols-3 gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {/* Walk Counter */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div className=&#34;flex flex-col items-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;div className=&#34;w-20 h-20 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 flex items-center justify-center shadow-lg&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;span className=&#34;text-2xl font-bold text-white&#34;&gt;{monthlyStats.walk.count}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;span className=&#34;text-xs font-medium text-slate-600 mt-2&#34;&gt;Walk&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {/* Run Counter */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div className=&#34;flex flex-col items-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;div className=&#34;w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;span className=&#34;text-2xl font-bold text-white&#34;&gt;{monthlyStats.run.count}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;span className=&#34;text-xs font-medium text-slate-600 mt-2&#34;&gt;Run&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {/* Bike Counter */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div className=&#34;flex flex-col items-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;div className=&#34;w-20 h-20 rounded-full bg-gradient-to-br from-blue-700 to-blue-800 flex items-center justify-center shadow-lg&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;span className=&#34;text-2xl font-bold text-white&#34;&gt;{monthlyStats.bike.count}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;span className=&#34;text-xs font-medium text-slate-600 mt-2&#34;&gt;Bike&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    {/* Activity Table with Pagination */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;overflow-x-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;table className=&#34;w-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;thead className=&#34;bg-gradient-to-r from-blue-50 to-slate-50&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Date&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Activity Name&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Type&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Distance&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Time&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Elevation&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;th className=&#34;px-6 py-4 text-left text-sm font-bold text-slate-700 border-b border-slate-200&#34;&gt;Avg Speed&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/thead&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    {currentActivities.map((activity, index) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;tr
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            key={activity.id}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? &#39;bg-white&#39; : &#39;bg-slate-50/50&#39;}`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm text-slate-600 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {new Date(activity.start_date).toLocaleDateString(&#39;en-US&#39;, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    month: &#39;short&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    day: &#39;numeric&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    year: &#39;numeric&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm font-medium text-slate-900 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {activity.name}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm text-slate-600 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {activity.sport_type.toLowerCase() === &#39;walk&#39; ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    &lt;PersonStanding size={24} className=&#34;text-blue-400&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                ) : activity.sport_type.toLowerCase().includes(&#39;ride&#39;) || activity.sport_type.toLowerCase() === &#39;bike&#39; || activity.sport_type.toLowerCase() === &#39;virtualride&#39; ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    &lt;Bike size={24} className=&#34;text-blue-800&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                ) : activity.sport_type.toLowerCase() === &#39;run&#39; || activity.sport_type.toLowerCase() === &#39;running&#39; ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    &lt;Footprints size={24} className=&#34;text-blue-600&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    &lt;span className=&#34;text-xs text-gray-600&#34;&gt;{activity.sport_type}&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm text-slate-600 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {(activity.distance / 1000).toFixed(2)} km
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm text-slate-600 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {Math.floor(activity.moving_time / 3600)}h {Math.floor((activity.moving_time % 3600) / 60)}m
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm text-slate-600 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {activity.total_elevation_gain.toFixed(0)} m
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-6 py-4 text-sm text-slate-600 border-b border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {(activity.average_speed * 3.6).toFixed(1)} km/h
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/table&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {/* Pagination Controls */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;p className=&#34;text-sm text-slate-600&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                Showing &lt;span className=&#34;font-bold text-slate-900&#34;&gt;{startIndex + 1}&lt;/span&gt; to{&#39; &#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;span className=&#34;font-bold text-slate-900&#34;&gt;{Math.min(endIndex, stravaActivities.length)}&lt;/span&gt; of{&#39; &#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;span className=&#34;font-bold text-slate-900&#34;&gt;{stravaActivities.length}&lt;/span&gt; activities
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    onClick={handlePrevPage}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    disabled={currentPage === 1}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === 1
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        ? &#39;bg-slate-200 text-slate-400 cursor-not-allowed&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        : &#39;bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow-md&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;ChevronLeft size={20} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;span className=&#34;text-sm font-medium text-slate-700&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    Page {currentPage} of {totalPages}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    onClick={handleNextPage}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    disabled={currentPage === totalPages}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === totalPages
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        ? &#39;bg-slate-200 text-slate-400 cursor-not-allowed&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        : &#39;bg-blue-500 text-white hover:bg-blue-600 shadow-sm hover:shadow-md&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;ChevronRight size={20} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;p-12 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-100 border-dashed&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;Dumbbell size={48} className=&#34;mx-auto mb-4 opacity-50&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;p className=&#34;mb-4&#34;&gt;No activities found&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;p className=&#34;text-sm&#34;&gt;Click &#34;Sync from Strava&#34; to authorize and load your activities&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                     )}
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/StravaCallback.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/StravaCallback.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -0,0 +1,119 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span><span class="gi">+import React, { useEffect, useState } from &#39;react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+import { useNavigate, useLocation } from &#39;react-router-dom&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+export const StravaCallback: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const navigate = useNavigate();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const location = useLocation();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [status, setStatus] = useState&lt;&#39;processing&#39; | &#39;success&#39; | &#39;error&#39;&gt;(&#39;processing&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [errorMessage, setErrorMessage] = useState(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useEffect(() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const handleCallback = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Parse URL parameters
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const params = new URLSearchParams(location.search);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const code = params.get(&#39;code&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const error = params.get(&#39;error&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setStatus(&#39;error&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setErrorMessage(&#39;Authorization was denied or failed&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setTimeout(() =&gt; navigate(&#39;/interests&#39;), 3000);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (!code) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setStatus(&#39;error&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setErrorMessage(&#39;No authorization code received&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setTimeout(() =&gt; navigate(&#39;/interests&#39;), 3000);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Exchange code for access token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const tokenResponse = await fetch(`${API_URL}/api/strava/exchange_token`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    body: JSON.stringify({ code })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (!tokenResponse.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    throw new Error(&#39;Failed to exchange token&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const tokenData = await tokenResponse.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const accessToken = tokenData.access_token;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Fetch activities with the access token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const activitiesResponse = await fetch(`${API_URL}/api/strava/activities-with-token`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    body: JSON.stringify({ accessToken })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (!activitiesResponse.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    throw new Error(&#39;Failed to fetch activities&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const activities = await activitiesResponse.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Store in localStorage for the Interests page to use
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                localStorage.setItem(&#39;strava_activities&#39;, JSON.stringify(activities));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                localStorage.setItem(&#39;strava_access_token&#39;, accessToken);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                localStorage.setItem(&#39;strava_athlete&#39;, JSON.stringify(tokenData.athlete));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setStatus(&#39;success&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setTimeout(() =&gt; navigate(&#39;/interests&#39;), 1500);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                console.error(&#39;Error during Strava callback:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setStatus(&#39;error&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setErrorMessage(&#39;Failed to complete authorization&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setTimeout(() =&gt; navigate(&#39;/interests&#39;), 3000);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        handleCallback();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }, [location, navigate]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div className=&#34;flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;bg-white p-12 rounded-2xl shadow-xl max-w-md w-full text-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {status === &#39;processing&#39; &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6&#34;&gt;&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;h2 className=&#34;text-2xl font-bold text-slate-900 mb-2&#34;&gt;Processing...&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-600&#34;&gt;Connecting to Strava and fetching your activities&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {status === &#39;success&#39; &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;svg className=&#34;w-8 h-8 text-green-600&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; viewBox=&#34;0 0 24 24&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;path strokeLinecap=&#34;round&#34; strokeLinejoin=&#34;round&#34; strokeWidth={2} d=&#34;M5 13l4 4L19 7&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;h2 className=&#34;text-2xl font-bold text-slate-900 mb-2&#34;&gt;Success!&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-600&#34;&gt;Redirecting to your activities...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {status === &#39;error&#39; &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;svg className=&#34;w-8 h-8 text-red-600&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; viewBox=&#34;0 0 24 24&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;path strokeLinecap=&#34;round&#34; strokeLinejoin=&#34;round&#34; strokeWidth={2} d=&#34;M6 18L18 6M6 6l12 12&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;h2 className=&#34;text-2xl font-bold text-slate-900 mb-2&#34;&gt;Error&lt;/h2&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-600&#34;&gt;{errorMessage}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -65,6 +65,27 @@ const techBlogSchema = new mongoose.Schema({
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl"> const TechBlog = mongoose.model(&#39;TechBlog&#39;, techBlogSchema);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+// Workout Schema for Strava activities
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const workoutSchema = new mongoose.Schema({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    activity_id: { type: Number, unique: true, required: true },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    name: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    distance: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    moving_time: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    elapsed_time: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    total_elevation_gain: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    type: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    sport_type: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    start_date: Date,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    start_date_local: Date,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    average_speed: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    max_speed: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    athlete_id: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    insertedAt: { type: Date, default: Date.now },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    createdAt: { type: Date, default: Date.now }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}, { collection: &#39;INTERESTS_WORKOUT&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const Workout = mongoose.model(&#39;Workout&#39;, workoutSchema);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> // Google OAuth Endpoint
+</span></span><span class="line"><span class="cl"> app.post(&#39;/api/auth/google&#39;, async (req, res) =&gt; {
+</span></span><span class="line"><span class="cl">     const { code } = req.body;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -560,6 +581,257 @@ function updateVisitorStatus(socketId) {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+// --- Strava API Endpoints ---
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Strava OAuth - Initiate Authorization
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.get(&#39;/api/strava/auth&#39;, (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const clientId = process.env.STRAVA_CLIENT_ID || &#39;187016&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const redirectUri = encodeURIComponent(&#39;http://localhost:3000/strava/callback&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const scope = &#39;read,activity:read_all,profile:read_all,read_all&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&amp;response_type=code&amp;redirect_uri=${redirectUri}&amp;approval_prompt=force&amp;scope=${scope}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    res.json({ authUrl });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Strava OAuth - Exchange Code for Token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.post(&#39;/api/strava/exchange_token&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { code } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!code) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(400).json({ error: &#39;Authorization code is required&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const clientId = process.env.STRAVA_CLIENT_ID || &#39;187016&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const clientSecret = process.env.STRAVA_CLIENT_SECRET || &#39;021ca34790af66291ff4b82a8e02101744080353&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const response = await fetch(&#39;https://www.strava.com/oauth/token&#39;, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                client_id: clientId,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                client_secret: clientSecret,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                code: code,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                grant_type: &#39;authorization_code&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const errorText = await response.text();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Token exchange failed:&#39;, response.status, errorText);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(response.status).json({ error: &#39;Failed to exchange token&#39;, details: errorText });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(&#39;Successfully exchanged code for token&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(data);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(&#39;Token exchange error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Failed to exchange token&#39;, details: err.message });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Get Strava Activities with provided access token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.post(&#39;/api/strava/activities-with-token&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { accessToken } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!accessToken) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(400).json({ error: &#39;Access token is required&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const response = await fetch(&#39;https://www.strava.com/api/v3/athlete/activities?per_page=100&#39;, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            headers: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &#39;Authorization&#39;: `Bearer ${accessToken}`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const errorText = await response.text();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Strava API Error:&#39;, response.status, errorText);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(response.status).json({ error: `Strava API error: ${response.status}`, details: errorText });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const activities = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(`Fetched ${activities.length} activities from Strava`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Sync with database
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const dbCount = await Workout.countDocuments();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const apiCount = activities.length;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.log(`DB has ${dbCount} activities, API returned ${apiCount} activities`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Always try to sync/insert new activities
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // We&#39;ll filter out ones that already exist by ID to avoid duplicate key errors filling up logs,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // or just rely on the unique index and ordered: false.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Since we want to be robust, let&#39;s just try to insert all and let Mongo handle duplicates.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.log(`Attempting to sync ${apiCount} activities to DB`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (apiCount &gt; 0) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                console.log(&#39;Sample activity structure:&#39;, JSON.stringify(activities[0], null, 2));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Prepare activities for insertion
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const activitiesToInsert = activities.map(activity =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Ensure required fields are present
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (!activity.id) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    console.warn(&#39;Activity missing ID:&#39;, activity);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    activity_id: activity.id,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    name: activity.name,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    distance: activity.distance,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    moving_time: activity.moving_time,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    elapsed_time: activity.elapsed_time,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    total_elevation_gain: activity.total_elevation_gain,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    type: activity.type,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    sport_type: activity.sport_type,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    start_date: new Date(activity.start_date),
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    start_date_local: new Date(activity.start_date_local),
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    average_speed: activity.average_speed,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    max_speed: activity.max_speed,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    athlete_id: activity.athlete?.id,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    insertedAt: new Date()
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.log(`Prepared ${activitiesToInsert.length} documents for insertion`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Insert new activities (ignore duplicates)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const result = await Workout.insertMany(activitiesToInsert, { ordered: false });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                console.log(`Successfully inserted ${result.length} activities.`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Ignore duplicate key errors (code 11000)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (err.code === 11000) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    console.log(`Sync complete. Some activities already existed.`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    if (err.insertedDocs &amp;&amp; err.insertedDocs.length &gt; 0) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        console.log(`Inserted ${err.insertedDocs.length} new activities (others were duplicates).`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        console.log(&#39;No new activities inserted (all were duplicates).&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    console.error(&#39;Error inserting activities:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    // Log validation errors if any
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    if (err.name === &#39;ValidationError&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        console.error(&#39;Validation Errors:&#39;, err.errors);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Verify final count
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const finalCount = await Workout.countDocuments();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.log(`Final DB count: ${finalCount}`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } catch (dbErr) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Database sync error:&#39;, dbErr);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(activities);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(&#39;Strava API handler error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Failed to fetch Strava activities&#39;, details: err.message });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Function to refresh Strava Access Token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+async function refreshStravaToken() {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(&#39;Refreshing Strava Access Token...&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const response = await fetch(&#39;https://www.strava.com/oauth/token&#39;, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                client_id: process.env.STRAVA_CLIENT_ID,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                client_secret: process.env.STRAVA_CLIENT_SECRET,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                grant_type: &#39;refresh_token&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                refresh_token: process.env.STRAVA_REFRESH_TOKEN
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const errorText = await response.text();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Failed to refresh token response:&#39;, response.status, errorText);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            throw new Error(`Failed to refresh token: ${response.status}`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(&#39;Successfully refreshed Strava token&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return data.access_token;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(&#39;Error refreshing Strava token:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Get Strava Activities
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.get(&#39;/api/strava/activities&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        let accessToken = process.env.STRAVA_ACCESS_TOKEN;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!accessToken) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Try refreshing if no access token is set initially
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            accessToken = await refreshStravaToken();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (!accessToken) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return res.status(500).json({ error: &#39;Strava configuration missing&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            process.env.STRAVA_ACCESS_TOKEN = accessToken;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Helper to fetch activities
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const fetchActivities = async (token) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return await fetch(&#39;https://www.strava.com/api/v3/athlete/activities?per_page=30&#39;, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                headers: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &#39;Authorization&#39;: `Bearer ${token}`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        let response = await fetchActivities(accessToken);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // If 401 Unauthorized, try refreshing token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (response.status === 401) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.log(&#39;Strava token expired (401), attempting refresh...&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const newToken = await refreshStravaToken();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (newToken) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                process.env.STRAVA_ACCESS_TOKEN = newToken; // Update in memory
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                response = await fetchActivities(newToken);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return res.status(401).json({ error: &#39;Failed to refresh Strava token&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const errorText = await response.text();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Strava API Error:&#39;, response.status, errorText);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(response.status).json({ error: `Strava API error: ${response.status}`, details: errorText });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const activities = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(`Fetched ${activities.length} activities from Strava`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(activities);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(&#39;Strava API handler error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Failed to fetch Strava activities&#39;, details: err.message });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Get stored workouts from Database
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.get(&#39;/api/workouts&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const workouts = await Workout.find().sort({ start_date: -1 });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.log(`Fetched ${workouts.length} workouts from DB`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(workouts);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(&#39;Database fetch error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Failed to fetch workouts from database&#39;, details: err.message });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> const PORT = process.env.PORT || 4000;
+</span></span><span class="line"><span class="cl"> server.listen(PORT, () =&gt; {
+</span></span><span class="line"><span class="cl">     console.log(`SERVER RUNNING ON PORT ${PORT}`);
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -6,6 +6,7 @@ import { ChatBot } from &#39;./components/ChatBot&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import { Research } from &#39;./pages/Research&#39;;
+</span></span><span class="line"><span class="cl"> import { Interests } from &#39;./pages/Interests&#39;;
+</span></span><span class="line"><span class="cl"> import { About } from &#39;./pages/About&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { StravaCallback } from &#39;./pages/StravaCallback&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> import { io, Socket } from &#39;socket.io-client&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> const Home: React.FC = () =&gt; (
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1047,6 +1048,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &lt;Route path=&#34;/tech&#34; element={&lt;Tech /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/interests&#34; element={&lt;Interests /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/contact&#34; element={&lt;Contact /&gt;} /&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+        &lt;Route path=&#34;/strava/callback&#34; element={&lt;StravaCallback /&gt;} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>       &lt;/Routes&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">       &lt;ChatBot /&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="README.md" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">README.md</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -56,5 +56,69 @@ The application employs a decoupled architecture for optimal performance and cos
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   - **Glassmorphism**: Applied semi-transparent, blurred backgrounds to UI elements like the chat interface and cards.
+</span></span><span class="line"><span class="cl"> - **Icons**: **Lucide React** for clean, consistent, and lightweight SVG icons.
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+## 🏃 Strava OAuth 2.0 Integration
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+The application integrates with Strava&#39;s API to fetch and display workout activities. The OAuth 2.0 flow follows these steps:
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+### Authorization Flow
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+1. **Initiate Authorization**
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - User clicks &#34;Test Strava Connection&#34; button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Frontend requests authorization URL from backend (`GET /api/strava/auth`)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - User is redirected to Strava&#39;s authorization page:
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     https://www.strava.com/oauth/authorize?
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       client_id={CLIENT_ID}&amp;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       response_type=code&amp;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       redirect_uri=http://localhost:3000/strava/callback&amp;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       approval_prompt=force&amp;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       scope=read,activity:read_all,profile:read_all,read_all
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+2. **User Grants Permission**
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - User reviews and approves the requested permissions on Strava&#39;s page
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Strava redirects back to the application with an authorization code:
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     http://localhost:3000/strava/callback?code={AUTHORIZATION_CODE}&amp;scope=...
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+3. **Exchange Code for Access Token**
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Callback page extracts the authorization code from URL parameters
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Sends code to backend (`POST /api/strava/exchange_token`)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Backend exchanges code for access token via Strava&#39;s token endpoint:
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     POST https://www.strava.com/oauth/token
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       client_id: {CLIENT_ID},
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       client_secret: {CLIENT_SECRET},
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       code: {AUTHORIZATION_CODE},
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+       grant_type: &#34;authorization_code&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Response includes `access_token`, `refresh_token`, and athlete profile
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+4. **Fetch Activity Data**
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Using the access token, request athlete&#39;s activities:
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     GET https://www.strava.com/api/v3/athlete/activities?access_token={ACCESS_TOKEN}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+     ```
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - Activities are stored in localStorage for persistence
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+   - User is redirected to the Interests page where activities are displayed
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+### Data Display Features
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Monthly Statistics**: Bar chart showing total distance by activity type (Walk, Bike, Run)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Activity Counters**: Circular badges displaying monthly activity counts
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Paginated Table**: Activity details with 5 rows per page
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- **Activity Types**: Color-coded badges for different sport types
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+### Security Note
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+**Why automatic OAuth approval is not possible:**
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- Strava&#39;s authorization page is hosted on a different domain
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- Browser&#39;s Same-Origin Policy prevents cross-domain JavaScript execution
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- OAuth 2.0 security model requires explicit user consent
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+- Attempting to automate this would violate security principles and is technically blocked by browsers
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> ---
+</span></span><span class="line"><span class="cl"><span class="gd">-*This project demonstrates a blend of domain expertise in Computational Biology (Data Visualization) with modern Web Engineering (3D Graphics, Real-time Systems).*
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+*This project demonstrates a blend of domain expertise in Computational Biology (Data Visualization) with modern Web Engineering (3D Graphics, Real-time Systems, OAuth Integration).*
+</span></span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="tsconfig.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">tsconfig.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -11,7 +11,8 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     ],
+</span></span><span class="line"><span class="cl">     &#34;skipLibCheck&#34;: true,
+</span></span><span class="line"><span class="cl">     &#34;types&#34;: [
+</span></span><span class="line"><span class="cl"><span class="gd">-      &#34;node&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+      &#34;node&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;vite/client&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     ],
+</span></span><span class="line"><span class="cl">     &#34;moduleResolution&#34;: &#34;bundler&#34;,
+</span></span><span class="line"><span class="cl">     &#34;isolatedModules&#34;: true,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

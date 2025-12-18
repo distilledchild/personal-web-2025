@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>personal-web-2025/pages/Contact.tsx at main</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+        .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .ln:target { background-color: #e5e5e5 }
+.chroma .lnt:target { background-color: #e5e5e5 }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9 }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1 }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+
+        [id] {
+          scroll-margin-top: var(--header-height);
+        }
+
+        pre {
+          border: 1px solid var(--c-border);
+          border-top: none;
+          border-bottom-left-radius: var(--border-radius);
+          border-bottom-right-radius: var(--border-radius);
+        }
+
+        pre {
+          margin: 0;
+          padding: 8px 16px;
+          overflow-x: auto;
+          white-space: pre;
+          word-spacing: normal;
+          word-break: normal;
+          word-wrap: normal;
+          tab-size: 4;
+          font-family: var(--font-family-mono), monospace;
+        }
+
+        pre > code {
+          display: block;
+          padding: 0 16px;
+          width: fit-content;
+          min-width: 100%;
+          line-height: var(--code-line-height);
+          font-size: var(--code-font-size);
+        }
+
+        .border {
+          border: 1px solid var(--c-border);
+          border-top: none;
+          border-bottom-left-radius: 6px;
+          border-bottom-right-radius: 6px;
+        }
+
+        .binary-file {
+          padding: 8px 16px;
+          font-style: italic;
+        }
+
+        .image {
+          padding: 8px 16px;
+          text-align: center;
+        }
+
+        .image img {
+          max-width: 100%;
+          height: auto;
+        }
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../../../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item selected">
+            <a href="../../../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    
+    <div class="header-container">
+        <header>
+            
+                <div class="header-ref" aria-label="Ref">main</div>
+            
+            
+                <nav class="breadcrumbs" aria-label="Breadcrumbs">
+                    
+                        
+                        
+                            <a href="./../index.html">personal-web-2025</a>
+                        
+                    
+                        
+                            <div>/</div>
+                        
+                        
+                            <a href="./index.html">pages</a>
+                        
+                    
+                        
+                            <div>/</div>
+                        
+                        
+                            <h1>Contact.tsx</h1>
+                            
+                        
+                    
+                </nav>
+            
+            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#arrow-top"></use>
+                </svg>
+                Top
+            </button>
+        </header>
+    </div>
+
+    
+        <pre class="chroma"><code><span class="line"><span class="ln" id="L1"><a class="lnlinks" href="#L1">  1</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Github</span><span class="p">,</span> <span class="nx">Mail</span><span class="p">,</span> <span class="nx">MapPin</span><span class="p">,</span> <span class="nx">Plus</span><span class="p">,</span> <span class="nx">X</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;lucide-react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L2"><a class="lnlinks" href="#L2">  2</a></span><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L3"><a class="lnlinks" href="#L3">  3</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">API_URL</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../utils/apiConfig&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L4"><a class="lnlinks" href="#L4">  4</a></span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useLockBodyScroll</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../hooks/useLockBodyScroll&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L5"><a class="lnlinks" href="#L5">  5</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L6"><a class="lnlinks" href="#L6">  6</a></span><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Contact</span>: <span class="kt">React.FC</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L7"><a class="lnlinks" href="#L7">  7</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">showCopied</span><span class="p">,</span> <span class="nx">setShowCopied</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L8"><a class="lnlinks" href="#L8">  8</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">cursorPos</span><span class="p">,</span> <span class="nx">setCursorPos</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="p">{</span> <span class="nx">x</span>: <span class="kt">0</span><span class="p">,</span> <span class="nx">y</span>: <span class="kt">0</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L9"><a class="lnlinks" href="#L9">  9</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">contactInfo</span><span class="p">,</span> <span class="nx">setContactInfo</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">&lt;</span><span class="nt">any</span><span class="p"></span><span class="p">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L10"><a class="lnlinks" href="#L10"> 10</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">user</span><span class="p">,</span> <span class="nx">setUser</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">&lt;</span><span class="nt">any</span><span class="p"></span><span class="p">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L11"><a class="lnlinks" href="#L11"> 11</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">isAuthorized</span><span class="p">,</span> <span class="nx">setIsAuthorized</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L12"><a class="lnlinks" href="#L12"> 12</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">isModalOpen</span><span class="p">,</span> <span class="nx">setIsModalOpen</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L13"><a class="lnlinks" href="#L13"> 13</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">userLocation</span><span class="p">,</span> <span class="nx">setUserLocation</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">city</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">state</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">country</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">lat</span>: <span class="kt">number</span><span class="p">;</span> <span class="nx">lon</span>: <span class="kt">number</span> <span class="p">}</span> <span class="o">|</span> <span class="kc">null</span><span class="o">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L14"><a class="lnlinks" href="#L14"> 14</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">stateSuggestions</span><span class="p">,</span> <span class="nx">setStateSuggestions</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="err">[</span><span class="err">]</span><span class="p"></span><span class="p">&gt;</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L15"><a class="lnlinks" href="#L15"> 15</a></span><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">setFormData</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L16"><a class="lnlinks" href="#L16"> 16</a></span><span class="cl">        <span class="nx">Email</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L17"><a class="lnlinks" href="#L17"> 17</a></span><span class="cl">        <span class="nx">GitHub</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L18"><a class="lnlinks" href="#L18"> 18</a></span><span class="cl">        <span class="nx">LinkedIn</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L19"><a class="lnlinks" href="#L19"> 19</a></span><span class="cl">        <span class="nx">city</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L20"><a class="lnlinks" href="#L20"> 20</a></span><span class="cl">        <span class="nx">state</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L21"><a class="lnlinks" href="#L21"> 21</a></span><span class="cl">        <span class="nx">country</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="ln" id="L22"><a class="lnlinks" href="#L22"> 22</a></span><span class="cl">    <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L23"><a class="lnlinks" href="#L23"> 23</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L24"><a class="lnlinks" href="#L24"> 24</a></span><span class="cl">    <span class="c1">// Fetch user&#39;s IP-based location
+</span></span></span><span class="line"><span class="ln" id="L25"><a class="lnlinks" href="#L25"> 25</a></span><span class="cl"><span class="c1"></span>    <span class="nx">useEffect</span><span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L26"><a class="lnlinks" href="#L26"> 26</a></span><span class="cl">        <span class="kr">const</span> <span class="nx">fetchUserLocation</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L27"><a class="lnlinks" href="#L27"> 27</a></span><span class="cl">            <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L28"><a class="lnlinks" href="#L28"> 28</a></span><span class="cl">                <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://ip-api.com/json/?fields=status,city,regionName,country,lat,lon&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L29"><a class="lnlinks" href="#L29"> 29</a></span><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L30"><a class="lnlinks" href="#L30"> 30</a></span><span class="cl">                    <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L31"><a class="lnlinks" href="#L31"> 31</a></span><span class="cl">                    <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L32"><a class="lnlinks" href="#L32"> 32</a></span><span class="cl">                        <span class="nx">setUserLocation</span><span class="p">(</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L33"><a class="lnlinks" href="#L33"> 33</a></span><span class="cl">                            <span class="nx">city</span>: <span class="kt">data.city</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L34"><a class="lnlinks" href="#L34"> 34</a></span><span class="cl">                            <span class="nx">state</span>: <span class="kt">data.regionName</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L35"><a class="lnlinks" href="#L35"> 35</a></span><span class="cl">                            <span class="nx">country</span>: <span class="kt">data.country</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L36"><a class="lnlinks" href="#L36"> 36</a></span><span class="cl">                            <span class="nx">lat</span>: <span class="kt">data.lat</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L37"><a class="lnlinks" href="#L37"> 37</a></span><span class="cl">                            <span class="nx">lon</span>: <span class="kt">data.lon</span>
+</span></span><span class="line"><span class="ln" id="L38"><a class="lnlinks" href="#L38"> 38</a></span><span class="cl">                        <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L39"><a class="lnlinks" href="#L39"> 39</a></span><span class="cl">                    <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L40"><a class="lnlinks" href="#L40"> 40</a></span><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L41"><a class="lnlinks" href="#L41"> 41</a></span><span class="cl">            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L42"><a class="lnlinks" href="#L42"> 42</a></span><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to fetch user location:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L43"><a class="lnlinks" href="#L43"> 43</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L44"><a class="lnlinks" href="#L44"> 44</a></span><span class="cl">        <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L45"><a class="lnlinks" href="#L45"> 45</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L46"><a class="lnlinks" href="#L46"> 46</a></span><span class="cl">        <span class="nx">fetchUserLocation</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L47"><a class="lnlinks" href="#L47"> 47</a></span><span class="cl">    <span class="p">}</span><span class="p">,</span> <span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L48"><a class="lnlinks" href="#L48"> 48</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L49"><a class="lnlinks" href="#L49"> 49</a></span><span class="cl">    <span class="nx">useEffect</span><span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L50"><a class="lnlinks" href="#L50"> 50</a></span><span class="cl">        <span class="c1">// Check user auth and fetch contact info
+</span></span></span><span class="line"><span class="ln" id="L51"><a class="lnlinks" href="#L51"> 51</a></span><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">checkAuth</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L52"><a class="lnlinks" href="#L52"> 52</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">storedUser</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;user_profile&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L53"><a class="lnlinks" href="#L53"> 53</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">storedUser</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L54"><a class="lnlinks" href="#L54"> 54</a></span><span class="cl">                <span class="kr">const</span> <span class="nx">parsedUser</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">storedUser</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L55"><a class="lnlinks" href="#L55"> 55</a></span><span class="cl">                <span class="nx">setUser</span><span class="p">(</span><span class="nx">parsedUser</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L56"><a class="lnlinks" href="#L56"> 56</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L57"><a class="lnlinks" href="#L57"> 57</a></span><span class="cl">                <span class="c1">// Check authorization from MEMBER collection
+</span></span></span><span class="line"><span class="ln" id="L58"><a class="lnlinks" href="#L58"> 58</a></span><span class="cl"><span class="c1"></span>                <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L59"><a class="lnlinks" href="#L59"> 59</a></span><span class="cl">                    <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">/api/member/role/</span><span class="si">${</span><span class="nx">parsedUser</span><span class="p">.</span><span class="nx">email</span><span class="si">}</span><span class="sb">`</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L60"><a class="lnlinks" href="#L60"> 60</a></span><span class="cl">                    <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L61"><a class="lnlinks" href="#L61"> 61</a></span><span class="cl">                        <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L62"><a class="lnlinks" href="#L62"> 62</a></span><span class="cl">                        <span class="nx">setIsAuthorized</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">authorized</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L63"><a class="lnlinks" href="#L63"> 63</a></span><span class="cl">                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L64"><a class="lnlinks" href="#L64"> 64</a></span><span class="cl">                        <span class="nx">setIsAuthorized</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L65"><a class="lnlinks" href="#L65"> 65</a></span><span class="cl">                    <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L66"><a class="lnlinks" href="#L66"> 66</a></span><span class="cl">                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L67"><a class="lnlinks" href="#L67"> 67</a></span><span class="cl">                    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to check authorization:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L68"><a class="lnlinks" href="#L68"> 68</a></span><span class="cl">                    <span class="nx">setIsAuthorized</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L69"><a class="lnlinks" href="#L69"> 69</a></span><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L70"><a class="lnlinks" href="#L70"> 70</a></span><span class="cl">            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L71"><a class="lnlinks" href="#L71"> 71</a></span><span class="cl">                <span class="nx">setUser</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L72"><a class="lnlinks" href="#L72"> 72</a></span><span class="cl">                <span class="nx">setIsAuthorized</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L73"><a class="lnlinks" href="#L73"> 73</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L74"><a class="lnlinks" href="#L74"> 74</a></span><span class="cl">        <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L75"><a class="lnlinks" href="#L75"> 75</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L76"><a class="lnlinks" href="#L76"> 76</a></span><span class="cl">        <span class="c1">// Initial check
+</span></span></span><span class="line"><span class="ln" id="L77"><a class="lnlinks" href="#L77"> 77</a></span><span class="cl"><span class="c1"></span>        <span class="nx">checkAuth</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L78"><a class="lnlinks" href="#L78"> 78</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L79"><a class="lnlinks" href="#L79"> 79</a></span><span class="cl">        <span class="c1">// Fetch contact info once
+</span></span></span><span class="line"><span class="ln" id="L80"><a class="lnlinks" href="#L80"> 80</a></span><span class="cl"><span class="c1"></span>        <span class="nx">fetchContactInfo</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L81"><a class="lnlinks" href="#L81"> 81</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L82"><a class="lnlinks" href="#L82"> 82</a></span><span class="cl">        <span class="c1">// Listen for storage changes (works across tabs)
+</span></span></span><span class="line"><span class="ln" id="L83"><a class="lnlinks" href="#L83"> 83</a></span><span class="cl"><span class="c1"></span>        <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">,</span> <span class="nx">checkAuth</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L84"><a class="lnlinks" href="#L84"> 84</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L85"><a class="lnlinks" href="#L85"> 85</a></span><span class="cl">        <span class="c1">// Poll for changes in same tab (since storage event doesn&#39;t fire in same tab)
+</span></span></span><span class="line"><span class="ln" id="L86"><a class="lnlinks" href="#L86"> 86</a></span><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">interval</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="nx">checkAuth</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L87"><a class="lnlinks" href="#L87"> 87</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L88"><a class="lnlinks" href="#L88"> 88</a></span><span class="cl">        <span class="k">return</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L89"><a class="lnlinks" href="#L89"> 89</a></span><span class="cl">            <span class="nb">window</span><span class="p">.</span><span class="nx">removeEventListener</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">,</span> <span class="nx">checkAuth</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L90"><a class="lnlinks" href="#L90"> 90</a></span><span class="cl">            <span class="nx">clearInterval</span><span class="p">(</span><span class="nx">interval</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L91"><a class="lnlinks" href="#L91"> 91</a></span><span class="cl">        <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L92"><a class="lnlinks" href="#L92"> 92</a></span><span class="cl">    <span class="p">}</span><span class="p">,</span> <span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L93"><a class="lnlinks" href="#L93"> 93</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L94"><a class="lnlinks" href="#L94"> 94</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">fetchContactInfo</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L95"><a class="lnlinks" href="#L95"> 95</a></span><span class="cl">        <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L96"><a class="lnlinks" href="#L96"> 96</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">/api/contact</span><span class="sb">`</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L97"><a class="lnlinks" href="#L97"> 97</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L98"><a class="lnlinks" href="#L98"> 98</a></span><span class="cl">                <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L99"><a class="lnlinks" href="#L99"> 99</a></span><span class="cl">                <span class="nx">setContactInfo</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L100"><a class="lnlinks" href="#L100">100</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L101"><a class="lnlinks" href="#L101">101</a></span><span class="cl">        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L102"><a class="lnlinks" href="#L102">102</a></span><span class="cl">            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to fetch contact info:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L103"><a class="lnlinks" href="#L103">103</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L104"><a class="lnlinks" href="#L104">104</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L105"><a class="lnlinks" href="#L105">105</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L106"><a class="lnlinks" href="#L106">106</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">handleCopy</span> <span class="o">=</span> <span class="p">(</span><span class="nx">e</span>: <span class="kt">React.MouseEvent</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L107"><a class="lnlinks" href="#L107">107</a></span><span class="cl">        <span class="nx">setCursorPos</span><span class="p">(</span><span class="p">{</span> <span class="nx">x</span>: <span class="kt">e.clientX</span><span class="p">,</span> <span class="nx">y</span>: <span class="kt">e.clientY</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L108"><a class="lnlinks" href="#L108">108</a></span><span class="cl">        <span class="nx">navigator</span><span class="p">.</span><span class="nx">clipboard</span><span class="p">.</span><span class="nx">writeText</span><span class="p">(</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Email</span> <span class="o">||</span> <span class="s1">&#39;distilledchild@gmail.com&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L109"><a class="lnlinks" href="#L109">109</a></span><span class="cl">        <span class="nx">setShowCopied</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L110"><a class="lnlinks" href="#L110">110</a></span><span class="cl">        <span class="nx">setTimeout</span><span class="p">(</span><span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">setShowCopied</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L111"><a class="lnlinks" href="#L111">111</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L112"><a class="lnlinks" href="#L112">112</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L113"><a class="lnlinks" href="#L113">113</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">openModal</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L114"><a class="lnlinks" href="#L114">114</a></span><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">contactInfo</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L115"><a class="lnlinks" href="#L115">115</a></span><span class="cl">            <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L116"><a class="lnlinks" href="#L116">116</a></span><span class="cl">                <span class="nx">Email</span>: <span class="kt">contactInfo.Email</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L117"><a class="lnlinks" href="#L117">117</a></span><span class="cl">                <span class="nx">GitHub</span>: <span class="kt">contactInfo.GitHub</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L118"><a class="lnlinks" href="#L118">118</a></span><span class="cl">                <span class="nx">LinkedIn</span>: <span class="kt">contactInfo.LinkedIn</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L119"><a class="lnlinks" href="#L119">119</a></span><span class="cl">                <span class="nx">city</span>: <span class="kt">contactInfo.Location?.city</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L120"><a class="lnlinks" href="#L120">120</a></span><span class="cl">                <span class="nx">state</span>: <span class="kt">contactInfo.Location?.state</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L121"><a class="lnlinks" href="#L121">121</a></span><span class="cl">                <span class="nx">country</span>: <span class="kt">contactInfo.Location?.country</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="ln" id="L122"><a class="lnlinks" href="#L122">122</a></span><span class="cl">            <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L123"><a class="lnlinks" href="#L123">123</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L124"><a class="lnlinks" href="#L124">124</a></span><span class="cl">        <span class="nx">setIsModalOpen</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L125"><a class="lnlinks" href="#L125">125</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L126"><a class="lnlinks" href="#L126">126</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L127"><a class="lnlinks" href="#L127">127</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">closeModal</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L128"><a class="lnlinks" href="#L128">128</a></span><span class="cl">        <span class="nx">setIsModalOpen</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L129"><a class="lnlinks" href="#L129">129</a></span><span class="cl">        <span class="nx">setStateSuggestions</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L130"><a class="lnlinks" href="#L130">130</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L131"><a class="lnlinks" href="#L131">131</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L132"><a class="lnlinks" href="#L132">132</a></span><span class="cl">    <span class="c1">// Lock body scroll when modal is open
+</span></span></span><span class="line"><span class="ln" id="L133"><a class="lnlinks" href="#L133">133</a></span><span class="cl"><span class="c1"></span>    <span class="nx">useLockBodyScroll</span><span class="p">(</span><span class="nx">isModalOpen</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L134"><a class="lnlinks" href="#L134">134</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L135"><a class="lnlinks" href="#L135">135</a></span><span class="cl">    <span class="c1">// Geocode location to get coordinates
+</span></span></span><span class="line"><span class="ln" id="L136"><a class="lnlinks" href="#L136">136</a></span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">geocodeLocation</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">city</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">state</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">country</span>: <span class="kt">string</span><span class="p">)</span><span class="o">:</span> <span class="nx">Promise</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">lat</span>: <span class="kt">number</span><span class="p">;</span> <span class="nx">lon</span>: <span class="kt">number</span> <span class="p">}</span> <span class="o">|</span> <span class="kc">null</span><span class="o">&gt;</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L137"><a class="lnlinks" href="#L137">137</a></span><span class="cl">        <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L138"><a class="lnlinks" href="#L138">138</a></span><span class="cl">            <span class="c1">// Build search query
+</span></span></span><span class="line"><span class="ln" id="L139"><a class="lnlinks" href="#L139">139</a></span><span class="cl"><span class="c1"></span>            <span class="kr">const</span> <span class="nx">parts</span> <span class="o">=</span> <span class="p">[</span><span class="nx">city</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="nx">country</span><span class="p">]</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L140"><a class="lnlinks" href="#L140">140</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L141"><a class="lnlinks" href="#L141">141</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L142"><a class="lnlinks" href="#L142">142</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">searchQuery</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L143"><a class="lnlinks" href="#L143">143</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L144"><a class="lnlinks" href="#L144">144</a></span><span class="cl">            <span class="c1">// Use Nominatim (OpenStreetMap) geocoding API - free, no key required
+</span></span></span><span class="line"><span class="ln" id="L145"><a class="lnlinks" href="#L145">145</a></span><span class="cl"><span class="c1"></span>            <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L146"><a class="lnlinks" href="#L146">146</a></span><span class="cl">                <span class="sb">`</span><span class="sb">https://nominatim.openstreetmap.org/search?format=json&amp;q=</span><span class="si">${</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">)</span><span class="si">}</span><span class="sb">&amp;limit=1</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L147"><a class="lnlinks" href="#L147">147</a></span><span class="cl">                <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L148"><a class="lnlinks" href="#L148">148</a></span><span class="cl">                    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L149"><a class="lnlinks" href="#L149">149</a></span><span class="cl">                        <span class="s1">&#39;User-Agent&#39;</span><span class="o">:</span> <span class="s1">&#39;PersonalWebsite/1.0&#39;</span> <span class="c1">// Required by Nominatim
+</span></span></span><span class="line"><span class="ln" id="L150"><a class="lnlinks" href="#L150">150</a></span><span class="cl"><span class="c1"></span>                    <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L151"><a class="lnlinks" href="#L151">151</a></span><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L152"><a class="lnlinks" href="#L152">152</a></span><span class="cl">            <span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L153"><a class="lnlinks" href="#L153">153</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L154"><a class="lnlinks" href="#L154">154</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L155"><a class="lnlinks" href="#L155">155</a></span><span class="cl">                <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L156"><a class="lnlinks" href="#L156">156</a></span><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L157"><a class="lnlinks" href="#L157">157</a></span><span class="cl">                    <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L158"><a class="lnlinks" href="#L158">158</a></span><span class="cl">                        <span class="nx">lat</span>: <span class="kt">parseFloat</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">.</span><span class="nx">lat</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L159"><a class="lnlinks" href="#L159">159</a></span><span class="cl">                        <span class="nx">lon</span>: <span class="kt">parseFloat</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">.</span><span class="nx">lon</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln" id="L160"><a class="lnlinks" href="#L160">160</a></span><span class="cl">                    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L161"><a class="lnlinks" href="#L161">161</a></span><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L162"><a class="lnlinks" href="#L162">162</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L163"><a class="lnlinks" href="#L163">163</a></span><span class="cl">            <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L164"><a class="lnlinks" href="#L164">164</a></span><span class="cl">        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L165"><a class="lnlinks" href="#L165">165</a></span><span class="cl">            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Geocoding error:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L166"><a class="lnlinks" href="#L166">166</a></span><span class="cl">            <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L167"><a class="lnlinks" href="#L167">167</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L168"><a class="lnlinks" href="#L168">168</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L169"><a class="lnlinks" href="#L169">169</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L170"><a class="lnlinks" href="#L170">170</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">handleSave</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L171"><a class="lnlinks" href="#L171">171</a></span><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span> <span class="o">||</span> <span class="o">!</span><span class="nx">contactInfo</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L172"><a class="lnlinks" href="#L172">172</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L173"><a class="lnlinks" href="#L173">173</a></span><span class="cl">        <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L174"><a class="lnlinks" href="#L174">174</a></span><span class="cl">            <span class="c1">// Always geocode if city/state/country is provided to ensure accurate pin placement
+</span></span></span><span class="line"><span class="ln" id="L175"><a class="lnlinks" href="#L175">175</a></span><span class="cl"><span class="c1"></span>            <span class="kd">let</span> <span class="nx">finalLatitude</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L176"><a class="lnlinks" href="#L176">176</a></span><span class="cl">            <span class="kd">let</span> <span class="nx">finalLongitude</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L177"><a class="lnlinks" href="#L177">177</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L178"><a class="lnlinks" href="#L178">178</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">formData</span><span class="p">.</span><span class="nx">city</span> <span class="o">||</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">state</span> <span class="o">||</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">country</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L179"><a class="lnlinks" href="#L179">179</a></span><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Geocoding location...&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">city</span>: <span class="kt">formData.city</span><span class="p">,</span> <span class="nx">state</span>: <span class="kt">formData.state</span><span class="p">,</span> <span class="nx">country</span>: <span class="kt">formData.country</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L180"><a class="lnlinks" href="#L180">180</a></span><span class="cl">                <span class="kr">const</span> <span class="nx">coords</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">geocodeLocation</span><span class="p">(</span><span class="nx">formData</span><span class="p">.</span><span class="nx">city</span><span class="p">,</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">state</span><span class="p">,</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">country</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L181"><a class="lnlinks" href="#L181">181</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L182"><a class="lnlinks" href="#L182">182</a></span><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="nx">coords</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L183"><a class="lnlinks" href="#L183">183</a></span><span class="cl">                    <span class="nx">finalLatitude</span> <span class="o">=</span> <span class="nx">coords</span><span class="p">.</span><span class="nx">lat</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L184"><a class="lnlinks" href="#L184">184</a></span><span class="cl">                    <span class="nx">finalLongitude</span> <span class="o">=</span> <span class="nx">coords</span><span class="p">.</span><span class="nx">lon</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L185"><a class="lnlinks" href="#L185">185</a></span><span class="cl">                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Geocoded coordinates:&#39;</span><span class="p">,</span> <span class="nx">coords</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L186"><a class="lnlinks" href="#L186">186</a></span><span class="cl">                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L187"><a class="lnlinks" href="#L187">187</a></span><span class="cl">                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Geocoding failed, coordinates will not be saved&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L188"><a class="lnlinks" href="#L188">188</a></span><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L189"><a class="lnlinks" href="#L189">189</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L190"><a class="lnlinks" href="#L190">190</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L191"><a class="lnlinks" href="#L191">191</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">/api/contact/</span><span class="si">${</span><span class="nx">contactInfo</span><span class="p">.</span><span class="nx">_id</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L192"><a class="lnlinks" href="#L192">192</a></span><span class="cl">                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L193"><a class="lnlinks" href="#L193">193</a></span><span class="cl">                <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span> <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L194"><a class="lnlinks" href="#L194">194</a></span><span class="cl">                <span class="nx">body</span>: <span class="kt">JSON.stringify</span><span class="p">(</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L195"><a class="lnlinks" href="#L195">195</a></span><span class="cl">                    <span class="nx">Email</span>: <span class="kt">formData.Email</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L196"><a class="lnlinks" href="#L196">196</a></span><span class="cl">                    <span class="nx">GitHub</span>: <span class="kt">formData.GitHub</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L197"><a class="lnlinks" href="#L197">197</a></span><span class="cl">                    <span class="nx">LinkedIn</span>: <span class="kt">formData.LinkedIn</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L198"><a class="lnlinks" href="#L198">198</a></span><span class="cl">                    <span class="nx">Location</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L199"><a class="lnlinks" href="#L199">199</a></span><span class="cl">                        <span class="nx">city</span>: <span class="kt">formData.city</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L200"><a class="lnlinks" href="#L200">200</a></span><span class="cl">                        <span class="nx">state</span>: <span class="kt">formData.state</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L201"><a class="lnlinks" href="#L201">201</a></span><span class="cl">                        <span class="nx">country</span>: <span class="kt">formData.country</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L202"><a class="lnlinks" href="#L202">202</a></span><span class="cl">                        <span class="nx">latitude</span>: <span class="kt">finalLatitude</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L203"><a class="lnlinks" href="#L203">203</a></span><span class="cl">                        <span class="nx">longitude</span>: <span class="kt">finalLongitude</span>
+</span></span><span class="line"><span class="ln" id="L204"><a class="lnlinks" href="#L204">204</a></span><span class="cl">                    <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L205"><a class="lnlinks" href="#L205">205</a></span><span class="cl">                    <span class="nx">userEmail</span>: <span class="kt">user.email</span>
+</span></span><span class="line"><span class="ln" id="L206"><a class="lnlinks" href="#L206">206</a></span><span class="cl">                <span class="p">}</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln" id="L207"><a class="lnlinks" href="#L207">207</a></span><span class="cl">            <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L208"><a class="lnlinks" href="#L208">208</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L209"><a class="lnlinks" href="#L209">209</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L210"><a class="lnlinks" href="#L210">210</a></span><span class="cl">                <span class="nx">fetchContactInfo</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L211"><a class="lnlinks" href="#L211">211</a></span><span class="cl">                <span class="nx">closeModal</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L212"><a class="lnlinks" href="#L212">212</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L213"><a class="lnlinks" href="#L213">213</a></span><span class="cl">        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L214"><a class="lnlinks" href="#L214">214</a></span><span class="cl">            <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to update contact:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L215"><a class="lnlinks" href="#L215">215</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L216"><a class="lnlinks" href="#L216">216</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L217"><a class="lnlinks" href="#L217">217</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L218"><a class="lnlinks" href="#L218">218</a></span><span class="cl">    <span class="c1">// US States list for autocomplete
+</span></span></span><span class="line"><span class="ln" id="L219"><a class="lnlinks" href="#L219">219</a></span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">US_STATES</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="ln" id="L220"><a class="lnlinks" href="#L220">220</a></span><span class="cl">        <span class="s1">&#39;Alabama&#39;</span><span class="p">,</span> <span class="s1">&#39;Alaska&#39;</span><span class="p">,</span> <span class="s1">&#39;Arizona&#39;</span><span class="p">,</span> <span class="s1">&#39;Arkansas&#39;</span><span class="p">,</span> <span class="s1">&#39;California&#39;</span><span class="p">,</span> <span class="s1">&#39;Colorado&#39;</span><span class="p">,</span> <span class="s1">&#39;Connecticut&#39;</span><span class="p">,</span> <span class="s1">&#39;Delaware&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L221"><a class="lnlinks" href="#L221">221</a></span><span class="cl">        <span class="s1">&#39;Florida&#39;</span><span class="p">,</span> <span class="s1">&#39;Georgia&#39;</span><span class="p">,</span> <span class="s1">&#39;Hawaii&#39;</span><span class="p">,</span> <span class="s1">&#39;Idaho&#39;</span><span class="p">,</span> <span class="s1">&#39;Illinois&#39;</span><span class="p">,</span> <span class="s1">&#39;Indiana&#39;</span><span class="p">,</span> <span class="s1">&#39;Iowa&#39;</span><span class="p">,</span> <span class="s1">&#39;Kansas&#39;</span><span class="p">,</span> <span class="s1">&#39;Kentucky&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L222"><a class="lnlinks" href="#L222">222</a></span><span class="cl">        <span class="s1">&#39;Louisiana&#39;</span><span class="p">,</span> <span class="s1">&#39;Maine&#39;</span><span class="p">,</span> <span class="s1">&#39;Maryland&#39;</span><span class="p">,</span> <span class="s1">&#39;Massachusetts&#39;</span><span class="p">,</span> <span class="s1">&#39;Michigan&#39;</span><span class="p">,</span> <span class="s1">&#39;Minnesota&#39;</span><span class="p">,</span> <span class="s1">&#39;Mississippi&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L223"><a class="lnlinks" href="#L223">223</a></span><span class="cl">        <span class="s1">&#39;Missouri&#39;</span><span class="p">,</span> <span class="s1">&#39;Montana&#39;</span><span class="p">,</span> <span class="s1">&#39;Nebraska&#39;</span><span class="p">,</span> <span class="s1">&#39;Nevada&#39;</span><span class="p">,</span> <span class="s1">&#39;New Hampshire&#39;</span><span class="p">,</span> <span class="s1">&#39;New Jersey&#39;</span><span class="p">,</span> <span class="s1">&#39;New Mexico&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L224"><a class="lnlinks" href="#L224">224</a></span><span class="cl">        <span class="s1">&#39;New York&#39;</span><span class="p">,</span> <span class="s1">&#39;North Carolina&#39;</span><span class="p">,</span> <span class="s1">&#39;North Dakota&#39;</span><span class="p">,</span> <span class="s1">&#39;Ohio&#39;</span><span class="p">,</span> <span class="s1">&#39;Oklahoma&#39;</span><span class="p">,</span> <span class="s1">&#39;Oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;Pennsylvania&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L225"><a class="lnlinks" href="#L225">225</a></span><span class="cl">        <span class="s1">&#39;Rhode Island&#39;</span><span class="p">,</span> <span class="s1">&#39;South Carolina&#39;</span><span class="p">,</span> <span class="s1">&#39;South Dakota&#39;</span><span class="p">,</span> <span class="s1">&#39;Tennessee&#39;</span><span class="p">,</span> <span class="s1">&#39;Texas&#39;</span><span class="p">,</span> <span class="s1">&#39;Utah&#39;</span><span class="p">,</span> <span class="s1">&#39;Vermont&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L226"><a class="lnlinks" href="#L226">226</a></span><span class="cl">        <span class="s1">&#39;Virginia&#39;</span><span class="p">,</span> <span class="s1">&#39;Washington&#39;</span><span class="p">,</span> <span class="s1">&#39;West Virginia&#39;</span><span class="p">,</span> <span class="s1">&#39;Wisconsin&#39;</span><span class="p">,</span> <span class="s1">&#39;Wyoming&#39;</span>
+</span></span><span class="line"><span class="ln" id="L227"><a class="lnlinks" href="#L227">227</a></span><span class="cl">    <span class="p">]</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L228"><a class="lnlinks" href="#L228">228</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L229"><a class="lnlinks" href="#L229">229</a></span><span class="cl">    <span class="c1">// Filter state suggestions
+</span></span></span><span class="line"><span class="ln" id="L230"><a class="lnlinks" href="#L230">230</a></span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">handleStateInput</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L231"><a class="lnlinks" href="#L231">231</a></span><span class="cl">        <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">state</span>: <span class="kt">value</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L232"><a class="lnlinks" href="#L232">232</a></span><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L233"><a class="lnlinks" href="#L233">233</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">filtered</span> <span class="o">=</span> <span class="nx">US_STATES</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">state</span> <span class="o">=</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L234"><a class="lnlinks" href="#L234">234</a></span><span class="cl">                <span class="nx">state</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(</span><span class="p">)</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="ln" id="L235"><a class="lnlinks" href="#L235">235</a></span><span class="cl">            <span class="p">)</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L236"><a class="lnlinks" href="#L236">236</a></span><span class="cl">            <span class="nx">setStateSuggestions</span><span class="p">(</span><span class="nx">filtered</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L237"><a class="lnlinks" href="#L237">237</a></span><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L238"><a class="lnlinks" href="#L238">238</a></span><span class="cl">            <span class="nx">setStateSuggestions</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L239"><a class="lnlinks" href="#L239">239</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L240"><a class="lnlinks" href="#L240">240</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L241"><a class="lnlinks" href="#L241">241</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L242"><a class="lnlinks" href="#L242">242</a></span><span class="cl">    <span class="c1">// Get Google Maps embed URL with red marker
+</span></span></span><span class="line"><span class="ln" id="L243"><a class="lnlinks" href="#L243">243</a></span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">getMapUrl</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L244"><a class="lnlinks" href="#L244">244</a></span><span class="cl">        <span class="kr">const</span> <span class="nx">hasContactLocation</span> <span class="o">=</span> <span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Location</span><span class="o">?</span><span class="p">.</span><span class="nx">city</span> <span class="o">||</span> <span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Location</span><span class="o">?</span><span class="p">.</span><span class="nx">state</span> <span class="o">||</span> <span class="p">(</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Location</span><span class="o">?</span><span class="p">.</span><span class="nx">latitude</span> <span class="o">&amp;&amp;</span> <span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Location</span><span class="o">?</span><span class="p">.</span><span class="nx">longitude</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L245"><a class="lnlinks" href="#L245">245</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L246"><a class="lnlinks" href="#L246">246</a></span><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">hasContactLocation</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L247"><a class="lnlinks" href="#L247">247</a></span><span class="cl">            <span class="kr">const</span> <span class="p">{</span> <span class="nx">city</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="nx">country</span><span class="p">,</span> <span class="nx">latitude</span><span class="p">,</span> <span class="nx">longitude</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">contactInfo</span><span class="p">.</span><span class="nx">Location</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L248"><a class="lnlinks" href="#L248">248</a></span><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">latitude</span> <span class="o">&amp;&amp;</span> <span class="nx">longitude</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L249"><a class="lnlinks" href="#L249">249</a></span><span class="cl">                <span class="k">return</span> <span class="sb">`</span><span class="sb">https://maps.google.com/maps?q=</span><span class="si">${</span><span class="nx">latitude</span><span class="si">}</span><span class="sb">,</span><span class="si">${</span><span class="nx">longitude</span><span class="si">}</span><span class="sb">&amp;z=12&amp;output=embed</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L250"><a class="lnlinks" href="#L250">250</a></span><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L251"><a class="lnlinks" href="#L251">251</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">location</span> <span class="o">=</span> <span class="sb">`</span><span class="si">${</span><span class="nx">city</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">state</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">country</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="si">}</span><span class="sb">`</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^,\s*|\s*,$/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L252"><a class="lnlinks" href="#L252">252</a></span><span class="cl">            <span class="k">return</span> <span class="sb">`</span><span class="sb">https://maps.google.com/maps?q=</span><span class="si">${</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">location</span><span class="p">)</span><span class="si">}</span><span class="sb">&amp;z=12&amp;output=embed</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L253"><a class="lnlinks" href="#L253">253</a></span><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userLocation</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L254"><a class="lnlinks" href="#L254">254</a></span><span class="cl">            <span class="c1">// Fallback to user&#39;s IP-based location with coordinates to show exact pin
+</span></span></span><span class="line"><span class="ln" id="L255"><a class="lnlinks" href="#L255">255</a></span><span class="cl"><span class="c1"></span>            <span class="k">return</span> <span class="sb">`</span><span class="sb">https://maps.google.com/maps?q=</span><span class="si">${</span><span class="nx">userLocation</span><span class="p">.</span><span class="nx">lat</span><span class="si">}</span><span class="sb">,</span><span class="si">${</span><span class="nx">userLocation</span><span class="p">.</span><span class="nx">lon</span><span class="si">}</span><span class="sb">&amp;z=12&amp;output=embed</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L256"><a class="lnlinks" href="#L256">256</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L257"><a class="lnlinks" href="#L257">257</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L258"><a class="lnlinks" href="#L258">258</a></span><span class="cl">        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L259"><a class="lnlinks" href="#L259">259</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L260"><a class="lnlinks" href="#L260">260</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L261"><a class="lnlinks" href="#L261">261</a></span><span class="cl">    <span class="c1">// Get display location text
+</span></span></span><span class="line"><span class="ln" id="L262"><a class="lnlinks" href="#L262">262</a></span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">getLocationText</span> <span class="o">=</span> <span class="p">(</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L263"><a class="lnlinks" href="#L263">263</a></span><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Location</span><span class="o">?</span><span class="p">.</span><span class="nx">city</span> <span class="o">||</span> <span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Location</span><span class="o">?</span><span class="p">.</span><span class="nx">state</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L264"><a class="lnlinks" href="#L264">264</a></span><span class="cl">            <span class="kr">const</span> <span class="p">{</span> <span class="nx">city</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="nx">country</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">contactInfo</span><span class="p">.</span><span class="nx">Location</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L265"><a class="lnlinks" href="#L265">265</a></span><span class="cl">            <span class="kr">const</span> <span class="nx">parts</span> <span class="o">=</span> <span class="p">[</span><span class="nx">city</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="nx">country</span><span class="p">]</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L266"><a class="lnlinks" href="#L266">266</a></span><span class="cl">            <span class="k">return</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L267"><a class="lnlinks" href="#L267">267</a></span><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userLocation</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L268"><a class="lnlinks" href="#L268">268</a></span><span class="cl">            <span class="k">return</span> <span class="sb">`</span><span class="si">${</span><span class="nx">userLocation</span><span class="p">.</span><span class="nx">city</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">userLocation</span><span class="p">.</span><span class="nx">state</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">userLocation</span><span class="p">.</span><span class="nx">country</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L269"><a class="lnlinks" href="#L269">269</a></span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L270"><a class="lnlinks" href="#L270">270</a></span><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Loading...&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L271"><a class="lnlinks" href="#L271">271</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L272"><a class="lnlinks" href="#L272">272</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L273"><a class="lnlinks" href="#L273">273</a></span><span class="cl">    <span class="kr">const</span> <span class="nx">handleSubmit</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">e</span>: <span class="kt">React.FormEvent</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L274"><a class="lnlinks" href="#L274">274</a></span><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L275"><a class="lnlinks" href="#L275">275</a></span><span class="cl">        <span class="k">await</span> <span class="nx">handleSave</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L276"><a class="lnlinks" href="#L276">276</a></span><span class="cl">    <span class="p">}</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L277"><a class="lnlinks" href="#L277">277</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L278"><a class="lnlinks" href="#L278">278</a></span><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L279"><a class="lnlinks" href="#L279">279</a></span><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden relative&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L280"><a class="lnlinks" href="#L280">280</a></span><span class="cl">            <span class="p">{</span><span class="cm">/* Notification Toast */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L281"><a class="lnlinks" href="#L281">281</a></span><span class="cl">            <span class="p">{</span><span class="nx">showCopied</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L282"><a class="lnlinks" href="#L282">282</a></span><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span>
+</span></span><span class="line"><span class="ln" id="L283"><a class="lnlinks" href="#L283">283</a></span><span class="cl">                    <span class="na">className</span><span class="o">=</span><span class="s">&#34;fixed z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg animate-fadeIn flex items-center gap-2 pointer-events-none&#34;</span>
+</span></span><span class="line"><span class="ln" id="L284"><a class="lnlinks" href="#L284">284</a></span><span class="cl">                    <span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L285"><a class="lnlinks" href="#L285">285</a></span><span class="cl">                        <span class="nx">left</span>: <span class="kt">cursorPos.x</span> <span class="o">+</span> <span class="mi">16</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln" id="L286"><a class="lnlinks" href="#L286">286</a></span><span class="cl">                        <span class="nx">top</span>: <span class="kt">cursorPos.y</span> <span class="o">-</span> <span class="mi">16</span>
+</span></span><span class="line"><span class="ln" id="L287"><a class="lnlinks" href="#L287">287</a></span><span class="cl">                    <span class="p">}</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L288"><a class="lnlinks" href="#L288">288</a></span><span class="cl">                <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L289"><a class="lnlinks" href="#L289">289</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">span</span><span class="p"></span><span class="p">&gt;</span><span class="err">✨</span> <span class="nx">Email</span> <span class="nx">copied</span> <span class="nx">to</span> <span class="nx">clipboard</span><span class="o">!</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L290"><a class="lnlinks" href="#L290">290</a></span><span class="cl">                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L291"><a class="lnlinks" href="#L291">291</a></span><span class="cl">            <span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L292"><a class="lnlinks" href="#L292">292</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L293"><a class="lnlinks" href="#L293">293</a></span><span class="cl">            <span class="p">{</span><span class="cm">/* Edit Button - Only for authorized users */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L294"><a class="lnlinks" href="#L294">294</a></span><span class="cl">            <span class="p">{</span><span class="nx">isAuthorized</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L295"><a class="lnlinks" href="#L295">295</a></span><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;fixed bottom-24 left-6 z-50&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L296"><a class="lnlinks" href="#L296">296</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="ln" id="L297"><a class="lnlinks" href="#L297">297</a></span><span class="cl">                        <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">openModal</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L298"><a class="lnlinks" href="#L298">298</a></span><span class="cl">                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-14 h-14 bg-purple-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-purple-600 transition-all hover:scale-110&#34;</span>
+</span></span><span class="line"><span class="ln" id="L299"><a class="lnlinks" href="#L299">299</a></span><span class="cl">                        <span class="na">title</span><span class="o">=</span><span class="s">&#34;Edit Contact Info&#34;</span>
+</span></span><span class="line"><span class="ln" id="L300"><a class="lnlinks" href="#L300">300</a></span><span class="cl">                    <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L301"><a class="lnlinks" href="#L301">301</a></span><span class="cl">                        <span class="p">&lt;</span><span class="nt">Plus</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">28</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L302"><a class="lnlinks" href="#L302">302</a></span><span class="cl">                    <span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L303"><a class="lnlinks" href="#L303">303</a></span><span class="cl">                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L304"><a class="lnlinks" href="#L304">304</a></span><span class="cl">            <span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L305"><a class="lnlinks" href="#L305">305</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L306"><a class="lnlinks" href="#L306">306</a></span><span class="cl">            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0 animate-fadeIn&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L307"><a class="lnlinks" href="#L307">307</a></span><span class="cl">                <span class="p">{</span><span class="cm">/* Fixed Header */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L308"><a class="lnlinks" href="#L308">308</a></span><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-shrink-0&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L309"><a class="lnlinks" href="#L309">309</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">h2</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-4xl font-bold text-slate-900 mb-6 text-center&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Get</span> <span class="k">in</span> <span class="nx">Touch</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L310"><a class="lnlinks" href="#L310">310</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">hr</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border-slate-100&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L311"><a class="lnlinks" href="#L311">311</a></span><span class="cl">                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L312"><a class="lnlinks" href="#L312">312</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L313"><a class="lnlinks" href="#L313">313</a></span><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-1 overflow-y-auto scrollbar-hide min-h-0 pb-16 pt-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L314"><a class="lnlinks" href="#L314">314</a></span><span class="cl">                    <span class="p">{</span><span class="cm">/* 2 Column Layout: 50% Contact Cards, 50% Google Map */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L315"><a class="lnlinks" href="#L315">315</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;grid grid-cols-1 lg:grid-cols-2 gap-8&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L316"><a class="lnlinks" href="#L316">316</a></span><span class="cl">                        <span class="p">{</span><span class="cm">/* Left Column - Contact Cards */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L317"><a class="lnlinks" href="#L317">317</a></span><span class="cl">                        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L318"><a class="lnlinks" href="#L318">318</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="ln" id="L319"><a class="lnlinks" href="#L319">319</a></span><span class="cl">                                <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleCopy</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L320"><a class="lnlinks" href="#L320">320</a></span><span class="cl">                                <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100 cursor-pointer text-left&#34;</span>
+</span></span><span class="line"><span class="ln" id="L321"><a class="lnlinks" href="#L321">321</a></span><span class="cl">                            <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L322"><a class="lnlinks" href="#L322">322</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-full shadow-sm text-black group-hover:text-[#9332EA] transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L323"><a class="lnlinks" href="#L323">323</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">Mail</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">32</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L324"><a class="lnlinks" href="#L324">324</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L325"><a class="lnlinks" href="#L325">325</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;ml-6 text-left&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L326"><a class="lnlinks" href="#L326">326</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm text-slate-500 group-hover:text-purple-600 uppercase font-bold tracking-wider mb-1 transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Email</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L327"><a class="lnlinks" href="#L327">327</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-xl text-slate-900 font-medium break-all&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">{</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">Email</span> <span class="o">||</span> <span class="s1">&#39;Loading...&#39;</span><span class="p">}</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L328"><a class="lnlinks" href="#L328">328</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L329"><a class="lnlinks" href="#L329">329</a></span><span class="cl">                            <span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L330"><a class="lnlinks" href="#L330">330</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L331"><a class="lnlinks" href="#L331">331</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">a</span>
+</span></span><span class="line"><span class="ln" id="L332"><a class="lnlinks" href="#L332">332</a></span><span class="cl">                                <span class="na">href</span><span class="o">=</span><span class="p">{</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">GitHub</span> <span class="o">?</span> <span class="sb">`</span><span class="sb">https://</span><span class="si">${</span><span class="nx">contactInfo</span><span class="p">.</span><span class="nx">GitHub</span><span class="si">}</span><span class="sb">`</span> <span class="o">:</span> <span class="s1">&#39;#&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L333"><a class="lnlinks" href="#L333">333</a></span><span class="cl">                                <span class="na">target</span><span class="o">=</span><span class="s">&#34;_blank&#34;</span>
+</span></span><span class="line"><span class="ln" id="L334"><a class="lnlinks" href="#L334">334</a></span><span class="cl">                                <span class="na">rel</span><span class="o">=</span><span class="s">&#34;noopener noreferrer&#34;</span>
+</span></span><span class="line"><span class="ln" id="L335"><a class="lnlinks" href="#L335">335</a></span><span class="cl">                                <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100 cursor-pointer text-left&#34;</span>
+</span></span><span class="line"><span class="ln" id="L336"><a class="lnlinks" href="#L336">336</a></span><span class="cl">                            <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L337"><a class="lnlinks" href="#L337">337</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-full shadow-sm text-black group-hover:text-black transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L338"><a class="lnlinks" href="#L338">338</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">Github</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">32</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L339"><a class="lnlinks" href="#L339">339</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L340"><a class="lnlinks" href="#L340">340</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;ml-6 text-left&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L341"><a class="lnlinks" href="#L341">341</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm text-slate-500 group-hover:text-purple-600 uppercase font-bold tracking-wider mb-1 transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">GitHub</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L342"><a class="lnlinks" href="#L342">342</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-xl text-slate-900 font-medium break-all&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">{</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">GitHub</span><span class="o">?</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;https://github.com/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="s1">&#39;Loading...&#39;</span><span class="p">}</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L343"><a class="lnlinks" href="#L343">343</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L344"><a class="lnlinks" href="#L344">344</a></span><span class="cl">                            <span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L345"><a class="lnlinks" href="#L345">345</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L346"><a class="lnlinks" href="#L346">346</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">a</span>
+</span></span><span class="line"><span class="ln" id="L347"><a class="lnlinks" href="#L347">347</a></span><span class="cl">                                <span class="na">href</span><span class="o">=</span><span class="p">{</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">LinkedIn</span> <span class="o">?</span> <span class="sb">`</span><span class="sb">https://</span><span class="si">${</span><span class="nx">contactInfo</span><span class="p">.</span><span class="nx">LinkedIn</span><span class="si">}</span><span class="sb">`</span> <span class="o">:</span> <span class="s1">&#39;#&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L348"><a class="lnlinks" href="#L348">348</a></span><span class="cl">                                <span class="na">target</span><span class="o">=</span><span class="s">&#34;_blank&#34;</span>
+</span></span><span class="line"><span class="ln" id="L349"><a class="lnlinks" href="#L349">349</a></span><span class="cl">                                <span class="na">rel</span><span class="o">=</span><span class="s">&#34;noopener noreferrer&#34;</span>
+</span></span><span class="line"><span class="ln" id="L350"><a class="lnlinks" href="#L350">350</a></span><span class="cl">                                <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full flex items-center p-6 bg-slate-50 rounded-2xl hover:bg-purple-50 transition-colors group border border-slate-100 hover:border-purple-100 cursor-pointer text-left&#34;</span>
+</span></span><span class="line"><span class="ln" id="L351"><a class="lnlinks" href="#L351">351</a></span><span class="cl">                            <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L352"><a class="lnlinks" href="#L352">352</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-full shadow-sm text-black group-hover:text-[#2362BC] transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L353"><a class="lnlinks" href="#L353">353</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">svg</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-8 h-8&#34;</span> <span class="na">fill</span><span class="o">=</span><span class="s">&#34;currentColor&#34;</span> <span class="na">viewBox</span><span class="o">=</span><span class="s">&#34;0 0 24 24&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L354"><a class="lnlinks" href="#L354">354</a></span><span class="cl">                                        <span class="p">&lt;</span><span class="nt">path</span> <span class="na">d</span><span class="o">=</span><span class="s">&#34;M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L355"><a class="lnlinks" href="#L355">355</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="p">/</span><span class="nt">svg</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L356"><a class="lnlinks" href="#L356">356</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L357"><a class="lnlinks" href="#L357">357</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;ml-6 text-left&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L358"><a class="lnlinks" href="#L358">358</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm text-slate-500 group-hover:text-purple-600 uppercase font-bold tracking-wider mb-1 transition-colors&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">LinkedIn</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L359"><a class="lnlinks" href="#L359">359</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-xl text-slate-900 font-medium break-all&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">{</span><span class="nx">contactInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">LinkedIn</span><span class="o">?</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;https://linkedin.com/in/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="s1">&#39;Loading...&#39;</span><span class="p">}</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L360"><a class="lnlinks" href="#L360">360</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L361"><a class="lnlinks" href="#L361">361</a></span><span class="cl">                            <span class="p">&lt;</span><span class="p">/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L362"><a class="lnlinks" href="#L362">362</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L363"><a class="lnlinks" href="#L363">363</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full flex items-center p-6 bg-slate-50 rounded-2xl border border-slate-100&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L364"><a class="lnlinks" href="#L364">364</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-white p-4 rounded-full shadow-sm text-black&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L365"><a class="lnlinks" href="#L365">365</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">MapPin</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">32</span><span class="p">}</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L366"><a class="lnlinks" href="#L366">366</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L367"><a class="lnlinks" href="#L367">367</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;ml-6 flex-1&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L368"><a class="lnlinks" href="#L368">368</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm text-slate-500 uppercase font-bold tracking-wider mb-1&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Located</span> <span class="nx">In</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L369"><a class="lnlinks" href="#L369">369</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-xl text-slate-900 font-medium&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="p">{</span><span class="nx">getLocationText</span><span class="p">(</span><span class="p">)</span><span class="p">}</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L370"><a class="lnlinks" href="#L370">370</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L371"><a class="lnlinks" href="#L371">371</a></span><span class="cl">                            <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L372"><a class="lnlinks" href="#L372">372</a></span><span class="cl">                        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L373"><a class="lnlinks" href="#L373">373</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L374"><a class="lnlinks" href="#L374">374</a></span><span class="cl">                        <span class="p">{</span><span class="cm">/* Right Column - Google Maps Embed */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L375"><a class="lnlinks" href="#L375">375</a></span><span class="cl">                        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 h-[400px] lg:h-auto min-h-[400px]&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L376"><a class="lnlinks" href="#L376">376</a></span><span class="cl">                            <span class="p">{</span><span class="nx">getMapUrl</span><span class="p">(</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L377"><a class="lnlinks" href="#L377">377</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">iframe</span>
+</span></span><span class="line"><span class="ln" id="L378"><a class="lnlinks" href="#L378">378</a></span><span class="cl">                                    <span class="na">width</span><span class="o">=</span><span class="s">&#34;100%&#34;</span>
+</span></span><span class="line"><span class="ln" id="L379"><a class="lnlinks" href="#L379">379</a></span><span class="cl">                                    <span class="na">height</span><span class="o">=</span><span class="s">&#34;100%&#34;</span>
+</span></span><span class="line"><span class="ln" id="L380"><a class="lnlinks" href="#L380">380</a></span><span class="cl">                                    <span class="na">frameBorder</span><span class="o">=</span><span class="s">&#34;0&#34;</span>
+</span></span><span class="line"><span class="ln" id="L381"><a class="lnlinks" href="#L381">381</a></span><span class="cl">                                    <span class="na">scrolling</span><span class="o">=</span><span class="s">&#34;no&#34;</span>
+</span></span><span class="line"><span class="ln" id="L382"><a class="lnlinks" href="#L382">382</a></span><span class="cl">                                    <span class="na">marginHeight</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L383"><a class="lnlinks" href="#L383">383</a></span><span class="cl">                                    <span class="na">marginWidth</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L384"><a class="lnlinks" href="#L384">384</a></span><span class="cl">                                    <span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">getMapUrl</span><span class="p">(</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L385"><a class="lnlinks" href="#L385">385</a></span><span class="cl">                                    <span class="na">title</span><span class="o">=</span><span class="s">&#34;Location Map&#34;</span>
+</span></span><span class="line"><span class="ln" id="L386"><a class="lnlinks" href="#L386">386</a></span><span class="cl">                                <span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">iframe</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L387"><a class="lnlinks" href="#L387">387</a></span><span class="cl">                            <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L388"><a class="lnlinks" href="#L388">388</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full h-full flex items-center justify-center text-slate-400&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L389"><a class="lnlinks" href="#L389">389</a></span><span class="cl">                                    <span class="nx">Loading</span> <span class="nx">map</span><span class="p">.</span><span class="p">.</span><span class="p">.</span>
+</span></span><span class="line"><span class="ln" id="L390"><a class="lnlinks" href="#L390">390</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L391"><a class="lnlinks" href="#L391">391</a></span><span class="cl">                            <span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L392"><a class="lnlinks" href="#L392">392</a></span><span class="cl">                        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L393"><a class="lnlinks" href="#L393">393</a></span><span class="cl">                    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L394"><a class="lnlinks" href="#L394">394</a></span><span class="cl">                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L395"><a class="lnlinks" href="#L395">395</a></span><span class="cl">            <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L396"><a class="lnlinks" href="#L396">396</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L397"><a class="lnlinks" href="#L397">397</a></span><span class="cl">            <span class="p">{</span><span class="cm">/* Edit Modal */</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L398"><a class="lnlinks" href="#L398">398</a></span><span class="cl">            <span class="p">{</span><span class="nx">isModalOpen</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="ln" id="L399"><a class="lnlinks" href="#L399">399</a></span><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fadeIn&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L400"><a class="lnlinks" href="#L400">400</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;absolute inset-0 bg-black/50 backdrop-blur-sm&#34;</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">closeModal</span><span class="p">}</span><span class="p"></span><span class="p">&gt;</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L401"><a class="lnlinks" href="#L401">401</a></span><span class="cl">                    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;relative bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl animate-scaleIn overflow-y-auto max-h-[90vh]&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L402"><a class="lnlinks" href="#L402">402</a></span><span class="cl">                        <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="ln" id="L403"><a class="lnlinks" href="#L403">403</a></span><span class="cl">                            <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">closeModal</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L404"><a class="lnlinks" href="#L404">404</a></span><span class="cl">                            <span class="na">className</span><span class="o">=</span><span class="s">&#34;absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors&#34;</span>
+</span></span><span class="line"><span class="ln" id="L405"><a class="lnlinks" href="#L405">405</a></span><span class="cl">                            <span class="na">aria-label</span><span class="o">=</span><span class="s">&#34;Close modal&#34;</span>
+</span></span><span class="line"><span class="ln" id="L406"><a class="lnlinks" href="#L406">406</a></span><span class="cl">                        <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L407"><a class="lnlinks" href="#L407">407</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">X</span> <span class="na">size</span><span class="o">=</span><span class="p">{</span><span class="mi">24</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-slate-500&#34;</span> <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L408"><a class="lnlinks" href="#L408">408</a></span><span class="cl">                        <span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L409"><a class="lnlinks" href="#L409">409</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L410"><a class="lnlinks" href="#L410">410</a></span><span class="cl">                        <span class="p">&lt;</span><span class="nt">h3</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl font-bold text-slate-900 mb-6&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Update</span> <span class="nx">Contact</span> <span class="nx">Info</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L411"><a class="lnlinks" href="#L411">411</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L412"><a class="lnlinks" href="#L412">412</a></span><span class="cl">                        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSubmit</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L413"><a class="lnlinks" href="#L413">413</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;grid grid-cols-1 md:grid-cols-2 gap-6&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L414"><a class="lnlinks" href="#L414">414</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L415"><a class="lnlinks" href="#L415">415</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-bold text-slate-700&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Email</span> <span class="nx">Address</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L416"><a class="lnlinks" href="#L416">416</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="ln" id="L417"><a class="lnlinks" href="#L417">417</a></span><span class="cl">                                        <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="ln" id="L418"><a class="lnlinks" href="#L418">418</a></span><span class="cl">                                        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">Email</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L419"><a class="lnlinks" href="#L419">419</a></span><span class="cl">                                        <span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">Email</span>: <span class="kt">e.target.value</span> <span class="p">}</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L420"><a class="lnlinks" href="#L420">420</a></span><span class="cl">                                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all&#34;</span>
+</span></span><span class="line"><span class="ln" id="L421"><a class="lnlinks" href="#L421">421</a></span><span class="cl">                                        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;your@email.com&#34;</span>
+</span></span><span class="line"><span class="ln" id="L422"><a class="lnlinks" href="#L422">422</a></span><span class="cl">                                    <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L423"><a class="lnlinks" href="#L423">423</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L424"><a class="lnlinks" href="#L424">424</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L425"><a class="lnlinks" href="#L425">425</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L426"><a class="lnlinks" href="#L426">426</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-bold text-slate-700&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">GitHub</span> <span class="nx">URL</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L427"><a class="lnlinks" href="#L427">427</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="ln" id="L428"><a class="lnlinks" href="#L428">428</a></span><span class="cl">                                        <span class="na">type</span><span class="o">=</span><span class="s">&#34;url&#34;</span>
+</span></span><span class="line"><span class="ln" id="L429"><a class="lnlinks" href="#L429">429</a></span><span class="cl">                                        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">GitHub</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L430"><a class="lnlinks" href="#L430">430</a></span><span class="cl">                                        <span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">GitHub</span>: <span class="kt">e.target.value</span> <span class="p">}</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L431"><a class="lnlinks" href="#L431">431</a></span><span class="cl">                                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all&#34;</span>
+</span></span><span class="line"><span class="ln" id="L432"><a class="lnlinks" href="#L432">432</a></span><span class="cl">                                        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;https://github.com/username&#34;</span>
+</span></span><span class="line"><span class="ln" id="L433"><a class="lnlinks" href="#L433">433</a></span><span class="cl">                                    <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L434"><a class="lnlinks" href="#L434">434</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L435"><a class="lnlinks" href="#L435">435</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L436"><a class="lnlinks" href="#L436">436</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L437"><a class="lnlinks" href="#L437">437</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-bold text-slate-700&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">LinkedIn</span> <span class="nx">URL</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L438"><a class="lnlinks" href="#L438">438</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="ln" id="L439"><a class="lnlinks" href="#L439">439</a></span><span class="cl">                                        <span class="na">type</span><span class="o">=</span><span class="s">&#34;url&#34;</span>
+</span></span><span class="line"><span class="ln" id="L440"><a class="lnlinks" href="#L440">440</a></span><span class="cl">                                        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">LinkedIn</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L441"><a class="lnlinks" href="#L441">441</a></span><span class="cl">                                        <span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">LinkedIn</span>: <span class="kt">e.target.value</span> <span class="p">}</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L442"><a class="lnlinks" href="#L442">442</a></span><span class="cl">                                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all&#34;</span>
+</span></span><span class="line"><span class="ln" id="L443"><a class="lnlinks" href="#L443">443</a></span><span class="cl">                                        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;https://linkedin.com/in/username&#34;</span>
+</span></span><span class="line"><span class="ln" id="L444"><a class="lnlinks" href="#L444">444</a></span><span class="cl">                                    <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L445"><a class="lnlinks" href="#L445">445</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L446"><a class="lnlinks" href="#L446">446</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L447"><a class="lnlinks" href="#L447">447</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-2 relative&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L448"><a class="lnlinks" href="#L448">448</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-bold text-slate-700&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">State</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L449"><a class="lnlinks" href="#L449">449</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="ln" id="L450"><a class="lnlinks" href="#L450">450</a></span><span class="cl">                                        <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span>
+</span></span><span class="line"><span class="ln" id="L451"><a class="lnlinks" href="#L451">451</a></span><span class="cl">                                        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">state</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L452"><a class="lnlinks" href="#L452">452</a></span><span class="cl">                                        <span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L453"><a class="lnlinks" href="#L453">453</a></span><span class="cl">                                            <span class="kr">const</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L454"><a class="lnlinks" href="#L454">454</a></span><span class="cl">                                            <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">state</span>: <span class="kt">val</span> <span class="p">}</span><span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L455"><a class="lnlinks" href="#L455">455</a></span><span class="cl">                                            <span class="k">if</span> <span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln" id="L456"><a class="lnlinks" href="#L456">456</a></span><span class="cl">                                                <span class="c1">// Simple client-side filtering of US states could be added here
+</span></span></span><span class="line"><span class="ln" id="L457"><a class="lnlinks" href="#L457">457</a></span><span class="cl"><span class="c1"></span>                                                <span class="c1">// For now just basic input
+</span></span></span><span class="line"><span class="ln" id="L458"><a class="lnlinks" href="#L458">458</a></span><span class="cl"><span class="c1"></span>                                            <span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L459"><a class="lnlinks" href="#L459">459</a></span><span class="cl">                                        <span class="p">}</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L460"><a class="lnlinks" href="#L460">460</a></span><span class="cl">                                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all&#34;</span>
+</span></span><span class="line"><span class="ln" id="L461"><a class="lnlinks" href="#L461">461</a></span><span class="cl">                                        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;State/Region&#34;</span>
+</span></span><span class="line"><span class="ln" id="L462"><a class="lnlinks" href="#L462">462</a></span><span class="cl">                                    <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L463"><a class="lnlinks" href="#L463">463</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L464"><a class="lnlinks" href="#L464">464</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L465"><a class="lnlinks" href="#L465">465</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L466"><a class="lnlinks" href="#L466">466</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-bold text-slate-700&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">City</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L467"><a class="lnlinks" href="#L467">467</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="ln" id="L468"><a class="lnlinks" href="#L468">468</a></span><span class="cl">                                        <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span>
+</span></span><span class="line"><span class="ln" id="L469"><a class="lnlinks" href="#L469">469</a></span><span class="cl">                                        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">city</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L470"><a class="lnlinks" href="#L470">470</a></span><span class="cl">                                        <span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">city</span>: <span class="kt">e.target.value</span> <span class="p">}</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L471"><a class="lnlinks" href="#L471">471</a></span><span class="cl">                                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all&#34;</span>
+</span></span><span class="line"><span class="ln" id="L472"><a class="lnlinks" href="#L472">472</a></span><span class="cl">                                        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;City&#34;</span>
+</span></span><span class="line"><span class="ln" id="L473"><a class="lnlinks" href="#L473">473</a></span><span class="cl">                                    <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L474"><a class="lnlinks" href="#L474">474</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L475"><a class="lnlinks" href="#L475">475</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L476"><a class="lnlinks" href="#L476">476</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;space-y-2&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L477"><a class="lnlinks" href="#L477">477</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-sm font-bold text-slate-700&#34;</span><span class="p"></span><span class="p">&gt;</span><span class="nx">Country</span><span class="p">&lt;</span><span class="p">/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L478"><a class="lnlinks" href="#L478">478</a></span><span class="cl">                                    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="ln" id="L479"><a class="lnlinks" href="#L479">479</a></span><span class="cl">                                        <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span>
+</span></span><span class="line"><span class="ln" id="L480"><a class="lnlinks" href="#L480">480</a></span><span class="cl">                                        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">country</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L481"><a class="lnlinks" href="#L481">481</a></span><span class="cl">                                        <span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=</span><span class="o">&gt;</span> <span class="nx">setFormData</span><span class="p">(</span><span class="p">{</span> <span class="p">.</span><span class="p">.</span><span class="p">.</span><span class="nx">formData</span><span class="p">,</span> <span class="nx">country</span>: <span class="kt">e.target.value</span> <span class="p">}</span><span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L482"><a class="lnlinks" href="#L482">482</a></span><span class="cl">                                        <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all&#34;</span>
+</span></span><span class="line"><span class="ln" id="L483"><a class="lnlinks" href="#L483">483</a></span><span class="cl">                                        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Country&#34;</span>
+</span></span><span class="line"><span class="ln" id="L484"><a class="lnlinks" href="#L484">484</a></span><span class="cl">                                    <span class="p">/</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L485"><a class="lnlinks" href="#L485">485</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L486"><a class="lnlinks" href="#L486">486</a></span><span class="cl">                            <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L487"><a class="lnlinks" href="#L487">487</a></span><span class="cl">
+</span></span><span class="line"><span class="ln" id="L488"><a class="lnlinks" href="#L488">488</a></span><span class="cl">                            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex justify-end gap-3 pt-4&#34;</span><span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L489"><a class="lnlinks" href="#L489">489</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="ln" id="L490"><a class="lnlinks" href="#L490">490</a></span><span class="cl">                                    <span class="na">type</span><span class="o">=</span><span class="s">&#34;button&#34;</span>
+</span></span><span class="line"><span class="ln" id="L491"><a class="lnlinks" href="#L491">491</a></span><span class="cl">                                    <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">closeModal</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L492"><a class="lnlinks" href="#L492">492</a></span><span class="cl">                                    <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-6 py-3 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors&#34;</span>
+</span></span><span class="line"><span class="ln" id="L493"><a class="lnlinks" href="#L493">493</a></span><span class="cl">                                <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L494"><a class="lnlinks" href="#L494">494</a></span><span class="cl">                                    <span class="nx">Cancel</span>
+</span></span><span class="line"><span class="ln" id="L495"><a class="lnlinks" href="#L495">495</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L496"><a class="lnlinks" href="#L496">496</a></span><span class="cl">                                <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="ln" id="L497"><a class="lnlinks" href="#L497">497</a></span><span class="cl">                                    <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="ln" id="L498"><a class="lnlinks" href="#L498">498</a></span><span class="cl">                                    <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-6 py-3 rounded-xl font-bold bg-purple-500 text-white hover:bg-purple-600 transition-colors shadow-lg hover:shadow-xl&#34;</span>
+</span></span><span class="line"><span class="ln" id="L499"><a class="lnlinks" href="#L499">499</a></span><span class="cl">                                <span class="p"></span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L500"><a class="lnlinks" href="#L500">500</a></span><span class="cl">                                    <span class="nx">Save</span> <span class="nx">Changes</span>
+</span></span><span class="line"><span class="ln" id="L501"><a class="lnlinks" href="#L501">501</a></span><span class="cl">                                <span class="p">&lt;</span><span class="p">/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L502"><a class="lnlinks" href="#L502">502</a></span><span class="cl">                            <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L503"><a class="lnlinks" href="#L503">503</a></span><span class="cl">                        <span class="p">&lt;</span><span class="p">/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L504"><a class="lnlinks" href="#L504">504</a></span><span class="cl">                    <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L505"><a class="lnlinks" href="#L505">505</a></span><span class="cl">                <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L506"><a class="lnlinks" href="#L506">506</a></span><span class="cl">            <span class="p">)</span><span class="p">}</span>
+</span></span><span class="line"><span class="ln" id="L507"><a class="lnlinks" href="#L507">507</a></span><span class="cl">        <span class="p">&lt;</span><span class="p">/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln" id="L508"><a class="lnlinks" href="#L508">508</a></span><span class="cl">    <span class="p">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln" id="L509"><a class="lnlinks" href="#L509">509</a></span><span class="cl"><span class="p">}</span><span class="p">;</span></span></span></code></pre>
+    
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

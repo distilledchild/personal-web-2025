@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>personal-web-2025/docs/cloud-run-auto-deploy.md at main</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      [id] {
+        scroll-margin-top: var(--header-height);
+      }
+
+      .markdown-container {
+        border: 1px solid var(--c-divider);
+        border-top: none;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        overflow-x: auto;
+      }
+
+      .markdown-body {
+        width: 100%;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 32px;
+        word-wrap: break-word;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 767px) {
+        .markdown-body {
+          padding: 16px;
+        }
+      }
+
+      .markdown-body details,
+.markdown-body figcaption,
+.markdown-body figure {
+  display: block;
+}
+
+.markdown-body summary {
+  display: list-item;
+}
+
+.markdown-body [hidden] {
+  display: none !important;
+}
+
+.markdown-body a {
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.markdown-body abbr[title] {
+  border-bottom: none;
+  text-decoration: underline dotted;
+}
+
+.markdown-body b,
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body dfn {
+  font-style: italic;
+}
+
+.markdown-body h1 {
+  margin: .67em 0;
+  font-weight: 600;
+  padding-bottom: .3em;
+  font-size: 2em;
+  border-bottom: 1px solid #d1d9e0b3;
+}
+
+.markdown-body mark {
+  background-color: #fff8c5;
+  color: #1f2328;
+}
+
+.markdown-body small {
+  font-size: 90%;
+}
+
+.markdown-body sub,
+.markdown-body sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.markdown-body sub {
+  bottom: -0.25em;
+}
+
+.markdown-body sup {
+  top: -0.5em;
+}
+
+.markdown-body img {
+  border-style: none;
+  max-width: 100%;
+  box-sizing: content-box;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: monospace;
+  font-size: 1em;
+}
+
+.markdown-body figure {
+  margin: 1em 2.5rem;
+}
+
+.markdown-body hr {
+  box-sizing: content-box;
+  overflow: hidden;
+  border-bottom: 1px solid #d1d9e0b3;
+  height: .25em;
+  padding: 0;
+  margin: 1.5rem 0;
+  background-color: #d1d9e0;
+}
+
+.markdown-body input {
+  font: inherit;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+}
+
+.markdown-body [type=button],
+.markdown-body [type=reset],
+.markdown-body [type=submit] {
+  -webkit-appearance: button;
+  appearance: button;
+}
+
+.markdown-body [type=checkbox],
+.markdown-body [type=radio] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body [type=number]::-webkit-inner-spin-button,
+.markdown-body [type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+.markdown-body [type=search]::-webkit-search-cancel-button,
+.markdown-body [type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.markdown-body ::-webkit-input-placeholder {
+  color: inherit;
+  opacity: .54;
+}
+
+.markdown-body ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  appearance: button;
+  font: inherit;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body ::placeholder {
+  color: #59636e;
+  opacity: 1;
+}
+
+.markdown-body hr::before {
+  display: table;
+  content: "";
+}
+
+.markdown-body hr::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdown-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  font-variant: tabular-nums;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body details summary {
+  cursor: pointer;
+}
+
+.markdown-body a:focus,
+.markdown-body [role=button]:focus,
+.markdown-body input[type=radio]:focus,
+.markdown-body input[type=checkbox]:focus {
+  outline: 2px solid #0969da;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.markdown-body a:focus:not(:focus-visible),
+.markdown-body [role=button]:focus:not(:focus-visible),
+.markdown-body input[type=radio]:focus:not(:focus-visible),
+.markdown-body input[type=checkbox]:focus:not(:focus-visible) {
+  outline: solid 1px transparent;
+}
+
+.markdown-body a:focus-visible,
+.markdown-body [role=button]:focus-visible,
+.markdown-body input[type=radio]:focus-visible,
+.markdown-body input[type=checkbox]:focus-visible {
+  outline: 2px solid #0969da;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.markdown-body a:not([class]):focus,
+.markdown-body a:not([class]):focus-visible,
+.markdown-body input[type=radio]:focus,
+.markdown-body input[type=radio]:focus-visible,
+.markdown-body input[type=checkbox]:focus,
+.markdown-body input[type=checkbox]:focus-visible {
+  outline-offset: 0;
+}
+
+.markdown-body kbd {
+  display: inline-block;
+  padding: 0.25rem;
+  font: 11px ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  line-height: 10px;
+  color: #1f2328;
+  vertical-align: middle;
+  background-color: #f6f8fa;
+  border: solid 1px #d1d9e0b3;
+  border-bottom-color: #d1d9e0b3;
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 #d1d9e0b3;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-body h2 {
+  font-weight: 600;
+  padding-bottom: .3em;
+  font-size: 1.5em;
+  border-bottom: 1px solid #d1d9e0b3;
+}
+
+.markdown-body h3 {
+  font-weight: 600;
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-weight: 600;
+  font-size: .875em;
+}
+
+.markdown-body h6 {
+  font-weight: 600;
+  font-size: .85em;
+  color: #59636e;
+}
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+  padding: 0 1em;
+  color: #59636e;
+  border-left: .25em solid #d1d9e0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2em;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ul ul ol,
+.markdown-body ul ol ol,
+.markdown-body ol ul ol,
+.markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body tt,
+.markdown-body code,
+.markdown-body samp {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-size: 12px;
+  word-wrap: normal;
+}
+
+.markdown-body .octicon {
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-body input::-webkit-outer-spin-button,
+.markdown-body input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.markdown-body .mr-2 {
+  margin-right: 0.5rem !important;
+}
+
+.markdown-body::before {
+  display: table;
+  content: "";
+}
+
+.markdown-body::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdown-body > *:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+.markdown-body a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown-body .absent {
+  color: #d1242f;
+}
+
+.markdown-body .anchor {
+  float: left;
+  padding-right: 0.25rem;
+  margin-left: -20px;
+  line-height: 1;
+}
+
+.markdown-body .anchor:focus {
+  outline: none;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre,
+.markdown-body details {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.markdown-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+  color: #1f2328;
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+
+.markdown-body h1 tt,
+.markdown-body h1 code,
+.markdown-body h2 tt,
+.markdown-body h2 code,
+.markdown-body h3 tt,
+.markdown-body h3 code,
+.markdown-body h4 tt,
+.markdown-body h4 code,
+.markdown-body h5 tt,
+.markdown-body h5 code,
+.markdown-body h6 tt,
+.markdown-body h6 code {
+  padding: 0 .2em;
+  font-size: inherit;
+}
+
+.markdown-body summary h1,
+.markdown-body summary h2,
+.markdown-body summary h3,
+.markdown-body summary h4,
+.markdown-body summary h5,
+.markdown-body summary h6 {
+  display: inline-block;
+}
+
+.markdown-body summary h1 .anchor,
+.markdown-body summary h2 .anchor,
+.markdown-body summary h3 .anchor,
+.markdown-body summary h4 .anchor,
+.markdown-body summary h5 .anchor,
+.markdown-body summary h6 .anchor {
+  margin-left: -40px;
+}
+
+.markdown-body summary h1,
+.markdown-body summary h2 {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.markdown-body ul.no-list,
+.markdown-body ol.no-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.markdown-body ol[type="a s"] {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body ol[type="A s"] {
+  list-style-type: upper-alpha;
+}
+
+.markdown-body ol[type="i s"] {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ol[type="I s"] {
+  list-style-type: upper-roman;
+}
+
+.markdown-body ol[type="1"] {
+  list-style-type: decimal;
+}
+
+.markdown-body div > ol:not([type]) {
+  list-style-type: decimal;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body li > p {
+  margin-top: 1rem;
+}
+
+.markdown-body li + li {
+  margin-top: .25em;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  padding: 0;
+  margin-top: 1rem;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.markdown-body dl dd {
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-body table th {
+  font-weight: 600;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #d1d9e0;
+}
+
+.markdown-body table td > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table tr {
+  background-color: #ffffff;
+  border-top: 1px solid #d1d9e0b3;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.markdown-body table img {
+  background-color: transparent;
+}
+
+.markdown-body img[align=right] {
+  padding-left: 20px;
+}
+
+.markdown-body img[align=left] {
+  padding-right: 20px;
+}
+
+.markdown-body .emoji {
+  max-width: none;
+  vertical-align: text-top;
+  background-color: transparent;
+}
+
+.markdown-body span.frame {
+  display: block;
+  overflow: hidden;
+}
+
+.markdown-body span.frame > span {
+  display: block;
+  float: left;
+  width: auto;
+  padding: 7px;
+  margin: 13px 0 0;
+  overflow: hidden;
+  border: 1px solid #d1d9e0;
+}
+
+.markdown-body span.frame span img {
+  display: block;
+  float: left;
+}
+
+.markdown-body span.frame span span {
+  display: block;
+  padding: 5px 0 0;
+  clear: both;
+  color: #1f2328;
+}
+
+.markdown-body span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both;
+}
+
+.markdown-body span.align-center > span {
+  display: block;
+  margin: 13px auto 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.markdown-body span.align-center span img {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.markdown-body span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both;
+}
+
+.markdown-body span.align-right > span {
+  display: block;
+  margin: 13px 0 0;
+  overflow: hidden;
+  text-align: right;
+}
+
+.markdown-body span.align-right span img {
+  margin: 0;
+  text-align: right;
+}
+
+.markdown-body span.float-left {
+  display: block;
+  float: left;
+  margin-right: 13px;
+  overflow: hidden;
+}
+
+.markdown-body span.float-left span {
+  margin: 13px 0 0;
+}
+
+.markdown-body span.float-right {
+  display: block;
+  float: right;
+  margin-left: 13px;
+  overflow: hidden;
+}
+
+.markdown-body span.float-right > span {
+  display: block;
+  margin: 13px auto 0;
+  overflow: hidden;
+  text-align: right;
+}
+
+.markdown-body code,
+.markdown-body tt {
+  padding: .2em .4em;
+  margin: 0;
+  font-size: 85%;
+  white-space: break-spaces;
+  background-color: #818b981f;
+  border-radius: 6px;
+}
+
+.markdown-body code br,
+.markdown-body tt br {
+  display: none;
+}
+
+.markdown-body del code {
+  text-decoration: inherit;
+}
+
+.markdown-body samp {
+  font-size: 85%;
+}
+
+.markdown-body pre code {
+  font-size: 100%;
+}
+
+.markdown-body pre > code {
+  padding: 0;
+  margin: 0;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
+.markdown-body .highlight {
+  margin-bottom: 1rem;
+}
+
+.markdown-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  padding: 1rem;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  color: #1f2328;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+}
+
+.markdown-body pre code,
+.markdown-body pre tt {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.markdown-body .csv-data td,
+.markdown-body .csv-data th {
+  padding: 5px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.markdown-body .csv-data .blob-num {
+  padding: 10px 0.5rem 9px;
+  text-align: right;
+  background: #ffffff;
+  border: 0;
+}
+
+.markdown-body .csv-data tr {
+  border-top: 0;
+}
+
+.markdown-body .csv-data th {
+  font-weight: 600;
+  background: #f6f8fa;
+  border-top: 0;
+}
+
+.markdown-body [data-footnote-ref]::before {
+  content: "[";
+}
+
+.markdown-body [data-footnote-ref]::after {
+  content: "]";
+}
+
+.markdown-body .footnotes {
+  font-size: 12px;
+  color: #59636e;
+  border-top: 1px solid #d1d9e0;
+}
+
+.markdown-body .footnotes ol {
+  padding-left: 1rem;
+}
+
+.markdown-body .footnotes ol ul {
+  display: inline-block;
+  padding-left: 1rem;
+  margin-top: 1rem;
+}
+
+.markdown-body .footnotes li {
+  position: relative;
+}
+
+.markdown-body .footnotes li:target::before {
+  position: absolute;
+  top: calc(0.5rem * -1);
+  right: calc(0.5rem * -1);
+  bottom: calc(0.5rem * -1);
+  left: calc(1.5rem * -1);
+  pointer-events: none;
+  content: "";
+  border: 2px solid #0969da;
+  border-radius: 6px;
+}
+
+.markdown-body .footnotes li:target {
+  color: #1f2328;
+}
+
+.markdown-body .footnotes .data-footnote-backref g-emoji {
+  font-family: monospace;
+}
+
+.markdown-body .pl-c {
+  color: #59636e;
+}
+
+.markdown-body .pl-c1,
+.markdown-body .pl-s .pl-v {
+  color: #0550ae;
+}
+
+.markdown-body .pl-e,
+.markdown-body .pl-en {
+  color: #6639ba;
+}
+
+.markdown-body .pl-smi,
+.markdown-body .pl-s .pl-s1 {
+  color: #1f2328;
+}
+
+.markdown-body .pl-ent {
+  color: #0550ae;
+}
+
+.markdown-body .pl-k {
+  color: #cf222e;
+}
+
+.markdown-body .pl-s,
+.markdown-body .pl-pds,
+.markdown-body .pl-s .pl-pse .pl-s1,
+.markdown-body .pl-sr,
+.markdown-body .pl-sr .pl-cce,
+.markdown-body .pl-sr .pl-sre,
+.markdown-body .pl-sr .pl-sra {
+  color: #0a3069;
+}
+
+.markdown-body .pl-v,
+.markdown-body .pl-smw {
+  color: #953800;
+}
+
+.markdown-body .pl-bu {
+  color: #82071e;
+}
+
+.markdown-body .pl-ii {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+
+.markdown-body .pl-c2 {
+  color: #f6f8fa;
+  background-color: #cf222e;
+}
+
+.markdown-body .pl-sr .pl-cce {
+  font-weight: bold;
+  color: #116329;
+}
+
+.markdown-body .pl-ml {
+  color: #3b2300;
+}
+
+.markdown-body .pl-mh,
+.markdown-body .pl-mh .pl-en,
+.markdown-body .pl-ms {
+  font-weight: bold;
+  color: #0550ae;
+}
+
+.markdown-body .pl-mi {
+  font-style: italic;
+  color: #1f2328;
+}
+
+.markdown-body .pl-mb {
+  font-weight: bold;
+  color: #1f2328;
+}
+
+.markdown-body .pl-md {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+
+.markdown-body .pl-mi1 {
+  color: #116329;
+  background-color: #dafbe1;
+}
+
+.markdown-body .pl-mc {
+  color: #953800;
+  background-color: #ffd8b5;
+}
+
+.markdown-body .pl-mi2 {
+  color: #d1d9e0;
+  background-color: #0550ae;
+}
+
+.markdown-body .pl-mdr {
+  font-weight: bold;
+  color: #8250df;
+}
+
+.markdown-body .pl-ba {
+  color: #59636e;
+}
+
+.markdown-body .pl-sg {
+  color: #818b98;
+}
+
+.markdown-body .pl-corl {
+  text-decoration: underline;
+  color: #0a3069;
+}
+
+.markdown-body [role=button]:focus:not(:focus-visible),
+.markdown-body [role=tabpanel][tabindex="0"]:focus:not(:focus-visible),
+.markdown-body button:focus:not(:focus-visible),
+.markdown-body summary:focus:not(:focus-visible),
+.markdown-body a:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.markdown-body [tabindex="0"]:focus:not(:focus-visible),
+.markdown-body details-dialog:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.markdown-body g-emoji {
+  display: inline-block;
+  min-width: 1ch;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 1em;
+  font-style: normal !important;
+  font-weight: 400;
+  line-height: 1;
+  vertical-align: -0.075em;
+}
+
+.markdown-body g-emoji img {
+  width: 1em;
+  height: 1em;
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item label {
+  font-weight: 400;
+}
+
+.markdown-body .task-list-item.enabled label {
+  cursor: pointer;
+}
+
+.markdown-body .task-list-item + .task-list-item {
+  margin-top: 0.25rem;
+}
+
+.markdown-body .task-list-item .handle {
+  display: none;
+}
+
+.markdown-body .task-list-item-checkbox {
+  margin: 0 .2em .25em -1.4em;
+  vertical-align: middle;
+}
+
+.markdown-body ul:dir(rtl) .task-list-item-checkbox {
+  margin: 0 -1.6em .25em .2em;
+}
+
+.markdown-body ol:dir(rtl) .task-list-item-checkbox {
+  margin: 0 -1.6em .25em .2em;
+}
+
+.markdown-body .contains-task-list:hover .task-list-item-convert-container,
+.markdown-body .contains-task-list:focus-within .task-list-item-convert-container {
+  display: block;
+  width: auto;
+  height: 24px;
+  overflow: visible;
+  clip: auto;
+}
+
+.markdown-body ::-webkit-calendar-picker-indicator {
+  filter: invert(50%);
+}
+
+.markdown-body .markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  color: inherit;
+  border-left: .25em solid #d1d9e0;
+}
+
+.markdown-body .markdown-alert > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body .markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body .markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1;
+}
+
+.markdown-body .markdown-alert.markdown-alert-note {
+  border-left-color: #0969da;
+}
+
+.markdown-body .markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #0969da;
+}
+
+.markdown-body .markdown-alert.markdown-alert-important {
+  border-left-color: #8250df;
+}
+
+.markdown-body .markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: #8250df;
+}
+
+.markdown-body .markdown-alert.markdown-alert-warning {
+  border-left-color: #9a6700;
+}
+
+.markdown-body .markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #9a6700;
+}
+
+.markdown-body .markdown-alert.markdown-alert-tip {
+  border-left-color: #1a7f37;
+}
+
+.markdown-body .markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #1a7f37;
+}
+
+.markdown-body .markdown-alert.markdown-alert-caution {
+  border-left-color: #cf222e;
+}
+
+.markdown-body .markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: #d1242f;
+}
+
+.markdown-body > *:first-child > .heading-element:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body .highlight pre:has(+.zeroclipboard-container) {
+  min-height: 52px;
+}
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../../../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item selected">
+            <a href="../../../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    
+    <div class="header-container">
+        <header>
+            
+                <div class="header-ref" aria-label="Ref">main</div>
+            
+            
+                <nav class="breadcrumbs" aria-label="Breadcrumbs">
+                    
+                        
+                        
+                            <a href="./../index.html">personal-web-2025</a>
+                        
+                    
+                        
+                            <div>/</div>
+                        
+                        
+                            <a href="./index.html">docs</a>
+                        
+                    
+                        
+                            <div>/</div>
+                        
+                        
+                            <h1>cloud-run-auto-deploy.md</h1>
+                            
+                        
+                    
+                </nav>
+            
+            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#arrow-top"></use>
+                </svg>
+                Top
+            </button>
+        </header>
+    </div>
+
+    <article class="markdown-container">
+        <div class="markdown-body">
+            <html><head></head><body><h1 id="cloud-run---">Cloud Run 자동 배포 가이드</h1>
+<h2 id="heading">개요</h2>
+<p>이 문서는 GitHub에 코드를 푸시하면 자동으로 Cloud Run에 배포되는 CI/CD 파이프라인 구축 방법을 설명합니다.</p>
+<h2 id="heading-1">목차</h2>
+<ol>
+<li><a href="#%EB%B0%B0%ED%8F%AC-%EB%B0%A9%EB%B2%95-%EB%B9%84%EA%B5%90">배포 방법 비교</a></li>
+<li><a href="#cloud-build-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC-%EA%B6%8C%EC%9E%A5">Cloud Build 자동 배포 (권장)</a></li>
+<li><a href="#github-actions-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC">GitHub Actions 자동 배포</a></li>
+<li><a href="#%EB%A1%9C%EC%BB%AC-%EC%88%98%EB%8F%99-%EB%B0%B0%ED%8F%AC">로컬 수동 배포</a></li>
+<li><a href="#%EB%B9%84%EC%9A%A9-%EB%B6%84%EC%84%9D">비용 분석</a></li>
+<li><a href="#%ED%8A%B8%EB%9F%AC%EB%B8%94%EC%8A%88%ED%8C%85">트러블슈팅</a></li>
+</ol>
+<hr/>
+<h2 id="--">배포 방법 비교</h2>
+<h3 id="-1-cloud-build-">방법 1: Cloud Build (권장)</h3>
+<pre><code>✅ 무료: 120분/일 (개인 프로젝트 충분)
+✅ GCP 네이티브 통합 (권한 관리 쉬움)
+✅ 설정 간단 (cloudbuild.yaml)
+✅ 빌드 속도 빠름
+✅ GitHub 연동 가능
+
+비용: $0 (무료 tier 범위 내)
+설정 시간: 10-15분
+</code></pre>
+<h3 id="-2-github-actions">방법 2: GitHub Actions</h3>
+<pre><code>✅ 무료: 2,000분/월 (Private repo)
+✅ 무제한 (Public repo)
+✅ GitHub에서 모든 것 관리
+✅ 다른 CI/CD 도구와 통합 쉬움
+
+⚠️ GCP 인증 설정 필요 (Service Account)
+
+비용: $0
+설정 시간: 15-20분
+</code></pre>
+<h3 id="-3---">방법 3: 로컬 수동 배포</h3>
+<pre><code>✅ 무료: 100%
+✅ 설정 간단
+✅ 즉시 실행 가능
+
+⚠️ 자동화 없음 (수동 실행 필요)
+
+비용: $0
+설정 시간: 5분
+</code></pre>
+<hr/>
+<h2 id="cloud-build---">Cloud Build 자동 배포 (권장)</h2>
+<h3 id="heading-2">워크플로우</h3>
+<pre><code>1. 로컬에서 코드 수정
+   ↓
+2. git add . &amp;&amp; git commit -m &#34;Update&#34;
+   ↓
+3. git push origin main
+   ↓
+4. Cloud Build 자동 실행
+   - Docker 이미지 빌드
+   - Google Container Registry로 푸시
+   - Cloud Run에 배포
+   ↓
+5. 배포 완료! 🎉
+</code></pre>
+<h3 id="1--">1. 사전 준비</h3>
+<h4 id="-">필요한 것</h4>
+<ul>
+<li>✅ Google Cloud Platform 프로젝트</li>
+<li>✅ Cloud Run 서비스 (이미 배포된 상태)</li>
+<li>✅ GitHub 저장소</li>
+<li>✅ 로컬에 Docker 설치</li>
+</ul>
+<h3 id="2-cloud-build-api-">2. Cloud Build API 활성화</h3>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Cloud Build API 활성화</span>
+</span></span><span style="display:flex;"><span>gcloud services <span style="color:#6639ba">enable</span> cloudbuild.googleapis.com
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Artifact Registry API 활성화 (필요시)</span>
+</span></span><span style="display:flex;"><span>gcloud services <span style="color:#6639ba">enable</span> artifactregistry.googleapis.com
+</span></span></code></pre><h3 id="3-cloud-build--">3. Cloud Build 권한 설정</h3>
+<p>Cloud Build 서비스 계정에 Cloud Run 배포 권한을 부여합니다.</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 프로젝트 번호 확인</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">PROJECT_ID</span><span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;your-project-id&#34;</span>  <span style="color:#57606a"># 실제 프로젝트 ID로 변경</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0550ae">=</span><span style="color:#cf222e">$(</span>gcloud projects describe <span style="color:#953800">$PROJECT_ID</span> --format<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;value(projectNumber)&#34;</span><span style="color:#cf222e">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;Project Number: </span><span style="color:#953800">$PROJECT_NUMBER</span><span style="color:#0a3069">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Run Admin 권한 부여</span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding <span style="color:#953800">$PROJECT_ID</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/run.admin&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Service Account User 권한 부여</span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding <span style="color:#953800">$PROJECT_ID</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/iam.serviceAccountUser&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Storage Admin 권한 부여 (GCR 접근용)</span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding <span style="color:#953800">$PROJECT_ID</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/storage.admin&#34;</span>
+</span></span></code></pre><h3 id="4-cloudbuildyaml--">4. cloudbuild.yaml 파일 확인</h3>
+<p>프로젝트에 이미 <code>server/cloudbuild.yaml</code> 파일이 있습니다:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#0550ae">steps</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#57606a"># Step 1: Docker 이미지 빌드</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/docker&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;build&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;-t&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;-t&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:latest&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;.&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#57606a"># Step 2: Google Container Registry로 푸시</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/docker&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;push&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/docker&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;push&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:latest&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#57606a"># Step 3: Cloud Run에 자동 배포</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/gcloud&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;run&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;deploy&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;backend&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--image&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--region&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;us-west1&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--platform&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;managed&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--allow-unauthenticated&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">images</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:latest&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">options</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">logging</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>CLOUD_LOGGING_ONLY<span style="color:#fff">
+</span></span></span></code></pre><p><strong>변수 설명:</strong></p>
+<ul>
+<li><code>$PROJECT_ID</code>: GCP 프로젝트 ID (자동 치환)</li>
+<li><code>$SHORT_SHA</code>: Git 커밋 해시 앞 7자리 (자동 치환)</li>
+<li><code>backend</code>: Cloud Run 서비스 이름</li>
+<li><code>us-west1</code>: Cloud Run 리전</li>
+</ul>
+<p><strong>필요 시 수정:</strong></p>
+<ul>
+<li>서비스 이름: <code>backend</code> → 다른 이름</li>
+<li>리전: <code>us-west1</code> → <code>asia-northeast3</code> (서울) 등</li>
+<li>환경 변수 추가:
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>- <span style="color:#0a3069">&#39;--set-env-vars&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span>- <span style="color:#0a3069">&#39;NODE_ENV=production,OTHER_VAR=value&#39;</span><span style="color:#fff">
+</span></span></span></code></pre></li>
+</ul>
+<h3 id="5-github--">5. GitHub 저장소 연결</h3>
+<h4 id="-a-cloud-console----">방법 A: Cloud Console에서 연결 (추천, 더 쉬움)</h4>
+<ol>
+<li>
+<p><strong>Google Cloud Console 접속</strong></p>
+<pre><code>https://console.cloud.google.com/cloud-build/triggers
+</code></pre>
+</li>
+<li>
+<p><strong>프로젝트 선택</strong></p>
+</li>
+<li>
+<p><strong>“CREATE TRIGGER” 버튼 클릭</strong></p>
+</li>
+<li>
+<p><strong>Trigger 설정:</strong></p>
+<pre><code>Name: deploy-backend
+Description: Deploy backend to Cloud Run on push to main
+Event: Push to a branch
+Source:
+  - Click &#34;CONNECT REPOSITORY&#34;
+  - Select &#34;GitHub (Cloud Build GitHub App)&#34;
+  - Authenticate GitHub
+  - Select your repository: personal-web-2025
+Branch: ^main$
+Build Configuration: Cloud Build configuration file (yaml or json)
+Cloud Build configuration file location: server/cloudbuild.yaml
+</code></pre>
+</li>
+<li>
+<p><strong>“CREATE” 버튼 클릭</strong></p>
+</li>
+</ol>
+<h4 id="-b-gcloud--">방법 B: gcloud 명령어로 연결</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># GitHub 저장소 연결 및 Trigger 생성</span>
+</span></span><span style="display:flex;"><span>gcloud builds triggers create github <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --repo-name<span style="color:#0550ae">=</span>personal-web-2025 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --repo-owner<span style="color:#0550ae">=</span>YOUR_GITHUB_USERNAME <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --branch-pattern<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;^main</span>$<span style="color:#0a3069">&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --build-config<span style="color:#0550ae">=</span>server/cloudbuild.yaml <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --description<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;Deploy backend to Cloud Run&#34;</span>
+</span></span></code></pre><p><strong>참고:</strong> 처음 실행 시 GitHub 인증 필요</p>
+<h3 id="6-">6. 테스트</h3>
+<h4 id="---">코드 수정 및 푸시</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 1. 코드 수정 (예: server/index.js)</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;console.log(&#39;test deploy&#39;);&#34;</span> &gt;&gt; server/index.js
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 2. Git 커밋 및 푸시</span>
+</span></span><span style="display:flex;"><span>git add .
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#0a3069">&#34;Test auto deploy&#34;</span>
+</span></span><span style="display:flex;"><span>git push origin main
+</span></span></code></pre><h4 id="---1">빌드 상태 확인</h4>
+<p><strong>Cloud Console에서 확인:</strong></p>
+<pre><code>https://console.cloud.google.com/cloud-build/builds
+</code></pre>
+<p><strong>터미널에서 확인:</strong></p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 최근 빌드 목록 확인</span>
+</span></span><span style="display:flex;"><span>gcloud builds list --limit<span style="color:#0550ae">=</span><span style="color:#0550ae">5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 특정 빌드 로그 확인</span>
+</span></span><span style="display:flex;"><span>gcloud builds log BUILD_ID --stream
+</span></span></code></pre><h4 id="--1">배포 확인</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Cloud Run 서비스 상태 확인</span>
+</span></span><span style="display:flex;"><span>gcloud run services describe backend --region<span style="color:#0550ae">=</span>us-west1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 서비스 URL 확인</span>
+</span></span><span style="display:flex;"><span>gcloud run services describe backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region<span style="color:#0550ae">=</span>us-west1 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --format<span style="color:#0550ae">=</span><span style="color:#0a3069">&#39;value(status.url)&#39;</span>
+</span></span></code></pre><p>브라우저에서 접속 테스트:</p>
+<pre><code>https://your-service-url/api/health
+</code></pre>
+<h3 id="7----">7. 빌드 히스토리 및 로그</h3>
+<h4 id="cloud-console-">Cloud Console에서 확인</h4>
+<pre><code>https://console.cloud.google.com/cloud-build/builds
+</code></pre>
+<ul>
+<li>✅ 성공한 빌드: 녹색 체크</li>
+<li>❌ 실패한 빌드: 빨간색 X</li>
+<li>각 빌드 클릭하면 상세 로그 확인 가능</li>
+</ul>
+<h4 id="--2">터미널에서 확인</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 최근 빌드 목록</span>
+</span></span><span style="display:flex;"><span>gcloud builds list --limit<span style="color:#0550ae">=</span><span style="color:#0550ae">10</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 특정 빌드 상세 정보</span>
+</span></span><span style="display:flex;"><span>gcloud builds describe BUILD_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 빌드 로그 스트리밍</span>
+</span></span><span style="display:flex;"><span>gcloud builds log BUILD_ID --stream
+</span></span></code></pre><h3 id="8----">8. 환경 변수 추가 (선택)</h3>
+<p><code>cloudbuild.yaml</code>에서 환경 변수를 추가할 수 있습니다:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#0550ae">steps</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#57606a"># ... 기존 steps ...</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/gcloud&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;run&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;deploy&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;backend&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--image&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--region&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;us-west1&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--platform&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;managed&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--allow-unauthenticated&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;--set-env-vars&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;NODE_ENV=production,MONGO_URI=$$MONGO_URI,JWT_SECRET=$$JWT_SECRET&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">secretEnv</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#1f2328">[</span><span style="color:#0a3069">&#39;MONGO_URI&#39;</span><span style="color:#1f2328">,</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;JWT_SECRET&#39;</span><span style="color:#1f2328">]</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#57606a"># Secret Manager에서 비밀 가져오기</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">availableSecrets</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">secretManager</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span>- <span style="color:#0550ae">versionName</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>projects/$PROJECT_ID/secrets/MONGO_URI/versions/latest<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span><span style="color:#0550ae">env</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;MONGO_URI&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span>- <span style="color:#0550ae">versionName</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>projects/$PROJECT_ID/secrets/JWT_SECRET/versions/latest<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span><span style="color:#0550ae">env</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;JWT_SECRET&#39;</span><span style="color:#fff">
+</span></span></span></code></pre><p><strong>Secret Manager에 비밀 저장:</strong></p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Secret 생성</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> -n <span style="color:#0a3069">&#34;mongodb://...&#34;</span> <span style="color:#1f2328">|</span> gcloud secrets create MONGO_URI --data-file<span style="color:#0550ae">=</span>-
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> -n <span style="color:#0a3069">&#34;your-jwt-secret&#34;</span> <span style="color:#1f2328">|</span> gcloud secrets create JWT_SECRET --data-file<span style="color:#0550ae">=</span>-
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Build에 Secret 접근 권한 부여</span>
+</span></span><span style="display:flex;"><span>gcloud secrets add-iam-policy-binding MONGO_URI <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/secretmanager.secretAccessor&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gcloud secrets add-iam-policy-binding JWT_SECRET <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/secretmanager.secretAccessor&#34;</span>
+</span></span></code></pre><h3 id="9------">9. 특정 폴더 변경 시에만 빌드 (선택)</h3>
+<p><code>server/</code> 폴더 변경 시에만 빌드하도록 Trigger 설정:</p>
+<p><strong>Cloud Console에서:</strong></p>
+<ol>
+<li>Cloud Build → Triggers → 해당 Trigger 선택 → EDIT</li>
+<li>“Included files filter (glob)” 추가:
+<pre><code>server/**
+</code></pre>
+</li>
+</ol>
+<p><strong>gcloud 명령어:</strong></p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud builds triggers update TRIGGER_NAME <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --included-files<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;server/**&#34;</span>
+</span></span></code></pre><hr/>
+<h2 id="github-actions--">GitHub Actions 자동 배포</h2>
+<h3 id="heading-3">워크플로우</h3>
+<pre><code>1. 로컬에서 코드 수정
+   ↓
+2. git push origin main
+   ↓
+3. GitHub Actions 실행
+   - Docker 이미지 빌드
+   - GCR 푸시
+   - Cloud Run 배포
+   ↓
+4. 완료!
+</code></pre>
+<h3 id="1-gcp-service-account-">1. GCP Service Account 생성</h3>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Service Account 생성</span>
+</span></span><span style="display:flex;"><span>gcloud iam service-accounts create github-actions <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --display-name<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;GitHub Actions&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Run Admin 권한</span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding YOUR_PROJECT_ID <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/run.admin&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Storage Admin 권한 (GCR 접근)</span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding YOUR_PROJECT_ID <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/storage.admin&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Service Account User 권한</span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding YOUR_PROJECT_ID <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/iam.serviceAccountUser&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># JSON 키 생성</span>
+</span></span><span style="display:flex;"><span>gcloud iam service-accounts keys create key.json <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --iam-account<span style="color:#0550ae">=</span>github-actions@YOUR_PROJECT_ID.iam.gserviceaccount.com
+</span></span></code></pre><h3 id="2-github-secret-">2. GitHub Secret 추가</h3>
+<ol>
+<li><strong>GitHub Repository → Settings → Secrets and variables → Actions</strong></li>
+<li><strong>“New repository secret” 클릭</strong></li>
+<li><strong>Secret 추가:</strong>
+<pre><code>Name: GCP_SA_KEY
+Value: key.json 파일 내용 전체 복사/붙여넣기
+</code></pre>
+</li>
+<li><strong>“Add secret” 클릭</strong></li>
+</ol>
+<h3 id="3-github-actions-workflow--">3. GitHub Actions Workflow 파일 확인</h3>
+<p>프로젝트에 이미 <code>.github/workflows/deploy-backend.yml</code> 파일이 있습니다:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Deploy Backend to Cloud Run<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">on</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">push</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">branches</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- main<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">paths</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;server/**&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;.github/workflows/deploy-backend.yml&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">env</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">PROJECT_ID</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>YOUR_GCP_PROJECT_ID <span style="color:#fff"> </span><span style="color:#57606a"># ⚠️ 실제 프로젝트 ID로 변경</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">SERVICE_NAME</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>backend<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">REGION</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>us-west1<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">jobs</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">deploy</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">runs-on</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>ubuntu-latest<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">steps</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Checkout code<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">uses</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>actions/checkout@v3<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Authenticate to Google Cloud<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">uses</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>google-github-actions/auth@v1<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">with</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">          </span><span style="color:#0550ae">credentials_json</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>${{ secrets.GCP_SA_KEY }}<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Set up Cloud SDK<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">uses</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>google-github-actions/setup-gcloud@v1<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Configure Docker to use gcloud<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">run</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>gcloud auth configure-docker<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Build Docker image<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">run</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#1f2328">|</span><span style="color:#0a3069">
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} ./server
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          docker tag gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Push to Google Container Registry<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">run</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#1f2328">|</span><span style="color:#0a3069">
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Deploy to Cloud Run<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">run</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#1f2328">|</span><span style="color:#0a3069">
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          gcloud run deploy ${{ env.SERVICE_NAME }} \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --region ${{ env.REGION }} \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --platform managed \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --allow-unauthenticated \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --set-env-vars &#34;NODE_ENV=production&#34;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>Get Service URL<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">        </span><span style="color:#0550ae">run</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#1f2328">|</span><span style="color:#0a3069">
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --region ${{ env.REGION }} \
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">            --format &#39;value(status.url)&#39;)
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069">          echo &#34;Service deployed at: $SERVICE_URL&#34;</span><span style="color:#fff">
+</span></span></span></code></pre><p><strong>⚠️ 중요: <code>PROJECT_ID</code>를 실제 프로젝트 ID로 변경하세요!</strong></p>
+<h3 id="4-">4. 테스트</h3>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 코드 수정 및 푸시</span>
+</span></span><span style="display:flex;"><span>git add .
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#0a3069">&#34;Test GitHub Actions deploy&#34;</span>
+</span></span><span style="display:flex;"><span>git push origin main
+</span></span></code></pre><p><strong>빌드 확인:</strong></p>
+<ul>
+<li>GitHub Repository → Actions 탭</li>
+<li>실행 중인 워크플로우 확인</li>
+</ul>
+<hr/>
+<h2 id="---2">로컬 수동 배포</h2>
+<h3 id="1-deploysh--">1. deploy.sh 스크립트 사용</h3>
+<p>프로젝트에 이미 <code>server/deploy.sh</code> 파일이 있습니다:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"></span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Run 배포 스크립트</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">set</span> -e
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 변수 설정</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">PROJECT_ID</span><span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;YOUR_GCP_PROJECT_ID&#34;</span>  <span style="color:#57606a"># ⚠️ 실제 프로젝트 ID로 변경</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">SERVICE_NAME</span><span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;backend&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">REGION</span><span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;us-west1&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;gcr.io/</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_ID</span><span style="color:#0a3069">}</span><span style="color:#0a3069">/</span><span style="color:#0a3069">${</span><span style="color:#953800">SERVICE_NAME</span><span style="color:#0a3069">}</span><span style="color:#0a3069">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;🚀 Starting deployment to Cloud Run...&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 1. Docker 이미지 빌드</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;📦 Building Docker image...&#34;</span>
+</span></span><span style="display:flex;"><span>docker build -t <span style="color:#0a3069">${</span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0a3069">}</span>:latest .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 2. 이미지에 타임스탬프 태그 추가</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">TIMESTAMP</span><span style="color:#0550ae">=</span><span style="color:#cf222e">$(</span>date +%Y%m%d-%H%M%S<span style="color:#cf222e">)</span>
+</span></span><span style="display:flex;"><span>docker tag <span style="color:#0a3069">${</span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0a3069">}</span>:latest <span style="color:#0a3069">${</span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0a3069">}</span>:<span style="color:#0a3069">${</span><span style="color:#953800">TIMESTAMP</span><span style="color:#0a3069">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 3. Google Container Registry로 푸시</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;📤 Pushing to Google Container Registry...&#34;</span>
+</span></span><span style="display:flex;"><span>docker push <span style="color:#0a3069">${</span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0a3069">}</span>:latest
+</span></span><span style="display:flex;"><span>docker push <span style="color:#0a3069">${</span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0a3069">}</span>:<span style="color:#0a3069">${</span><span style="color:#953800">TIMESTAMP</span><span style="color:#0a3069">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 4. Cloud Run에 배포</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;☁️  Deploying to Cloud Run...&#34;</span>
+</span></span><span style="display:flex;"><span>gcloud run deploy <span style="color:#0a3069">${</span><span style="color:#953800">SERVICE_NAME</span><span style="color:#0a3069">}</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --image <span style="color:#0a3069">${</span><span style="color:#953800">IMAGE_NAME</span><span style="color:#0a3069">}</span>:<span style="color:#0a3069">${</span><span style="color:#953800">TIMESTAMP</span><span style="color:#0a3069">}</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region <span style="color:#0a3069">${</span><span style="color:#953800">REGION</span><span style="color:#0a3069">}</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --platform managed <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --allow-unauthenticated <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --set-env-vars <span style="color:#0a3069">&#34;NODE_ENV=production&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 5. 배포 완료 URL 출력</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">SERVICE_URL</span><span style="color:#0550ae">=</span><span style="color:#cf222e">$(</span>gcloud run services describe <span style="color:#0a3069">${</span><span style="color:#953800">SERVICE_NAME</span><span style="color:#0a3069">}</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region <span style="color:#0a3069">${</span><span style="color:#953800">REGION</span><span style="color:#0a3069">}</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --format <span style="color:#0a3069">&#39;value(status.url)&#39;</span><span style="color:#cf222e">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;✅ Deployment complete!&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;🌐 Service URL: </span><span style="color:#0a3069">${</span><span style="color:#953800">SERVICE_URL</span><span style="color:#0a3069">}</span><span style="color:#0a3069">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">echo</span> <span style="color:#0a3069">&#34;🏷️  Image tag: </span><span style="color:#0a3069">${</span><span style="color:#953800">TIMESTAMP</span><span style="color:#0a3069">}</span><span style="color:#0a3069">&#34;</span>
+</span></span></code></pre><h3 id="2----">2. 스크립트 수정 및 실행</h3>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 1. PROJECT_ID 수정</span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># server/deploy.sh 파일을 열어서 YOUR_GCP_PROJECT_ID를 실제 값으로 변경</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 2. 실행 권한 부여</span>
+</span></span><span style="display:flex;"><span>chmod +x server/deploy.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 3. 배포 실행</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">cd</span> server
+</span></span><span style="display:flex;"><span>./deploy.sh
+</span></span></code></pre><h3 id="3---">3. 간단한 명령어로 배포</h3>
+<p>스크립트 없이 직접 명령어 실행:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#6639ba">cd</span> server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 1. Docker 이미지 빌드</span>
+</span></span><span style="display:flex;"><span>docker build -t gcr.io/YOUR_PROJECT_ID/backend:latest .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 2. GCR로 푸시</span>
+</span></span><span style="display:flex;"><span>docker push gcr.io/YOUR_PROJECT_ID/backend:latest
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 3. Cloud Run 배포</span>
+</span></span><span style="display:flex;"><span>gcloud run deploy backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --image gcr.io/YOUR_PROJECT_ID/backend:latest <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region us-west1 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --platform managed <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --allow-unauthenticated
+</span></span></code></pre><hr/>
+<h2 id="--3">비용 분석</h2>
+<h3 id="cloud-build-">Cloud Build (권장)</h3>
+<h4 id="-tier">무료 tier</h4>
+<pre><code>✅ 빌드 시간: 120분/일 (무료)
+✅ 약 24-40회 배포/일 가능 (1회 빌드 3-5분 기준)
+</code></pre>
+<h4 id="----1">실제 사용량 (개인 프로젝트)</h4>
+<pre><code>📊 예상 배포 횟수:
+- 개발 중: 1-3회/일
+- 안정기: 1-2회/주
+
+📊 예상 빌드 시간:
+- 3회/일 × 5분 = 15분/일
+- 무료 한도: 120분/일
+- 사용률: 12.5% ✅
+
+결론: 100% 무료 범위 내에서 사용 가능!
+</code></pre>
+<h4 id="---3">초과 시 비용</h4>
+<pre><code>💰 $0.003/분 (빌드 시간 초과분)
+
+예: 하루 200분 사용 시
+- 무료: 120분
+- 유료: 80분 × $0.003 = $0.24/일 = $7.20/월
+</code></pre>
+<h3 id="github-actions">GitHub Actions</h3>
+<h4 id="-tier-1">무료 tier</h4>
+<pre><code>✅ Public repo: 무제한 무료
+✅ Private repo: 2,000분/월 무료
+</code></pre>
+<h4 id="---private-repo">초과 시 비용 (Private repo)</h4>
+<pre><code>💰 $0.008/분
+
+예: 월 3,000분 사용 시
+- 무료: 2,000분
+- 유료: 1,000분 × $0.008 = $8/월
+</code></pre>
+<h3 id="---4">로컬 수동 배포</h3>
+<pre><code>✅ 비용: $0 (완전 무료)
+⚠️ 자동화 없음
+</code></pre>
+<h3 id="cloud-run--">Cloud Run 실행 비용</h3>
+<pre><code>무료 tier (매월):
+- 요청: 200만 건
+- CPU: 180,000 vCPU-초
+- 메모리: 360,000 GiB-초
+- 네트워크 송신: 1GB
+
+개인 프로젝트는 대부분 무료 범위 내!
+</code></pre>
+<hr/>
+<h2 id="heading-4">트러블슈팅</h2>
+<h3 id="-1-cloud-build--">문제 1: Cloud Build 권한 오류</h3>
+<p><strong>에러 메시지:</strong></p>
+<pre><code>ERROR: (gcloud.run.deploy) PERMISSION_DENIED: Permission &#39;run.services.update&#39; denied
+</code></pre>
+<p><strong>해결 방법:</strong></p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Cloud Build 서비스 계정에 권한 부여</span>
+</span></span><span style="display:flex;"><span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0550ae">=</span><span style="color:#cf222e">$(</span>gcloud projects describe YOUR_PROJECT_ID --format<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;value(projectNumber)&#34;</span><span style="color:#cf222e">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding YOUR_PROJECT_ID <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/run.admin&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gcloud projects add-iam-policy-binding YOUR_PROJECT_ID <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --member<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;serviceAccount:</span><span style="color:#0a3069">${</span><span style="color:#953800">PROJECT_NUMBER</span><span style="color:#0a3069">}</span><span style="color:#0a3069">@cloudbuild.gserviceaccount.com&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --role<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;roles/iam.serviceAccountUser&#34;</span>
+</span></span></code></pre><hr/>
+<h3 id="-2-github--">문제 2: GitHub 연동 실패</h3>
+<p><strong>에러 메시지:</strong></p>
+<pre><code>ERROR: Repository not found
+</code></pre>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>GitHub App 재인증:
+<pre><code>https://console.cloud.google.com/cloud-build/triggers
+</code></pre>
+</li>
+<li>“CONNECT REPOSITORY” 클릭</li>
+<li>GitHub 재인증 및 저장소 선택</li>
+</ol>
+<hr/>
+<h3 id="-3-docker--">문제 3: Docker 빌드 실패</h3>
+<p><strong>에러 메시지:</strong></p>
+<pre><code>ERROR: failed to solve with frontend dockerfile.v0
+</code></pre>
+<p><strong>원인:</strong></p>
+<ul>
+<li>Dockerfile 문법 오류</li>
+<li>파일 경로 오류</li>
+<li>의존성 설치 실패</li>
+</ul>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>
+<p>로컬에서 Docker 빌드 테스트:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#6639ba">cd</span> server
+</span></span><span style="display:flex;"><span>docker build -t test:latest .
+</span></span></code></pre></li>
+<li>
+<p>Dockerfile 확인:</p>
+<ul>
+<li><code>COPY</code> 명령어 경로 확인</li>
+<li><code>package.json</code> 존재 여부 확인</li>
+<li>Node.js 버전 확인</li>
+</ul>
+</li>
+<li>
+<p><code>.dockerignore</code> 확인:</p>
+<pre><code>node_modules
+npm-debug.log
+.env
+.git
+</code></pre>
+</li>
+</ol>
+<hr/>
+<h3 id="-4-cloud-run--">문제 4: Cloud Run 배포 타임아웃</h3>
+<p><strong>에러 메시지:</strong></p>
+<pre><code>ERROR: Revision failed to become ready
+</code></pre>
+<p><strong>원인:</strong></p>
+<ul>
+<li>애플리케이션 시작 실패</li>
+<li>포트 바인딩 오류</li>
+<li>환경 변수 누락</li>
+</ul>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>
+<p>Cloud Run 로그 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud logging <span style="color:#6639ba">read</span> <span style="color:#0a3069">&#34;resource.type=cloud_run_revision&#34;</span> --limit<span style="color:#0550ae">=</span><span style="color:#0550ae">50</span>
+</span></span></code></pre></li>
+<li>
+<p>애플리케이션이 <code>PORT</code> 환경 변수 사용하는지 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#cf222e">const</span> <span style="color:#1f2328">PORT</span> <span style="color:#0550ae">=</span> <span style="color:#1f2328">process</span><span style="color:#1f2328">.</span><span style="color:#1f2328">env</span><span style="color:#1f2328">.</span><span style="color:#1f2328">PORT</span> <span style="color:#0550ae">||</span> <span style="color:#0550ae">3001</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">app</span><span style="color:#1f2328">.</span><span style="color:#1f2328">listen</span><span style="color:#1f2328">(</span><span style="color:#1f2328">PORT</span><span style="color:#1f2328">,</span> <span style="color:#1f2328">()</span> <span style="color:#1f2328">=&gt;</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#1f2328">console</span><span style="color:#1f2328">.</span><span style="color:#1f2328">log</span><span style="color:#1f2328">(</span><span style="color:#0a3069">`Server running on port </span><span style="color:#0a3069">${</span><span style="color:#1f2328">PORT</span><span style="color:#0a3069">}</span><span style="color:#0a3069">`</span><span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">});</span>
+</span></span></code></pre></li>
+<li>
+<p>헬스체크 엔드포인트 추가:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#1f2328">app</span><span style="color:#1f2328">.</span><span style="color:#1f2328">get</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#39;/health&#39;</span><span style="color:#1f2328">,</span> <span style="color:#1f2328">(</span><span style="color:#1f2328">req</span><span style="color:#1f2328">,</span> <span style="color:#1f2328">res</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">=&gt;</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#1f2328">res</span><span style="color:#1f2328">.</span><span style="color:#1f2328">status</span><span style="color:#1f2328">(</span><span style="color:#0550ae">200</span><span style="color:#1f2328">).</span><span style="color:#1f2328">send</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#39;OK&#39;</span><span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">});</span>
+</span></span></code></pre></li>
+</ol>
+<hr/>
+<h3 id="-5-github-actions-gcp--">문제 5: GitHub Actions에서 GCP 인증 실패</h3>
+<p><strong>에러 메시지:</strong></p>
+<pre><code>Error: google-github-actions/auth failed with: retry function failed after 3 attempts
+</code></pre>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>
+<p>Service Account 키 재확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>cat key.json
+</span></span></code></pre></li>
+<li>
+<p>GitHub Secret 재등록:</p>
+<ul>
+<li>Repository → Settings → Secrets → GCP_SA_KEY 삭제</li>
+<li><code>key.json</code> 전체 내용 복사하여 재등록</li>
+</ul>
+</li>
+<li>
+<p>Service Account 권한 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud projects get-iam-policy YOUR_PROJECT_ID <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --flatten<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;bindings[].members&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --filter<span style="color:#0550ae">=</span><span style="color:#0a3069">&#34;bindings.members:github-actions@*&#34;</span>
+</span></span></code></pre></li>
+</ol>
+<hr/>
+<h3 id="-6-----">문제 6: 빌드는 성공하지만 배포 안 됨</h3>
+<p><strong>증상:</strong></p>
+<ul>
+<li>Cloud Build 빌드 성공 ✅</li>
+<li>하지만 Cloud Run 서비스가 업데이트되지 않음</li>
+</ul>
+<p><strong>원인:</strong></p>
+<ul>
+<li>이미지가 푸시되었지만 배포 단계 실패</li>
+<li>Cloud Run 서비스 이름 불일치</li>
+</ul>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>
+<p>Cloud Build 로그 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud builds list --limit<span style="color:#0550ae">=</span><span style="color:#0550ae">1</span>
+</span></span><span style="display:flex;"><span>gcloud builds log BUILD_ID
+</span></span></code></pre></li>
+<li>
+<p><code>cloudbuild.yaml</code>에서 서비스 이름 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/gcloud&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span>- <span style="color:#0a3069">&#39;run&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span>- <span style="color:#0a3069">&#39;deploy&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span>- <span style="color:#0a3069">&#39;backend&#39;</span><span style="color:#fff">  </span><span style="color:#57606a"># ← 실제 Cloud Run 서비스 이름과 일치해야 함</span><span style="color:#fff">
+</span></span></span></code></pre></li>
+<li>
+<p>Cloud Run 서비스 목록 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud run services list
+</span></span></code></pre></li>
+</ol>
+<hr/>
+<h3 id="-7----">문제 7: 환경 변수가 적용되지 않음</h3>
+<p><strong>증상:</strong></p>
+<ul>
+<li>배포는 성공하지만 애플리케이션에서 환경 변수를 읽지 못함</li>
+</ul>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>
+<p>Cloud Run 서비스의 환경 변수 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud run services describe backend --region<span style="color:#0550ae">=</span>us-west1 --format<span style="color:#0550ae">=</span>yaml
+</span></span></code></pre></li>
+<li>
+<p><code>cloudbuild.yaml</code>에 환경 변수 추가:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>- <span style="color:#0a3069">&#39;--set-env-vars&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span>- <span style="color:#0a3069">&#39;NODE_ENV=production,MONGO_URI=your-mongo-uri&#39;</span><span style="color:#fff">
+</span></span></span></code></pre></li>
+<li>
+<p>Secret Manager 사용 (민감한 정보):</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#0550ae">secretEnv</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#1f2328">[</span><span style="color:#0a3069">&#39;MONGO_URI&#39;</span><span style="color:#1f2328">,</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;JWT_SECRET&#39;</span><span style="color:#1f2328">]</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff"></span><span style="color:#0550ae">availableSecrets</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">secretManager</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span>- <span style="color:#0550ae">versionName</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>projects/$PROJECT_ID/secrets/MONGO_URI/versions/latest<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span><span style="color:#0550ae">env</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;MONGO_URI&#39;</span><span style="color:#fff">
+</span></span></span></code></pre></li>
+</ol>
+<hr/>
+<h3 id="-8----">문제 8: 이전 이미지가 계속 배포됨</h3>
+<p><strong>증상:</strong></p>
+<ul>
+<li>새 코드를 푸시했는데 이전 버전이 배포됨</li>
+</ul>
+<p><strong>원인:</strong></p>
+<ul>
+<li>Docker 이미지 캐시</li>
+<li>GCR에 이미지가 푸시되지 않음</li>
+<li><code>:latest</code> 태그만 사용</li>
+</ul>
+<p><strong>해결 방법:</strong></p>
+<ol>
+<li>
+<p>커밋 SHA를 이미지 태그로 사용 (이미 <code>cloudbuild.yaml</code>에 적용됨):</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>- <span style="color:#0a3069">&#39;gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#39;</span><span style="color:#fff">  </span><span style="color:#57606a"># ✅ 커밋별 고유 태그</span><span style="color:#fff">
+</span></span></span></code></pre></li>
+<li>
+<p>GCR에서 이미지 확인:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud container images list-tags gcr.io/YOUR_PROJECT_ID/backend
+</span></span></code></pre></li>
+<li>
+<p>특정 이미지로 재배포:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span>gcloud run deploy backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --image gcr.io/YOUR_PROJECT_ID/backend:abc1234 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region us-west1
+</span></span></code></pre></li>
+</ol>
+<hr/>
+<h3 id="---5">로그 확인 방법</h3>
+<h4 id="cloud-build--1">Cloud Build 로그</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 최근 빌드 목록</span>
+</span></span><span style="display:flex;"><span>gcloud builds list --limit<span style="color:#0550ae">=</span><span style="color:#0550ae">10</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 특정 빌드 로그</span>
+</span></span><span style="display:flex;"><span>gcloud builds log BUILD_ID --stream
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Console</span>
+</span></span><span style="display:flex;"><span>https://console.cloud.google.com/cloud-build/builds
+</span></span></code></pre><h4 id="cloud-run-">Cloud Run 로그</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 실시간 로그 스트리밍</span>
+</span></span><span style="display:flex;"><span>gcloud logging <span style="color:#6639ba">read</span> <span style="color:#0a3069">&#34;resource.type=cloud_run_revision AND resource.labels.service_name=backend&#34;</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --limit<span style="color:#0550ae">=</span><span style="color:#0550ae">50</span> <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --format<span style="color:#0550ae">=</span>json <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --freshness<span style="color:#0550ae">=</span>1h
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Console</span>
+</span></span><span style="display:flex;"><span>https://console.cloud.google.com/run
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># → 서비스 선택 → LOGS 탭</span>
+</span></span></code></pre><h4 id="github-actions-">GitHub Actions 로그</h4>
+<pre><code>GitHub Repository → Actions 탭 → 워크플로우 선택 → 각 Step 클릭
+</code></pre>
+<hr/>
+<h2 id="--4">추가 최적화</h2>
+<h3 id="1---">1. 빌드 속도 향상</h3>
+<h4 id="docker---">Docker 멀티스테이지 빌드 사용</h4>
+<p><code>server/Dockerfile</code> 최적화:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Stage 1: Dependencies</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">FROM</span><span style="color:#fff"> </span><span style="color:#0a3069">node:18-alpine</span><span style="color:#fff"> </span><span style="color:#cf222e">AS</span><span style="color:#fff"> </span><span style="color:#0a3069">deps</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">WORKDIR</span><span style="color:#fff"> </span><span style="color:#0a3069">/app</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">COPY</span> package*.json ./<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">RUN</span> npm ci --only<span style="color:#0550ae">=</span>production<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#57606a"># Stage 2: Build</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">FROM</span><span style="color:#fff"> </span><span style="color:#0a3069">node:18-alpine</span><span style="color:#fff"> </span><span style="color:#cf222e">AS</span><span style="color:#fff"> </span><span style="color:#0a3069">builder</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">WORKDIR</span><span style="color:#fff"> </span><span style="color:#0a3069">/app</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">COPY</span> package*.json ./<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">RUN</span> npm ci<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">COPY</span> . .<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#57606a"># 필요 시 빌드 스크립트 실행</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#57606a"># RUN npm run build</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#57606a"># Stage 3: Production</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">FROM</span><span style="color:#fff"> </span><span style="color:#0a3069">node:18-alpine</span><span style="color:#fff"> </span><span style="color:#cf222e">AS</span><span style="color:#fff"> </span><span style="color:#0a3069">runner</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">WORKDIR</span><span style="color:#fff"> </span><span style="color:#0a3069">/app</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">ENV</span> <span style="color:#953800">NODE_ENV</span><span style="color:#0550ae">=</span>production
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cf222e">COPY</span> --from<span style="color:#0550ae">=</span>deps /app/node_modules ./node_modules<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">COPY</span> --from<span style="color:#0550ae">=</span>builder /app .<span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">EXPOSE</span><span style="color:#fff"> </span><span style="color:#0a3069">3001</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span><span style="display:flex;"><span><span style="color:#f6f8fa;background-color:#82071e"></span><span style="color:#cf222e">CMD</span> <span style="color:#1f2328">[</span><span style="color:#0a3069">&#34;node&#34;</span><span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;index.js&#34;</span><span style="color:#1f2328">]</span><span style="color:#f6f8fa;background-color:#82071e">
+</span></span></span></code></pre><h4 id="docker-layer-">Docker Layer 캐싱</h4>
+<p><code>cloudbuild.yaml</code>에 캐시 추가:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#0550ae">options</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">machineType</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;E2_HIGHCPU_8&#39;</span><span style="color:#fff">  </span><span style="color:#57606a"># 빌드 속도 향상</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#0550ae">logging</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>CLOUD_LOGGING_ONLY<span style="color:#fff">
+</span></span></span></code></pre><h3 id="2---">2. 배포 알림 설정</h3>
+<h4 id="slack--">Slack 알림 추가</h4>
+<p><code>cloudbuild.yaml</code>에 추가:</p>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#0550ae">steps</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#57606a"># ... 기존 steps ...</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span><span style="color:#57606a"># Slack 알림</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">  </span>- <span style="color:#0550ae">name</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span><span style="color:#0a3069">&#39;gcr.io/cloud-builders/curl&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">    </span><span style="color:#0550ae">args</span><span style="color:#1f2328">:</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;-X&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;POST&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;-H&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0550ae">&#39;Content-Type</span><span style="color:#1f2328">:</span><span style="color:#fff"> </span>application/json&#39;<span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;-d&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;{&#34;text&#34;:&#34;✅ Backend deployed successfully! Image: gcr.io/$PROJECT_ID/backend:$SHORT_SHA&#34;}&#39;</span><span style="color:#fff">
+</span></span></span><span style="display:flex;"><span><span style="color:#fff">      </span>- <span style="color:#0a3069">&#39;YOUR_SLACK_WEBHOOK_URL&#39;</span><span style="color:#fff">
+</span></span></span></code></pre><h3 id="3-rollback-">3. Rollback 전략</h3>
+<h4 id="---6">이전 버전으로 롤백</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 이전 이미지 확인</span>
+</span></span><span style="display:flex;"><span>gcloud container images list-tags gcr.io/YOUR_PROJECT_ID/backend
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 특정 버전으로 롤백</span>
+</span></span><span style="display:flex;"><span>gcloud run deploy backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --image gcr.io/YOUR_PROJECT_ID/backend:PREVIOUS_SHA <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region us-west1
+</span></span></code></pre><h4 id="--blue-green-">트래픽 분할 (Blue-Green 배포)</h4>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># 새 버전 배포 (트래픽 0%)</span>
+</span></span><span style="display:flex;"><span>gcloud run deploy backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --image gcr.io/YOUR_PROJECT_ID/backend:NEW_SHA <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region us-west1 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --no-traffic <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --tag<span style="color:#0550ae">=</span>new
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 트래픽 점진적 이동</span>
+</span></span><span style="display:flex;"><span>gcloud run services update-traffic backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region us-west1 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --to-revisions<span style="color:#0550ae">=</span><span style="color:#953800">new</span><span style="color:#0550ae">=</span>10,LATEST<span style="color:#0550ae">=</span><span style="color:#0550ae">90</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># 전체 트래픽 이동</span>
+</span></span><span style="display:flex;"><span>gcloud run services update-traffic backend <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --region us-west1 <span style="color:#0a3069">\
+</span></span></span><span style="display:flex;"><span><span style="color:#0a3069"></span>  --to-latest
+</span></span></code></pre><hr/>
+<h2 id="heading-5">체크리스트</h2>
+<h3 id="cloud-build----1">Cloud Build 설정 완료 체크리스트</h3>
+<ul>
+<li><input disabled="" type="checkbox"/> Cloud Build API 활성화</li>
+<li><input disabled="" type="checkbox"/> Cloud Build 서비스 계정 권한 설정 (run.admin, iam.serviceAccountUser)</li>
+<li><input disabled="" type="checkbox"/> <code>server/cloudbuild.yaml</code> 파일 확인</li>
+<li><input disabled="" type="checkbox"/> GitHub 저장소 연결</li>
+<li><input disabled="" type="checkbox"/> Trigger 생성 (main 브랜치, server/cloudbuild.yaml)</li>
+<li><input disabled="" type="checkbox"/> 테스트 배포 실행</li>
+<li><input disabled="" type="checkbox"/> Cloud Console에서 빌드 성공 확인</li>
+<li><input disabled="" type="checkbox"/> Cloud Run 서비스 업데이트 확인</li>
+<li><input disabled="" type="checkbox"/> 브라우저에서 접속 테스트</li>
+</ul>
+<h3 id="github-actions---">GitHub Actions 설정 완료 체크리스트</h3>
+<ul>
+<li><input disabled="" type="checkbox"/> GCP Service Account 생성</li>
+<li><input disabled="" type="checkbox"/> Service Account에 권한 부여 (run.admin, storage.admin, iam.serviceAccountUser)</li>
+<li><input disabled="" type="checkbox"/> Service Account JSON 키 생성</li>
+<li><input disabled="" type="checkbox"/> GitHub Secret에 <code>GCP_SA_KEY</code> 추가</li>
+<li><input disabled="" type="checkbox"/> <code>.github/workflows/deploy-backend.yml</code>에서 <code>PROJECT_ID</code> 수정</li>
+<li><input disabled="" type="checkbox"/> 테스트 푸시 실행</li>
+<li><input disabled="" type="checkbox"/> GitHub Actions 탭에서 워크플로우 성공 확인</li>
+<li><input disabled="" type="checkbox"/> Cloud Run 서비스 업데이트 확인</li>
+<li><input disabled="" type="checkbox"/> 브라우저에서 접속 테스트</li>
+</ul>
+<h3 id="----2">로컬 수동 배포 체크리스트</h3>
+<ul>
+<li><input disabled="" type="checkbox"/> <code>server/deploy.sh</code>에서 <code>PROJECT_ID</code> 수정</li>
+<li><input disabled="" type="checkbox"/> 스크립트 실행 권한 부여 (<code>chmod +x</code>)</li>
+<li><input disabled="" type="checkbox"/> Docker Desktop 실행 중 확인</li>
+<li><input disabled="" type="checkbox"/> gcloud CLI 인증 완료 (<code>gcloud auth login</code>)</li>
+<li><input disabled="" type="checkbox"/> 스크립트 실행 (<code>./deploy.sh</code>)</li>
+<li><input disabled="" type="checkbox"/> 배포 성공 메시지 확인</li>
+<li><input disabled="" type="checkbox"/> 브라우저에서 접속 테스트</li>
+</ul>
+<hr/>
+<h2 id="--5">참고 자료</h2>
+<h3 id="--6">공식 문서</h3>
+<ul>
+<li><a href="https://cloud.google.com/build/docs">Cloud Build Documentation</a></li>
+<li><a href="https://cloud.google.com/run/docs">Cloud Run Documentation</a></li>
+<li><a href="https://docs.github.com/en/actions">GitHub Actions Documentation</a></li>
+<li><a href="https://cloud.google.com/container-registry/docs">Google Container Registry</a></li>
+</ul>
+<h3 id="--7">유용한 명령어</h3>
+<pre style="background-color:#fff;"><code><span style="display:flex;"><span><span style="color:#57606a"># Cloud Build</span>
+</span></span><span style="display:flex;"><span>gcloud builds list
+</span></span><span style="display:flex;"><span>gcloud builds describe BUILD_ID
+</span></span><span style="display:flex;"><span>gcloud builds log BUILD_ID --stream
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Cloud Run</span>
+</span></span><span style="display:flex;"><span>gcloud run services list
+</span></span><span style="display:flex;"><span>gcloud run services describe SERVICE_NAME --region<span style="color:#0550ae">=</span>REGION
+</span></span><span style="display:flex;"><span>gcloud run revisions list --service<span style="color:#0550ae">=</span>SERVICE_NAME --region<span style="color:#0550ae">=</span>REGION
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Container Registry</span>
+</span></span><span style="display:flex;"><span>gcloud container images list
+</span></span><span style="display:flex;"><span>gcloud container images list-tags gcr.io/PROJECT_ID/IMAGE_NAME
+</span></span><span style="display:flex;"><span>gcloud container images delete gcr.io/PROJECT_ID/IMAGE_NAME:TAG
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Secret Manager</span>
+</span></span><span style="display:flex;"><span>gcloud secrets create SECRET_NAME --data-file<span style="color:#0550ae">=</span>-
+</span></span><span style="display:flex;"><span>gcloud secrets versions access latest --secret<span style="color:#0550ae">=</span>SECRET_NAME
+</span></span></code></pre><hr/>
+<h2 id="--8">문서 히스토리</h2>
+<ul>
+<li><strong>2025-12-04:</strong> 초기 문서 작성 (Cloud Build, GitHub Actions, 로컬 배포 방법)</li>
+</ul>
+<hr/>
+<h2 id="--9">다음 단계</h2>
+<ol>
+<li>✅ Cloud Build 자동 배포 설정 완료</li>
+<li>✅ 커스텀 도메인 연결 완료 (별도 문서 참조)</li>
+<li>📝 프론트엔드 Vercel 배포 (진행 중)</li>
+<li>📝 환경 변수 Secret Manager로 마이그레이션 (선택)</li>
+<li>📝 모니터링 및 알림 설정 (선택)</li>
+</ol>
+</body></html>
+        </div>
+    </article>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

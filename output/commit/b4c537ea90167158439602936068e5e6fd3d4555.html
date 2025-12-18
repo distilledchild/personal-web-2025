@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Update and insert form for Me and Academic submenu · personal-web-2025@b4c537e</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>b4c537e</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-11-28</span> <span class="nowrap">02:12:13</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                Update and insert form for Me and Academic submenu
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="c65ec5b1d4e9c89741eff79b15ed4db3778f9cdb.html"><code>c65ec5b</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (2)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fAbout.tsx" class="file-name">
+                    About.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="pages/About.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/About.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,5 +1,5 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import React, { useState, useEffect } from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"><span class="gd">-import { Dna, Plus, X, Trash2, Edit2 } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+import { Plus, X, Trash2 } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> interface Milestone {
+</span></span><span class="line"><span class="cl">     _id: string;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -10,22 +10,93 @@ interface Milestone {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     createdAt: string;
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+interface AboutMe {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    _id?: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    introduction: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    research_interests: string[];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    hobbies: string[];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    future_goal: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+interface AboutAcademic {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    _id?: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    education: Array&lt;{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        degree: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        institution: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        location: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        period: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        gpa: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    experience: Array&lt;{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        organization: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        location: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        period: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        responsibilities: string[];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    publications: Array&lt;{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        authors: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        journal: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        year: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        volume: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        pages: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        doi: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        pmid: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        type: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    skills: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        programming: Array&lt;{ name: string; level: string; order: number }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        bioinformatics: Array&lt;{ name: string; level: string; order: number }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        tools: Array&lt;{ name: string; level: string; order: number }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        frameworks: Array&lt;{ name: string; level: string; order: number }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    awards: Array&lt;{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        organization: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        year: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: string;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: number;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> export const About: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl">     const [activeTab, setActiveTab] = useState&lt;&#39;me&#39; | &#39;website&#39; | &#39;cv&#39;&gt;(&#39;me&#39;);
+</span></span><span class="line"><span class="cl">     const [milestones, setMilestones] = useState&lt;Milestone[]&gt;([]);
+</span></span><span class="line"><span class="cl"><span class="gi">+    const [aboutMe, setAboutMe] = useState&lt;AboutMe | null&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [aboutAcademic, setAboutAcademic] = useState&lt;AboutAcademic | null&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const [user, setUser] = useState&lt;any&gt;(null);
+</span></span><span class="line"><span class="cl">     const [isAuthorized, setIsAuthorized] = useState(false);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     // Modal States
+</span></span><span class="line"><span class="cl">     const [isModalOpen, setIsModalOpen] = useState(false);
+</span></span><span class="line"><span class="cl"><span class="gi">+    const [modalType, setModalType] = useState&lt;&#39;milestone&#39; | &#39;aboutMe&#39; | &#39;academic&#39;&gt;(&#39;milestone&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const [editingMilestone, setEditingMilestone] = useState&lt;Milestone | null&gt;(null);
+</span></span><span class="line"><span class="cl"><span class="gd">-    const [formData, setFormData] = useState({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Milestone Form
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [milestoneForm, setMilestoneForm] = useState({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         date: &#39;&#39;,
+</span></span><span class="line"><span class="cl">         title: &#39;&#39;,
+</span></span><span class="line"><span class="cl">         description: &#39;&#39;,
+</span></span><span class="line"><span class="cl">         category: &#39;WEB&#39; as &#39;ME&#39; | &#39;WEB&#39;
+</span></span><span class="line"><span class="cl">     });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // About Me Form
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [aboutMeForm, setAboutMeForm] = useState({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        introduction: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        research_interests: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        hobbies: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        future_goal: &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Academic Form (simplified - just as JSON editor)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [academicFormJson, setAcademicFormJson] = useState(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl">         // Get user from local storage
+</span></span><span class="line"><span class="cl">         const storedUser = localStorage.getItem(&#39;user_profile&#39;);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -42,15 +113,20 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl">         if (activeTab === &#39;website&#39;) {
+</span></span><span class="line"><span class="cl">             fetchMilestones();
+</span></span><span class="line"><span class="cl"><span class="gi">+        } else if (activeTab === &#39;me&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            fetchAboutMe();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else if (activeTab === &#39;cv&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            fetchAboutAcademic();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         }
+</span></span><span class="line"><span class="cl">     }, [activeTab]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Fetch functions
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const fetchMilestones = async () =&gt; {
+</span></span><span class="line"><span class="cl">         try {
+</span></span><span class="line"><span class="cl"><span class="gd">-            const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>             const response = await fetch(`${API_URL}/api/milestones`);
+</span></span><span class="line"><span class="cl">             if (response.ok) {
+</span></span><span class="line"><span class="cl">                 const data = await response.json();
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -61,14 +137,35 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-    const handleSave = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!user) return;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const fetchAboutMe = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const response = await fetch(`${API_URL}/api/about-me`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setAboutMe(data);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Failed to fetch about me:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    const fetchAboutAcademic = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         try {
+</span></span><span class="line"><span class="cl"><span class="gd">-            const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            const response = await fetch(`${API_URL}/api/about-academic`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setAboutAcademic(data);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Failed to fetch about academic:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Save handlers
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleSaveMilestone = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!user) return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gi">+        try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             const method = editingMilestone ? &#39;PUT&#39; : &#39;POST&#39;;
+</span></span><span class="line"><span class="cl">             const url = editingMilestone
+</span></span><span class="line"><span class="cl">                 ? `${API_URL}/api/milestones/${editingMilestone._id}`
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -78,7 +175,7 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 method,
+</span></span><span class="line"><span class="cl">                 headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span><span class="line"><span class="cl">                 body: JSON.stringify({
+</span></span><span class="line"><span class="cl"><span class="gd">-                    ...formData,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    ...milestoneForm,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                     email: user.email
+</span></span><span class="line"><span class="cl">                 })
+</span></span><span class="line"><span class="cl">             });
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -92,16 +189,73 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-    const handleDelete = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const handleSaveAboutMe = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!user) return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const isCreating = !aboutMe?._id;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const url = isCreating
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                ? `${API_URL}/api/about-me`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                : `${API_URL}/api/about-me/${aboutMe._id}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const method = isCreating ? &#39;POST&#39; : &#39;PUT&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const response = await fetch(url, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                method,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    introduction: aboutMeForm.introduction,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    research_interests: aboutMeForm.research_interests.split(&#39;\n&#39;).filter(i =&gt; i.trim()),
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    hobbies: aboutMeForm.hobbies.split(&#39;\n&#39;).filter(h =&gt; h.trim()),
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    future_goal: aboutMeForm.future_goal,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    email: user.email
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                fetchAboutMe();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                closeModal();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Failed to save about me:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleSaveAcademic = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!user) return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const parsedData = JSON.parse(academicFormJson);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const isCreating = !aboutAcademic?._id;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const url = isCreating
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                ? `${API_URL}/api/about-academic`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                : `${API_URL}/api/about-academic/${aboutAcademic._id}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const method = isCreating ? &#39;POST&#39; : &#39;PUT&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const response = await fetch(url, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                method,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                body: JSON.stringify({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ...parsedData,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    email: user.email
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                fetchAboutAcademic();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                closeModal();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Failed to save academic:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            alert(&#39;Invalid JSON format&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleDeleteMilestone = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         if (!editingMilestone || !user) return;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">         if (!confirm(&#39;Are you sure you want to delete this milestone?&#39;)) return;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">         try {
+</span></span><span class="line"><span class="cl"><span class="gd">-            const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>             const response = await fetch(`${API_URL}/api/milestones/${editingMilestone._id}`, {
+</span></span><span class="line"><span class="cl">                 method: &#39;DELETE&#39;,
+</span></span><span class="line"><span class="cl">                 headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -117,12 +271,13 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-    const openModal = (milestone?: Milestone) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    // Modal handlers
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const openMilestoneModal = (milestone?: Milestone) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         if (milestone) {
+</span></span><span class="line"><span class="cl">             setEditingMilestone(milestone);
+</span></span><span class="line"><span class="cl">             const date = new Date(milestone.date);
+</span></span><span class="line"><span class="cl">             const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, &#39;0&#39;)}`;
+</span></span><span class="line"><span class="cl"><span class="gd">-            setFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            setMilestoneForm({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 date: yearMonth,
+</span></span><span class="line"><span class="cl">                 title: milestone.title,
+</span></span><span class="line"><span class="cl">                 description: milestone.description,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -132,13 +287,36 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             setEditingMilestone(null);
+</span></span><span class="line"><span class="cl">             const now = new Date();
+</span></span><span class="line"><span class="cl">             const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, &#39;0&#39;)}`;
+</span></span><span class="line"><span class="cl"><span class="gd">-            setFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            setMilestoneForm({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 date: yearMonth,
+</span></span><span class="line"><span class="cl">                 title: &#39;&#39;,
+</span></span><span class="line"><span class="cl">                 description: &#39;&#39;,
+</span></span><span class="line"><span class="cl">                 category: &#39;WEB&#39;
+</span></span><span class="line"><span class="cl">             });
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl"><span class="gi">+        setModalType(&#39;milestone&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setIsModalOpen(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const openAboutMeModal = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (aboutMe) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setAboutMeForm({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                introduction: aboutMe.introduction || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                research_interests: aboutMe.research_interests?.join(&#39;\n&#39;) || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                hobbies: aboutMe.hobbies?.join(&#39;\n&#39;) || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                future_goal: aboutMe.future_goal || &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setModalType(&#39;aboutMe&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setIsModalOpen(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const openAcademicModal = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (aboutAcademic) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const { _id, ...dataWithoutId } = aboutAcademic;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setAcademicFormJson(JSON.stringify(dataWithoutId, null, 2));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setModalType(&#39;academic&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         setIsModalOpen(true);
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -202,34 +380,42 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 &lt;div className=&#34;max-w-7xl mx-auto pt-8&#34;&gt;
+</span></span><span class="line"><span class="cl">                     {/* Content */}
+</span></span><span class="line"><span class="cl">                     {activeTab === &#39;me&#39; ? (
+</span></span><span class="line"><span class="cl"><span class="gd">-                        &lt;div className=&#34;animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                I am a &lt;strong&gt;Computational Biologist&lt;/strong&gt; with a deep passion for understanding the intricate architecture of the genome. My research focuses on &lt;strong&gt;3D genomics&lt;/strong&gt;, exploring how chromatin organization influences gene regulation and cellular function.
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                        &lt;div className=&#34;animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg relative&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {/* Admin Add Button */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {isAuthorized &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;fixed bottom-24 left-6 z-50&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={openAboutMeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        title=&#34;Edit About Me&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;Plus size={28} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;p dangerouslySetInnerHTML={{ __html: aboutMe?.introduction || &#39;&#39; }} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">                             &lt;div className=&#34;grid grid-cols-1 md:grid-cols-2 gap-8 my-12&#34;&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;div className=&#34;bg-slate-50 p-8 rounded-2xl border border-slate-100&#34;&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;h3 className=&#34;text-xl font-bold text-slate-900 mb-4&#34;&gt;Research Interests&lt;/h3&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;ul className=&#34;space-y-3 text-base&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        &lt;li&gt;• 3D Genomics &lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;li&gt;• Single-cell sequencing for cancer research&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;li&gt;• Structural Variant Analysis&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                        {aboutMe?.research_interests?.map((interest, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;li key={idx}&gt;• {interest}&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                     &lt;/ul&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;div className=&#34;bg-slate-50 p-8 rounded-2xl border border-slate-100&#34;&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;h3 className=&#34;text-xl font-bold text-slate-900 mb-4&#34;&gt;Hobbies&lt;/h3&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;ul className=&#34;space-y-3 text-base&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        &lt;li&gt;• Riding a bike&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;li&gt;• Camping&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;li&gt;• Traveling&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;li&gt;• Playing Baduk (Go)&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                        {aboutMe?.hobbies?.map((hobby, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;li key={idx}&gt;• {hobby}&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                     &lt;/ul&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                Looking forward, I aspire to leverage my expertise in a dynamic environment within the &lt;strong&gt;Pharmaceutical or IT industry&lt;/strong&gt;, contributing to drug discovery and precision medicine through advanced computational strategies.
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            &lt;p dangerouslySetInnerHTML={{ __html: aboutMe?.future_goal || &#39;&#39; }} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                     ) : activeTab === &#39;website&#39; ? (
+</span></span><span class="line"><span class="cl">                         &lt;div className=&#34;animate-fadeIn relative min-h-[400px]&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -237,7 +423,7 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                             {isAuthorized &amp;&amp; (
+</span></span><span class="line"><span class="cl">                                 &lt;div className=&#34;fixed bottom-24 left-6 z-50&#34;&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;button
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        onClick={() =&gt; openModal()}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                        onClick={() =&gt; openMilestoneModal()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                         className=&#34;w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110&#34;
+</span></span><span class="line"><span class="cl">                                         title=&#34;Add Milestone&#34;
+</span></span><span class="line"><span class="cl">                                     &gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -263,7 +449,7 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                         &lt;div className=&#34;w-1/2 pr-12 flex justify-end&#34;&gt;
+</span></span><span class="line"><span class="cl">                                             {milestone.category === &#39;ME&#39; &amp;&amp; (
+</span></span><span class="line"><span class="cl">                                                 &lt;div
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                    onClick={() =&gt; isAuthorized &amp;&amp; openModal(milestone)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                    onClick={() =&gt; isAuthorized &amp;&amp; openMilestoneModal(milestone)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                     className={`
+</span></span><span class="line"><span class="cl">                                                         relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
+</span></span><span class="line"><span class="cl">                                                         ${isAuthorized ? &#39;cursor-pointer hover:border-blue-300 hover:shadow-md transition-all&#39; : &#39;&#39;}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -290,7 +476,7 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                         &lt;div className=&#34;w-1/2 pl-12 flex justify-start&#34;&gt;
+</span></span><span class="line"><span class="cl">                                             {milestone.category === &#39;WEB&#39; &amp;&amp; (
+</span></span><span class="line"><span class="cl">                                                 &lt;div
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                    onClick={() =&gt; isAuthorized &amp;&amp; openModal(milestone)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                    onClick={() =&gt; isAuthorized &amp;&amp; openMilestoneModal(milestone)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                     className={`
+</span></span><span class="line"><span class="cl">                                                         relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
+</span></span><span class="line"><span class="cl">                                                         ${isAuthorized ? &#39;cursor-pointer hover:border-blue-300 hover:shadow-md transition-all&#39; : &#39;&#39;}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -317,7 +503,20 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                     ) : (
+</span></span><span class="line"><span class="cl"><span class="gd">-                        &lt;div className=&#34;animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                        &lt;div className=&#34;animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0 relative&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {/* Admin Add Button */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {isAuthorized &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;fixed bottom-24 left-6 z-50&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={openAcademicModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        title=&#34;Edit Academic&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;Plus size={28} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             {/* Left Sidebar - Links Section */}
+</span></span><span class="line"><span class="cl">                             &lt;div className=&#34;lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2&#34;&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;h3 className=&#34;text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2&#34;&gt;Links&lt;/h3&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -358,7 +557,15 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                     &lt;div className=&#34;mb-8&#34;&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;h4 className=&#34;text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2&#34;&gt;Education&lt;/h4&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                            &lt;p className=&#34;text-slate-600&#34;&gt;Your education information will go here...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                            {aboutAcademic?.education?.map((edu, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div key={idx} className=&#34;mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-lg font-bold text-slate-900&#34;&gt;{edu.degree}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-600&#34;&gt;{edu.institution} • {edu.location}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-500 text-sm&#34;&gt;{edu.period}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-600 mt-1&#34;&gt;{edu.description}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    {edu.gpa &amp;&amp; &lt;p className=&#34;text-slate-500 text-sm&#34;&gt;GPA: {edu.gpa}&lt;/p&gt;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -366,7 +573,21 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                     &lt;div className=&#34;mb-8&#34;&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;h4 className=&#34;text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2&#34;&gt;Experience&lt;/h4&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                            &lt;p className=&#34;text-slate-600&#34;&gt;Your experience information will go here...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                            {aboutAcademic?.experience?.map((exp, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div key={idx} className=&#34;mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-lg font-bold text-slate-900&#34;&gt;{exp.title}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-600&#34;&gt;{exp.organization} • {exp.location}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-500 text-sm&#34;&gt;{exp.period}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-600 mt-1&#34;&gt;{exp.description}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    {exp.responsibilities &amp;&amp; exp.responsibilities.length &gt; 0 &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;ul className=&#34;mt-2 ml-4 space-y-1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            {exp.responsibilities.map((resp, ridx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                &lt;li key={ridx} className=&#34;text-slate-600 text-sm&#34;&gt;• {resp}&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;/ul&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -374,15 +595,41 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                     &lt;div className=&#34;mb-8&#34;&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;h4 className=&#34;text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2&#34;&gt;Publications&lt;/h4&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                            &lt;p className=&#34;text-slate-600&#34;&gt;Your publications will go here...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                            {aboutAcademic?.publications?.map((pub, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div key={idx} className=&#34;mb-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-900 font-medium&#34;&gt;{pub.title}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-600 text-sm&#34;&gt;{pub.authors}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;text-slate-500 text-sm italic&#34;&gt;{pub.journal}, {pub.year}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    {pub.doi &amp;&amp; &lt;p className=&#34;text-slate-500 text-xs&#34;&gt;DOI: {pub.doi}&lt;/p&gt;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">                                     {/* Skills Section */}
+</span></span><span class="line"><span class="cl">                                     &lt;div&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;h4 className=&#34;text-xl font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2&#34;&gt;Skills&lt;/h4&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;p className=&#34;text-slate-600&#34;&gt;Your skills will go here...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                        &lt;div className=&#34;grid grid-cols-1 md:grid-cols-2 gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {aboutAcademic?.skills?.programming &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;font-bold text-slate-700 mb-2&#34;&gt;Programming&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;ul className=&#34;space-y-1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        {aboutAcademic.skills.programming.map((skill, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;li key={idx} className=&#34;text-slate-600 text-sm&#34;&gt;• {skill.name} ({skill.level})&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/ul&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {aboutAcademic?.skills?.bioinformatics &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;p className=&#34;font-bold text-slate-700 mb-2&#34;&gt;Bioinformatics&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;ul className=&#34;space-y-1&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        {aboutAcademic.skills.bioinformatics.map((skill, idx) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;li key={idx} className=&#34;text-slate-600 text-sm&#34;&gt;• {skill.name} ({skill.level})&lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/ul&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -395,83 +642,192 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             {/* Modal */}
+</span></span><span class="line"><span class="cl">             {isModalOpen &amp;&amp; (
+</span></span><span class="line"><span class="cl">                 &lt;div className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    &lt;div className=&#34;bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            className=&#34;absolute top-4 right-4 text-slate-400 hover:text-slate-600&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;X size={24} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    {modalType === &#39;milestone&#39; ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                className=&#34;absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;X size={24} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {editingMilestone ? &#39;Edit Milestone&#39; : &#39;Add Milestone&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Month&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        type=&#34;month&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={milestoneForm.date}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setMilestoneForm({ ...milestoneForm, date: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Category&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={milestoneForm.category}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setMilestoneForm({ ...milestoneForm, category: e.target.value as &#39;ME&#39; | &#39;WEB&#39; })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;option value=&#34;ME&#34;&gt;Me&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;option value=&#34;WEB&#34;&gt;Website&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Title&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={milestoneForm.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setMilestoneForm({ ...milestoneForm, title: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;Enter milestone title&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Description&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={milestoneForm.description}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setMilestoneForm({ ...milestoneForm, description: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;Enter milestone description&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                        &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            {editingMilestone ? &#39;Edit Milestone&#39; : &#39;Add Milestone&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Month&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    type=&#34;month&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    value={formData.date}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onChange={e =&gt; setFormData({ ...formData, date: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Category&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    value={formData.category}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onChange={e =&gt; setFormData({ ...formData, category: e.target.value as &#39;ME&#39; | &#39;WEB&#39; })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;option value=&#34;ME&#34;&gt;Me&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;option value=&#34;WEB&#34;&gt;Website&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Title&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    value={formData.title}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onChange={e =&gt; setFormData({ ...formData, title: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                &lt;div className=&#34;flex gap-3 pt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    {editingMilestone &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={handleDeleteMilestone}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;Trash2 size={18} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            Delete
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={handleSaveMilestone}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Save
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Description&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    value={formData.description}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onChange={e =&gt; setFormData({ ...formData, description: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ) : modalType === &#39;aboutMe&#39; ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;bg-white rounded-2xl max-w-3xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                className=&#34;absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;X size={24} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;Edit About Me&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Introduction (HTML allowed)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={aboutMeForm.introduction}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setAboutMeForm({ ...aboutMeForm, introduction: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;Enter introduction (HTML tags like &lt;strong&gt; allowed)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Research Interests (one per line)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={aboutMeForm.research_interests}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setAboutMeForm({ ...aboutMeForm, research_interests: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;3D Genomics&amp;#10;Single-cell sequencing&amp;#10;...&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Hobbies (one per line)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={aboutMeForm.hobbies}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setAboutMeForm({ ...aboutMeForm, hobbies: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;Riding a bike&amp;#10;Camping&amp;#10;...&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;Future Goal (HTML allowed)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={aboutMeForm.future_goal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setAboutMeForm({ ...aboutMeForm, future_goal: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;Enter future goals&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;flex gap-3 pt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={handleSaveAboutMe}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Save
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+                    ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;bg-white rounded-2xl max-w-4xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                className=&#34;absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;X size={24} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;Edit Academic (JSON Format)&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-1&#34;&gt;JSON Data&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={academicFormJson}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={e =&gt; setAcademicFormJson(e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm min-h-[400px]&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        placeholder=&#34;Enter JSON data&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;p className=&#34;text-xs text-slate-500 mt-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Edit the JSON directly. Make sure it&#39;s valid JSON format.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                        &lt;div className=&#34;flex justify-between mt-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            {editingMilestone &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onClick={handleDelete}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;px-4 py-2 text-red-600 font-bold hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;Trash2 size={18} /&gt; Delete
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div className=&#34;flex gap-4 ml-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;px-6 py-2 bg-slate-100 text-slate-600 rounded-full font-bold hover:bg-slate-200 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    onClick={handleSave}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    className=&#34;px-6 py-2 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    Save
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                &lt;div className=&#34;flex gap-3 pt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={closeModal}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;flex-1 px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onClick={handleSaveAcademic}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        Save
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             )}
+</span></span><span class="line"><span class="cl">         &lt;/div&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -226,7 +226,8 @@ const accessInfoSchema = new mongoose.Schema({
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     referrer: String,
+</span></span><span class="line"><span class="cl">     timestamp: { type: Date, default: Date.now },
+</span></span><span class="line"><span class="cl">     session_id: String,
+</span></span><span class="line"><span class="cl"><span class="gd">-    status_code: Number
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    status_code: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    location: String  // Format: &#34;City, Country&#34; (e.g., &#34;Seoul, South Korea&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> // Production collection
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -235,6 +236,48 @@ const AccessInfo = mongoose.model(&#39;AccessInfo&#39;, accessInfoSchema.clone(), &#39;ACCES
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> // Development collection (for local/test IPs)
+</span></span><span class="line"><span class="cl"> const AccessInfoDev = mongoose.model(&#39;AccessInfoDev&#39;, accessInfoSchema.clone(), &#39;ACCESS_INFO_DEV&#39;);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+// Helper function to get location from IP address
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+async function getLocationFromIP(ip) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Skip geolocation for local IPs
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const ipStr = ip.toString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (ipStr === &#39;::1&#39; || ipStr === &#39;127.0.0.1&#39; ||
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ipStr.startsWith(&#39;::ffff:127.&#39;) || ipStr.startsWith(&#39;192.168.&#39;) ||
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ipStr.startsWith(&#39;10.&#39;) || ipStr.startsWith(&#39;172.16.&#39;) || ipStr === &#39;localhost&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return &#39;Local&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Clean up IPv6-mapped IPv4 addresses (::ffff:xxx.xxx.xxx.xxx -&gt; xxx.xxx.xxx.xxx)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        let cleanIP = ipStr;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (ipStr.startsWith(&#39;::ffff:&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            cleanIP = ipStr.substring(7);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Call ip-api.com free API (no key required, 45 requests/minute limit)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const response = await fetch(`http://ip-api.com/json/${cleanIP}?fields=status,message,city,country`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(`[GEOLOCATION] API error: ${response.status}`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (data.status === &#39;success&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Format as &#34;City, Country&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const city = data.city || &#39;Unknown&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const country = data.country || &#39;Unknown&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return `${city}, ${country}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(`[GEOLOCATION] Failed for IP ${cleanIP}:`, data.message);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(`[GEOLOCATION] Error fetching location for IP ${ip}:`, error.message);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> // API endpoint to log access information
+</span></span><span class="line"><span class="cl"> app.post(&#39;/api/access/log&#39;, async (req, res) =&gt; {
+</span></span><span class="line"><span class="cl">     try {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -270,6 +313,9 @@ app.post(&#39;/api/access/log&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                    ipStr === &#39;localhost&#39;;
+</span></span><span class="line"><span class="cl">         };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+        // Get location from IP address
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const location = await getLocationFromIP(ip_address);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         // Determine which model to use based on IP
+</span></span><span class="line"><span class="cl">         const Model = isLocalIP(ip_address) ? AccessInfoDev : AccessInfo;
+</span></span><span class="line"><span class="cl">         const collectionName = isLocalIP(ip_address) ? &#39;ACCESS_INFO_DEV&#39; : &#39;ACCESS_INFO&#39;;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -282,6 +328,7 @@ app.post(&#39;/api/access/log&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             referrer: referrer || &#39;&#39;,
+</span></span><span class="line"><span class="cl">             session_id: session_id || &#39;&#39;,
+</span></span><span class="line"><span class="cl">             status_code: 200,
+</span></span><span class="line"><span class="cl"><span class="gi">+            location: location || &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             timestamp: new Date()
+</span></span><span class="line"><span class="cl">         });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -520,8 +567,72 @@ app.delete(&#39;/api/tech-blog/:id&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-// --- Milestone (About Page) Schema &amp; Endpoints ---
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+// --- About Page Schemas &amp; Endpoints ---
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// ABOUT_ME Schema
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const aboutMeSchema = new mongoose.Schema({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    introduction: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    research_interests: [String],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    hobbies: [String],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    future_goal: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    show: { type: String, default: &#39;Y&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    updated_at: { type: Date, default: Date.now }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}, { collection: &#39;ABOUT_ME&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const AboutMe = mongoose.model(&#39;AboutMe&#39;, aboutMeSchema);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// ABOUT_ACADEMIC Schema
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const aboutAcademicSchema = new mongoose.Schema({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    education: [{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        degree: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        institution: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        location: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        period: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        gpa: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: Number
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    experience: [{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        organization: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        location: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        period: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        responsibilities: [String],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: Number
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    publications: [{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        authors: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        journal: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        year: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        volume: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        pages: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        doi: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        pmid: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        type: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: Number
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    skills: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        programming: [{ name: String, level: String, order: Number }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        bioinformatics: [{ name: String, level: String, order: Number }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        tools: [{ name: String, level: String, order: Number }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        frameworks: [{ name: String, level: String, order: Number }]
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    awards: [{
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        organization: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        year: Number,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: String,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        order: Number
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    show: { type: String, default: &#39;Y&#39; },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    updated_at: { type: Date, default: Date.now }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+}, { collection: &#39;ABOUT_ACADEMIC&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const AboutAcademic = mongoose.model(&#39;AboutAcademic&#39;, aboutAcademicSchema);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Milestone Schema
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> const milestoneSchema = new mongoose.Schema({
+</span></span><span class="line"><span class="cl">     date: Date,
+</span></span><span class="line"><span class="cl">     title: String,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -616,6 +727,144 @@ app.delete(&#39;/api/milestones/:id&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+// --- ABOUT_ME Endpoints ---
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Get About Me
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.get(&#39;/api/about-me&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const aboutMe = await AboutMe.findOne({ show: &#39;Y&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(aboutMe || {});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Create About Me
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.post(&#39;/api/about-me&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { introduction, research_interests, hobbies, future_goal, email } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const authorizedEmails = [&#39;distilledchild@gmail.com&#39;, &#39;wellclouder@gmail.com&#39;];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!authorizedEmails.includes(email)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(403).json({ error: &#39;Unauthorized&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const newAboutMe = new AboutMe({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            introduction,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            research_interests,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            hobbies,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            future_goal,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            show: &#39;Y&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            updated_at: new Date()
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        await newAboutMe.save();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(201).json(newAboutMe);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Update About Me
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.put(&#39;/api/about-me/:id&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { id } = req.params;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { introduction, research_interests, hobbies, future_goal, email } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const authorizedEmails = [&#39;distilledchild@gmail.com&#39;, &#39;wellclouder@gmail.com&#39;];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!authorizedEmails.includes(email)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(403).json({ error: &#39;Unauthorized&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const aboutMe = await AboutMe.findById(id);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!aboutMe) return res.status(404).json({ error: &#39;Not found&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (introduction !== undefined) aboutMe.introduction = introduction;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (research_interests !== undefined) aboutMe.research_interests = research_interests;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (hobbies !== undefined) aboutMe.hobbies = hobbies;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (future_goal !== undefined) aboutMe.future_goal = future_goal;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        aboutMe.updated_at = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        await aboutMe.save();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(aboutMe);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// --- ABOUT_ACADEMIC Endpoints ---
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Get About Academic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.get(&#39;/api/about-academic&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const aboutAcademic = await AboutAcademic.findOne({ show: &#39;Y&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(aboutAcademic || {});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Create About Academic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.post(&#39;/api/about-academic&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { education, experience, publications, skills, awards, email } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const authorizedEmails = [&#39;distilledchild@gmail.com&#39;, &#39;wellclouder@gmail.com&#39;];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!authorizedEmails.includes(email)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(403).json({ error: &#39;Unauthorized&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const newAboutAcademic = new AboutAcademic({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            education,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            experience,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            publications,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            skills,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            awards,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            show: &#39;Y&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            updated_at: new Date()
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        await newAboutAcademic.save();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(201).json(newAboutAcademic);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+// Update About Academic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.put(&#39;/api/about-academic/:id&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { id } = req.params;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const { education, experience, publications, skills, awards, email } = req.body;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const authorizedEmails = [&#39;distilledchild@gmail.com&#39;, &#39;wellclouder@gmail.com&#39;];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!authorizedEmails.includes(email)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(403).json({ error: &#39;Unauthorized&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const aboutAcademic = await AboutAcademic.findById(id);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!aboutAcademic) return res.status(404).json({ error: &#39;Not found&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (education !== undefined) aboutAcademic.education = education;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (experience !== undefined) aboutAcademic.experience = experience;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (publications !== undefined) aboutAcademic.publications = publications;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (skills !== undefined) aboutAcademic.skills = skills;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (awards !== undefined) aboutAcademic.awards = awards;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        aboutAcademic.updated_at = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        await aboutAcademic.save();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.json(aboutAcademic);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> const server = createServer(app);
+</span></span><span class="line"><span class="cl"> const io = new Server(server, {
+</span></span><span class="line"><span class="cl">     cors: {
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

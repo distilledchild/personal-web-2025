@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1. weather in TODO 2. search bar in todo · personal-web-2025@f85e3c8</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>f85e3c8</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-12-03</span> <span class="nowrap">12:47:43</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                1. weather in TODO 2. search bar in todo
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="b0f20ae53cd17157772d5a4915b70b45f0a8dab2.html"><code>b0f20ae</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (1)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fTodo.tsx" class="file-name">
+                    Todo.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="pages/Todo.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Todo.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,6 +1,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import React from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"> import { useNavigate } from &#39;react-router-dom&#39;;
+</span></span><span class="line"><span class="cl"><span class="gd">-import { Plus, Bell } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+import { Plus, Bell, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> const AnalogClock: React.FC&lt;{ timezone: string; label: string }&gt; = ({ timezone, label }) =&gt; {
+</span></span><span class="line"><span class="cl">     const [time, setTime] = React.useState(new Date());
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -57,6 +57,113 @@ const AnalogClock: React.FC&lt;{ timezone: string; label: string }&gt; = ({ timezone,
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     );
+</span></span><span class="line"><span class="cl"> };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const WeatherWidget: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [weather, setWeather] = React.useState&lt;any&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [locationName, setLocationName] = React.useState(&#39;Loading...&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [loading, setLoading] = React.useState(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    React.useEffect(() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const fetchWeather = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                let lat = 37.5665;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                let lon = 126.9780;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                let name = &#39;Seoul&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    // 1. Get location from Contact API
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const contactResponse = await fetch(`${API_URL}/api/contact`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    if (contactResponse.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        const contactData = await contactResponse.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        if (contactData?.Location) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            // Prefer explicit coordinates if available
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            if (contactData.Location.latitude &amp;&amp; contactData.Location.longitude) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                lat = contactData.Location.latitude;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                lon = contactData.Location.longitude;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            // Construct location name
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            const parts = [contactData.Location.city, contactData.Location.state].filter(Boolean);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            if (parts.length &gt; 0) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                name = parts.join(&#39;, &#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            } else if (contactData.Location.country) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                name = contactData.Location.country;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                } catch (e) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    console.warn(&#39;Failed to get contact location, defaulting to Seoul&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setLocationName(name);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // 2. Fetch weather
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const response = await fetch(
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&amp;longitude=${lon}&amp;daily=weather_code,temperature_2m_max,temperature_2m_min&amp;timezone=auto&amp;forecast_days=1`
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setWeather(data.daily);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                console.error(&#39;Failed to fetch weather:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setLocationName(&#39;Error&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            } finally {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setLoading(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        fetchWeather();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }, []);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const fixedClass = &#34;fixed bottom-[21rem] left-6 w-14 h-14 bg-white rounded-full transition-all hover:scale-110 flex items-center justify-center z-[100] cursor-pointer group&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const strongShadow = { boxShadow: &#39;0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)&#39; };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (loading) return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div className={fixedClass} style={strongShadow}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;w-6 h-6 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin&#34;&gt;&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!weather) return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const code = weather.weather_code[0];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const maxTemp = Math.round(weather.temperature_2m_max[0]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const minTemp = Math.round(weather.temperature_2m_min[0]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const getWeatherIcon = (code: number) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code === 0) return &lt;Sun className=&#34;w-6 h-6 text-yellow-500&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 1 &amp;&amp; code &lt;= 3) return &lt;Cloud className=&#34;w-6 h-6 text-slate-500&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 45 &amp;&amp; code &lt;= 48) return &lt;CloudFog className=&#34;w-6 h-6 text-slate-400&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 51 &amp;&amp; code &lt;= 67) return &lt;CloudRain className=&#34;w-6 h-6 text-blue-500&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 71 &amp;&amp; code &lt;= 77) return &lt;CloudSnow className=&#34;w-6 h-6 text-blue-300&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 80 &amp;&amp; code &lt;= 82) return &lt;CloudRain className=&#34;w-6 h-6 text-blue-600&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 85 &amp;&amp; code &lt;= 86) return &lt;CloudSnow className=&#34;w-6 h-6 text-blue-400&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (code &gt;= 95) return &lt;CloudLightning className=&#34;w-6 h-6 text-purple-500&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return &lt;Sun className=&#34;w-6 h-6 text-yellow-500&#34; /&gt;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            className={fixedClass}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            style={strongShadow}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            title={`${locationName} Weather`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;flex flex-col items-center justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {getWeatherIcon(code)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;span className=&#34;text-[10px] font-bold text-slate-700 mt-[-2px]&#34;&gt;{maxTemp}°&lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            {/* Tooltip */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;absolute left-16 bg-slate-800 text-white text-xs font-bold py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {locationName}: {maxTemp}° / {minTemp}°
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> export const Todo: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl">     const navigate = useNavigate();
+</span></span><span class="line"><span class="cl">     const [todos, setTodos] = React.useState&lt;any[]&gt;([]);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -89,6 +196,8 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     // Filter State
+</span></span><span class="line"><span class="cl">     const [filterDate, setFilterDate] = React.useState&lt;Date | null&gt;(null);
+</span></span><span class="line"><span class="cl">     const [filterMode, setFilterMode] = React.useState&lt;&#39;all&#39; | &#39;until_date&#39; | &#39;today&#39;&gt;(&#39;all&#39;);
+</span></span><span class="line"><span class="cl"><span class="gi">+    const [searchQuery, setSearchQuery] = React.useState(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [isSearching, setIsSearching] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     const sortTodos = (todosToSort: any[]) =&gt; {
+</span></span><span class="line"><span class="cl">         return [...todosToSort].sort((a, b) =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -288,27 +397,65 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         return date.toLocaleDateString(&#39;en-US&#39;, { month: &#39;short&#39;, day: &#39;numeric&#39;, year: &#39;numeric&#39; });
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Filter Logic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     // Filter Logic
+</span></span><span class="line"><span class="cl">     const filteredTodos = React.useMemo(() =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gd">-        if (filterMode === &#39;all&#39;) return todos;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        let result = todos;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // 1. Apply Search Filter if active
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (isSearching &amp;&amp; searchQuery.trim()) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const query = searchQuery.toLowerCase();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            result = result.filter(todo =&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                todo.title.toLowerCase().includes(query) ||
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                todo.description.toLowerCase().includes(query)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-        return todos.filter(todo =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            if (!todo.due_date) return false;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            const todoDate = new Date(todo.due_date);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        // 2. Apply Date/Mode Filters
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (filterMode !== &#39;all&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            result = result.filter(todo =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                if (!todo.due_date) return false;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const todoDate = new Date(todo.due_date);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            if (filterMode === &#39;until_date&#39; &amp;&amp; filterDate) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                // Compare dates (exact match)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                return todoDate.toDateString() === filterDate.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                if (filterMode === &#39;until_date&#39; &amp;&amp; filterDate) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    return todoDate.toDateString() === filterDate.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            if (filterMode === &#39;today&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                const today = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                return todoDate.toDateString() === today.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                if (filterMode === &#39;today&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const today = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    return todoDate.toDateString() === today.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            return true;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    }, [todos, filterMode, filterDate]);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                return true;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // 3. Sort Results
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // If searching, prioritize deadline (closest first)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (isSearching) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return [...result].sort((a, b) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const dateA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const dateB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return dateA - dateB;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Otherwise use default sorting (Priority &gt; Deadline &gt; Status)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Note: &#39;todos&#39; is already sorted by default fetch, but filtering might need re-sort if we want strict order
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // However, filter preserves order, so we can just return result
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return result;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }, [todos, filterMode, filterDate, isSearching, searchQuery]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Handle Search
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleSearch = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (searchQuery.trim()) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setIsSearching(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setCurrentPage(1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setIsSearching(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setCurrentPage(1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     // Pagination Logic
+</span></span><span class="line"><span class="cl">     const indexOfLastItem = currentPage * itemsPerPage;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -448,9 +595,10 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 {/* World Clocks */}
+</span></span><span class="line"><span class="cl">                                 &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl p-6 shadow-sm&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                    &lt;h3 className=&#34;text-lg font-bold text-slate-900 mb-4 text-center border-b border-slate-100 pb-2&#34;&gt;World Time&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>                                     &lt;div className=&#34;grid grid-cols-2 gap-4 justify-items-center&#34;&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;AnalogClock timezone=&#34;America/Chicago&#34; label=&#34;Chicago&#34; /&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;AnalogClock timezone=&#34;Asia/Seoul&#34; label=&#34;Seoul&#34; /&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -520,37 +668,114 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                     &lt;/table&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                                {/* Pagination Controls */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>                                 {filteredTodos.length &gt; itemsPerPage &amp;&amp; (
+</span></span><span class="line"><span class="cl"><span class="gd">-                                    &lt;div className=&#34;flex justify-center items-center gap-2 mt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            onClick={() =&gt; handlePageChange(currentPage - 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            disabled={currentPage === 1}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            className=&#34;px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            Previous
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                    &lt;div className=&#34;flex justify-between items-center gap-4 mt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {/* Empty spacer for alignment */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;flex-1 max-w-sm&#34;&gt;&lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        {Array.from({ length: totalPages }, (_, i) =&gt; i + 1).map((page) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                        {/* Pagination Controls */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;flex justify-center items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &lt;button
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                key={page}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                onClick={() =&gt; handlePageChange(page)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    ? &#39;bg-gray-500 text-white&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    : &#39;text-slate-600 hover:bg-slate-100&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    }`}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                onClick={() =&gt; handlePageChange(currentPage - 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                disabled={currentPage === 1}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className=&#34;px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                {page}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                Previous
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &lt;/button&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            onClick={() =&gt; handlePageChange(currentPage + 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            disabled={currentPage === totalPages}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            className=&#34;px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            Next
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                            {Array.from({ length: totalPages }, (_, i) =&gt; i + 1).map((page) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    key={page}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    onClick={() =&gt; handlePageChange(page)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        ? &#39;bg-gray-500 text-white&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        : &#39;text-slate-600 hover:bg-slate-100&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    {page}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onClick={() =&gt; handlePageChange(currentPage + 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                disabled={currentPage === totalPages}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className=&#34;px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                Next
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {/* Search Section */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;flex items-center gap-2 flex-1 max-w-sm justify-end&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                value={searchQuery}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onChange={(e) =&gt; setSearchQuery(e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onKeyDown={(e) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    if (e.key === &#39;Enter&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        e.preventDefault();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        handleSearch();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                placeholder=&#34;Search...&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className=&#34;w-48 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onClick={handleSearch}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className=&#34;w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-slate-400 transition-all flex items-center justify-center group&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                title=&#34;Search&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;svg
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    className=&#34;w-5 h-5 text-slate-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    fill=&#34;currentColor&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    viewBox=&#34;0 0 20 20&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;path
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        fillRule=&#34;evenodd&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        d=&#34;M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        clipRule=&#34;evenodd&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {/* Search Section (Visible even if no pagination, but only if there are items or searching) */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {filteredTodos.length &lt;= itemsPerPage &amp;&amp; (todos.length &gt; 0 || isSearching) &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;flex justify-end items-center gap-2 mt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;div className=&#34;flex items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                value={searchQuery}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onChange={(e) =&gt; setSearchQuery(e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onKeyDown={(e) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    if (e.key === &#39;Enter&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        e.preventDefault();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        handleSearch();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                placeholder=&#34;Search...&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className=&#34;w-48 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 text-sm&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onClick={handleSearch}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className=&#34;w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-slate-400 transition-all flex items-center justify-center group&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                title=&#34;Search&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;svg
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    className=&#34;w-5 h-5 text-slate-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    fill=&#34;currentColor&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    viewBox=&#34;0 0 20 20&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;path
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        fillRule=&#34;evenodd&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        d=&#34;M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        clipRule=&#34;evenodd&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                                 )}
+</span></span><span class="line"><span class="cl">                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -558,14 +783,18 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                     )}
+</span></span><span class="line"><span class="cl">                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+                {/* Weather Widget (Always visible) */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;WeatherWidget /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 {/* Create Button (Admin/Editor only) */}
+</span></span><span class="line"><span class="cl">                 {isAuthorized &amp;&amp; (
+</span></span><span class="line"><span class="cl">                     &lt;&gt;
+</span></span><span class="line"><span class="cl">                         {/* Notification Bell Button - Above Cal.com (bottom-64 approx) */}
+</span></span><span class="line"><span class="cl">                         &lt;button
+</span></span><span class="line"><span class="cl">                             onClick={() =&gt; setFilterMode(prev =&gt; prev === &#39;today&#39; ? &#39;all&#39; : &#39;today&#39;)}
+</span></span><span class="line"><span class="cl"><span class="gd">-                            className={`fixed bottom-64 left-6 w-14 h-14 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center z-40
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            className={`fixed bottom-64 left-6 w-14 h-14 rounded-full transition-all hover:scale-110 flex items-center justify-center z-40
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 ${filterMode === &#39;today&#39; ? &#39;bg-blue-600 text-white&#39; : &#39;bg-gray-500 text-white hover:bg-gray-600&#39;}`}
+</span></span><span class="line"><span class="cl"><span class="gi">+                            style={{ boxShadow: &#39;0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)&#39; }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             title=&#34;Show today&#39;s tasks&#34;
+</span></span><span class="line"><span class="cl">                         &gt;
+</span></span><span class="line"><span class="cl">                             &lt;div className=&#34;relative&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -580,7 +809,8 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">                         &lt;button
+</span></span><span class="line"><span class="cl">                             onClick={() =&gt; setShowCreateModal(true)}
+</span></span><span class="line"><span class="cl"><span class="gd">-                            className=&#34;fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            className=&#34;fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            style={{ boxShadow: &#39;0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)&#39; }}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             title=&#34;Create new TODO&#34;
+</span></span><span class="line"><span class="cl">                         &gt;
+</span></span><span class="line"><span class="cl">                             &lt;Plus size={28} /&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1. add cal.com calendar in TODO 2. add daily alarm for todo list through calendar and icon 3. update README.md for hicbrowser · personal-web-2025@7174363</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>7174363</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-12-02</span> <span class="nowrap">17:51:39</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                1. add cal.com calendar in TODO 2. add daily alarm for todo list through calendar and icon 3. update README.md for hicbrowser
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="997d854818fac4f18ea44153fa6189e790b3dc6d.html"><code>997d854</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (8)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fBlog.tsx" class="file-name">
+                    Blog.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fTodo.tsx" class="file-name">
+                    Todo.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#.gitignore" class="file-name">
+                    .gitignore
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package-lock.json" class="file-name">
+                    package-lock.json
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package.json" class="file-name">
+                    package.json
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#README.md" class="file-name">
+                    README.md
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="pages/Blog.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Blog.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1176,8 +1176,8 @@ export const Blog: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             )}
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            {/* Create Button (+ icon) - Tech page only */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            {canCreatePost() &amp;&amp; location.pathname === &#39;/tech&#39; &amp;&amp; !isCreateMode &amp;&amp; !isEditMode &amp;&amp; selectedPost === null &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            {/* Create Button (+ icon) - Blog page only */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            {canCreatePost() &amp;&amp; location.pathname === &#39;/blog&#39; &amp;&amp; !isCreateMode &amp;&amp; !isEditMode &amp;&amp; selectedPost === null &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;button
+</span></span><span class="line"><span class="cl">                     onClick={handleCreate}
+</span></span><span class="line"><span class="cl">                     className=&#34;fixed bottom-24 left-6 w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40&#34;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/Todo.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Todo.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,6 +1,6 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import React from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"> import { useNavigate } from &#39;react-router-dom&#39;;
+</span></span><span class="line"><span class="cl"><span class="gd">-import { Plus } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+import { Plus, Bell } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> const AnalogClock: React.FC&lt;{ timezone: string; label: string }&gt; = ({ timezone, label }) =&gt; {
+</span></span><span class="line"><span class="cl">     const [time, setTime] = React.useState(new Date());
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -72,9 +72,43 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         due_date: &#39;&#39;
+</span></span><span class="line"><span class="cl">     });
+</span></span><span class="line"><span class="cl">     const [selectedDate, setSelectedDate] = React.useState(new Date());
+</span></span><span class="line"><span class="cl"><span class="gd">-    const [editingTodos, setEditingTodos] = React.useState&lt;{ [key: string]: any }&gt;({});
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const [selectedTodo, setSelectedTodo] = React.useState&lt;any&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [isEditMode, setIsEditMode] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [editFormData, setEditFormData] = React.useState({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        title: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        description: &#39;&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        priority: &#39;medium&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        status: &#39;pending&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        due_date: &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const [showSuccessPopup, setShowSuccessPopup] = React.useState(false);
+</span></span><span class="line"><span class="cl">     const [successMessage, setSuccessMessage] = React.useState(&#39;&#39;);
+</span></span><span class="line"><span class="cl"><span class="gi">+    const [currentPage, setCurrentPage] = React.useState(1);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const itemsPerPage = 10;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Filter State
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [filterDate, setFilterDate] = React.useState&lt;Date | null&gt;(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [filterMode, setFilterMode] = React.useState&lt;&#39;all&#39; | &#39;until_date&#39; | &#39;today&#39;&gt;(&#39;all&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const sortTodos = (todosToSort: any[]) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return [...todosToSort].sort((a, b) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // 1. Priority: High &gt; Medium &gt; Low
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (priorityDiff !== 0) return priorityDiff;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // 2. Deadline: Closest date first (ascending)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Treat missing deadline as far future
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const dateA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const dateB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (dateA !== dateB) return dateA - dateB;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // 3. Status: In Progress &gt; Pending &gt; Completed &gt; Cancelled
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const statusOrder: { [key: string]: number } = { in_progress: 1, pending: 2, completed: 3, cancelled: 4 };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const statusDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return statusDiff;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     React.useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl">         const checkAuth = async () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -120,7 +154,7 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             const response = await fetch(`${API_URL}/api/todos`);
+</span></span><span class="line"><span class="cl">             if (response.ok) {
+</span></span><span class="line"><span class="cl">                 const data = await response.json();
+</span></span><span class="line"><span class="cl"><span class="gd">-                setTodos(data);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                setTodos(sortTodos(data));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             }
+</span></span><span class="line"><span class="cl">         } catch (error) {
+</span></span><span class="line"><span class="cl">             console.error(&#39;Failed to fetch todos:&#39;, error);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -156,7 +190,7 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">             if (response.ok) {
+</span></span><span class="line"><span class="cl">                 const createdTodo = await response.json();
+</span></span><span class="line"><span class="cl"><span class="gd">-                setTodos([createdTodo, ...todos]);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                setTodos(sortTodos([createdTodo, ...todos]));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 setShowCreateModal(false);
+</span></span><span class="line"><span class="cl">                 setNewTodo({ title: &#39;&#39;, description: &#39;&#39;, priority: &#39;medium&#39;, due_date: &#39;&#39; });
+</span></span><span class="line"><span class="cl">             }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -165,65 +199,46 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-    const handleStatusChange = (todoId: string, newStatus: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setEditingTodos({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            ...editingTodos,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            [todoId]: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ...editingTodos[todoId],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                status: newStatus
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const handleTodoClick = (todo: any) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setSelectedTodo(todo);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setIsEditMode(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-    const handlePriorityChange = (todoId: string, newPriority: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setEditingTodos({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            ...editingTodos,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            [todoId]: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ...editingTodos[todoId],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                priority: newPriority
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    };
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    const handleDeadlineChange = (todoId: string, newDeadline: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        setEditingTodos({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            ...editingTodos,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            [todoId]: {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ...editingTodos[todoId],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                due_date: newDeadline
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        });
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const handleEditClick = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (selectedTodo) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setEditFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                title: selectedTodo.title,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                description: selectedTodo.description,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                priority: selectedTodo.priority,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                status: selectedTodo.status,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                due_date: selectedTodo.due_date || &#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setIsEditMode(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-    const handleUpdateTodo = async (todoId: string) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (!user || !user.email) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            alert(&#39;Please login to update TODO&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            return;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    const handleSaveEdit = async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!selectedTodo || !user || !user.email) return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">         try {
+</span></span><span class="line"><span class="cl">             const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span><span class="line"><span class="cl">                 ? &#39;http://localhost:4000&#39;
+</span></span><span class="line"><span class="cl">                 : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-            const editedData = editingTodos[todoId] || {};
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            const response = await fetch(`${API_URL}/api/todos/${todoId}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            const response = await fetch(`${API_URL}/api/todos/${selectedTodo._id}`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 method: &#39;PUT&#39;,
+</span></span><span class="line"><span class="cl">                 headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+</span></span><span class="line"><span class="cl">                 body: JSON.stringify({
+</span></span><span class="line"><span class="cl">                     email: user.email,
+</span></span><span class="line"><span class="cl"><span class="gd">-                    ...editedData
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    ...editFormData
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 })
+</span></span><span class="line"><span class="cl">             });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">             if (response.ok) {
+</span></span><span class="line"><span class="cl">                 const updatedTodo = await response.json();
+</span></span><span class="line"><span class="cl"><span class="gd">-                setTodos(todos.map(t =&gt; t._id === todoId ? updatedTodo : t));
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                // Clear editing state for this todo
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                const newEditingTodos = { ...editingTodos };
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                delete newEditingTodos[todoId];
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                setEditingTodos(newEditingTodos);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                // Show success message
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                setTodos(sortTodos(todos.map(t =&gt; t._id === selectedTodo._id ? updatedTodo : t)));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setSelectedTodo(updatedTodo);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                setIsEditMode(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 setSuccessMessage(&#39;TODO has been updated successfully!&#39;);
+</span></span><span class="line"><span class="cl">                 setShowSuccessPopup(true);
+</span></span><span class="line"><span class="cl">             }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -257,6 +272,7 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">             if (response.ok) {
+</span></span><span class="line"><span class="cl">                 setTodos(todos.filter(t =&gt; t._id !== todoId));
+</span></span><span class="line"><span class="cl"><span class="gi">+                setSelectedTodo(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 // Show success message
+</span></span><span class="line"><span class="cl">                 setSuccessMessage(&#39;TODO has been deleted successfully!&#39;);
+</span></span><span class="line"><span class="cl">                 setShowSuccessPopup(true);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -272,6 +288,52 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         return date.toLocaleDateString(&#39;en-US&#39;, { month: &#39;short&#39;, day: &#39;numeric&#39;, year: &#39;numeric&#39; });
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Filter Logic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const filteredTodos = React.useMemo(() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (filterMode === &#39;all&#39;) return todos;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return todos.filter(todo =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (!todo.due_date) return false;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const todoDate = new Date(todo.due_date);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (filterMode === &#39;until_date&#39; &amp;&amp; filterDate) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                // Compare dates (exact match)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return todoDate.toDateString() === filterDate.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            if (filterMode === &#39;today&#39;) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                const today = new Date();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                return todoDate.toDateString() === today.toDateString();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return true;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }, [todos, filterMode, filterDate]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Pagination Logic
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const indexOfLastItem = currentPage * itemsPerPage;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const currentTodos = filteredTodos.slice(indexOfFirstItem, indexOfLastItem);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const totalPages = Math.ceil(filteredTodos.length / itemsPerPage);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handlePageChange = (pageNumber: number) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setCurrentPage(pageNumber);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Calendar Click Handler
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleDateClick = (date: Date) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (filterMode === &#39;until_date&#39; &amp;&amp; filterDate &amp;&amp; date.toDateString() === filterDate.toDateString()) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setFilterMode(&#39;all&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setFilterDate(null);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setFilterMode(&#39;until_date&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setFilterDate(date);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Today&#39;s Count
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const todayCount = todos.filter(t =&gt; t.due_date &amp;&amp; new Date(t.due_date).toDateString() === new Date().toDateString()).length;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     // Get dates with todos for calendar highlighting
+</span></span><span class="line"><span class="cl">     const todoDates = todos.map(todo =&gt; {
+</span></span><span class="line"><span class="cl">         if (todo.due_date) {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -303,12 +365,16 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             const dateString = currentDate.toDateString();
+</span></span><span class="line"><span class="cl">             const hasTodo = todoDates.includes(dateString);
+</span></span><span class="line"><span class="cl">             const isToday = dateString === todayString;
+</span></span><span class="line"><span class="cl"><span class="gi">+            const isSelected = filterMode === &#39;until_date&#39; &amp;&amp; filterDate?.toDateString() === dateString;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">             days.push(
+</span></span><span class="line"><span class="cl">                 &lt;div
+</span></span><span class="line"><span class="cl">                     key={day}
+</span></span><span class="line"><span class="cl"><span class="gd">-                    className={`h-12 flex items-center justify-center rounded-lg cursor-pointer transition-colors ${hasTodo ? &#39;bg-blue-100 text-blue-700 font-bold&#39; : &#39;hover:bg-slate-100&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        } ${isToday ? &#39;border-2 border-gray-500 rounded-full&#39; : &#39;&#39;}`}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    onClick={() =&gt; handleDateClick(currentDate)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    className={`h-12 flex items-center justify-center rounded-lg cursor-pointer transition-colors 
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        ${isSelected ? &#39;bg-slate-800 text-white font-bold&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            hasTodo ? &#39;bg-blue-100 text-blue-700 font-bold&#39; : &#39;hover:bg-slate-100&#39;} 
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        ${isToday &amp;&amp; !isSelected ? &#39;border-2 border-gray-500 rounded-full&#39; : &#39;&#39;}`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &gt;
+</span></span><span class="line"><span class="cl">                     {day}
+</span></span><span class="line"><span class="cl">                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -337,183 +403,189 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     return (
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;div className=&#34;min-h-screen bg-white pt-32 pb-20 px-6 animate-fadeIn&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            &lt;div className=&#34;max-w-7xl mx-auto&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-12 text-center border-b border-slate-100 pb-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        &lt;div className=&#34;h-screen bg-white pt-32 pb-0 px-6 animate-fadeIn flex flex-col overflow-hidden&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            &lt;div className=&#34;max-w-7xl mx-auto w-full flex flex-col h-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;h2 className=&#34;text-4xl font-bold text-black mb-6 text-center border-b border-slate-100 pb-6 flex-shrink-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                     TODO
+</span></span><span class="line"><span class="cl">                 &lt;/h2&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                {loading ? (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;div className=&#34;text-center py-12&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;p className=&#34;text-slate-500&#34;&gt;Loading...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;div className=&#34;flex gap-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        {/* Left: Calendar */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;div className=&#34;w-1/3 flex flex-col gap-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl p-6 shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;div className=&#34;flex items-center justify-between mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        onClick={() =&gt; setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1))}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        className=&#34;p-2 hover:bg-slate-100 rounded-lg transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        ←
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;h3 className=&#34;text-lg font-bold text-slate-900&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        {selectedDate.toLocaleDateString(&#39;en-US&#39;, { month: &#39;long&#39;, year: &#39;numeric&#39; })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        onClick={() =&gt; setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1))}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        className=&#34;p-2 hover:bg-slate-100 rounded-lg transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        →
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;div className=&#34;grid grid-cols-7 gap-2 mb-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    {[&#39;Sun&#39;, &#39;Mon&#39;, &#39;Tue&#39;, &#39;Wed&#39;, &#39;Thu&#39;, &#39;Fri&#39;, &#39;Sat&#39;].map(day =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;div key={day} className=&#34;text-xs font-bold text-slate-500 text-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            {day}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    ))}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;div className=&#34;grid grid-cols-7 gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    {renderCalendar()}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                &lt;div className=&#34;flex-1 overflow-y-auto min-h-0 pb-20 [&amp;::-webkit-scrollbar]:hidden [-ms-overflow-style:&#39;none&#39;] [scrollbar-width:&#39;none&#39;]&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {loading ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;text-center py-12&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;p className=&#34;text-slate-500&#34;&gt;Loading...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div className=&#34;flex gap-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            {/* Left: Calendar */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;w-1/3 flex flex-col gap-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl p-6 shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;flex items-center justify-between mb-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={() =&gt; setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;p-2 hover:bg-slate-100 rounded-lg transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            ←
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;h3 className=&#34;text-lg font-bold text-slate-900&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {selectedDate.toLocaleDateString(&#39;en-US&#39;, { month: &#39;long&#39;, year: &#39;numeric&#39; })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={() =&gt; setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;p-2 hover:bg-slate-100 rounded-lg transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            →
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;grid grid-cols-7 gap-2 mb-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {[&#39;Sun&#39;, &#39;Mon&#39;, &#39;Tue&#39;, &#39;Wed&#39;, &#39;Thu&#39;, &#39;Fri&#39;, &#39;Sat&#39;].map(day =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;div key={day} className=&#34;text-xs font-bold text-slate-500 text-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {day}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;grid grid-cols-7 gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {renderCalendar()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                            {/* World Clocks */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl p-6 shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;h3 className=&#34;text-lg font-bold text-slate-900 mb-4 text-center border-b border-slate-100 pb-2&#34;&gt;World Time&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;div className=&#34;grid grid-cols-2 gap-4 justify-items-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;AnalogClock timezone=&#34;America/Chicago&#34; label=&#34;Chicago&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;AnalogClock timezone=&#34;Asia/Seoul&#34; label=&#34;Seoul&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                {/* World Clocks */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl p-6 shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;h3 className=&#34;text-lg font-bold text-slate-900 mb-4 text-center border-b border-slate-100 pb-2&#34;&gt;World Time&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;grid grid-cols-2 gap-4 justify-items-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;AnalogClock timezone=&#34;America/Chicago&#34; label=&#34;Chicago&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;AnalogClock timezone=&#34;Asia/Seoul&#34; label=&#34;Seoul&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                        {/* Right: TODO Table */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;div className=&#34;flex-1 max-w-6xl&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                            &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;table className=&#34;w-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;thead className=&#34;bg-slate-50 border-b border-slate-200&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Title&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Description&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Status&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Priority&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Deadline&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            &lt;th className=&#34;px-4 py-3 text-center text-sm font-bold text-slate-700&#34;&gt;Actions&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;/thead&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        {todos.length === 0 ? (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            {/* Right: TODO Table */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;flex-1 max-w-6xl&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;table className=&#34;w-full&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;thead className=&#34;bg-slate-50 border-b border-slate-200&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &lt;tr&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                &lt;td colSpan={7} className=&#34;px-4 py-12 text-center text-slate-500&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    No TODO items found
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Title&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Description&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Status&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Priority&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;th className=&#34;px-4 py-3 text-left text-sm font-bold text-slate-700&#34;&gt;Deadline&lt;/th&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &lt;/tr&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                        ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            todos.map((todo) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                const editedTodo = editingTodos[todo._id] || {};
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                const currentStatus = editedTodo.status !== undefined ? editedTodo.status : todo.status;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                const currentPriority = editedTodo.priority !== undefined ? editedTodo.priority : todo.priority;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                const currentDueDate = editedTodo.due_date !== undefined ? editedTodo.due_date : todo.due_date;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                const isStrikethrough = currentStatus === &#39;completed&#39; || currentStatus === &#39;cancelled&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                // Check if there are any changes
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                const hasChanges = (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    (editedTodo.status !== undefined &amp;&amp; editedTodo.status !== todo.status) ||
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    (editedTodo.priority !== undefined &amp;&amp; editedTodo.priority !== todo.priority) ||
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    (editedTodo.due_date !== undefined &amp;&amp; editedTodo.due_date !== todo.due_date)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                );
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                return (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    &lt;tr key={todo._id} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${getStatusColor(currentStatus)}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;td className={`px-4 py-3 ${isStrikethrough ? &#39;line-through text-slate-400&#39; : &#39;text-slate-900&#39;}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            {todo.title}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;td className={`px-4 py-3 ${isStrikethrough ? &#39;line-through text-slate-400&#39; : &#39;text-slate-600&#39;} text-sm`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            {todo.description}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                value={currentStatus}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                onChange={(e) =&gt; handleStatusChange(todo._id, e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                className=&#34;px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                aria-label=&#34;Change status&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                title=&#34;Change status&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                        &lt;/thead&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {filteredTodos.length === 0 ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;td colSpan={5} className=&#34;px-4 py-12 text-center text-slate-500&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        {filterMode === &#39;all&#39; ? &#39;No TODO items found&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            filterMode === &#39;today&#39; ? &#39;No tasks due today&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                &#39;No tasks found for selected period&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                currentTodos.map((todo) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    const isStrikethrough = todo.status === &#39;completed&#39; || todo.status === &#39;cancelled&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;tr key={todo._id} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${getStatusColor(todo.status)}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                className={`px-4 py-3 ${isStrikethrough ? &#39;line-through text-slate-400&#39; : &#39;text-slate-900&#39;} cursor-pointer hover:text-blue-600 font-medium`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                onClick={() =&gt; handleTodoClick(todo)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                             &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                                &lt;option value=&#34;pending&#34;&gt;Pending&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;option value=&#34;in_progress&#34;&gt;In Progress&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;option value=&#34;completed&#34;&gt;Completed&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;option value=&#34;cancelled&#34;&gt;Cancelled&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                value={currentPriority}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                onChange={(e) =&gt; handlePriorityChange(todo._id, e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                className={`px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${getPriorityColor(currentPriority)}`}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                aria-label=&#34;Change priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                title=&#34;Change priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;option value=&#34;low&#34;&gt;Low&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;option value=&#34;medium&#34;&gt;Medium&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;option value=&#34;high&#34;&gt;High&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                type=&#34;date&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                value={currentDueDate ? new Date(currentDueDate).toISOString().split(&#39;T&#39;)[0] : &#39;&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                onChange={(e) =&gt; handleDeadlineChange(todo._id, e.target.value)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                className=&#34;px-3 py-1 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                aria-label=&#34;Change deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                title=&#34;Change deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;div className=&#34;flex gap-2 justify-center&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    onClick={() =&gt; handleUpdateTodo(todo._id)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${hasChanges
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                        ? &#39;bg-blue-500 text-white hover:bg-blue-600&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                        : &#39;bg-gray-300 text-gray-500 cursor-not-allowed&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                        }`}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    title=&#34;Update TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    disabled={!hasChanges}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    Update
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    onClick={() =&gt; handleDeleteTodo(todo._id)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    className=&#34;px-3 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    title=&#34;Delete TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                    Delete
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                        &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                );
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                            })
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                        )}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                    &lt;/tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                &lt;/table&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                                {todo.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className={`px-4 py-3 ${isStrikethrough ? &#39;line-through text-slate-400&#39; : &#39;text-slate-600&#39;} text-sm`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {todo.description}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-4 py-3 whitespace-nowrap&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                &lt;span className={`px-2 py-1 rounded-full text-xs font-bold capitalize ${todo.status === &#39;completed&#39; ? &#39;bg-green-100 text-green-700&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    todo.status === &#39;in_progress&#39; ? &#39;bg-blue-100 text-blue-700&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                        todo.status === &#39;cancelled&#39; ? &#39;bg-red-100 text-red-700&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                            &#39;bg-slate-100 text-slate-700&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    }`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    {todo.status.replace(&#39;_&#39;, &#39; &#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-4 py-3&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                &lt;span className={`text-sm font-bold capitalize ${getPriorityColor(todo.priority)}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                    {todo.priority}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;td className=&#34;px-4 py-3 text-sm text-slate-600 whitespace-nowrap&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                                {formatDate(todo.due_date)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                            &lt;/td&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                        &lt;/tr&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                })
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/tbody&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/table&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {/* Pagination Controls */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {filteredTodos.length &gt; itemsPerPage &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div className=&#34;flex justify-center items-center gap-2 mt-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={() =&gt; handlePageChange(currentPage - 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            disabled={currentPage === 1}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            Previous
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {Array.from({ length: totalPages }, (_, i) =&gt; i + 1).map((page) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                key={page}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onClick={() =&gt; handlePageChange(page)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    ? &#39;bg-gray-500 text-white&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    : &#39;text-slate-600 hover:bg-slate-100&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                {page}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        ))}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={() =&gt; handlePageChange(currentPage + 1)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            disabled={currentPage === totalPages}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            Next
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                )}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">                 {/* Create Button (Admin/Editor only) */}
+</span></span><span class="line"><span class="cl">                 {isAuthorized &amp;&amp; (
+</span></span><span class="line"><span class="cl"><span class="gd">-                    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        onClick={() =&gt; setShowCreateModal(true)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        className=&#34;fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        title=&#34;Create new TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                        &lt;Plus size={28} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        {/* Notification Bell Button - Above Cal.com (bottom-64 approx) */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            onClick={() =&gt; setFilterMode(prev =&gt; prev === &#39;today&#39; ? &#39;all&#39; : &#39;today&#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            className={`fixed bottom-64 left-6 w-14 h-14 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center z-40
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                ${filterMode === &#39;today&#39; ? &#39;bg-blue-600 text-white&#39; : &#39;bg-gray-500 text-white hover:bg-gray-600&#39;}`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            title=&#34;Show today&#39;s tasks&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;relative&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;Bell size={24} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {todayCount &gt; 0 &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;span className=&#34;absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-500&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        {todayCount}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            onClick={() =&gt; setShowCreateModal(true)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            className=&#34;fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            title=&#34;Create new TODO&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;Plus size={28} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 )}
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">                 {/* Create Modal */}
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -599,6 +671,180 @@ export const Todo: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                     &lt;/div&gt;
+</span></span><span class="line"><span class="cl">                 )}
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+                {/* Detail Modal */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {selectedTodo &amp;&amp; !isEditMode &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        onClick={() =&gt; setSelectedTodo(null)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            className=&#34;bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            onClick={(e) =&gt; e.stopPropagation()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;flex justify-between items-start mb-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;h3 className=&#34;text-2xl font-bold text-slate-900&#34;&gt;{selectedTodo.title}&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    onClick={() =&gt; setSelectedTodo(null)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    className=&#34;text-slate-400 hover:text-slate-600&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    ✕
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;space-y-6&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;h4 className=&#34;text-sm font-bold text-slate-500 uppercase tracking-wider mb-2&#34;&gt;Description&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;p className=&#34;text-slate-700 leading-relaxed whitespace-pre-wrap&#34;&gt;{selectedTodo.description}&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;grid grid-cols-3 gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;h4 className=&#34;text-sm font-bold text-slate-500 uppercase tracking-wider mb-2&#34;&gt;Status&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;span className={`px-3 py-1 rounded-full text-sm font-bold capitalize inline-block ${selectedTodo.status === &#39;completed&#39; ? &#39;bg-green-100 text-green-700&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            selectedTodo.status === &#39;in_progress&#39; ? &#39;bg-blue-100 text-blue-700&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                selectedTodo.status === &#39;cancelled&#39; ? &#39;bg-red-100 text-red-700&#39; :
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                    &#39;bg-slate-100 text-slate-700&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            }`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {selectedTodo.status.replace(&#39;_&#39;, &#39; &#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;h4 className=&#34;text-sm font-bold text-slate-500 uppercase tracking-wider mb-2&#34;&gt;Priority&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;span className={`text-sm font-bold capitalize ${getPriorityColor(selectedTodo.priority)}`}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {selectedTodo.priority}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;h4 className=&#34;text-sm font-bold text-slate-500 uppercase tracking-wider mb-2&#34;&gt;Deadline&lt;/h4&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;span className=&#34;text-slate-700 font-medium&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            {formatDate(selectedTodo.due_date)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/span&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;flex justify-end gap-4 mt-8 pt-6 border-t border-slate-100&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                {isAuthorized &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={() =&gt; handleDeleteTodo(selectedTodo._id)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;px-6 py-3 bg-red-100 text-red-600 rounded-full font-bold hover:bg-red-200 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            Delete
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onClick={handleEditClick}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            Update
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    onClick={() =&gt; setSelectedTodo(null)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    className=&#34;px-6 py-3 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    Close
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {/* Edit Modal */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                {selectedTodo &amp;&amp; isEditMode &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        onClick={() =&gt; setIsEditMode(false)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            className=&#34;bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            onClick={(e) =&gt; e.stopPropagation()}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-6&#34;&gt;Edit TODO&lt;/h3&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;space-y-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Title *&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        type=&#34;text&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={editFormData.title}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={(e) =&gt; setEditFormData({ ...editFormData, title: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        aria-label=&#34;Edit title&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Description *&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;textarea
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={editFormData.description}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={(e) =&gt; setEditFormData({ ...editFormData, description: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        aria-label=&#34;Edit description&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div className=&#34;grid grid-cols-2 gap-4&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Status&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            value={editFormData.status}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onChange={(e) =&gt; setEditFormData({ ...editFormData, status: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            aria-label=&#34;Edit status&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;pending&#34;&gt;Pending&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;in_progress&#34;&gt;In Progress&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;completed&#34;&gt;Completed&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;cancelled&#34;&gt;Cancelled&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Priority&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;select
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            value={editFormData.priority}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            onChange={(e) =&gt; setEditFormData({ ...editFormData, priority: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            aria-label=&#34;Edit priority&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;low&#34;&gt;Low&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;medium&#34;&gt;Medium&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                            &lt;option value=&#34;high&#34;&gt;High&lt;/option&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        &lt;/select&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Deadline&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        type=&#34;date&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        value={editFormData.due_date ? new Date(editFormData.due_date).toISOString().split(&#39;T&#39;)[0] : &#39;&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        onChange={(e) =&gt; setEditFormData({ ...editFormData, due_date: e.target.value })}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                        aria-label=&#34;Edit deadline&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;div className=&#34;flex justify-end gap-4 mt-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    onClick={() =&gt; setIsEditMode(false)}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    className=&#34;px-6 py-3 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    onClick={handleSaveEdit}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    className=&#34;px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-colors&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                    Save Changes
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 {/* Success Popup */}
+</span></span><span class="line"><span class="cl">                 {showSuccessPopup &amp;&amp; (
+</span></span><span class="line"><span class="cl">                     &lt;div
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -67,6 +67,10 @@ if (process.env.GCP_SERVICE_ACCOUNT_KEY) {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     // Local: file path
+</span></span><span class="line"><span class="cl">     console.log(&#39;Using GCS credentials from GOOGLE_APPLICATION_CREDENTIALS file&#39;);
+</span></span><span class="line"><span class="cl">     storageConfig.keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+</span></span><span class="line"><span class="cl"><span class="gi">+} else if (fs.existsSync(path.resolve(__dirname, &#39;../service-account-key.json&#39;))) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Local: automatic detection of service-account-key.json in root
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    console.log(&#39;Using GCS credentials from local service-account-key.json&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    storageConfig.keyFilename = path.resolve(__dirname, &#39;../service-account-key.json&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> } else {
+</span></span><span class="line"><span class="cl">     // Default: Application Default Credentials (gcloud auth)
+</span></span><span class="line"><span class="cl">     console.log(&#39;Using GCS default credentials&#39;);
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id=".gitignore" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">.gitignore</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -24,4 +24,5 @@ dist-ssr
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> *.sw?
+</span></span><span class="line"><span class="cl"> .env*
+</span></span><span class="line"><span class="cl"> *-key.json
+</span></span><span class="line"><span class="cl"><span class="gd">-public/data
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>\ No newline at end of file
+</span></span><span class="line"><span class="cl"><span class="gi">+public/data
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+queries/
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>\ No newline at end of file
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -290,6 +290,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &lt;/Routes&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">       &lt;GoogleLogin /&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+      &lt;CalComButton isAuthorized={isAuthorized} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &lt;/div&gt;
+</span></span><span class="line"><span class="cl">   );
+</span></span><span class="line"><span class="cl"> };
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -414,6 +415,35 @@ const OAuthCallback: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   );
+</span></span><span class="line"><span class="cl"> };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+import { getCalApi } from &#34;@calcom/embed-react&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+import { Calendar } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const CalComButton: React.FC&lt;{ isAuthorized: boolean }&gt; = ({ isAuthorized }) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const location = useLocation();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const isTodoPage = location.pathname === &#39;/todo&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  useEffect(() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    (async function () {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const cal = await getCalApi({});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      cal(&#34;ui&#34;, { &#34;styles&#34;: { &#34;branding&#34;: { &#34;brandColor&#34;: &#34;#000000&#34; } }, &#34;hideEventTypeDetails&#34;: false, &#34;layout&#34;: &#34;month_view&#34; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    })();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  }, []);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Only show for authorized users (admins) AND only on /todo page
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  if (!isAuthorized || !isTodoPage) return null;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  return (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &lt;button
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      data-cal-link=&#34;petekim/15min&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      data-cal-config=&#39;{&#34;layout&#34;:&#34;month_view&#34;}&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      className=&#34;fixed left-6 z-[60] w-[58px] h-[58px] bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 border border-slate-100 transition-all duration-300 hover:scale-105 flex items-center justify-center bottom-44&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      title=&#34;Schedule a meeting&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &lt;Calendar size={24} color=&#34;white&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &lt;/button&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  );
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> const App: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl">   return (
+</span></span><span class="line"><span class="cl">     &lt;Router&gt;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -421,10 +451,6 @@ const App: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &lt;Route path=&#34;/oauth/google/callback&#34; element={&lt;OAuthCallback /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;*&#34; element={&lt;Layout /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">       &lt;/Routes&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-      {/* Google Login is part of Layout logically, but since we have a catch-all route for Layout, 
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          we can put it here to ensure it&#39;s on every page except maybe the callback page if we wanted.
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-          But Layout wraps everything else. Let&#39;s put it inside Layout.
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-      */}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span>     &lt;/Router&gt;
+</span></span><span class="line"><span class="cl">   );
+</span></span><span class="line"><span class="cl"> };
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package-lock.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package-lock.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -8,6 +8,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &#34;name&#34;: &#34;compbio-portfolio&#34;,
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;0.0.0&#34;,
+</span></span><span class="line"><span class="cl">       &#34;dependencies&#34;: {
+</span></span><span class="line"><span class="cl"><span class="gi">+        &#34;@calcom/embed-react&#34;: &#34;^1.5.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &#34;@google-cloud/storage&#34;: &#34;^7.17.3&#34;,
+</span></span><span class="line"><span class="cl">         &#34;@google/genai&#34;: &#34;^1.30.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;@react-three/drei&#34;: &#34;^10.7.7&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -337,6 +338,35 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;node&#34;: &#34;&gt;=6.9.0&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/@calcom/embed-core&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.5.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/@calcom/embed-core/-/embed-core-1.5.3.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-GeId9gaByJ5EWiPmuvelZOvFWPOTWkcWZr5vGTCbIUTX125oE5yn0n8lDF1MJk5Xj1WO+/dk9jKIE08Ad9ytiQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;SEE LICENSE IN LICENSE&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/@calcom/embed-react&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.5.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/@calcom/embed-react/-/embed-react-1.5.3.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-JCgge04pc8fhdvUmPNVLhW8/lCWK+AAziKecKWWPfv1nn2s+qKP2BwsEAnxhxK9yPOBgE1EIEgmYkrrNB1iajA==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;SEE LICENSE IN LICENSE&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;@calcom/embed-core&#34;: &#34;1.5.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;@calcom/embed-snippet&#34;: &#34;1.3.3&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;peerDependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;react&#34;: &#34;^18.2.0 || ^19.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;react-dom&#34;: &#34;^18.2.0 || ^19.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/@calcom/embed-snippet&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.3.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/@calcom/embed-snippet/-/embed-snippet-1.3.3.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-pqqKaeLB8R6BvyegcpI9gAyY6Xyx1bKYfWvIGOvIbTpguWyM1BBBVcT9DCeGe8Zw7Ujp5K56ci7isRUrT2Uadg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;SEE LICENSE IN LICENSE&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;@calcom/embed-core&#34;: &#34;1.5.3&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/@dimforge/rapier3d-compat&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;0.12.0&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/@dimforge/rapier3d-compat/-/rapier3d-compat-0.12.0.tgz&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -12,6 +12,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     &#34;vercel-build&#34;: &#34;npm install --legacy-peer-deps &amp;&amp; npm run build&#34;
+</span></span><span class="line"><span class="cl">   },
+</span></span><span class="line"><span class="cl">   &#34;dependencies&#34;: {
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;@calcom/embed-react&#34;: &#34;^1.5.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;@google-cloud/storage&#34;: &#34;^7.17.3&#34;,
+</span></span><span class="line"><span class="cl">     &#34;@google/genai&#34;: &#34;^1.30.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;@react-three/drei&#34;: &#34;^10.7.7&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="README.md" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">README.md</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -2,11 +2,9 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> &lt;img width=&#34;1200&#34; height=&#34;475&#34; alt=&#34;GHBanner&#34; src=&#34;https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6&#34; /&gt;
+</span></span><span class="line"><span class="cl"> &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-# Run and deploy your AI Studio app
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+# Run and deploy this app
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"><span class="gd">-This contains everything you need to run your app locally.
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-View your app in AI Studio: https://ai.studio/apps/drive/1R10sHTriX92WcSdUFALnCSQaWvg8jSKH
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+This contains everything you need to run this app locally.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> ## Run Locally
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -32,6 +30,7 @@ This document outlines the modern full-stack architecture used in the **Distille
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> | **Styling** | **Tailwind CSS** | Utility-first CSS framework for rapid, consistent, and responsive UI development. |
+</span></span><span class="line"><span class="cl"> | **3D Graphics** | **Three.js (R3F)** | Implements the interactive 3D DNA double-helix visualization using `@react-three/fiber`. |
+</span></span><span class="line"><span class="cl"> | **Data Viz** | **Recharts** | React-based composable charting library used for the Research page visualizations. |
+</span></span><span class="line"><span class="cl"><span class="gi">+| **Hi-C Browser** | **D3.js + HTML5 Canvas** | Custom-built genome browser for visualizing chromatin loops and gene regulation using `d3-scale` and Canvas API for high performance. |
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> | **Backend** | **Node.js + Socket.io** | Custom server handling real-time bidirectional communication for the chat feature. |
+</span></span><span class="line"><span class="cl"> | **Database** | **MongoDB** | NoSQL database used for storing Tech and Bio posts and user interactions (likes, views). |
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

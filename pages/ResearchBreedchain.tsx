@@ -175,7 +175,7 @@ export const ResearchBreedchain: React.FC = () => (
                     </h4>
                     <ul className="list-disc list-inside text-slate-700 space-y-2">
                         <li><strong>Private Data Collections:</strong> Sensitive data isolation</li>
-                        <li><strong>Role-Based Access:</strong> OAuth 2.0 authentication</li>
+                        <li><strong>Role-Based Access:</strong> OAuth 2.0 authentication (Google accounts)</li>
                         <li><strong>Audit Trail:</strong> Complete transaction history</li>
                     </ul>
                 </div>

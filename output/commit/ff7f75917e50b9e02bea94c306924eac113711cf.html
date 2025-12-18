@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1. add `useLockBodyScroll` hook for modals, so let not interact parental screen 2. show Sync from Strava button only for admin users · personal-web-2025@ff7f759</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>ff7f759</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-12-06</span> <span class="nowrap">06:51:37</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                1. add `useLockBodyScroll` hook for modals, so let not interact parental screen 2. show Sync from Strava button only for admin users
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="ab588c2c8d9492318c0a4c8fb3c42270135f2c64.html"><code>ab588c2</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (9)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">components</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#components%2fBlogPostModal.tsx" class="file-name">
+                    BlogPostModal.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#components%2fTodoComponents.tsx" class="file-name">
+                    TodoComponents.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">hooks</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16" class="file-added">
+                            <use xlink:href="#file-added"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#hooks%2fuseLockBodyScroll.ts" class="file-name">
+                    useLockBodyScroll.ts
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">pages</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fAbout.tsx" class="file-name">
+                    About.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fBlog.tsx" class="file-name">
+                    Blog.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fContact.tsx" class="file-name">
+                    Contact.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fInterests.tsx" class="file-name">
+                    Interests.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#pages%2fTodoDev.tsx" class="file-name">
+                    TodoDev.tsx
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="components/BlogPostModal.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">components/BlogPostModal.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -29,6 +29,8 @@ interface BlogPostModalProps {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     onDrop: (e: React.DragEvent) =&gt; void;
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+import { useLockBodyScroll } from &#39;../hooks/useLockBodyScroll&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> export const BlogPostModal: React.FC&lt;BlogPostModalProps&gt; = ({
+</span></span><span class="line"><span class="cl">     mode,
+</span></span><span class="line"><span class="cl">     isOpen,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -55,6 +57,8 @@ export const BlogPostModal: React.FC&lt;BlogPostModalProps&gt; = ({
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">     const isCreateMode = mode === &#39;create&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    useLockBodyScroll(isOpen);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     return (
+</span></span><span class="line"><span class="cl">         &lt;div
+</span></span><span class="line"><span class="cl">             className=&#34;fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4&#34;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="components/TodoComponents.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">components/TodoComponents.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,6 +1,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import React from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"> import { Plus, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from &#39;lucide-react&#39;;
+</span></span><span class="line"><span class="cl"> import { API_URL } from &#39;../utils/apiConfig&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { useLockBodyScroll } from &#39;../hooks/useLockBodyScroll&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> // ============================================================================
+</span></span><span class="line"><span class="cl"> // ANALOG CLOCK COMPONENT
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -442,6 +443,8 @@ export const CreateTodoModal: React.FC&lt;CreateTodoModalProps&gt; = ({
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     }, [show, defaultCategory]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    useLockBodyScroll(show);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     if (!show) return null;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     const handleSubmit = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -606,6 +609,9 @@ export const TodoDetailModal: React.FC&lt;TodoDetailModalProps&gt; = ({
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> }) =&gt; {
+</span></span><span class="line"><span class="cl">     if (!todo) return null;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Lock body scroll when modal is open
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useLockBodyScroll(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const getSortDisplay = () =&gt; {
+</span></span><span class="line"><span class="cl">         if (!todo.sort) return null;
+</span></span><span class="line"><span class="cl">         if (todo.category === &#39;dev&#39;) {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -767,6 +773,9 @@ export const EditTodoModal: React.FC&lt;EditTodoModalProps&gt; = ({
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     }, [todo]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Lock body scroll when modal is open
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useLockBodyScroll(!!todo);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     if (!todo) return null;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     const handleSubmit = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -956,6 +965,9 @@ export const SuccessPopup: React.FC&lt;SuccessPopupProps&gt; = ({ show, message, onClo
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     }, [show, onClose]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Lock body scroll when popup is open
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useLockBodyScroll(show);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     if (!show) return null;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     return (
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="hooks/useLockBodyScroll.ts" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">hooks/useLockBodyScroll.ts</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -0,0 +1,21 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span><span class="gi">+import { useEffect } from &#39;react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+/**
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+ * Hook to lock the body scroll when a condition is met (e.g., modal is open).
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+ * @param isLocked - Boolean indicating if the scroll should be locked.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+ */
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+export const useLockBodyScroll = (isLocked: boolean) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useEffect(() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (isLocked) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            document.body.style.overflow = &#39;hidden&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            document.body.style.overflow = &#39;unset&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Cleanup function to ensure scroll is unlocked when component unmounts
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // or when isLocked becomes false.
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        return () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            document.body.style.overflow = &#39;unset&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }, [isLocked]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+};
+</span></span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/About.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/About.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,6 +1,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import React, { useState, useEffect } from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"> import { Plus, X, Trash2 } from &#39;lucide-react&#39;;
+</span></span><span class="line"><span class="cl"> import { API_URL } from &#39;../utils/apiConfig&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { useLockBodyScroll } from &#39;../hooks/useLockBodyScroll&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> interface Milestone {
+</span></span><span class="line"><span class="cl">     _id: string;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -160,6 +161,9 @@ export const About: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     }, [activeTab]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Lock body scroll when modal is open
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useLockBodyScroll(isModalOpen);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     // Fetch functions
+</span></span><span class="line"><span class="cl">     const fetchMilestones = async () =&gt; {
+</span></span><span class="line"><span class="cl">         try {
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/Blog.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Blog.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -4,6 +4,7 @@ import { Plus } from &#39;lucide-react&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import ReactMarkdown from &#39;react-markdown&#39;;
+</span></span><span class="line"><span class="cl"> import remarkGfm from &#39;remark-gfm&#39;;
+</span></span><span class="line"><span class="cl"> import { BlogPostModal } from &#39;../components/BlogPostModal&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { useLockBodyScroll } from &#39;../hooks/useLockBodyScroll&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> import { API_URL } from &#39;../utils/apiConfig&#39;;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> export const Blog: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -118,6 +119,8 @@ export const Blog: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         }
+</span></span><span class="line"><span class="cl">     }, [selectedPost]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    useLockBodyScroll(selectedPost !== null &amp;&amp; !isEditMode);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     // Handle like/unlike
+</span></span><span class="line"><span class="cl">     const handleLike = async (postId: string, e: React.MouseEvent) =&gt; {
+</span></span><span class="line"><span class="cl">         e.stopPropagation();
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -595,7 +598,7 @@ export const Blog: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">     return (
+</span></span><span class="line"><span class="cl">         &lt;&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-            &lt;div className=&#34;h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+            &lt;div className=&#34;min-h-screen lg:h-screen bg-white pt-32 pb-4 px-6 flex flex-col lg:overflow-hidden&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;div className=&#34;max-w-7xl mx-auto w-full flex-1 flex flex-col&#34;&gt;
+</span></span><span class="line"><span class="cl">                     &lt;h2 className=&#34;text-4xl font-bold text-slate-900 mb-6 text-center border-b border-slate-100 pb-4 flex-shrink-0&#34;&gt;Tech &amp; Bio&lt;/h2&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -611,7 +614,7 @@ export const Blog: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                         &lt;div className=&#34;flex flex-col lg:flex-row gap-8 flex-1 min-h-0&#34;&gt;
+</span></span><span class="line"><span class="cl">                             {/* Sidebar TOC */}
+</span></span><span class="line"><span class="cl">                             {/* Sidebar TOC */}
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;div className=&#34;lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            &lt;div className=&#34;lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto pr-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 &lt;h3 className=&#34;text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2&#34;&gt;Latest Posts&lt;/h3&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;hr className=&#34;border-slate-200 my-2&#34; /&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -669,7 +672,7 @@ export const Blog: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">                             {/* Grid */}
+</span></span><span class="line"><span class="cl"><span class="gd">-                            &lt;div className=&#34;hidden sm:grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                            &lt;div className=&#34;grid flex-1 grid-cols-1 lg:grid-cols-2 gap-6 min-h-0&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                 {posts.map((post, i) =&gt; (
+</span></span><span class="line"><span class="cl">                                     &lt;div key={post._id || i} className=&#34;group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full&#34;&gt;
+</span></span><span class="line"><span class="cl">                                         {/* Header */}
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/Contact.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Contact.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -1,6 +1,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import { Github, Mail, MapPin, Plus, X } from &#39;lucide-react&#39;;
+</span></span><span class="line"><span class="cl"> import React, { useState, useEffect } from &#39;react&#39;;
+</span></span><span class="line"><span class="cl"> import { API_URL } from &#39;../utils/apiConfig&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { useLockBodyScroll } from &#39;../hooks/useLockBodyScroll&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> export const Contact: React.FC = () =&gt; {
+</span></span><span class="line"><span class="cl">     const [showCopied, setShowCopied] = useState(false);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -128,6 +129,9 @@ export const Contact: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         setStateSuggestions([]);
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Lock body scroll when modal is open
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    useLockBodyScroll(isModalOpen);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     // Geocode location to get coordinates
+</span></span><span class="line"><span class="cl">     const geocodeLocation = async (city: string, state: string, country: string): Promise&lt;{ lat: number; lon: number } | null&gt; =&gt; {
+</span></span><span class="line"><span class="cl">         try {
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/Interests.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/Interests.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -148,7 +148,7 @@ const generateCalendarDays = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     return days;
+</span></span><span class="line"><span class="cl"> };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+export const Interests: React.FC&lt;{ isAuthorized: boolean }&gt; = ({ isAuthorized }) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const { submenu } = useParams&lt;{ submenu?: string }&gt;();
+</span></span><span class="line"><span class="cl">     const navigate = useNavigate();
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -496,7 +496,7 @@ export const Interests: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                     &lt;h3 className=&#34;text-2xl font-bold text-slate-900 mb-2&#34;&gt;Workout Activities&lt;/h3&gt;
+</span></span><span class="line"><span class="cl">                                     &lt;p className=&#34;text-slate-500 text-lg&#34;&gt;My workout activities from Strava&lt;/p&gt;
+</span></span><span class="line"><span class="cl">                                 &lt;/div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                {import.meta.env.DEV &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                {isAuthorized &amp;&amp; (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                     &lt;button
+</span></span><span class="line"><span class="cl">                                         onClick={handleStravaAuth}
+</span></span><span class="line"><span class="cl">                                         className=&#34;px-6 py-3 bg-gradient-to-r from-[#FFA300] to-[#FF8C00] text-white font-bold rounded-xl hover:from-[#FF8C00] hover:to-[#FF7700] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105&#34;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="pages/TodoDev.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">pages/TodoDev.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -16,6 +16,7 @@ import {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     TodoFormData
+</span></span><span class="line"><span class="cl"> } from &#39;../components/TodoComponents&#39;;
+</span></span><span class="line"><span class="cl"> import { API_URL } from &#39;../utils/apiConfig&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import { useLockBodyScroll } from &#39;../hooks/useLockBodyScroll&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> interface TodoDevProps {
+</span></span><span class="line"><span class="cl">     user: any;
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -91,16 +92,7 @@ export const TodoDev: React.FC&lt;TodoDevProps&gt; = ({ user, isAuthorized, projects:
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }, [initialProjects]);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">     // Lock body scroll when modal is open
+</span></span><span class="line"><span class="cl"><span class="gd">-    React.useEffect(() =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        if (selectedProject || showProjectModal) {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            document.body.style.overflow = &#39;hidden&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            document.body.style.overflow = &#39;unset&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        }
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        return () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-            document.body.style.overflow = &#39;unset&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-        };
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-    }, [selectedProject, showProjectModal]);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+    useLockBodyScroll(!!selectedProject || showProjectModal);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">     // ============================================================================
+</span></span><span class="line"><span class="cl">     // API FUNCTIONS
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -320,6 +312,55 @@ export const TodoDev: React.FC&lt;TodoDevProps&gt; = ({ user, isAuthorized, projects:
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         setIsProjectEditMode(false);
+</span></span><span class="line"><span class="cl">     };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+    // Handle Technologies input with auto-formatting (semicolon separator)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [technologiesString, setTechnologiesString] = React.useState(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const [tagsString, setTagsString] = React.useState(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleTechnologiesInput = (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const val = e.target.value;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (val.endsWith(&#39; &#39;) &amp;&amp; !val.endsWith(&#39;; &#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setTechnologiesString(val.trim() + &#39;; &#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setTechnologiesString(val);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleTechnologiesBlur = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        let val = technologiesString.trim();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (val.endsWith(&#39;;&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            val = val.slice(0, -1).trim();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTechnologiesString(val);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Update formData array
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setProjectFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ...projectFormData,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            technologies: val.split(&#39;;&#39;).map((t: string) =&gt; t.trim()).filter(Boolean)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    // Handle Tags input with auto-formatting (semicolon separator)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleTagsInput = (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const val = e.target.value;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (val.endsWith(&#39; &#39;) &amp;&amp; !val.endsWith(&#39;; &#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setTagsString(val.trim() + &#39;; &#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setTagsString(val);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const handleTagsBlur = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        let val = tagsString.trim();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (val.endsWith(&#39;;&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            val = val.slice(0, -1).trim();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTagsString(val);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Update formData array
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setProjectFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            ...projectFormData,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            tags: val.split(&#39;;&#39;).map((t: string) =&gt; t.trim()).filter(Boolean)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     const handleAddProjectClick = () =&gt; {
+</span></span><span class="line"><span class="cl">         setProjectFormData({
+</span></span><span class="line"><span class="cl">             project_name: &#39;&#39;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -335,6 +376,8 @@ export const TodoDev: React.FC&lt;TodoDevProps&gt; = ({ user, isAuthorized, projects:
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             budget: &#39;&#39;,
+</span></span><span class="line"><span class="cl">             progress_percent: 0
+</span></span><span class="line"><span class="cl">         });
+</span></span><span class="line"><span class="cl"><span class="gi">+        setTechnologiesString(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setTagsString(&#39;&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         setIsProjectEditMode(true);
+</span></span><span class="line"><span class="cl">         setSelectedProject(null);
+</span></span><span class="line"><span class="cl">         setShowProjectModal(true);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -342,6 +385,8 @@ export const TodoDev: React.FC&lt;TodoDevProps&gt; = ({ user, isAuthorized, projects:
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl">     const handleEditProjectClick = () =&gt; {
+</span></span><span class="line"><span class="cl">         if (selectedProject) {
+</span></span><span class="line"><span class="cl"><span class="gi">+            const techs = selectedProject.technologies || [];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const projectTags = selectedProject.tags || [];
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             setProjectFormData({
+</span></span><span class="line"><span class="cl">                 project_name: selectedProject.project_name || &#39;&#39;,
+</span></span><span class="line"><span class="cl">                 github_url: selectedProject.github_url || &#39;&#39;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -351,11 +396,14 @@ export const TodoDev: React.FC&lt;TodoDevProps&gt; = ({ user, isAuthorized, projects:
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                 description: selectedProject.description || &#39;&#39;,
+</span></span><span class="line"><span class="cl">                 status: selectedProject.status || &#39;ongoing&#39;,
+</span></span><span class="line"><span class="cl">                 team_members: selectedProject.team_members || [],
+</span></span><span class="line"><span class="cl"><span class="gd">-                technologies: selectedProject.technologies || [],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                tags: selectedProject.tags || [],
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                technologies: techs,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                tags: projectTags,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 budget: selectedProject.budget?.toString() || &#39;&#39;,
+</span></span><span class="line"><span class="cl">                 progress_percent: selectedProject.progress_percent || 0
+</span></span><span class="line"><span class="cl">             });
+</span></span><span class="line"><span class="cl"><span class="gi">+            // Initialize string states with semicolon-separated values
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setTechnologiesString(techs.join(&#39;; &#39;));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            setTagsString(projectTags.join(&#39;; &#39;));
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>             setIsProjectEditMode(true);
+</span></span><span class="line"><span class="cl">             setShowProjectModal(true);
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -947,31 +995,27 @@ export const TodoDev: React.FC&lt;TodoDevProps&gt; = ({ user, isAuthorized, projects:
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">                                         &lt;div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                            &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Technologies (comma-separated)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                            &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Technologies (space to add semicolon)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &lt;input
+</span></span><span class="line"><span class="cl">                                                 type=&#34;text&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                value={projectFormData.technologies.join(&#39;, &#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                onChange={(e) =&gt; setProjectFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    ...projectFormData,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    technologies: e.target.value.split(&#39;,&#39;).map(t =&gt; t.trim()).filter(Boolean)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                value={technologiesString}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onChange={handleTechnologiesInput}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onBlur={handleTechnologiesBlur}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                 className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                placeholder=&#34;React, Node.js, MongoDB&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                placeholder=&#34;React; Node.js; MongoDB&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                 aria-label=&#34;Technologies&#34;
+</span></span><span class="line"><span class="cl">                                             /&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">                                         &lt;div&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                            &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Tags (comma-separated)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                            &lt;label className=&#34;block text-sm font-bold text-slate-700 mb-2&#34;&gt;Tags (space to add semicolon)&lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                             &lt;input
+</span></span><span class="line"><span class="cl">                                                 type=&#34;text&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                value={projectFormData.tags.join(&#39;, &#39;)}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                onChange={(e) =&gt; setProjectFormData({
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    ...projectFormData,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                    tags: e.target.value.split(&#39;,&#39;).map(t =&gt; t.trim()).filter(Boolean)
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                                                })}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                value={tagsString}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onChange={handleTagsInput}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                                onBlur={handleTagsBlur}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                 className=&#34;w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                                                placeholder=&#34;web, frontend, backend&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                                                placeholder=&#34;web; frontend; backend&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                                                 aria-label=&#34;Tags&#34;
+</span></span><span class="line"><span class="cl">                                             /&gt;
+</span></span><span class="line"><span class="cl">                                         &lt;/div&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -243,7 +243,7 @@ const Layout: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &lt;Route path=&#34;/research/:submenu&#34; element={&lt;Research /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/blog&#34; element={&lt;Blog /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/interests&#34; element={&lt;Navigate to=&#34;/interests/data&#34; replace /&gt;} /&gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-        &lt;Route path=&#34;/interests/:submenu&#34; element={&lt;Interests /&gt;} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        &lt;Route path=&#34;/interests/:submenu&#34; element={&lt;Interests isAuthorized={isAuthorized} /&gt;} /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &lt;Route path=&#34;/contact&#34; element={&lt;Contact /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;/strava/callback&#34; element={&lt;StravaCallback /&gt;} /&gt;
+</span></span><span class="line"><span class="cl">         &lt;Route path=&#34;*&#34; element={&lt;Navigate to=&#34;/&#34; replace /&gt;} /&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

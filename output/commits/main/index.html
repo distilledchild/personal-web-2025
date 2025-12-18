@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Commits · personal-web-2025</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      .commits {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+        overflow-x: auto;
+      }
+
+      .row {
+        display: flex;
+        height: 40px;
+        border-bottom: 1px solid var(--c-border);
+        padding-inline: 16px;
+        gap: 16px;
+      }
+
+      .row:last-child {
+        border-bottom: none;
+      }
+
+      .row:hover {
+        background-color: var(--c-bg-alt);
+      }
+
+      .cell {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .hash a {
+        font-family: var(--font-family-mono), monospace;
+        color: var(--c-text-2);
+      }
+
+      .commit-title {
+        flex: 1;
+      }
+
+      .commit-title a {
+        color: var(--c-text-1);
+        line-height: 1.5;
+      }
+
+      .commit-title a:hover {
+        color: var(--c-brand-2);
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .date {
+        font-family: var(--font-family-mono), monospace;
+        font-size: 12px;
+        color: var(--c-text-2);
+      }
+
+      .pagination {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 12px;
+        padding: 8px 0;
+        color: var(--c-text-2);
+      }
+
+      .pagination a,
+      .pagination span.btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid var(--c-border);
+        border-radius: 6px;
+        background: var(--c-bg-elv);
+        color: var(--c-text-1);
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .pagination a:hover {
+        color: var(--c-brand-2);
+        border-color: var(--c-brand-2);
+      }
+
+      .pagination .disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .pagination .page-indicator {
+        margin: 0 4px;
+        font-size: 13px;
+        color: var(--c-text-2);
+      }
+
+       
+      @media (max-width: 767px) {
+        .row {
+          height: auto;
+          padding: 10px 12px;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: flex-start;
+        }
+
+        .commit-title {
+          flex-basis: 100%;
+          order: 1;
+        }
+
+        .author, .date, .hash {
+          font-size: 12px;
+        }
+
+        .author {
+          color: var(--c-text-2);
+          order: 2;
+        }
+
+        .date {
+          order: 2;
+        }
+
+        .hash {
+          margin-left: auto;
+          order: 3;
+        }
+      }
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    
+    <div class="header-container">
+        <header>
+            
+                <div class="header-ref" aria-label="Ref">main</div>
+            
+            
+                <h1 class="title">Commits</h1>
+            
+            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#arrow-top"></use>
+                </svg>
+                Top
+            </button>
+        </header>
+    </div>
+
+    <div class="commits">
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/01bd4d32563849f9c5bd10a4d938adaa4eef5acf.html">01bd4d3</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/01bd4d32563849f9c5bd10a4d938adaa4eef5acf.html">fail to fix in preventing from logout after Strava login</a>
+                  
+                  <div class="ref-badges">
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                  </div>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-06</span> <span class="nowrap">20:39:31</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/5a5c50d9a0f2545b9651ffc730dbfe7b92f39667.html">5a5c50d</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/5a5c50d9a0f2545b9651ffc730dbfe7b92f39667.html">fix logout after Strava OAuth in production</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-06</span> <span class="nowrap">20:34:01</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/0b58629a5389617ee48229688ac807395346aa16.html">0b58629</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/0b58629a5389617ee48229688ac807395346aa16.html">1. responsive submenu for submenues in About 2. Always colorful map in Contact 3. Fix logout after Strava login</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-06</span> <span class="nowrap">20:28:13</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/f7c99024a12d532b2705f996399257944526862a.html">f7c9902</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/f7c99024a12d532b2705f996399257944526862a.html">strava redirect url test and debug in safari browser scroll issues in hicbrowser (responsive screeen)</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-06</span> <span class="nowrap">14:45:16</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/5a66eb4f012b0fb7ec396a54a00b6a00252c1a8a.html">5a66eb4</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/5a66eb4f012b0fb7ec396a54a00b6a00252c1a8a.html">1. update and show Strava OAuth and button for production| add redirect URL at Cloud Secret in GCP 2. refine page layouts(remove pd-6 class in div), and implement global scrollbar hiding.</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-06</span> <span class="nowrap">13:51:40</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/ff7f75917e50b9e02bea94c306924eac113711cf.html">ff7f759</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/ff7f75917e50b9e02bea94c306924eac113711cf.html">1. add `useLockBodyScroll` hook for modals, so let not interact parental screen 2. show Sync from Strava button only for admin users</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-06</span> <span class="nowrap">06:51:37</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/ab588c2c8d9492318c0a4c8fb3c42270135f2c64.html">ab588c2</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/ab588c2c8d9492318c0a4c8fb3c42270135f2c64.html">use API_URL from apiConfig.ts all over this project</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-05</span> <span class="nowrap">02:24:45</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/bd184fc67605db9d54029b79c1699bf50018f2e9.html">bd184fc</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/bd184fc67605db9d54029b79c1699bf50018f2e9.html">fix: OAuth redirect_uri mismatch - use www.distilledchild.space callback</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-05</span> <span class="nowrap">01:54:26</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/22938e6d00aca822dd68bf30c42388aae3b01edf.html">22938e6</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/22938e6d00aca822dd68bf30c42388aae3b01edf.html">miss to copy files, utils &amp; sync-artworks.js in Dockerfile</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-05</span> <span class="nowrap">01:45:57</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/cb00b7f846d6d6b0cb3238d8f0730c4055adf0d2.html">cb00b7f</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/cb00b7f846d6d6b0cb3238d8f0730c4055adf0d2.html">1. code refactor 1-1. Blog.tsx &amp; BlogPostModal.tsx 1-2. Todo.tsx &amp; TodoComponents.tsx 2. Split 2-1. Research.tsx-&gt; ResearchHiCBrowser.tsx 2-2. Todo.tsx -&gt; TodoDev.tsx &amp; TodoPersonal.tsx 3. signedUrlHelper.ts for GCP bucket private setting: apiConfig.ts, csvLoader.ts, gcsHelper.js</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-05</span> <span class="nowrap">01:39:37</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/2e6e38c907ac6250242ea9f4a27357701ddda6f3.html">2e6e38c</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/2e6e38c907ac6250242ea9f4a27357701ddda6f3.html">1. favicon 2. reorganize md files 3. removing log files generated from deprecated functions, chatting</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-05</span> <span class="nowrap">01:28:38</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/948a2a6d400f4a32d272650d3ae069a6f8b35a9b.html">948a2a6</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/948a2a6d400f4a32d272650d3ae069a6f8b35a9b.html">Add all environment variables to Cloud Build deployment</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">06:07:20</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/7d7db95a3b269219708e86cb8ecda747232ad51f.html">7d7db95</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/7d7db95a3b269219708e86cb8ecda747232ad51f.html">Use Secret Manager as environment variable instead of file mount</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">05:58:02</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/526cf87c58b6dce6803c228e3094cf776f7df5b7.html">526cf87</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/526cf87c58b6dce6803c228e3094cf776f7df5b7.html">Add Secret Manager mount to cloudbuild.yaml</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">05:55:34</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/3de301fd366f58ce8934607a99456ac53f9b3050.html">3de301f</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/3de301fd366f58ce8934607a99456ac53f9b3050.html">Use Secret Manager for GCS credentials and signed URLs</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">05:51:27</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/41e80c0f5564ddf57c15a1d89a8276d7b5f088f5.html">41e80c0</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/41e80c0f5564ddf57c15a1d89a8276d7b5f088f5.html">Change GCS image URLs from signed URLs to public URLs</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">05:40:58</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/b8ca3d39856c9b89b6719d486ec66e59bceab121.html">b8ca3d3</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/b8ca3d39856c9b89b6719d486ec66e59bceab121.html">Add Vercel domain to CORS whitelist</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">04:46:29</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/a9c05327600b61f82a2f0d7fb7c1403e5193b965.html">a9c0532</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/a9c05327600b61f82a2f0d7fb7c1403e5193b965.html">Trigger rebuild with correct permissions</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">04:42:00</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/599bceb25ee9652108f4f6cdf2f1652c1ae85277.html">599bceb</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/599bceb25ee9652108f4f6cdf2f1652c1ae85277.html">Remove service-account-key.json from Dockerfile</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">04:39:24</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/b0f86580c75ae12e9a77c3e9b692f3eba2e110a6.html">b0f8658</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/b0f86580c75ae12e9a77c3e9b692f3eba2e110a6.html">Fix Cloud Build: specify server directory context</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">04:36:58</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/24d18392cadf2456a459999a196ddfe3e49de358.html">24d1839</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/24d18392cadf2456a459999a196ddfe3e49de358.html">Update API URLs to api.distilledchild.space</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">04:31:25</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/93587a83073a0517097e696441f9cd27bd233124.html">93587a8</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/93587a83073a0517097e696441f9cd27bd233124.html">1. remove accessInfoSchema, AccessInfo and AccessInfoDev models, getLocationFromIP, /api/access/log endpoint 2. Fix Logout Redirect for TODO Pages to main homepage.</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">00:49:02</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/60f737e9cca6b36a407a13bee29bb56b2fcbc987.html">60f737e</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/60f737e9cca6b36a407a13bee29bb56b2fcbc987.html">1. tab separateion in TODO menun. 2. kanban board in Dev tab. 3. drag and drop in kanban board 4. project creation function. 5. PRJECT collection joining TODO_LIST through the key column, sort. 6. detailed comments for sections in Todo.tsx file. 7. TODO create using the same insert popup with dynamic select box of Category &amp; Sort selectbox.</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-04</span> <span class="nowrap">00:02:00</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/f85e3c850c49276beb15d2f1b52e0310e75d727b.html">f85e3c8</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/f85e3c850c49276beb15d2f1b52e0310e75d727b.html">1. weather in TODO 2. search bar in todo</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-03</span> <span class="nowrap">12:47:43</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/b0f20ae53cd17157772d5a4915b70b45f0a8dab2.html">b0f20ae</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/b0f20ae53cd17157772d5a4915b70b45f0a8dab2.html">search function in Blog</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-03</span> <span class="nowrap">04:05:35</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/71743632e98e799144d4ab72478710e35aa6dd4f.html">7174363</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/71743632e98e799144d4ab72478710e35aa6dd4f.html">1. add cal.com calendar in TODO 2. add daily alarm for todo list through calendar and icon 3. update README.md for hicbrowser</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-02</span> <span class="nowrap">17:51:39</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/997d854818fac4f18ea44153fa6189e790b3dc6d.html">997d854</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/997d854818fac4f18ea44153fa6189e790b3dc6d.html">Refactor App.tsx by moving the components into Interests.tsx, Blog.tsx(renaming from Tech component), Contact.tsx, and Todo.tsx</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-02</span> <span class="nowrap">12:01:23</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/12ffa6e27f8c21bc26d6b181d026ab8174c99d4b.html">12ffa6e</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/12ffa6e27f8c21bc26d6b181d026ab8174c99d4b.html">Research/hicbrowser implement top-left design change cors setting for the loop and genomic data from google cloud bucket</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-02</span> <span class="nowrap">03:59:23</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/0d7e6c72cf0683ef95cf03d6c2f30bbffd0bdfc9.html">0d7e6c7</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/0d7e6c72cf0683ef95cf03d6c2f30bbffd0bdfc9.html">displaying clocks, ordering todos by priority and deadline</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">12:12:32</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/40f85ff2a1817055d159bc69e82c14a68f61ec7d.html">40f85ff</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/40f85ff2a1817055d159bc69e82c14a68f61ec7d.html">fix: correct GCS bucket configuration</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">10:56:31</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/0109ff239f16a417c0d66e5504ec0bacbffffb36.html">0109ff2</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/0109ff239f16a417c0d66e5504ec0bacbffffb36.html">fix: add Node 20 requirement to server folder for Railway deployment</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">10:41:03</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/e77c4c082d02a6fe6995c6894415a93c03a10a71.html">e77c4c0</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/e77c4c082d02a6fe6995c6894415a93c03a10a71.html">fix: use correct Nix package name nodejs_20 for Railway</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">10:29:18</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/c3b57dc6ad0c0dcba08d030b82c4262c8f6617f4.html">c3b57dc</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/c3b57dc6ad0c0dcba08d030b82c4262c8f6617f4.html">fix: force Node 20.x in Railway with multiple config files and regenerate lock file</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">10:27:25</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/cb5036000adba91e7244aa9b3fd8d59760158414.html">cb50360</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/cb5036000adba91e7244aa9b3fd8d59760158414.html">fix: configure Railway to use Node 20.x and update lock file</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">10:23:59</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/608127ddc938b8b0e354365fab8e26fdd4389f4a.html">608127d</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/608127ddc938b8b0e354365fab8e26fdd4389f4a.html">fix: add browser check before localStorage access to prevent SSR errors</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">05:02:00</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/715b5bf8d75bc0170594e3c117266777e39d525f.html">715b5bf</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/715b5bf8d75bc0170594e3c117266777e39d525f.html">build errors from zonedTimeToUtc</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">04:57:57</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/484fdf83f1cc0fd8688becd3b6ced3a6b398428e.html">484fdf8</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/484fdf83f1cc0fd8688becd3b6ced3a6b398428e.html">image issues in Interests-art &amp; time setting</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">04:40:35</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/0a970a067aa00b1a1e0308f9c0c1dc6d22eaec22.html">0a970a0</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/0a970a067aa00b1a1e0308f9c0c1dc6d22eaec22.html">authorization for the page and menu of TODO</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">02:00:10</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/89619adf30424271b07747950ba19864eeda796f.html">89619ad</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/89619adf30424271b07747950ba19864eeda796f.html">feat: Conditionally render update button in Tech component for admin users</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">01:39:36</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/77184183b9cb40de5feb0f98517ee03c167e5b27.html">7718418</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/77184183b9cb40de5feb0f98517ee03c167e5b27.html">fix: Redirect to home on logout from TODO page and update path references</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">01:29:04</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/a0f9743f4f9611ce49fc6660869c71c2862eb074.html">a0f9743</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/a0f9743f4f9611ce49fc6660869c71c2862eb074.html">feat: Show TODO menu for admin users in production</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">01:15:56</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/4648e80d15e4d69aef54d772f5f2b1f3c5aaafad.html">4648e80</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/4648e80d15e4d69aef54d772f5f2b1f3c5aaafad.html">show TODO menu in production env.</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">01:13:39</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/4f03c9a2262506ed674b9f8dc9195dd49d878cac.html">4f03c9a</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/4f03c9a2262506ed674b9f8dc9195dd49d878cac.html">show TODO menu when user having a role of Admin logged in</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">01:02:10</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/afafc016af00c5cbaf08e5aae1247f5e4376b4c1.html">afafc01</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/afafc016af00c5cbaf08e5aae1247f5e4376b4c1.html">1. add TODO list 2. change category value in Blog</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-12-01</span> <span class="nowrap">00:05:52</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/5537865fdee5d98f5a9f4be37135e0ac3013dc3f.html">5537865</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/5537865fdee5d98f5a9f4be37135e0ac3013dc3f.html">Data is the default routing in Interests submenu</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-30</span> <span class="nowrap">17:27:56</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/106491b5131345d15a425e12de256e50a6f1390d.html">106491b</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/106491b5131345d15a425e12de256e50a6f1390d.html">1. change name of menu: Blog from Tech 2. file upload using multer 3. tags in posts in Blog 4. change left side of Blog 5. pagenation in Blog</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-30</span> <span class="nowrap">17:25:50</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/c43bacfd1cc69c2e94521ab9a1c281c9ecc3d76d.html">c43bacf</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/c43bacfd1cc69c2e94521ab9a1c281c9ecc3d76d.html">1. change button location on update page in Tech menu 2. change bucket in GCP, and a way how to bring images from google bucket 3. add image upload in Tech blog</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-30</span> <span class="nowrap">03:47:35</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/a28239e4e916109e0f60bab2575ad1026c89aebe.html">a28239e</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/a28239e4e916109e0f60bab2575ad1026c89aebe.html">1. MD for Tech blog 2. button location change at update and detail page in Tech menu. 3. Refine hover colors for contact section icons (Mail, GitHub, LinkedIn, Location).</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-29</span> <span class="nowrap">16:59:15</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/8fcbbc4b9f5f967588de2a50c71b597e5911d5fa.html">8fcbbc4</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/8fcbbc4b9f5f967588de2a50c71b597e5911d5fa.html">fix: Remove all PostgreSQL dependencies and related code</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-29</span> <span class="nowrap">04:45:52</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/7e57d0f3108b9dc266efa70f782cbf401097cdfd.html">7e57d0f</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/7e57d0f3108b9dc266efa70f782cbf401097cdfd.html">Update About, Contact, and Interests pages</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-29</span> <span class="nowrap">04:37:42</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/b6e0006371e6028942ca0e671836a4bfbd1ce952.html">b6e0006</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/b6e0006371e6028942ca0e671836a4bfbd1ce952.html">1. separate functions in workout, a.sync button: insert records in DB, b. table shows records from DB. 2. change the most dark color for gradation in calendar</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-28</span> <span class="nowrap">15:21:46</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/0e6a14b001dcbde08695fbbb1754f28be64bb032.html">0e6a14b</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/0e6a14b001dcbde08695fbbb1754f28be64bb032.html">1. fixing update in Academic submenu 2. fixing visibility for update button only authorized users</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-28</span> <span class="nowrap">02:29:12</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/b4c537ea90167158439602936068e5e6fd3d4555.html">b4c537e</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/b4c537ea90167158439602936068e5e6fd3d4555.html">Update and insert form for Me and Academic submenu</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-28</span> <span class="nowrap">02:12:13</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/c65ec5b1d4e9c89741eff79b15ed4db3778f9cdb.html">c65ec5b</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/c65ec5b1d4e9c89741eff79b15ed4db3778f9cdb.html">1. changing color consistency depending on menus 2. Removing chatting service 3. Adding Academic submenu in About 4. Hightening main menus</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">20:37:56</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/8d16f6fbd31175450f5635d031223570b0df18f4.html">8d16f6f</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/8d16f6fbd31175450f5635d031223570b0df18f4.html">Downgrade Express to 4.x to fix path-to-regexp wildcard issue</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">06:19:34</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/2a42f5131bb8c3f01c02bbf78b961a270a4388b2.html">2a42f51</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/2a42f5131bb8c3f01c02bbf78b961a270a4388b2.html">Add @google-cloud/storage dependency to fix Railway deployment</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">06:10:53</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/3ef0be037e0cda4c58dbb0ee42ae127d3ac33406.html">3ef0be0</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/3ef0be037e0cda4c58dbb0ee42ae127d3ac33406.html">Add explicit OPTIONS preflight handler for CORS</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">06:01:49</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/6e0abb8fcf14d5782db2b9b8fa6f53e43c2a17e1.html">6e0abb8</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/6e0abb8fcf14d5782db2b9b8fa6f53e43c2a17e1.html">Fix CORS configuration for production deployment</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">05:50:03</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/8e14d90ff354a533449d2fa5eecd42d30e655a69.html">8e14d90</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/8e14d90ff354a533449d2fa5eecd42d30e655a69.html">code changde due to service account JSON</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">05:30:57</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/cde916640c88e191223121170a2b16985073595d.html">cde9166</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/cde916640c88e191223121170a2b16985073595d.html">1. using Google bucket for images in Art submenu. 2. showing museum name and city when cursor is hovering over city pin. 3. adding fade-in and -out in a pictures from Masonry layout. 4. adding show field in museum collection and showing museums with the value of &#39;Y&#39; in the field. 5. adding 9 museums in DB and pictures for them in google bucket</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">04:52:14</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/1c9f1a4a269667b411c051ce514ab909f612b7c0.html">1c9f1a4</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/1c9f1a4a269667b411c051ce514ab909f612b7c0.html">1. Change routings upto submenus. Interest- 2. Adding map  art submenu 2-1. implement city pins in states, enlargement of state, color changes when cursor hovering over states. 2-2. Apply Masonry layout when clicking the pins, show paintings from the layout. 3. Start using FIPS_code for the state and latitude &amp; longitude for city locations.</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-27</span> <span class="nowrap">00:21:25</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/67653fa9ceba73e8354294b1280faed791104d1f.html">67653fa</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/67653fa9ceba73e8354294b1280faed791104d1f.html">Page Interest-Workout done 1. Sync from Strava 2. Pouring activity data into DB 3. AOuth 2.0 for Strava works with the button (invisible in production environment)</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-25</span> <span class="nowrap">23:46:08</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/4ebb57c1838883c7b8634d961e2c2f74e3331d6b.html">4ebb57c</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/4ebb57c1838883c7b8634d961e2c2f74e3331d6b.html">Unify tab layout and remove border lines across About, Research, and Interests pages</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-25</span> <span class="nowrap">13:20:54</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/2dd1389ad2b5652df2aefa1205e6c6d1f5084aef.html">2dd1389</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/2dd1389ad2b5652df2aefa1205e6c6d1f5084aef.html">Add About page with milestones timeline and convert sub-menus to tab layout</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-24</span> <span class="nowrap">17:18:12</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/102ac09fa58e154130bbb567a2c4010b2bb6b7cd.html">102ac09</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/102ac09fa58e154130bbb567a2c4010b2bb6b7cd.html">Implement input field validation popup</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-24</span> <span class="nowrap">00:19:38</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/5046715f4330e91219467740c4b78d60bc4736c1.html">5046715</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/5046715f4330e91219467740c4b78d60bc4736c1.html">1. Implement full CRUD and Like system for Tech Blog 2. Implement like/unlike functionality with toggle logic and persistence 3. Add Create post feature for authorized users with modal UI 4. Add Update and Soft Delete features for post authors 5. Update MongoDB schema to support likedBy (emails) and show (soft delete) 6. Enhance UI with confirmation dialogs, toast notifications, and ESC key support 7. Add Test page for OAuth debugging (localhost only)</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-24</span> <span class="nowrap">00:08:31</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/94d0bbfaba73ac43f7d5bf8ccf621e514b22999a.html">94d0bbf</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/94d0bbfaba73ac43f7d5bf8ccf621e514b22999a.html">Fix: Use dynamic PORT for Railway deployment</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">01:26:23</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/17250dbe703cdb3ae9a91fe41f64a2b432f7f07d.html">17250db</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/17250dbe703cdb3ae9a91fe41f64a2b432f7f07d.html">Add Railway deployment config for backend</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">01:03:41</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/ac86a213fa2ab7d6b1528d21fb34359c10435f45.html">ac86a21</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/ac86a213fa2ab7d6b1528d21fb34359c10435f45.html">Add .npmrc for Vercel build compatibility</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">00:58:59</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/774bee84175251d2cc784fcf6a3f447ddac1cdf6.html">774bee8</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/774bee84175251d2cc784fcf6a3f447ddac1cdf6.html">vercel build added in package.json</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">00:56:25</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/0851e4447e3bc7acaf6ffee0d901560f9be595b9.html">0851e44</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/0851e4447e3bc7acaf6ffee0d901560f9be595b9.html">build test again</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">00:45:44</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/4dcd28039b153e398095f09022f9a69cbd9edb7c.html">4dcd280</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/4dcd28039b153e398095f09022f9a69cbd9edb7c.html">fixing build crash</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">00:37:00</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/663defb67c2e979a6db7069d816c13657775189f.html">663defb</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/663defb67c2e979a6db7069d816c13657775189f.html">1. OAuth login using Google Account, 2. New menu, Interests, Map, 3. Design consistency</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-23</span> <span class="nowrap">00:27:19</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/3bed8875400e4f2671cca0812c0bf46ae56bcf56.html">3bed887</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/3bed8875400e4f2671cca0812c0bf46ae56bcf56.html">feat: update UI consistency and enhance contact interaction</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-22</span> <span class="nowrap">14:46:14</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/9724b7d68e6526b2ce01545c560b855af70cf086.html">9724b7d</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/9724b7d68e6526b2ce01545c560b855af70cf086.html">Remove hash from URLs (BrowserRouter)</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-22</span> <span class="nowrap">01:20:25</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/c25bd9dafe992c9a586e7e638609264fb32891a4.html">c25bd9d</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/c25bd9dafe992c9a586e7e638609264fb32891a4.html">Fix Biology text visibility on mobile Edge</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-22</span> <span class="nowrap">01:18:26</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/ed9d05b9cb32c95ff96b53c0526a47002e8c5ee0.html">ed9d05b</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/ed9d05b9cb32c95ff96b53c0526a47002e8c5ee0.html">Update backend URL to Railway production</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-22</span> <span class="nowrap">00:41:47</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/93216174ea229c945d8a6a0c0b5aa9007103a8ee.html">9321617</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/93216174ea229c945d8a6a0c0b5aa9007103a8ee.html">Add railway.json for backend deployment</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-22</span> <span class="nowrap">00:37:54</span></div>
+            </div>
+        
+            <div class="row">
+                <div class="cell hash">
+                    <a href="../../commit/f78ebfea07a048c28c4ac7f6ee6977fd0d734b8a.html">f78ebfe</a>
+                </div>
+                <div class="cell commit-title">
+                  <a href="../../commit/f78ebfea07a048c28c4ac7f6ee6977fd0d734b8a.html">first commit</a>
+                  
+                </div>
+                <div class="cell author">distilledchild</div>
+                <div class="cell date"><span class="nowrap">2025-11-22</span> <span class="nowrap">00:24:13</span></div>
+            </div>
+        
+    </div>
+    <div class="pagination">
+        
+            <span class="btn disabled">« First</span>
+        
+
+        
+            <span class="btn disabled">← Newer</span>
+        
+
+        <span class="page-indicator">Page 1 of 1</span>
+
+        
+            <span class="btn disabled">Older →</span>
+        
+
+        
+            <span class="btn disabled">Last »</span>
+        
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>

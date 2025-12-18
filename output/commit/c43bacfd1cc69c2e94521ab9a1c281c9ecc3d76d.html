@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1. change button location on update page in Tech menu 2. change bucket in GCP, and a way how to bring images from google bucket 3. add image upload in Tech blog · personal-web-2025@c43bacf</title>
+    <style>
+        
+        :root {
+          --c-indigo-1: #3451b2;
+          --c-indigo-2: #3a5ccc;
+          --c-indigo-3: #5672cd;
+          --c-green: #1a7f37;
+          --c-red: #c53030;
+          --c-yellow: #9a6700;
+          --c-dir: #54aeff;
+          --c-gray-soft: rgba(142, 150, 170, .14);
+          --c-bg: #ffffff;
+          --c-bg-alt: #f6f6f7;
+          --c-bg-elv: #ffffff;
+          --c-text-1: rgba(60, 60, 67);
+          --c-text-2: rgba(60, 60, 67, .78);
+          --c-text-3: rgba(60, 60, 67, .56);
+          --c-border: #c2c2c4;
+          --c-divider: #e2e2e3;
+        }
+
+        
+
+        :root {
+          --c-brand-1: var(--c-indigo-1);
+          --c-brand-2: var(--c-indigo-2);
+          --c-brand-3: var(--c-indigo-3);
+          --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          --code-line-height: 20px;
+          --code-font-size: 12px;
+          --code-color: var(--c-brand-1);
+          --code-bg: var(--c-gray-soft);
+          --code-block-bg: var(--c-bg-alt);
+          --code-block-color: var(--c-text-1);
+          --header-height: 46px;
+          --border-radius: 6px;
+          --max-content-width: 1470px;
+        }
+
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-family), sans-serif;
+          font-size: 14px;
+          line-height: 1;
+          color: var(--c-text-1);
+          background-color: var(--c-bg);
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-text-size-adjust: none;
+          -webkit-text-size-adjust: none;
+          text-size-adjust: none;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .nowrap {
+          white-space: nowrap;
+        }
+
+        h1 {
+          margin-inline: 0;
+          margin-block: 16px;
+          font-size: 20px;
+          font-weight: 600;
+        }
+
+        a {
+          color: var(--c-brand-1);
+          font-weight: 500;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          text-decoration: inherit;
+          touch-action: manipulation;
+        }
+
+        a:hover {
+          color: var(--c-brand-2);
+          text-decoration: underline;
+        }
+
+        .menu {
+          background-color: var(--c-bg-alt);
+          border-bottom: 1px solid var(--c-divider);
+          overflow-x: auto;
+        }
+
+        .menu-content {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 16px;
+          padding-inline: 16px;
+          max-width: var(--max-content-width);
+          margin-inline: auto;
+        }
+
+        .menu-item {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid transparent;
+          height: 56px;
+          padding-inline: 8px;
+        }
+
+        .menu-item a {
+          display: flex;
+          flex-direction: row;
+          gap: 8px;
+          align-items: center;
+          color: var(--c-text-1);
+          padding: 8px 10px;
+          border-radius: 4px;
+        }
+
+        .menu-item a:hover {
+          background-color: var(--c-bg-elv);
+          text-decoration: none;
+        }
+
+        .menu-item.selected {
+          border-bottom-color: var(--c-brand-1);
+        }
+
+        .project-name {
+          font-weight: 600;
+          font-size: 16px;
+          margin-inline: 16px;
+          color: var(--c-text-1);
+          text-decoration: none;
+        }
+
+        main {
+          flex-grow: 1;
+          width: 100%;
+          max-width: var(--max-content-width);
+          margin: 16px auto;
+        }
+
+        .main-content {
+          padding-inline: 16px;
+        }
+
+        footer {
+          padding: 12px 16px;
+          background-color: var(--c-bg-alt);
+          border-top: 1px solid var(--c-divider);
+          color: var(--c-text-3);
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .header-container {
+          container-type: scroll-state;
+          position: sticky;
+          top: 0;
+        }
+
+        .header-container {
+          @container scroll-state(stuck: top) {
+            header {
+              border-top: none;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
+            }
+
+            .goto-top {
+              display: flex;
+            }
+          }
+        }
+
+        header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          min-height: var(--header-height);
+          padding-inline: 16px;
+          background: var(--c-bg-alt);
+          border: 1px solid var(--c-border);
+          border-top-left-radius: var(--border-radius);
+          border-top-right-radius: var(--border-radius);
+        }
+
+        header h1 {
+          word-break: break-all;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 0;
+          padding: 0;
+        }
+
+        .header-ref {
+          color: var(--c-text-2);
+          border: 1px solid var(--c-border);
+          border-radius: 6px;
+          padding: 6px 10px;
+          margin-right: 10px;
+          margin-left: -6px;
+        }
+
+        header .path {
+          font-size: 16px;
+        }
+
+        .breadcrumbs {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          font-size: 16px;
+        }
+
+        .breadcrumbs a {
+          word-break: break-all;
+        }
+
+        .goto-top {
+          display: none;
+          margin-left: auto;
+          padding: 6px 10px;
+          background: none;
+          border: none;
+          border-radius: 6px;
+          gap: 4px;
+          align-items: center;
+          color: var(--c-text-1);
+          cursor: pointer;
+        }
+
+        .goto-top:hover {
+          background: var(--c-bg-elv);
+        }
+    </style>
+    
+    <style>
+      h1 code {
+        border-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        padding: 4px 8px;
+        font-family: var(--font-family-mono), monospace;
+        font-weight: 500;
+      }
+
+      .commit {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .commit-info {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .commit-author {
+        color: var(--c-text-1);
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .commit-date {
+        color: var(--c-text-2);
+        font-size: 12px;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      .commit-message {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+        padding: 16px;
+      }
+
+      .ref-badges {
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 8px;
+      }
+
+      .badge {
+        font-size: 12px;
+        color: var(--c-text-2);
+        border: 1px solid var(--c-border);
+        padding: 2px 6px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+
+      .commit-subject {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.3;
+        hyphens: auto;
+      }
+
+      .commit-body {
+        margin-top: 16px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        hyphens: auto;
+      }
+
+      .commit-subinfo {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+      }
+
+      .commit-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 960px) {
+        .commit-layout {
+          grid-template-columns: 300px 1fr;
+          align-items: start;
+        }
+
+        .files-tree {
+          position: sticky;
+          top: 16px;
+        }
+
+        .files-tree-content {
+          max-height: calc(100vh - var(--header-height) - 40px);
+          overflow: auto;
+        }
+      }
+
+      .files-tree {
+        border: 1px solid var(--c-border);
+        border-radius: var(--border-radius);
+      }
+
+      .files-tree-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-inline: 16px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--c-border);
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+        background: var(--c-bg-alt);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .files-tree-content {
+        display: block;
+        padding-block: 6px;
+      }
+
+      .tree .children {
+        margin-left: 16px;
+        border-left: 1px dashed var(--c-border);
+      }
+
+      .tree .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+      }
+
+      .tree .file-name {
+        flex: 1;
+        font-weight: 500;
+        color: var(--c-text-1);
+        cursor: pointer;
+      }
+
+      .tree .file-name:hover {
+        color: var(--c-brand-2);
+        text-decoration: underline;
+      }
+
+      .tree .dir {
+        color: var(--c-dir);
+      }
+
+      .tree .file-added {
+        color: var(--c-green);
+      }
+
+      .tree .file-deleted {
+        color: var(--c-red);
+      }
+
+      .tree .file-renamed {
+        color: var(--c-yellow);
+      }
+
+       
+
+      .files {
+        min-width: 0;
+      }
+
+      .file-section + .file-section {
+        margin-top: 16px;
+      }
+
+      pre {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+
+      pre {
+        margin: 0;
+        padding: 8px 16px;
+        overflow-x: auto;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        word-wrap: normal;
+        tab-size: 4;
+        font-family: var(--font-family-mono), monospace;
+      }
+
+      pre > code {
+        display: block;
+        padding: 0 16px;
+        width: fit-content;
+        min-width: 100%;
+        line-height: var(--code-line-height);
+        font-size: var(--code-font-size);
+      }
+
+      .binary-file {
+        padding: 8px 16px;
+        font-style: italic;
+      }
+
+      .border {
+        border: 1px solid var(--c-border);
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      .bg { background-color: #ffffff; }
+.chroma { background-color: #ffffff; }
+.chroma .err { color: #f6f8fa; background-color: #82071e }
+.chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+.chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+.chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+.chroma .hl { background-color: #e5e5e5 }
+.chroma .lnt { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .ln { white-space: pre; -webkit-user-select: none; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+.chroma .line { display: flex; }
+.chroma .k { color: #cf222e }
+.chroma .kc { color: #cf222e }
+.chroma .kd { color: #cf222e }
+.chroma .kn { color: #cf222e }
+.chroma .kp { color: #cf222e }
+.chroma .kr { color: #cf222e }
+.chroma .kt { color: #cf222e }
+.chroma .na { color: #1f2328 }
+.chroma .nc { color: #1f2328 }
+.chroma .no { color: #0550ae }
+.chroma .nd { color: #0550ae }
+.chroma .ni { color: #6639ba }
+.chroma .nl { color: #990000; font-weight: bold }
+.chroma .nn { color: #24292e }
+.chroma .nx { color: #1f2328 }
+.chroma .nt { color: #0550ae }
+.chroma .nb { color: #6639ba }
+.chroma .bp { color: #6a737d }
+.chroma .nv { color: #953800 }
+.chroma .vc { color: #953800 }
+.chroma .vg { color: #953800 }
+.chroma .vi { color: #953800 }
+.chroma .vm { color: #953800 }
+.chroma .nf { color: #6639ba }
+.chroma .fm { color: #6639ba }
+.chroma .s { color: #0a3069 }
+.chroma .sa { color: #0a3069 }
+.chroma .sb { color: #0a3069 }
+.chroma .sc { color: #0a3069 }
+.chroma .dl { color: #0a3069 }
+.chroma .sd { color: #0a3069 }
+.chroma .s2 { color: #0a3069 }
+.chroma .se { color: #0a3069 }
+.chroma .sh { color: #0a3069 }
+.chroma .si { color: #0a3069 }
+.chroma .sx { color: #0a3069 }
+.chroma .sr { color: #0a3069 }
+.chroma .s1 { color: #0a3069 }
+.chroma .ss { color: #032f62 }
+.chroma .m { color: #0550ae }
+.chroma .mb { color: #0550ae }
+.chroma .mf { color: #0550ae }
+.chroma .mh { color: #0550ae }
+.chroma .mi { color: #0550ae }
+.chroma .il { color: #0550ae }
+.chroma .mo { color: #0550ae }
+.chroma .o { color: #0550ae }
+.chroma .ow { color: #0550ae }
+.chroma .p { color: #1f2328 }
+.chroma .c { color: #57606a }
+.chroma .ch { color: #57606a }
+.chroma .cm { color: #57606a }
+.chroma .c1 { color: #57606a }
+.chroma .cs { color: #57606a }
+.chroma .cp { color: #57606a }
+.chroma .cpf { color: #57606a }
+.chroma .gd { color: #82071e; background-color: #ffebe9;display: block; }
+.chroma .ge { color: #1f2328 }
+.chroma .gi { color: #116329; background-color: #dafbe1;display: block; }
+.chroma .go { color: #1f2328 }
+.chroma .gl { text-decoration: underline }
+.chroma .w { color: #ffffff }
+
+    </style>
+
+</head>
+<body>
+
+    <svg style="display: none" aria-hidden="true" focusable="false">
+        <symbol id="dir" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+        </symbol>
+        <symbol id="file" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+        </symbol>
+        <symbol id="file-added" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.48 3.758a.75.75 0 0 1 .755.745l.01 1.497h1.497a.75.75 0 0 1 0 1.5H9v1.507a.75.75 0 0 1-1.5 0V9.005l-1.502.01a.75.75 0 0 1-.01-1.5l1.507-.01-.01-1.492a.75.75 0 0 1 .745-.755Z"/>
+        </symbol>
+        <symbol id="file-modified" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 1.75C1 .784 1.784 0 2.75 0h7.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16H2.75A1.75 1.75 0 0 1 1 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073ZM8 3.25a.75.75 0 0 1 .75.75v1.5h1.5a.75.75 0 0 1 0 1.5h-1.5v1.5a.75.75 0 0 1-1.5 0V7h-1.5a.75.75 0 0 1 0-1.5h1.5V4A.75.75 0 0 1 8 3.25Zm-3 8a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"/>
+        </symbol>
+        <symbol id="file-deleted" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073Zm4.5 6h2.242a.75.75 0 0 1 0 1.5h-2.24l-2.254.015a.75.75 0 0 1-.01-1.5Z"/>
+        </symbol>
+        <symbol id="file-renamed" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-3.5a.75.75 0 0 1 0-1.5h3.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-2.914-2.914a.25.25 0 0 0-.177-.073H3.75a.25.25 0 0 0-.25.25v6.5a.75.75 0 0 1-1.5 0v-6.5Z"/>
+            <path fill="currentColor"
+                  d="m5.427 15.573 3.146-3.146a.25.25 0 0 0 0-.354L5.427 8.927A.25.25 0 0 0 5 9.104V11.5H.75a.75.75 0 0 0 0 1.5H5v2.396c0 .223.27.335.427.177Z"/>
+        </symbol>
+        <symbol id="arrow-top" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M3.47 7.78a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0l4.25 4.25a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018L9 4.81v7.44a.75.75 0 0 1-1.5 0V4.81L4.53 7.78a.75.75 0 0 1-1.06 0Z"></path>
+        </symbol>
+        <symbol id="commit" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"></path>
+        </symbol>
+        <symbol id="branch" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path>
+        </symbol>
+        <symbol id="tag" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"></path>
+        </symbol>
+        <symbol id="code" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                  d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path>
+        </symbol>
+    </svg>
+
+<div class="menu">
+    <div class="menu-content">
+        <a href="../index.html" class="project-name">personal-web-2025</a>
+        <div class="menu-item ">
+            <a href="../blob/main/index.html">
+                <svg aria-hidden="true" width="16" height="16">
+                    <use xlink:href="#code"></use>
+                </svg>
+                Code
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../branches.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#branch"></use>
+                </svg>
+                Branches
+            </a>
+        </div>
+        <div class="menu-item ">
+            <a href="../tags.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#tag"></use>
+                </svg>
+                Tags
+            </a>
+        </div>
+        <div class="menu-item selected">
+            <a href="../commits/main/index.html">
+                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                    <use xlink:href="#commit"></use>
+                </svg>
+                Commits
+            </a>
+        </div>
+    </div>
+</div>
+<main>
+    <div class="main-content">
+        
+    <h1>Commit <code>c43bacf</code></h1>
+
+    <div class="commit">
+        <div class="commit-info">
+            <div class="commit-author">distilledchild &lt;sliceofmysoul@gmail.com&gt;</div>
+            <div class="commit-date"><span class="nowrap">2025-11-30</span> <span class="nowrap">03:47:35</span></div>
+        </div>
+        <div class="commit-message">
+            <div class="commit-subject">
+                1. change button location on update page in Tech menu 2. change bucket in GCP, and a way how to bring images from google bucket 3. add image upload in Tech blog
+                
+            </div>
+            
+        </div>
+        <div class="commit-subinfo">
+            <div class="commit-branch">
+                
+                    <a href="../commits/main/index.html" class="badge">main</a>
+                
+            </div>
+            
+                <div class="commit-parents">
+                    
+                        1 parent
+                    
+                    
+                        
+                        <a href="a28239e4e916109e0f60bab2575ad1026c89aebe.html"><code>a28239e</code></a>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <div class="commit-layout">
+        <div class="files-tree">
+            <div class="files-tree-header">Changed files (4)</div>
+            <div class="files-tree-content">
+                
+                    <div class="tree">
+                        
+    
+        
+            <details open>
+                <summary class="node">
+                    <svg aria-hidden="true" focusable="false" width="16" height="16" class="dir">
+                        <use xlink:href="#dir"></use>
+                    </svg>
+                    <span class="file-name">server</span>
+                </summary>
+                <div class="children">
+                    
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#server%2findex.js" class="file-name">
+                    index.js
+                </a>
+            </div>
+        
+    
+
+                </div>
+            </details>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#App.tsx" class="file-name">
+                    App.tsx
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package-lock.json" class="file-name">
+                    package-lock.json
+                </a>
+            </div>
+        
+    
+        
+            <div class="node">
+                <div class="icon" aria-hidden="true">
+                    
+                        <svg aria-hidden="true" focusable="false" width="16" height="16">
+                            <use xlink:href="#file-modified"></use>
+                        </svg>
+                    
+                </div>
+                <a href="#package.json" class="file-name">
+                    package.json
+                </a>
+            </div>
+        
+    
+
+                    </div>
+                
+            </div>
+        </div>
+
+        <div class="files">
+            
+                <section id="server/index.js" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">server/index.js</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -5,6 +5,7 @@ import cors from &#39;cors&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> import fs from &#39;fs&#39;;
+</span></span><span class="line"><span class="cl"> import path from &#39;path&#39;;
+</span></span><span class="line"><span class="cl"> import { fileURLToPath } from &#39;url&#39;;
+</span></span><span class="line"><span class="cl"><span class="gi">+import multer from &#39;multer&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> const __filename = fileURLToPath(import.meta.url);
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -73,6 +74,21 @@ if (process.env.GCP_PROJECT_ID) {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span> 
+</span></span><span class="line"><span class="cl"> const storage = new Storage(storageConfig);
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+// Configure multer for memory storage
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+const upload = multer({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    storage: multer.memoryStorage(),
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    limits: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        fileSize: 5 * 1024 * 1024, // 5MB limit
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    fileFilter: (req, file, cb) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Accept images only
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!file.mimetype.startsWith(&#39;image/&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return cb(new Error(&#39;Only image files are allowed!&#39;), false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        cb(null, true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> mongoose.connect(process.env.MONGODB_URI)
+</span></span><span class="line"><span class="cl">     .then(() =&gt; console.log(&#39;Connected to MongoDB&#39;))
+</span></span><span class="line"><span class="cl">     .catch(err =&gt; console.error(&#39;MongoDB connection error:&#39;, err));
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -143,16 +159,25 @@ app.get(&#39;/api/interests/art-museums&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                     // List files in the bucket for this museum
+</span></span><span class="line"><span class="cl">                     const bucket = storage.bucket(GCS_BUCKET_NAME);
+</span></span><span class="line"><span class="cl">                     const [files] = await bucket.getFiles({
+</span></span><span class="line"><span class="cl"><span class="gd">-                        prefix: `${museum.museum_code}/`,
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                        prefix: `interests/art/${museum.museum_code}/`,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                         delimiter: &#39;/&#39;
+</span></span><span class="line"><span class="cl">                     });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-                    // Filter image files and generate public URLs
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    artworks = files
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                    // Filter image files and generate signed URLs (valid for 1 hour)
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    const signedUrlPromises = files
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                         .filter(file =&gt; /\.(png|jpg|jpeg|gif|webp)$/i.test(file.name))
+</span></span><span class="line"><span class="cl"><span class="gd">-                        .map(file =&gt; `${GCS_BUCKET_URL}/${file.name}`);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gd">-                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS`);
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                        .map(async (file) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            const [signedUrl] = await file.getSignedUrl({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                version: &#39;v4&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                action: &#39;read&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                                expires: Date.now() + 60 * 60 * 1000, // 1 hour from now
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                            return signedUrl;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    artworks = await Promise.all(signedUrlPromises);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (signed URLs)`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 } catch (error) {
+</span></span><span class="line"><span class="cl">                     console.log(`Error reading GCS bucket for ${museum.museum_code}:`, error.message);
+</span></span><span class="line"><span class="cl">                 }
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -458,6 +483,55 @@ app.post(&#39;/api/tech-blog&#39;, async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     }
+</span></span><span class="line"><span class="cl"> });
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+// Upload image to GCS for Tech Blog
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+app.post(&#39;/api/tech-blog/upload-image&#39;, upload.single(&#39;image&#39;), async (req, res) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        if (!req.file) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            return res.status(400).json({ error: &#39;No image file provided&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const file = req.file;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const timestamp = Date.now();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const fileName = `${timestamp}-${file.originalname.replace(/\s+/g, &#39;-&#39;)}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const bucketName = process.env.GCS_BUCKET_NAME || &#39;distilledchild&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const bucket = storage.bucket(bucketName);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const blob = bucket.file(`tech/${fileName}`);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Create a write stream
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const blobStream = blob.createWriteStream({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            resumable: false,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            metadata: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                contentType: file.mimetype,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        blobStream.on(&#39;error&#39;, (err) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            console.error(&#39;Upload error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            res.status(500).json({ error: &#39;Failed to upload image&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        blobStream.on(&#39;finish&#39;, async () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Make the file public
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            await blob.makePublic();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            // Generate public URL
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            const publicUrl = `https://storage.googleapis.com/${bucketName}/tech/${fileName}`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            res.json({
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                success: true,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                url: publicUrl,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                fileName: fileName
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+            });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Write the file buffer to GCS
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        blobStream.end(file.buffer);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (err) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        console.error(&#39;Image upload error:&#39;, err);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        res.status(500).json({ error: &#39;Internal server error&#39; });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+});
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> // Like/Unlike Tech Blog Post
+</span></span><span class="line"><span class="cl"> app.post(&#39;/api/tech-blog/:id/like&#39;, async (req, res) =&gt; {
+</span></span><span class="line"><span class="cl">     try {
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="App.tsx" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">App.tsx</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -124,6 +124,8 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [isCreateMode, setIsCreateMode] = React.useState(false);
+</span></span><span class="line"><span class="cl">   const [showValidationDialog, setShowValidationDialog] = React.useState(false);
+</span></span><span class="line"><span class="cl"><span class="gi">+  const [uploadingImage, setUploadingImage] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const [isDragging, setIsDragging] = React.useState(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span> 
+</span></span><span class="line"><span class="cl">   React.useEffect(() =&gt; {
+</span></span><span class="line"><span class="cl">     // Fetch blog posts
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -444,6 +446,72 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     setEditData({ category: &#39;&#39;, title: &#39;&#39;, content: &#39;&#39; });
+</span></span><span class="line"><span class="cl">   };
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gi">+  // Handle image upload
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleImageUpload = async (file: File) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (!file.type.startsWith(&#39;image/&#39;)) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      alert(&#39;Please upload an image file&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      return;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setUploadingImage(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    try {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const API_URL = window.location.hostname === &#39;localhost&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        ? &#39;http://localhost:4000&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        : &#39;https://personal-web-2025-production.up.railway.app&#39;;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const formData = new FormData();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      formData.append(&#39;image&#39;, file);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      const response = await fetch(`${API_URL}/api/tech-blog/upload-image`, {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        method: &#39;POST&#39;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        body: formData,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      if (response.ok) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const data = await response.json();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        // Insert markdown image syntax at cursor position
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        const imageMarkdown = `\n![${file.name}](${data.url})\n`;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        setEditData({ ...editData, content: editData.content + imageMarkdown });
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      } else {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        alert(&#39;Failed to upload image&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } catch (error) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      console.error(&#39;Image upload error:&#39;, error);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      alert(&#39;Failed to upload image&#39;);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    } finally {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      setUploadingImage(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Handle drag and drop
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleDragOver = (e: React.DragEvent) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    e.preventDefault();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setIsDragging(true);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleDragLeave = (e: React.DragEvent) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    e.preventDefault();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setIsDragging(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleDrop = (e: React.DragEvent) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    e.preventDefault();
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    setIsDragging(false);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const files = e.dataTransfer.files;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (files.length &gt; 0) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      handleImageUpload(files[0]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  // Handle file input change
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  const handleFileSelect = (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    const files = e.target.files;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    if (files &amp;&amp; files.length &gt; 0) {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      handleImageUpload(files[0]);
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+  };
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>   // Unified Color Theme: All Pink
+</span></span><span class="line"><span class="cl">   const colorThemes = [
+</span></span><span class="line"><span class="cl">     { color: &#34;bg-pink-50&#34;, textColor: &#34;text-pink-700&#34;, borderColor: &#34;border-pink-100&#34;, hoverBorderColor: &#34;hover:border-pink-200&#34;, hoverColor: &#34;group-hover:text-pink-600&#34; },
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -843,25 +911,60 @@ const Tech: React.FC = () =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>             &lt;/div&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">             &lt;div className=&#34;p-8 overflow-y-auto max-h-[calc(85vh-300px)]&#34;&gt;
+</span></span><span class="line"><span class="cl"><span class="gi">+              {/* Image Upload Area */}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;div
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onDragOver={handleDragOver}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onDragLeave={handleDragLeave}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                onDrop={handleDrop}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                className={`mb-4 border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  isDragging
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ? &#39;border-blue-500 bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    : &#39;border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50&#39;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                }`}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;input
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  type=&#34;file&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  accept=&#34;image/*&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  onChange={handleFileSelect}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  className=&#34;hidden&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  id=&#34;image-upload&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;label htmlFor=&#34;image-upload&#34; className=&#34;cursor-pointer&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;div className=&#34;flex flex-col items-center gap-2&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;svg className=&#34;w-12 h-12 text-slate-400&#34; fill=&#34;none&#34; stroke=&#34;currentColor&#34; viewBox=&#34;0 0 24 24&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;path strokeLinecap=&#34;round&#34; strokeLinejoin=&#34;round&#34; strokeWidth={2} d=&#34;M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    &lt;/svg&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    {uploadingImage ? (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;p className=&#34;text-blue-600 font-medium&#34;&gt;Uploading...&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    ) : (
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-600 font-medium&#34;&gt;Click to upload or drag and drop&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                        &lt;p className=&#34;text-slate-400 text-sm&#34;&gt;PNG, JPG, GIF up to 5MB&lt;/p&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                      &lt;/&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                    )}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                  &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+                &lt;/label&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+              &lt;/div&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               &lt;textarea
+</span></span><span class="line"><span class="cl">                 value={editData.content}
+</span></span><span class="line"><span class="cl">                 onChange={(e) =&gt; setEditData({ ...editData, content: e.target.value })}
+</span></span><span class="line"><span class="cl">                 className=&#34;w-full h-64 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm&#34;
+</span></span><span class="line"><span class="cl"><span class="gd">-                placeholder=&#34;Write your content here...&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                placeholder=&#34;Write your content here... (Images will be inserted as markdown)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>               /&gt;
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="gd">-              &lt;div className=&#34;flex justify-between mt-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+              &lt;div className=&#34;flex justify-end gap-4 mt-8&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;button
+</span></span><span class="line"><span class="cl"><span class="gd">-                  onClick={handleCreateSave}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  onClick={handleCreateCancel}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   className=&#34;px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors&#34;
+</span></span><span class="line"><span class="cl">                 &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  Save
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/button&gt;
+</span></span><span class="line"><span class="cl">                 &lt;button
+</span></span><span class="line"><span class="cl"><span class="gd">-                  onClick={handleCreateCancel}
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  onClick={handleCreateSave}
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                   className=&#34;px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors&#34;
+</span></span><span class="line"><span class="cl">                 &gt;
+</span></span><span class="line"><span class="cl"><span class="gd">-                  Cancel
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                  Save
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                 &lt;/button&gt;
+</span></span><span class="line"><span class="cl">               &lt;/div&gt;
+</span></span><span class="line"><span class="cl">             &lt;/div&gt;
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package-lock.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package-lock.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -20,6 +20,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;express&#34;: &#34;^5.1.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;lucide-react&#34;: &#34;^0.554.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gi">+        &#34;multer&#34;: &#34;^2.0.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>         &#34;prop-types&#34;: &#34;^15.8.1&#34;,
+</span></span><span class="line"><span class="cl">         &#34;react&#34;: &#34;^19.2.0&#34;,
+</span></span><span class="line"><span class="cl">         &#34;react-dom&#34;: &#34;^19.2.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -1945,6 +1946,12 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;url&#34;: &#34;https://github.com/chalk/ansi-styles?sponsor=1&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/append-field&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/append-field/-/append-field-1.0.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-klpgFSWLW1ZEs8svjfb7g4qWY0YS5imI82dTg+QahUvJ8YqAY0P10Uk8tTyh9ZGuYEZEMaeJYCF5BFuX552hsw==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/arrify&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;2.0.1&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/arrify/-/arrify-2.0.1.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -2154,6 +2161,23 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &#34;integrity&#34;: &#34;sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==&#34;,
+</span></span><span class="line"><span class="cl">       &#34;license&#34;: &#34;BSD-3-Clause&#34;
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/buffer-from&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.1.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/busboy&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.6.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;streamsearch&#34;: &#34;^1.1.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;=10.16.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/bytes&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;3.1.2&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -2471,6 +2495,21 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &#34;integrity&#34;: &#34;sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==&#34;,
+</span></span><span class="line"><span class="cl">       &#34;license&#34;: &#34;MIT&#34;
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/concat-stream&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;2.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/concat-stream/-/concat-stream-2.0.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-MWufYdFw53ccGjCA+Ol7XJYpAlW6/prSMzuPOTRnJGcGzuhLn4Scrz7qf6o8bROZ514ltazcIFJZevcfbo0x7A==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: [
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node &gt;= 6.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      ],
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;buffer-from&#34;: &#34;^1.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;inherits&#34;: &#34;^2.0.3&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;readable-stream&#34;: &#34;^3.0.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;typedarray&#34;: &#34;^0.0.6&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/concurrently&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;9.2.1&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/concurrently/-/concurrently-9.2.1.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -5224,6 +5263,15 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;url&#34;: &#34;https://github.com/sponsors/isaacs&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/minimist&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.2.8&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;funding&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;url&#34;: &#34;https://github.com/sponsors/ljharb&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/minipass&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;7.1.2&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/minipass/-/minipass-7.1.2.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -5233,6 +5281,18 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;node&#34;: &#34;&gt;=16 || 14 &gt;=14.17&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/mkdirp&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;0.5.6&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.6.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;minimist&#34;: &#34;^1.2.6&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;bin&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;mkdirp&#34;: &#34;bin/cmd.js&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/mongodb&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;7.0.0&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/mongodb/-/mongodb-7.0.0.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -5337,6 +5397,67 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &#34;integrity&#34;: &#34;sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==&#34;,
+</span></span><span class="line"><span class="cl">       &#34;license&#34;: &#34;MIT&#34;
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/multer&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;2.0.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/multer/-/multer-2.0.2.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-u7f2xaZ/UG8oLXHvtF/oWTRvT44p9ecwBBqTwgJVq0+4BW1g8OW01TyMEGWBHbyMOYVHXslaut7qEQ1meATXgw==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;append-field&#34;: &#34;^1.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;busboy&#34;: &#34;^1.6.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;concat-stream&#34;: &#34;^2.0.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;mkdirp&#34;: &#34;^0.5.6&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;object-assign&#34;: &#34;^4.1.1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;type-is&#34;: &#34;^1.6.18&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;xtend&#34;: &#34;^4.0.2&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;= 10.16.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/multer/node_modules/media-typer&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;0.3.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;= 0.6&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/multer/node_modules/mime-db&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.52.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;= 0.6&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/multer/node_modules/mime-types&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;2.1.35&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;mime-db&#34;: &#34;1.52.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;= 0.6&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    &#34;node_modules/multer/node_modules/type-is&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.6.18&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;dependencies&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;media-typer&#34;: &#34;0.3.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;mime-types&#34;: &#34;~2.1.24&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;= 0.6&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/nanoid&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;3.3.11&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/nanoid/-/nanoid-3.3.11.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -6695,6 +6816,14 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>       &#34;integrity&#34;: &#34;sha512-76ORR0DO1o1hlKwTbi/DM3EXWGf3ZJYO8cXX5RJwnul2DEg2oyoZyjLNoQM8WsvZiFKCRfC1O0J7iCvie3RZmQ==&#34;,
+</span></span><span class="line"><span class="cl">       &#34;license&#34;: &#34;MIT&#34;
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/streamsearch&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;1.1.0&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/streamsearch/-/streamsearch-1.1.0.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;=10.0.0&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/string_decoder&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;1.3.0&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -7185,6 +7314,12 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;node&#34;: &#34;&gt;= 0.6&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/typedarray&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;0.0.6&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/typescript&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;5.8.3&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz&#34;,
+</span></span><span class="line"><span class="cl"><span class="gu">@@ -7682,6 +7817,15 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>         &#34;node&#34;: &#34;&gt;=0.4.0&#34;
+</span></span><span class="line"><span class="cl">       }
+</span></span><span class="line"><span class="cl">     },
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;node_modules/xtend&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;version&#34;: &#34;4.0.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;resolved&#34;: &#34;https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;integrity&#34;: &#34;sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;license&#34;: &#34;MIT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      &#34;engines&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+        &#34;node&#34;: &#34;&gt;=0.4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+      }
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gi">+    },
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;node_modules/y18n&#34;: {
+</span></span><span class="line"><span class="cl">       &#34;version&#34;: &#34;5.0.8&#34;,
+</span></span><span class="line"><span class="cl">       &#34;resolved&#34;: &#34;https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+                <section id="package.json" class="file-section">
+                    <div class="header-container">
+                        <header class="file-header">
+                            
+                                <div class="path">package.json</div>
+                            
+                            <button class="goto-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                                <svg aria-hidden="true" focusable="false" width="16" height="16">
+                                    <use xlink:href="#arrow-top"></use>
+                                </svg>
+                                Top
+                            </button>
+                        </header>
+                    </div>
+                    
+                        <div class="file-diff">
+                            <pre class="chroma"><code><span class="line"><span class="cl"><span class="gu">@@ -24,6 +24,7 @@
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>     &#34;express&#34;: &#34;^5.1.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;lucide-react&#34;: &#34;^0.554.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;mongoose&#34;: &#34;^9.0.0&#34;,
+</span></span><span class="line"><span class="cl"><span class="gi">+    &#34;multer&#34;: &#34;^2.0.2&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="gi"></span>     &#34;prop-types&#34;: &#34;^15.8.1&#34;,
+</span></span><span class="line"><span class="cl">     &#34;react&#34;: &#34;^19.2.0&#34;,
+</span></span><span class="line"><span class="cl">     &#34;react-dom&#34;: &#34;^19.2.0&#34;,
+</span></span></code></pre>
+                        </div>
+                    
+                </section>
+            
+        </div>
+    </div>
+
+    </div>
+</main>
+<footer>
+    Generated by <a href="https://github.com/antonmedv/gitmal">Gitmal</a>
+</footer>
+</body>
+</html>
