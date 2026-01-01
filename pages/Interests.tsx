@@ -746,7 +746,18 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                             <div className="flex justify-between items-center">
                                 <div>
                                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Art Museums</h3>
-                                    <p className="text-slate-500 text-lg">Explore art collections across the United States</p>
+                                    <p className="text-slate-500 text-lg flex items-center gap-1">
+                                        Explore art collections across the United States (Click
+                                        <svg viewBox="0 0 24 24" className="w-6 h-6 inline-block mx-0.5">
+                                            <path
+                                                d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
+                                                fill="#DC2626"
+                                                stroke="#FFFFFF"
+                                                strokeWidth="1"
+                                            />
+                                        </svg>
+                                        to view artworks)
+                                    </p>
                                 </div>
                             </div>
 
@@ -1085,95 +1096,6 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                     </ComposableMap>
                                 </div>
                             </div>
-
-                            {/* Museum Modal - Single Plate with Masonry Layout */}
-                            {selectedMuseum && !selectedArtwork && (
-                                <div
-                                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-500"
-                                    onClick={() => setSelectedMuseum(null)}
-                                    style={{ animation: 'fadeIn 0.5s ease-out' }}
-                                >
-                                    <div
-                                        className="relative w-full max-w-5xl h-[80vh] bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500"
-                                        onClick={e => e.stopPropagation()}
-                                        style={{ animation: 'scaleIn 0.5s ease-out' }}
-                                    >
-                                        {/* Close button - inside the plate */}
-                                        <button
-                                            onClick={() => setSelectedMuseum(null)}
-                                            className="absolute top-4 right-4 z-10 text-slate-600 hover:text-slate-900 transition-colors bg-white/80 rounded-full p-2 shadow-lg"
-                                        >
-                                            <X size={24} />
-                                        </button>
-
-                                        {/* Masonry Layout - overflow visible to show cropped effect */}
-                                        <div className="w-full h-full overflow-y-auto scrollbar-hide p-6 pt-16">
-                                            <div className="columns-4 gap-1">
-                                                {selectedMuseum.artworks && selectedMuseum.artworks.length > 0 ? selectedMuseum.artworks.map((artwork, index) => {
-                                                    // Generate random scale between 0.6 and 1.0 for variety
-                                                    const randomScale = 0.6 + (Math.sin(index * 12345) * 0.5 + 0.5) * 0.4;
-                                                    // Generate random X-axis offset for staggered effect
-                                                    const randomOffsetX = (Math.sin(index * 7890) * 0.5 + 0.5) * 30 - 15; // -15px to +15px
-
-                                                    return (
-                                                        <div key={index} className="break-inside-avoid mb-1">
-                                                            <div
-                                                                className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setSelectedArtwork(artwork);
-                                                                }}
-                                                                style={{
-                                                                    transform: `translateX(${randomOffsetX}px) scale(${randomScale})`,
-                                                                    transformOrigin: 'center'
-                                                                }}
-                                                            >
-                                                                <img
-                                                                    src={artwork}
-                                                                    alt={`Artwork ${index + 1}`}
-                                                                    className="w-full h-auto object-cover"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }) : (
-                                                    <p className="text-slate-500">No artworks available</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Single Artwork Zoom Modal with 360° rotation */}
-                            {selectedArtwork && (
-                                <div
-                                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
-                                    onClick={() => setSelectedArtwork(null)}
-                                    style={{ animation: 'fadeIn 0.5s ease-out' }}
-                                >
-                                    <div className="relative w-full h-full flex items-center justify-center p-16" onClick={(e) => e.stopPropagation()}>
-                                        {/* Close button - fixed position inside viewport */}
-                                        <button
-                                            onClick={() => setSelectedArtwork(null)}
-                                            className="fixed top-8 right-8 z-10 text-white hover:text-slate-300 transition-colors bg-black/50 rounded-full p-3 shadow-lg"
-                                        >
-                                            <X size={28} />
-                                        </button>
-
-                                        {/* Artwork Image with Y-axis 180° rotation and fade effects */}
-                                        <img
-                                            src={selectedArtwork}
-                                            alt="Artwork"
-                                            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-                                            style={{
-                                                animation: 'rotateY360 1s ease-out forwards, fadeInFinal 0.2s ease-out 1s forwards',
-                                                transform: 'perspective(1000px) rotateY(180deg)'
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     )}
 
@@ -1353,6 +1275,101 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                     )}
                 </div>
             </div>
+
+            {/* Museum Modal - Moved to root level for full viewport coverage */}
+            {selectedMuseum && (
+                <div
+                    className={`fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 transition-all duration-300 ${selectedArtwork ? 'backdrop-blur-md' : 'backdrop-blur-sm'}`}
+                    onClick={() => {
+                        if (!selectedArtwork) {
+                            setSelectedMuseum(null);
+                        }
+                    }}
+                    style={{ animation: 'fadeIn 0.5s ease-out' }}
+                >
+                    <div
+                        className={`relative w-full max-w-5xl h-[80vh] bg-white rounded-3xl shadow-2xl overflow-hidden transition-[filter] duration-300 ease-out ${selectedArtwork ? 'blur-lg pointer-events-none' : 'blur-0'}`}
+                        onClick={e => e.stopPropagation()}
+                        style={{ animation: 'scaleIn 0.5s ease-out' }}
+                    >
+                        {/* Close button - inside the plate */}
+                        <button
+                            onClick={() => setSelectedMuseum(null)}
+                            className="absolute top-4 right-4 z-10 text-slate-600 hover:text-slate-900 transition-colors bg-white/80 rounded-full p-2 shadow-lg"
+                        >
+                            <X size={24} />
+                        </button>
+
+                        {/* Masonry Layout */}
+                        <div className="w-full h-full overflow-y-auto scrollbar-hide p-6 pt-16">
+                            <div className="columns-4 gap-1">
+                                {selectedMuseum.artworks && selectedMuseum.artworks.length > 0 ? selectedMuseum.artworks.map((artwork, index) => {
+                                    // Generate random scale between 0.6 and 1.0 for variety
+                                    const randomScale = 0.6 + (Math.sin(index * 12345) * 0.5 + 0.5) * 0.4;
+                                    // Generate random X-axis offset for staggered effect
+                                    const randomOffsetX = (Math.sin(index * 7890) * 0.5 + 0.5) * 30 - 15; // -15px to +15px
+
+                                    return (
+                                        <div key={index} className="break-inside-avoid mb-1">
+                                            <div
+                                                className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedArtwork(artwork);
+                                                }}
+                                                style={{
+                                                    transform: `translateX(${randomOffsetX}px) scale(${randomScale})`,
+                                                    transformOrigin: 'center'
+                                                }}
+                                            >
+                                                <img
+                                                    src={artwork}
+                                                    alt={`Artwork ${index + 1}`}
+                                                    className="w-full h-auto object-cover"
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                }) : (
+                                    <p className="text-slate-500">No artworks available</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Single Artwork Zoom Modal - Overlay on top of blurred museum modal */}
+            {selectedArtwork && (
+                <div
+                    className="fixed inset-0 z-[60] flex items-center justify-center p-4 cursor-pointer"
+                    onClick={() => setSelectedArtwork(null)}
+                    style={{ animation: 'fadeIn 0.3s ease-out' }}
+                >
+                    {/* Close button - fixed position inside viewport */}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedArtwork(null);
+                        }}
+                        className="fixed top-8 right-8 z-10 text-white hover:text-slate-300 transition-colors bg-black/50 rounded-full p-3 shadow-lg"
+                    >
+                        <X size={28} />
+                    </button>
+
+                    {/* Artwork Image with Y-axis 360° rotation */}
+                    <img
+                        src={selectedArtwork}
+                        alt="Artwork"
+                        className="max-w-[85vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl cursor-default"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            animation: 'rotateY360 1s ease-out forwards',
+                            transform: 'perspective(1000px) rotateY(0deg)'
+                        }}
+                    />
+                </div>
+            )}
         </div>
     );
 };
