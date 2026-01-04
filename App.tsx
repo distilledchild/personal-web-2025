@@ -238,7 +238,8 @@ const Layout: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/todo" element={<Navigate to="/todo/personal" replace />} />
         <Route path="/todo/:tab" element={<Todo />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<Navigate to="/about/me" replace />} />
+        <Route path="/about/:tab" element={<About />} />
         <Route path="/research" element={<Navigate to="/research/hicbrowser" replace />} />
         <Route path="/research/:submenu" element={<Research />} />
         <Route path="/blog" element={<Blog />} />

@@ -470,7 +470,9 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
                                                     className={`px-4 py-3 ${isStrikethrough ? 'line-through text-slate-400' : 'text-slate-600'} text-sm cursor-pointer hover:text-blue-600`}
                                                     onClick={() => handleTodoClick(todo)}
                                                 >
-                                                    {todo.description}
+                                                    <div className="whitespace-pre-wrap line-clamp-5 overflow-hidden">
+                                                        {todo.description}
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     <span className={`px-2 py-1 rounded-full text-xs font-bold capitalize ${todo.status === 'completed' ? 'bg-green-100 text-green-700' :

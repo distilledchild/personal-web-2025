@@ -259,7 +259,8 @@ const techBlogSchema = new mongoose.Schema({
         avatar: String
     },
     likedBy: [{ type: String }],  // Array of email strings
-    show: { type: String, default: 'Y' }  // 'Y' or 'N'
+    show: { type: String, default: 'Y' },  // 'Y' or 'N'
+    isAutomated: { type: Boolean, default: false }
 }, { collection: 'TECH_BLOG' });
 
 const TechBlog = mongoose.model('TechBlog', techBlogSchema);
@@ -390,7 +391,9 @@ app.get('/api/travel/states', async (req, res) => {
 // Tech and Bio Endpoint
 app.get('/api/tech-blog', async (req, res) => {
     try {
-        const blogs = await TechBlog.find({ isPublished: true, show: 'Y' })
+        // Return all active posts (show='Y') regardless of isPublished status
+        // Frontend will handle filtering for public vs admin views
+        const blogs = await TechBlog.find({ show: 'Y' })
             .sort({ createdAt: -1 });
         res.json(blogs);
     } catch (err) {
@@ -404,7 +407,7 @@ app.post('/api/tech-blog', async (req, res) => {
     try {
         console.log('[TECH-BLOG] POST request received:', req.body);
         console.log('[TECH-BLOG] Tags received:', req.body.tags, 'Type:', typeof req.body.tags);
-        const { category, title, content, author } = req.body;
+        const { category, title, content, author, isAutomated } = req.body;
 
         if (!category || !title || !content || !author || !author.email) {
             console.error('[TECH-BLOG] Missing required fields');
@@ -434,7 +437,8 @@ app.post('/api/tech-blog', async (req, res) => {
             isPublished: true,
             show: 'Y',
             likedBy: [],
-            tags: req.body.tags || []
+            tags: req.body.tags || [],
+            isAutomated: isAutomated || false
         });
 
         const savedBlog = await newBlog.save();

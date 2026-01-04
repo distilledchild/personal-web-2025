@@ -345,6 +345,7 @@ export const Blog: React.FC = () => {
                     body: JSON.stringify({
                         ...editData,
                         tags: tagsArray,
+                        isAutomated: false,
                         author: {
                             name: user.name,
                             email: user.email,
@@ -509,8 +510,24 @@ export const Blog: React.FC = () => {
     }));
 
     // Filter posts based on search query (button/enter triggered)
+    // ONLY show published posts in the main grid unless showing pending
+    const activePosts = allPosts.filter(post => post.isPublished);
+    const pendingPosts = allPosts.filter(post => !post.isPublished);
+
+    // State to track if we are showing only pending posts
+    const [showPendingOnly, setShowPendingOnly] = React.useState(false);
+    const [showNoPendingDialog, setShowNoPendingDialog] = React.useState(false);
+
+    const handlePendingClick = () => {
+        if (pendingPosts.length === 0) {
+            setShowNoPendingDialog(true);
+            return;
+        }
+        setShowPendingOnly(!showPendingOnly);
+    };
+
     const filteredPosts = isSearching
-        ? allPosts.map((post, index) => ({ ...post, globalIndex: index })).filter(post => {
+        ? activePosts.map((post, index) => ({ ...post, globalIndex: index })).filter(post => {
             const searchLower = searchQuery.toLowerCase();
             const titleMatch = post.title?.toLowerCase().includes(searchLower);
             const contentMatch = post.content?.toLowerCase().includes(searchLower);
@@ -522,12 +539,19 @@ export const Blog: React.FC = () => {
             const dateB = new Date(b.createdAt).getTime();
             return dateB - dateA;
         })
-        : allPosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
-            // Always sort by createdAt descending (most recent first)
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return dateB - dateA;
-        });
+        : showPendingOnly
+            ? pendingPosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
+                // Sort by createdAt ASCENDING (Oldest first) for Pending view
+                const dateA = new Date(a.createdAt).getTime();
+                const dateB = new Date(b.createdAt).getTime();
+                return dateA - dateB;
+            })
+            : activePosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
+                // Always sort by createdAt descending (most recent first) for normal view
+                const dateA = new Date(a.createdAt).getTime();
+                const dateB = new Date(b.createdAt).getTime();
+                return dateB - dateA;
+            });
 
     // Pagination logic
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
@@ -618,6 +642,7 @@ export const Blog: React.FC = () => {
                         <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 overflow-y-auto scrollbar-hide lg:overflow-hidden">
                             {/* Sidebar TOC */}
                             <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
+
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Latest Posts</h3>
                                 <hr className="border-slate-200 my-2" />
 
@@ -630,7 +655,10 @@ export const Blog: React.FC = () => {
                                     .map((post) => (
                                         <div
                                             key={post._id || post.originalIndex}
-                                            onClick={() => setSelectedPost(post.originalIndex)}
+                                            onClick={() => {
+                                                const idx = allPosts.findIndex(p => p._id === post._id);
+                                                setSelectedPost(idx);
+                                            }}
                                             className={`
                     group cursor-pointer transition-all duration-200
                     bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
@@ -672,6 +700,45 @@ export const Blog: React.FC = () => {
                                             </p>
                                         </div>
                                     ))}
+
+                                {/* PENDING Post Section (Admin Only) - Moved to bottom */}
+                                {isAuthorized && (
+                                    <>
+                                        <hr className="border-slate-200 my-4" />
+                                        <h4
+                                            className="text-sm font-bold text-pink-500 mb-2 flex justify-between items-center cursor-pointer hover:text-pink-700 transition-colors"
+                                            onClick={handlePendingClick}
+                                        >
+                                            <span>Pending</span>
+                                            <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-xs">
+                                                {pendingPosts.length}
+                                            </span>
+                                        </h4>
+                                        {pendingPosts
+                                            .slice(0, 3)
+                                            .map((post) => {
+                                                const originalIndex = allPosts.findIndex(p => p._id === post._id);
+                                                return (
+                                                    <div
+                                                        key={post._id}
+                                                        onClick={() => setSelectedPost(originalIndex)}
+                                                        className={`
+                                                                group cursor-pointer transition-all duration-200
+                                                                bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                                                hover:${post.color} hover:${post.borderColor}
+                                                            `}
+                                                    >
+                                                        <p className={`
+                                                                text-sm font-medium text-slate-600 truncate
+                                                                group-hover:${post.textColor}
+                                                            `}>
+                                                            {post.title}
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })}
+                                    </>
+                                )}
                             </div>
 
                             {/* Grid */}
@@ -816,122 +883,124 @@ export const Blog: React.FC = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </div >
 
             {/* Modal Popup - View/Edit Mode */}
-            {selectedPost !== null && allPosts[selectedPost] && !isEditMode && (
-                <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modalBackdrop"
-                    onClick={() => setSelectedPost(null)}
-                >
+            {
+                selectedPost !== null && allPosts[selectedPost] && !isEditMode && (
                     <div
-                        className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl animate-modalContent"
-                        onClick={(e) => e.stopPropagation()}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modalBackdrop"
+                        onClick={() => setSelectedPost(null)}
                     >
-                        <div className={`${allPosts[selectedPost].color} p-8`}>
-                            <span className={`text-xs font-bold uppercase tracking-wider ${allPosts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}>
-                                {allPosts[selectedPost].category}
-                            </span>
-                            <h2 className="text-3xl font-bold text-slate-900 mt-4">
-                                {allPosts[selectedPost].title}
-                            </h2>
-                        </div>
-                        <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
-                            <div className="markdown-content text-slate-700 leading-relaxed">
-                                <ReactMarkdown
-                                    remarkPlugins={[remarkGfm]}
-                                    components={{
-                                        // Headings
-                                        h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mb-4 mt-6 text-slate-900" {...props} />,
-                                        h2: ({ node, ...props }) => <h2 className="text-2xl font-bold mb-3 mt-5 text-slate-900 border-b pb-2" {...props} />,
-                                        h3: ({ node, ...props }) => <h3 className="text-xl font-bold mb-2 mt-4 text-slate-900" {...props} />,
-                                        h4: ({ node, ...props }) => <h4 className="text-lg font-bold mb-2 mt-3 text-slate-900" {...props} />,
-                                        h5: ({ node, ...props }) => <h5 className="text-base font-bold mb-2 mt-3 text-slate-900" {...props} />,
-                                        h6: ({ node, ...props }) => <h6 className="text-sm font-bold mb-2 mt-3 text-slate-900" {...props} />,
-                                        // Paragraphs
-                                        p: ({ node, ...props }) => <p className="mb-4 leading-7" {...props} />,
-                                        // Lists
-                                        ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 ml-4 space-y-2" {...props} />,
-                                        ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 ml-4 space-y-2" {...props} />,
-                                        li: ({ node, ...props }) => <li className="leading-7" {...props} />,
-                                        // Links
-                                        a: ({ node, ...props }) => <a className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" {...props} />,
-                                        // Code
-                                        code: ({ node, inline, ...props }: any) =>
-                                            inline
-                                                ? <code className="bg-slate-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
-                                                : <code className="block bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono mb-4" {...props} />,
-                                        pre: ({ node, ...props }) => <pre className="mb-4" {...props} />,
-                                        // Blockquotes
-                                        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-slate-300 pl-4 italic my-4 text-slate-600" {...props} />,
-                                        // Horizontal rule
-                                        hr: ({ node, ...props }) => <hr className="my-6 border-slate-300" {...props} />,
-                                        // Tables
-                                        table: ({ node, ...props }) => <table className="min-w-full border-collapse border border-slate-300 mb-4" {...props} />,
-                                        thead: ({ node, ...props }) => <thead className="bg-slate-100" {...props} />,
-                                        tbody: ({ node, ...props }) => <tbody {...props} />,
-                                        tr: ({ node, ...props }) => <tr className="border-b border-slate-300" {...props} />,
-                                        th: ({ node, ...props }) => <th className="border border-slate-300 px-4 py-2 text-left font-bold" {...props} />,
-                                        td: ({ node, ...props }) => <td className="border border-slate-300 px-4 py-2" {...props} />,
-                                        // Images
-                                        img: ({ node, ...props }) => <img className="max-w-full h-auto rounded-lg my-4" {...props} />,
-                                        // Strong and emphasis
-                                        strong: ({ node, ...props }) => <strong className="font-bold text-slate-900" {...props} />,
-                                        em: ({ node, ...props }) => <em className="italic" {...props} />,
-                                    }}
-                                >
-                                    {allPosts[selectedPost].content}
-                                </ReactMarkdown>
+                        <div
+                            className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl animate-modalContent"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className={`${allPosts[selectedPost].color} p-8`}>
+                                <span className={`text-xs font-bold uppercase tracking-wider ${allPosts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}>
+                                    {allPosts[selectedPost].category}
+                                </span>
+                                <h2 className="text-3xl font-bold text-slate-900 mt-4">
+                                    {allPosts[selectedPost].title}
+                                </h2>
                             </div>
+                            <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
+                                <div className="markdown-content text-slate-700 leading-relaxed">
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            // Headings
+                                            h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mb-4 mt-6 text-slate-900" {...props} />,
+                                            h2: ({ node, ...props }) => <h2 className="text-2xl font-bold mb-3 mt-5 text-slate-900 border-b pb-2" {...props} />,
+                                            h3: ({ node, ...props }) => <h3 className="text-xl font-bold mb-2 mt-4 text-slate-900" {...props} />,
+                                            h4: ({ node, ...props }) => <h4 className="text-lg font-bold mb-2 mt-3 text-slate-900" {...props} />,
+                                            h5: ({ node, ...props }) => <h5 className="text-base font-bold mb-2 mt-3 text-slate-900" {...props} />,
+                                            h6: ({ node, ...props }) => <h6 className="text-sm font-bold mb-2 mt-3 text-slate-900" {...props} />,
+                                            // Paragraphs
+                                            p: ({ node, ...props }) => <p className="mb-4 leading-7" {...props} />,
+                                            // Lists
+                                            ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 ml-4 space-y-2" {...props} />,
+                                            ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 ml-4 space-y-2" {...props} />,
+                                            li: ({ node, ...props }) => <li className="leading-7" {...props} />,
+                                            // Links
+                                            a: ({ node, ...props }) => <a className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                            // Code
+                                            code: ({ node, inline, ...props }: any) =>
+                                                inline
+                                                    ? <code className="bg-slate-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                                                    : <code className="block bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono mb-4" {...props} />,
+                                            pre: ({ node, ...props }) => <pre className="mb-4" {...props} />,
+                                            // Blockquotes
+                                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-slate-300 pl-4 italic my-4 text-slate-600" {...props} />,
+                                            // Horizontal rule
+                                            hr: ({ node, ...props }) => <hr className="my-6 border-slate-300" {...props} />,
+                                            // Tables
+                                            table: ({ node, ...props }) => <table className="min-w-full border-collapse border border-slate-300 mb-4" {...props} />,
+                                            thead: ({ node, ...props }) => <thead className="bg-slate-100" {...props} />,
+                                            tbody: ({ node, ...props }) => <tbody {...props} />,
+                                            tr: ({ node, ...props }) => <tr className="border-b border-slate-300" {...props} />,
+                                            th: ({ node, ...props }) => <th className="border border-slate-300 px-4 py-2 text-left font-bold" {...props} />,
+                                            td: ({ node, ...props }) => <td className="border border-slate-300 px-4 py-2" {...props} />,
+                                            // Images
+                                            img: ({ node, ...props }) => <img className="max-w-full h-auto rounded-lg my-4" {...props} />,
+                                            // Strong and emphasis
+                                            strong: ({ node, ...props }) => <strong className="font-bold text-slate-900" {...props} />,
+                                            em: ({ node, ...props }) => <em className="italic" {...props} />,
+                                        }}
+                                    >
+                                        {allPosts[selectedPost].content}
+                                    </ReactMarkdown>
+                                </div>
 
-                            {/* Tags Section */}
-                            {allPosts[selectedPost].tags && allPosts[selectedPost].tags.length > 0 && (
-                                <div className="mt-8 pt-6 border-t border-slate-200">
-                                    <div className="flex flex-wrap gap-2">
-                                        {allPosts[selectedPost].tags.map((tag: string, idx: number) => (
-                                            <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium">
-                                                #{tag}
-                                            </span>
-                                        ))}
+                                {/* Tags Section */}
+                                {allPosts[selectedPost].tags && allPosts[selectedPost].tags.length > 0 && (
+                                    <div className="mt-8 pt-6 border-t border-slate-200">
+                                        <div className="flex flex-wrap gap-2">
+                                            {allPosts[selectedPost].tags.map((tag: string, idx: number) => (
+                                                <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium">
+                                                    #{tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Footer in modal */}
+                                <div className={`mt-4 flex items-center justify-between ${!allPosts[selectedPost].tags || allPosts[selectedPost].tags.length === 0 ? 'pt-6 border-t border-slate-200' : ''}`}>
+                                    <button
+                                        onClick={(e) => handleLike(allPosts[selectedPost]._id, e)}
+                                        className="flex items-center gap-3 cursor-pointer hover:scale-110 transition-transform"
+                                    >
+                                        <span className={`text-2xl ${isLikedByUser(allPosts[selectedPost]) ? 'text-red-500' : 'text-gray-400'}`}>
+                                            {isLikedByUser(allPosts[selectedPost]) ? '❤️' : '🤍'}
+                                        </span>
+                                        <span className="font-medium text-slate-700 text-base">{allPosts[selectedPost].likes || 0}</span>
+                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-slate-500">{formatDate(allPosts[selectedPost].createdAt)}</span>
                                     </div>
                                 </div>
-                            )}
 
-                            {/* Footer in modal */}
-                            <div className={`mt-4 flex items-center justify-between ${!allPosts[selectedPost].tags || allPosts[selectedPost].tags.length === 0 ? 'pt-6 border-t border-slate-200' : ''}`}>
-                                <button
-                                    onClick={(e) => handleLike(allPosts[selectedPost]._id, e)}
-                                    className="flex items-center gap-3 cursor-pointer hover:scale-110 transition-transform"
-                                >
-                                    <span className={`text-2xl ${isLikedByUser(allPosts[selectedPost]) ? 'text-red-500' : 'text-gray-400'}`}>
-                                        {isLikedByUser(allPosts[selectedPost]) ? '❤️' : '🤍'}
-                                    </span>
-                                    <span className="font-medium text-slate-700 text-base">{allPosts[selectedPost].likes || 0}</span>
-                                </button>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-slate-500">{formatDate(allPosts[selectedPost].createdAt)}</span>
-                                </div>
-                            </div>
-
-                            <div className={`flex mt-8 ${isAuthor(allPosts[selectedPost]) ? 'justify-between' : 'justify-start'}`}>
-                                {isAuthor(allPosts[selectedPost]) && (
-                                    <button
-                                        onClick={handleDelete}
-                                        className="px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
-                                    >
-                                        Delete
-                                    </button>
-                                )}
-                                <div className="flex gap-4">
-                                    {/* Update button */}
-                                    {(user && isAuthorized) && (
-                                        <button
-                                            onClick={handleEdit}
-                                            className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                                        >
-                                            Update
-                                        </button>
-                                    )}
+                                <div className="flex justify-between items-center mt-8">
+                                    <div className="flex gap-4">
+                                        {/* Delete/Update buttons for Admin (Authorized) users */}
+                                        {isAuthorized && (
+                                            <>
+                                                <button
+                                                    onClick={handleEdit}
+                                                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                                                >
+                                                    Update
+                                                </button>
+                                                <button
+                                                    onClick={handleDelete}
+                                                    className="px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                     <button
                                         onClick={() => setSelectedPost(null)}
                                         className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
@@ -942,97 +1011,103 @@ export const Blog: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Edit Mode Modal */}
-            {selectedPost !== null && allPosts[selectedPost] && (
-                <BlogPostModal
-                    mode="edit"
-                    isOpen={isEditMode}
-                    editData={editData}
-                    postColor={allPosts[selectedPost].color}
-                    uploadingImage={uploadingImage}
-                    isDragging={isDragging}
-                    onClose={handleCloseEdit}
-                    onSave={handleSave}
-                    onCategoryChange={(category: string) => setEditData({ ...editData, category })}
-                    onTitleChange={(title: string) => setEditData({ ...editData, title })}
-                    onContentChange={(content: string) => setEditData({ ...editData, content })}
-                    onTagInput={handleTagInput}
-                    onTagBlur={handleTagBlur}
-                    onImageUpload={handleFileSelect}
-                    onRemoveImage={handleRemoveImage}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                />
-            )}
+            {
+                selectedPost !== null && allPosts[selectedPost] && (
+                    <BlogPostModal
+                        mode="edit"
+                        isOpen={isEditMode}
+                        editData={editData}
+                        postColor={allPosts[selectedPost].color}
+                        uploadingImage={uploadingImage}
+                        isDragging={isDragging}
+                        onClose={handleCloseEdit}
+                        onSave={handleSave}
+                        onCategoryChange={(category: string) => setEditData({ ...editData, category })}
+                        onTitleChange={(title: string) => setEditData({ ...editData, title })}
+                        onContentChange={(content: string) => setEditData({ ...editData, content })}
+                        onTagInput={handleTagInput}
+                        onTagBlur={handleTagBlur}
+                        onImageUpload={handleFileSelect}
+                        onRemoveImage={handleRemoveImage}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                    />
+                )
+            }
 
             {/* Discard Confirmation Dialog */}
-            {showDiscardDialog && (
-                <div
-                    className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
-                    onKeyDown={(e: React.KeyboardEvent) => {
-                        if (e.key === 'Enter') {
-                            isCreateMode ? handleDiscardCreate() : handleDiscard();
-                        }
-                    }}
-                >
-                    <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
-                        <button
-                            onClick={isCreateMode ? () => setShowDiscardDialog(false) : handleContinueEdit}
-                            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold"
-                        >
-                            ✕
-                        </button>
-                        <h3 className="text-xl font-bold text-slate-900 mb-4">Unsaved Changes</h3>
-                        <p className="text-slate-600 mb-6">
-                            {isCreateMode
-                                ? 'Your new post will not be saved. Are you sure you want to discard it?'
-                                : 'Your changes will not be saved. Are you sure you want to discard them?'}
-                        </p>
-                        <div className="flex gap-4 justify-end">
+            {
+                showDiscardDialog && (
+                    <div
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+                        onKeyDown={(e: React.KeyboardEvent) => {
+                            if (e.key === 'Enter') {
+                                isCreateMode ? handleDiscardCreate() : handleDiscard();
+                            }
+                        }}
+                    >
+                        <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
                             <button
                                 onClick={isCreateMode ? () => setShowDiscardDialog(false) : handleContinueEdit}
-                                className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+                                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold"
                             >
-                                {isCreateMode ? 'Continue Writing' : 'Continue Editing'}
+                                ✕
                             </button>
-                            <button
-                                onClick={isCreateMode ? handleDiscardCreate : handleDiscard}
-                                className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
-                            >
-                                Discard
-                            </button>
+                            <h3 className="text-xl font-bold text-slate-900 mb-4">Unsaved Changes</h3>
+                            <p className="text-slate-600 mb-6">
+                                {isCreateMode
+                                    ? 'Your new post will not be saved. Are you sure you want to discard it?'
+                                    : 'Your changes will not be saved. Are you sure you want to discard them?'}
+                            </p>
+                            <div className="flex gap-4 justify-end">
+                                <button
+                                    onClick={isCreateMode ? () => setShowDiscardDialog(false) : handleContinueEdit}
+                                    className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+                                >
+                                    {isCreateMode ? 'Continue Writing' : 'Continue Editing'}
+                                </button>
+                                <button
+                                    onClick={isCreateMode ? handleDiscardCreate : handleDiscard}
+                                    className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
+                                >
+                                    Discard
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Delete Confirmation Dialog */}
-            {showDeleteDialog && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
-                        <h3 className="text-xl font-bold text-slate-900 mb-4">Delete Post Permanently?</h3>
-                        <p className="text-slate-600 mb-6">This action will permanently delete this post. Are you sure you want to continue?</p>
-                        <div className="flex gap-4 justify-end">
-                            <button
-                                onClick={handleCancelDelete}
-                                className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleConfirmDelete}
-                                className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
-                            >
-                                Confirm
-                            </button>
+            {
+                showDeleteDialog && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
+                            <h3 className="text-xl font-bold text-slate-900 mb-4">글 삭제 확인</h3>
+                            <p className="text-slate-600 mb-6">글을 삭제하시겠습니까?</p>
+                            <div className="flex gap-4 justify-end">
+                                <button
+                                    onClick={handleCancelDelete}
+                                    className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    onClick={handleConfirmDelete}
+                                    className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
+                                >
+                                    확인
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Create Mode Modal */}
             <BlogPostModal
@@ -1059,72 +1134,101 @@ export const Blog: React.FC = () => {
             />
 
             {/* OPAL Success Dialog */}
-            {showOpalDialog && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-3xl">✅</span>
+            {
+                showOpalDialog && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-3xl">✅</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Request Sent to OPAL</h3>
+                            <p className="text-slate-600 mb-8">Your request has been successfully sent to the OPAL workflow.</p>
+                            <button
+                                onClick={() => {
+                                    setShowOpalDialog(false);
+                                    setIsCreateMode(false);
+                                    setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
+                                    setUseOpal(false);
+                                }}
+                                className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                            >
+                                Confirm
+                            </button>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Request Sent to OPAL</h3>
-                        <p className="text-slate-600 mb-8">Your request has been successfully sent to the OPAL workflow.</p>
-                        <button
-                            onClick={() => {
-                                setShowOpalDialog(false);
-                                setIsCreateMode(false);
-                                setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
-                                setUseOpal(false);
-                            }}
-                            className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                        >
-                            Confirm
-                        </button>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Validation Dialog */}
-            {showValidationDialog && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span className="text-3xl">⚠️</span>
+            {
+                showValidationDialog && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
+                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-3xl">⚠️</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Missing Information</h3>
+                            <p className="text-slate-600 mb-8">Please fill in all fields (Category, Title, and Content) before saving.</p>
+                            <button
+                                onClick={() => setShowValidationDialog(false)}
+                                className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                            >
+                                Confirm
+                            </button>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-2">Missing Information</h3>
-                        <p className="text-slate-600 mb-8">Please fill in all fields (Category, Title, and Content) before saving.</p>
-                        <button
-                            onClick={() => setShowValidationDialog(false)}
-                            className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                        >
-                            Confirm
-                        </button>
                     </div>
-                </div>
-            )}
+                )
+            }
+
+            {/* No Pending Posts Dialog */}
+            {
+                showNoPendingDialog && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
+                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-3xl">ℹ️</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">No Pending Posts</h3>
+                            <p className="text-slate-600 mb-8">There are currently no posts pending approval.</p>
+                            <button
+                                onClick={() => setShowNoPendingDialog(false)}
+                                className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
 
             {/* Create Button (+ icon) - Blog page only */}
-            {canCreatePost() && location.pathname === '/blog' && !isCreateMode && !isEditMode && selectedPost === null && (
-                <button
-                    onClick={handleCreate}
-                    className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40"
-                    title="Create new post"
-                >
-                    <Plus size={28} />
-                </button>
-            )}
+            {
+                canCreatePost() && location.pathname === '/blog' && !isCreateMode && !isEditMode && selectedPost === null && (
+                    <button
+                        onClick={handleCreate}
+                        className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40"
+                        title="Create new post"
+                    >
+                        <Plus size={28} />
+                    </button>
+                )
+            }
 
             {/* Toast Notification */}
-            {showToast && (
-                <div
-                    className="fixed z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg animate-fadeIn flex items-center gap-2 pointer-events-none"
-                    style={{
-                        left: toastPos.x + 16,
-                        top: toastPos.y - 40,
-                        transform: 'translateX(-50%)'
-                    }}
-                >
-                    {toastMessage}
-                </div>
-            )}
+            {
+                showToast && (
+                    <div
+                        className="fixed z-50 bg-slate-900 text-white px-6 py-3 rounded-full shadow-lg animate-fadeIn flex items-center gap-2 pointer-events-none"
+                        style={{
+                            left: toastPos.x + 16,
+                            top: toastPos.y - 40,
+                            transform: 'translateX(-50%)'
+                        }}
+                    >
+                        {toastMessage}
+                    </div>
+                )
+            }
         </>
     );
 };
