@@ -1340,7 +1340,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
             )}
 
             {/* Single Artwork Zoom Modal - Overlay on top of blurred museum modal */}
-            {selectedArtwork && (
+            {selectedArtwork && selectedMuseum && (
                 <div
                     className="fixed inset-0 z-[60] flex items-center justify-center p-4 cursor-pointer"
                     onClick={() => setSelectedArtwork(null)}
@@ -1352,22 +1352,74 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                             e.stopPropagation();
                             setSelectedArtwork(null);
                         }}
-                        className="fixed top-8 right-8 z-10 text-white hover:text-slate-300 transition-colors bg-black/50 rounded-full p-3 shadow-lg"
+                        className="fixed top-8 right-8 z-30 text-white hover:text-slate-300 transition-colors bg-black/50 rounded-full p-3 shadow-lg"
+                        aria-label="Close Preview"
                     >
                         <X size={28} />
                     </button>
 
+                    {/* Navigation Buttons */}
+                    {(() => {
+                        const currentIndex = selectedMuseum.artworks?.indexOf(selectedArtwork) ?? -1;
+                        const totalArtworks = selectedMuseum.artworks?.length ?? 0;
+                        const isFirst = currentIndex <= 0;
+                        const isLast = currentIndex >= totalArtworks - 1;
+
+                        return (
+                            <>
+                                {/* Previous Button - Left */}
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isFirst && selectedMuseum.artworks) {
+                                            setSelectedArtwork(selectedMuseum.artworks[currentIndex - 1]);
+                                        }
+                                    }}
+                                    disabled={isFirst}
+                                    aria-label="Previous Artwork"
+                                    className={`absolute left-4 md:left-12 z-20 p-4 rounded-full transition-all duration-300 ${isFirst
+                                        ? 'bg-white/10 text-white/20 cursor-not-allowed border-2 border-white/10'
+                                        : 'bg-white/20 text-white hover:bg-white hover:text-black backdrop-blur-md border-2 border-white/50 hover:border-white hover:scale-110 shadow-[0_0_15px_rgba(0,0,0,0.5)]'
+                                        }`}
+                                >
+                                    <ChevronLeft size={40} strokeWidth={2.5} />
+                                </button>
+
+                                {/* Next Button - Right */}
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isLast && selectedMuseum.artworks) {
+                                            setSelectedArtwork(selectedMuseum.artworks[currentIndex + 1]);
+                                        }
+                                    }}
+                                    disabled={isLast}
+                                    aria-label="Next Artwork"
+                                    className={`absolute right-4 md:right-12 z-20 p-4 rounded-full transition-all duration-300 ${isLast
+                                        ? 'bg-white/10 text-white/20 cursor-not-allowed border-2 border-white/10'
+                                        : 'bg-white/20 text-white hover:bg-white hover:text-black backdrop-blur-md border-2 border-white/50 hover:border-white hover:scale-110 shadow-[0_0_15px_rgba(0,0,0,0.5)]'
+                                        }`}
+                                >
+                                    <ChevronRight size={40} strokeWidth={2.5} />
+                                </button>
+                            </>
+                        );
+                    })()}
+
                     {/* Artwork Image with Y-axis 360° rotation */}
-                    <img
-                        src={selectedArtwork}
-                        alt="Artwork"
-                        className="max-w-[85vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl cursor-default"
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                            animation: 'rotateY360 1s ease-out forwards',
-                            transform: 'perspective(1000px) rotateY(0deg)'
-                        }}
-                    />
+                    <div className="relative z-10">
+                        <img
+                            key={selectedArtwork} // Force re-render animation on change
+                            src={selectedArtwork}
+                            alt="Artwork"
+                            className="max-w-[80vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl cursor-default"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                                animation: 'rotateY360 1s ease-out forwards',
+                                transform: 'perspective(1000px) rotateY(0deg)'
+                            }}
+                        />
+                    </div>
                 </div>
             )}
         </div>
