@@ -62,20 +62,18 @@ export const About: React.FC = () => {
     return (
         <div className="flex flex-col h-screen bg-white">
             {/* Fixed Header Section */}
-            <div className="pt-32 pb-6 px-6 bg-white border-b border-slate-100">
+            <div className="pt-32 pb-0 px-6 bg-white flex-shrink-0">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-8">
-                        <h2 className="text-4xl font-bold text-slate-900 mb-4">
-                            Intro
-                        </h2>
-                    </div>
+                    <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">
+                        Intro
+                    </h2>
 
-                    {/* Tabs */}
-                    <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-4">
+                    {/* Tabs Navigation */}
+                    <div className="flex flex-wrap justify-center gap-2 mb-6">
                         <button
                             onClick={() => handleTabChange('me')}
                             className={`
-                                flex items-center justify-center gap-2 px-8 py-4 border-b-2 md:border-b-2 text-lg font-bold transition-all duration-300
+                                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                                 ${activeTab === 'me'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
@@ -86,7 +84,7 @@ export const About: React.FC = () => {
                         <button
                             onClick={() => handleTabChange('milestones')}
                             className={`
-                                flex items-center justify-center gap-2 px-8 py-4 border-b-2 md:border-b-2 text-lg font-bold transition-all duration-300
+                                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                                 ${activeTab === 'milestones'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
@@ -97,7 +95,7 @@ export const About: React.FC = () => {
                         <button
                             onClick={() => handleTabChange('academics')}
                             className={`
-                                flex items-center justify-center gap-2 px-8 py-4 border-b-2 md:border-b-2 text-lg font-bold transition-all duration-300
+                                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
                                 ${activeTab === 'academics'
                                     ? 'border-blue-600 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
@@ -106,6 +104,7 @@ export const About: React.FC = () => {
                             Academic
                         </button>
                     </div>
+                    <hr className="border-slate-100" />
                 </div>
             </div>
 
