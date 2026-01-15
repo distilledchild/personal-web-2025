@@ -36,7 +36,7 @@ app.use(express.json());
 
 // Root route for health check
 app.get('/', (req, res) => {
-    res.send('Hello from Cloud Run! 🚀 Server is running correctly.');
+    res.send('Hello from Cloud Run! 🚀 Server v2.1.0 - Contact Info Update');
 });
 
 // Load environment variables
