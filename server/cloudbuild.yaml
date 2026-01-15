@@ -1,8 +1,9 @@
 steps:
-  # Step 1: build Docker image
+  # Step 1: build Docker image (no-cache to ensure fresh build)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
+      - '--no-cache'
       - '-t'
       - 'gcr.io/$PROJECT_ID/backend:$SHORT_SHA'
       - '-t'
