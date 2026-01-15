@@ -216,7 +216,7 @@ const Layout: React.FC = () => {
           <LiquidTab
             to="/blog"
             label="Blog"
-            active={location.pathname === '/blog'}
+            active={location.pathname.startsWith('/blog')}
             colorClass="text-pink-500 hover:text-pink-300"
           />
           <LiquidTab
@@ -242,7 +242,8 @@ const Layout: React.FC = () => {
         <Route path="/about/:tab" element={<About />} />
         <Route path="/research" element={<Navigate to="/research/hicbrowser" replace />} />
         <Route path="/research/:submenu" element={<Research />} />
-        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog" element={<Navigate to="/blog/tech-bio" replace />} />
+        <Route path="/blog/:tab" element={<Blog />} />
         <Route path="/interests" element={<Navigate to="/interests/data" replace />} />
         <Route path="/interests/:submenu" element={<Interests isAuthorized={isAuthorized} />} />
         <Route path="/contact" element={<Navigate to="/contact/contactinfo" replace />} />

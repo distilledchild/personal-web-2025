@@ -147,6 +147,8 @@ const artMuseumSchema = new mongoose.Schema({
 
 const ArtMuseum = mongoose.model('ArtMuseum', artMuseumSchema);
 
+
+
 // Get Art Museums with City Data
 app.get('/api/interests/art-museums', async (req, res) => {
     try {
@@ -320,7 +322,7 @@ const contactSchema = new mongoose.Schema({
         ip: String,
         timezone: String
     }
-}, { collection: 'CONTACT' });
+}, { collection: 'CONTACT_INFO' });
 
 const Contact = mongoose.model('Contact', contactSchema);
 
@@ -335,7 +337,7 @@ const guestbookSchema = new mongoose.Schema({
     show: { type: String, default: 'Y' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
-}, { collection: 'GUESTBOOK' });
+}, { collection: 'CONTACT_GUESTBOOK' });
 
 const Guestbook = mongoose.model('Guestbook', guestbookSchema);
 

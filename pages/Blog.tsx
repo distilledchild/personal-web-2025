@@ -1,9 +1,11 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { Plus, Monitor, Coffee } from 'lucide-react';
+import { PageHeader, TabItem } from '../components/PageHeader';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BlogPostModal } from '../components/BlogPostModal';
+import { BlogCard } from '../components/BlogCard';
 import { LikeButton } from '../components/LikeButton';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import { API_URL } from '../utils/apiConfig';
@@ -31,6 +33,16 @@ export const Blog: React.FC = () => {
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchQuery, setSearchQuery] = React.useState('');
     const [isSearching, setIsSearching] = React.useState(false);
+
+    // Routing for tabs
+    const { tab } = useParams<{ tab: string }>();
+    const navigate = useNavigate();
+    const activeTab = tab || 'tech-bio';
+
+    const tabs: TabItem[] = [
+        { id: 'tech-bio', label: 'Tech & Bio', icon: Monitor },
+        { id: 'life', label: 'Life', icon: Coffee }
+    ];
     const postsPerPage = 4;
 
     React.useEffect(() => {
@@ -623,267 +635,245 @@ export const Blog: React.FC = () => {
 
     return (
         <>
-            <div className="h-screen bg-white pt-24 pb-4 px-6 flex flex-col overflow-hidden">
-                <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0">
-                    {/* Fixed Header */}
-                    <div className="flex-shrink-0">
-                        <h2 className="text-4xl font-bold text-slate-900 mb-4 text-center">Tech & Bio</h2>
-                        <hr className="border-slate-100 mb-4" />
-                    </div>
+            <div className="h-screen bg-white flex flex-col overflow-hidden">
+                <PageHeader
+                    title="Blog"
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onTabChange={(id) => navigate(`/blog/${id}`)}
+                    activeColor="border-pink-500 text-pink-500"
+                />
 
-                    {loading ? (
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="text-slate-400">Loading posts...</div>
-                        </div>
-                    ) : posts.length === 0 ? (
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="text-slate-400">No posts found.</div>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 overflow-y-auto scrollbar-hide lg:overflow-hidden">
-                            {/* Sidebar TOC */}
-                            <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
+                <div className="flex-1 min-h-0 relative">
+                    <div className="absolute inset-0 px-6 pb-4">
+                        <div className="max-w-7xl mx-auto w-full h-full flex flex-col">
+                            {activeTab === 'tech-bio' ? (
+                                <>
 
-                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Latest Posts</h3>
-                                <hr className="border-slate-200 my-2" />
+                                    {
+                                        loading ? (
+                                            <div className="flex-1 flex items-center justify-center" >
+                                                <div className="text-slate-400">Loading posts...</div>
+                                            </div>
+                                        ) : posts.length === 0 ? (
+                                            <div className="flex-1 flex items-center justify-center">
+                                                <div className="text-slate-400">No posts found.</div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 overflow-y-auto scrollbar-hide lg:overflow-hidden">
+                                                {/* Sidebar TOC */}
+                                                <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
 
-                                {/* Tech Section */}
-                                <h4 className="text-sm font-bold text-pink-500 mb-2">Tech</h4>
-                                {filteredPosts
-                                    .map((post, index) => ({ ...post, originalIndex: index }))
-                                    .filter(post => post.category === 'Tech')
-                                    .slice(0, 3)
-                                    .map((post) => (
-                                        <div
-                                            key={post._id || post.originalIndex}
-                                            onClick={() => {
-                                                const idx = allPosts.findIndex(p => p._id === post._id);
-                                                setSelectedPost(idx);
-                                            }}
-                                            className={`
+                                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Latest Posts</h3>
+                                                    <hr className="border-slate-200 my-2" />
+
+                                                    {/* Tech Section */}
+                                                    <h4 className="text-sm font-bold text-pink-500 mb-2">Tech</h4>
+                                                    {filteredPosts
+                                                        .map((post, index) => ({ ...post, originalIndex: index }))
+                                                        .filter(post => post.category === 'Tech')
+                                                        .slice(0, 3)
+                                                        .map((post) => (
+                                                            <div
+                                                                key={post._id || post.originalIndex}
+                                                                onClick={() => {
+                                                                    const idx = allPosts.findIndex(p => p._id === post._id);
+                                                                    setSelectedPost(idx);
+                                                                }}
+                                                                className={`
                     group cursor-pointer transition-all duration-200
                     bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                     hover:${post.color} hover:${post.borderColor}
                   `}
-                                        >
-                                            <p className={`
+                                                            >
+                                                                <p className={`
                     text-sm font-medium text-slate-600 truncate
                     group-hover:${post.textColor}
                   `}>
-                                                {post.title}
-                                            </p>
-                                        </div>
-                                    ))}
+                                                                    {post.title}
+                                                                </p>
+                                                            </div>
+                                                        ))}
 
-                                <hr className="border-slate-200 my-4" />
+                                                    <hr className="border-slate-200 my-4" />
 
-                                {/* Bio Section */}
-                                <h4 className="text-sm font-bold text-pink-500 mb-2">Bio</h4>
-                                {filteredPosts
-                                    .map((post, index) => ({ ...post, originalIndex: index }))
-                                    .filter(post => post.category === 'Biology')
-                                    .slice(0, 3)
-                                    .map((post) => (
-                                        <div
-                                            key={post._id || post.originalIndex}
-                                            onClick={() => setSelectedPost(post.originalIndex)}
-                                            className={`
+                                                    {/* Bio Section */}
+                                                    <h4 className="text-sm font-bold text-pink-500 mb-2">Bio</h4>
+                                                    {filteredPosts
+                                                        .map((post, index) => ({ ...post, originalIndex: index }))
+                                                        .filter(post => post.category === 'Biology')
+                                                        .slice(0, 3)
+                                                        .map((post) => (
+                                                            <div
+                                                                key={post._id || post.originalIndex}
+                                                                onClick={() => setSelectedPost(post.originalIndex)}
+                                                                className={`
                     group cursor-pointer transition-all duration-200
                     bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                     hover:${post.color} hover:${post.borderColor}
                   `}
-                                        >
-                                            <p className={`
+                                                            >
+                                                                <p className={`
                     text-sm font-medium text-slate-600 truncate
                     group-hover:${post.textColor}
                   `}>
-                                                {post.title}
-                                            </p>
-                                        </div>
-                                    ))}
+                                                                    {post.title}
+                                                                </p>
+                                                            </div>
+                                                        ))}
 
-                                {/* PENDING Post Section (Admin Only) - Moved to bottom */}
-                                {isAuthorized && (
-                                    <>
-                                        <hr className="border-slate-200 my-4" />
-                                        <h4
-                                            className="text-sm font-bold text-pink-500 mb-2 flex justify-between items-center cursor-pointer hover:text-pink-700 transition-colors"
-                                            onClick={handlePendingClick}
-                                        >
-                                            <span>Pending</span>
-                                            <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-xs">
-                                                {pendingPosts.length}
-                                            </span>
-                                        </h4>
-                                        {pendingPosts
-                                            .slice(0, 3)
-                                            .map((post) => {
-                                                const originalIndex = allPosts.findIndex(p => p._id === post._id);
-                                                return (
-                                                    <div
-                                                        key={post._id}
-                                                        onClick={() => setSelectedPost(originalIndex)}
-                                                        className={`
+                                                    {/* PENDING Post Section (Admin Only) - Moved to bottom */}
+                                                    {isAuthorized && (
+                                                        <>
+                                                            <hr className="border-slate-200 my-4" />
+                                                            <h4
+                                                                className="text-sm font-bold text-pink-500 mb-2 flex justify-between items-center cursor-pointer hover:text-pink-700 transition-colors"
+                                                                onClick={handlePendingClick}
+                                                            >
+                                                                <span>Pending</span>
+                                                                <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-xs">
+                                                                    {pendingPosts.length}
+                                                                </span>
+                                                            </h4>
+                                                            {pendingPosts
+                                                                .slice(0, 3)
+                                                                .map((post) => {
+                                                                    const originalIndex = allPosts.findIndex(p => p._id === post._id);
+                                                                    return (
+                                                                        <div
+                                                                            key={post._id}
+                                                                            onClick={() => setSelectedPost(originalIndex)}
+                                                                            className={`
                                                                 group cursor-pointer transition-all duration-200
                                                                 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                                                                 hover:${post.color} hover:${post.borderColor}
                                                             `}
-                                                    >
-                                                        <p className={`
+                                                                        >
+                                                                            <p className={`
                                                                 text-sm font-medium text-slate-600 truncate
                                                                 group-hover:${post.textColor}
                                                             `}>
-                                                            {post.title}
-                                                        </p>
-                                                    </div>
-                                                );
-                                            })}
-                                    </>
-                                )}
-                            </div>
-
-                            {/* Grid */}
-                            <div className="flex-1 flex flex-col min-h-0 lg:overflow-y-auto scrollbar-hide">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pb-20 lg:pb-10">
-                                    {posts.map((post, i) => (
-                                        <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
-                                            {/* Header */}
-                                            <div className={`${post.color} py-3 px-6 flex flex-col justify-center flex-shrink-0`}>
-                                                <span className={`text-[10px] font-bold uppercase tracking-wider ${post.textColor} bg-white/80 w-fit px-2 py-1 rounded-md`}>
-                                                    {post.category}
-                                                </span>
-                                            </div>
-                                            <div className="p-5 flex-1 flex flex-col min-h-0">
-                                                <h3 className="text-lg font-bold text-slate-800 mb-2 transition-colors line-clamp-2">
-                                                    {post.title}
-                                                </h3>
-                                                <p className="text-slate-600 text-sm leading-relaxed flex-1 line-clamp-3">
-                                                    {stripMarkdown(post.content || '').substring(0, 150)}...
-                                                </p>
-
-                                                {/* Footer with likes, date */}
-                                                <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                                                    <div className="flex items-center gap-2">
-                                                        <LikeButton
-                                                            isLiked={isLikedByUser(post)}
-                                                            likeCount={post.likes || 0}
-                                                            onLike={(e) => handleLike(post._id, e)}
-                                                        />
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span>{formatDate(post.createdAt)}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="mt-4 flex items-center justify-between">
-                                                    <button
-                                                        onClick={() => setSelectedPost(getGlobalIndex(i))}
-                                                        className={`text-xs font-bold text-slate-900 ${post.hoverColor} transition-colors flex items-center gap-1`}
-                                                    >
-                                                        Read Article &rarr;
-                                                    </button>
-                                                    {post.tags && post.tags.length > 0 && (
-                                                        <div className="flex gap-1">
-                                                            {post.tags.slice(0, 3).map((tag: string, idx: number) => (
-                                                                <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[10px]">
-                                                                    {tag}
-                                                                </span>
-                                                            ))}
-                                                        </div>
+                                                                                {post.title}
+                                                                            </p>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                        </>
                                                     )}
                                                 </div>
+
+                                                {/* Grid */}
+                                                <div className="flex-1 flex flex-col min-h-0 lg:overflow-y-auto scrollbar-hide">
+                                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2 pb-20 lg:pb-2">
+                                                        {posts.map((post, i) => (
+                                                            <div key={post._id || i} className="h-full">
+                                                                <BlogCard
+                                                                    post={post}
+                                                                    isLiked={isLikedByUser(post)}
+                                                                    onLike={(e) => handleLike(post._id, e)}
+                                                                    onClick={() => setSelectedPost(getGlobalIndex(i))}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                    {/* Pagination Controls with Search */}
+                                    {!loading && allPosts.length > 0 && (
+                                        <div className="flex justify-between items-center gap-4 mt-6 pb-4 flex-shrink-0">
+                                            {/* Empty spacer for alignment */}
+                                            <div className="flex-1 max-w-sm"></div>
+
+                                            {/* Pagination Section */}
+                                            {filteredPosts.length > postsPerPage && (
+                                                <div className="flex justify-center items-center gap-2">
+                                                    <button
+                                                        onClick={() => handlePageChange(currentPage - 1)}
+                                                        disabled={currentPage === 1}
+                                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
+                                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                                            }`}
+                                                    >
+                                                        Previous
+                                                    </button>
+
+                                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                                                        <button
+                                                            key={pageNum}
+                                                            onClick={() => handlePageChange(pageNum)}
+                                                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
+                                                                ? 'bg-pink-500 text-white'
+                                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                                                }`}
+                                                        >
+                                                            {pageNum}
+                                                        </button>
+                                                    ))}
+
+                                                    <button
+                                                        onClick={() => handlePageChange(currentPage + 1)}
+                                                        disabled={currentPage === totalPages}
+                                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
+                                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                                            }`}
+                                                    >
+                                                        Next
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {/* Search Section */}
+                                            <div className="flex items-center gap-2 flex-1 max-w-sm">
+                                                <input
+                                                    type="text"
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleSearch();
+                                                        }
+                                                    }}
+                                                    placeholder="Search posts by title, content, or tags..."
+                                                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
+                                                />
+                                                {/* Search button - always shows magnifying glass */}
+                                                <button
+                                                    onClick={handleSearch}
+                                                    className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-pink-300 transition-all flex items-center justify-center group"
+                                                    title="Search"
+                                                >
+                                                    {/* Magnifying glass icon */}
+                                                    <svg
+                                                        className="w-5 h-5 text-pink-500"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </button>
+
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Pagination Controls with Search */}
-                    {!loading && allPosts.length > 0 && (
-                        <div className="flex justify-between items-center gap-4 mt-6 pb-4 flex-shrink-0">
-                            {/* Empty spacer for alignment */}
-                            <div className="flex-1 max-w-sm"></div>
-
-                            {/* Pagination Section */}
-                            {filteredPosts.length > postsPerPage && (
-                                <div className="flex justify-center items-center gap-2">
-                                    <button
-                                        onClick={() => handlePageChange(currentPage - 1)}
-                                        disabled={currentPage === 1}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
-                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                            }`}
-                                    >
-                                        Previous
-                                    </button>
-
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                                        <button
-                                            key={pageNum}
-                                            onClick={() => handlePageChange(pageNum)}
-                                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
-                                                ? 'bg-pink-500 text-white'
-                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                }`}
-                                        >
-                                            {pageNum}
-                                        </button>
-                                    ))}
-
-                                    <button
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                        disabled={currentPage === totalPages}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
-                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                            }`}
-                                    >
-                                        Next
-                                    </button>
+                                    )}
+                                </>) : (
+                                <div className="flex-1 flex items-center justify-center">
+                                    <div className="text-slate-400 text-xl font-medium flex flex-col items-center gap-4">
+                                        <Coffee size={48} className="text-slate-300" />
+                                        <span>Life Blog Under Construction</span>
+                                    </div>
                                 </div>
                             )}
-
-                            {/* Search Section */}
-                            <div className="flex items-center gap-2 flex-1 max-w-sm">
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            handleSearch();
-                                        }
-                                    }}
-                                    placeholder="Search posts by title, content, or tags..."
-                                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
-                                />
-                                {/* Search button - always shows magnifying glass */}
-                                <button
-                                    onClick={handleSearch}
-                                    className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-pink-300 transition-all flex items-center justify-center group"
-                                    title="Search"
-                                >
-                                    {/* Magnifying glass icon */}
-                                    <svg
-                                        className="w-5 h-5 text-pink-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-
-                            </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div >
 
@@ -1205,7 +1195,7 @@ export const Blog: React.FC = () => {
 
             {/* Create Button (+ icon) - Blog page only */}
             {
-                canCreatePost() && location.pathname === '/blog' && !isCreateMode && !isEditMode && selectedPost === null && (
+                canCreatePost() && location.pathname.startsWith('/blog') && !isCreateMode && !isEditMode && selectedPost === null && (
                     <button
                         onClick={handleCreate}
                         className="fixed bottom-24 left-6 w-14 h-14 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-pink-600 transition-all hover:scale-110 z-40"
