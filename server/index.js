@@ -324,6 +324,175 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', contactSchema);
 
+// Guestbook Schema
+const guestbookSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    picture: String,
+    message: { type: String, required: true },
+    likes: { type: Number, default: 0 },
+    likedBy: [{ type: String }],  // Array of email strings
+    show: { type: String, default: 'Y' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+}, { collection: 'GUESTBOOK' });
+
+const Guestbook = mongoose.model('Guestbook', guestbookSchema);
+
+// --- Guestbook Endpoints ---
+
+// Get all guestbook entries
+app.get('/api/guestbook', async (req, res) => {
+    try {
+        const entries = await Guestbook.find({ show: 'Y' }).sort({ createdAt: -1 });
+        res.json(entries);
+    } catch (err) {
+        console.error('[GUESTBOOK] Error fetching entries:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create guestbook entry
+app.post('/api/guestbook', async (req, res) => {
+    try {
+        const { name, email, picture, message } = req.body;
+
+        if (!name || !email || !message) {
+            return res.status(400).json({ error: 'Name, email, and message are required' });
+        }
+
+        const newEntry = new Guestbook({
+            name,
+            email,
+            picture,
+            message,
+            likes: 0,
+            likedBy: [],
+            show: 'Y',
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        const savedEntry = await newEntry.save();
+        console.log('[GUESTBOOK] Entry created by:', email);
+        res.status(201).json(savedEntry);
+    } catch (err) {
+        console.error('[GUESTBOOK] Error creating entry:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update guestbook entry (only by author)
+app.put('/api/guestbook/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { message, userEmail } = req.body;
+
+        if (!userEmail) {
+            return res.status(400).json({ error: 'User email is required' });
+        }
+
+        const entry = await Guestbook.findById(id);
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        // Check if user is the author
+        if (entry.email !== userEmail) {
+            return res.status(403).json({ error: 'Unauthorized: Only author can update' });
+        }
+
+        if (message) entry.message = message;
+        entry.updatedAt = new Date();
+
+        const updatedEntry = await entry.save();
+        console.log('[GUESTBOOK] Entry updated by:', userEmail);
+        res.json(updatedEntry);
+    } catch (err) {
+        console.error('[GUESTBOOK] Error updating entry:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Delete guestbook entry (soft delete, only by author)
+app.delete('/api/guestbook/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userEmail } = req.body;
+
+        if (!userEmail) {
+            return res.status(400).json({ error: 'User email is required' });
+        }
+
+        const entry = await Guestbook.findById(id);
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        // Check if user is the author
+        if (entry.email !== userEmail) {
+            return res.status(403).json({ error: 'Unauthorized: Only author can delete' });
+        }
+
+        // Soft delete
+        entry.show = 'N';
+        entry.updatedAt = new Date();
+
+        await entry.save();
+        console.log('[GUESTBOOK] Entry deleted by:', userEmail);
+        res.json({ message: 'Entry deleted successfully' });
+    } catch (err) {
+        console.error('[GUESTBOOK] Error deleting entry:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Like/Unlike guestbook entry
+app.post('/api/guestbook/:id/like', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const entry = await Guestbook.findById(id);
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        // Initialize likedBy if it doesn't exist
+        if (!entry.likedBy) {
+            entry.likedBy = [];
+        }
+
+        // Check if user already liked (by email)
+        const likedIndex = entry.likedBy.indexOf(email);
+
+        if (likedIndex > -1) {
+            // Unlike: remove email from likedBy
+            entry.likedBy.splice(likedIndex, 1);
+        } else {
+            // Like: add email to likedBy
+            entry.likedBy.push(email);
+        }
+
+        // Update likes count based on likedBy array length
+        entry.likes = entry.likedBy.length;
+
+        await entry.save();
+        res.json({
+            likes: entry.likes,
+            likedBy: entry.likedBy,
+            isLiked: likedIndex === -1
+        });
+    } catch (err) {
+        console.error('[GUESTBOOK] Error liking entry:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Google OAuth Endpoint
 app.post('/api/auth/google', async (req, res) => {
     const { code } = req.body;

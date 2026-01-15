@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BlogPostModal } from '../components/BlogPostModal';
+import { LikeButton } from '../components/LikeButton';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import { API_URL } from '../utils/apiConfig';
 
@@ -622,12 +623,12 @@ export const Blog: React.FC = () => {
 
     return (
         <>
-            <div className="h-screen bg-white pt-32 pb-4 px-6 flex flex-col overflow-hidden">
+            <div className="h-screen bg-white pt-24 pb-4 px-6 flex flex-col overflow-hidden">
                 <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col min-h-0">
                     {/* Fixed Header */}
                     <div className="flex-shrink-0">
-                        <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">Tech & Bio</h2>
-                        <hr className="border-slate-100 mb-6" />
+                        <h2 className="text-4xl font-bold text-slate-900 mb-4 text-center">Tech & Bio</h2>
+                        <hr className="border-slate-100 mb-4" />
                     </div>
 
                     {loading ? (
@@ -743,7 +744,7 @@ export const Blog: React.FC = () => {
 
                             {/* Grid */}
                             <div className="flex-1 flex flex-col min-h-0 lg:overflow-y-auto scrollbar-hide">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20 lg:pb-0">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pb-20 lg:pb-10">
                                     {posts.map((post, i) => (
                                         <div key={post._id || i} className="group bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
                                             {/* Header */}
@@ -763,10 +764,11 @@ export const Blog: React.FC = () => {
                                                 {/* Footer with likes, date */}
                                                 <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
                                                     <div className="flex items-center gap-2">
-                                                        <span className={`text-xl ${isLikedByUser(post) ? 'text-red-500' : 'text-gray-400'}`}>
-                                                            {isLikedByUser(post) ? '❤️' : '🤍'}
-                                                        </span>
-                                                        <span className="font-medium text-slate-700">{post.likes || 0}</span>
+                                                        <LikeButton
+                                                            isLiked={isLikedByUser(post)}
+                                                            likeCount={post.likes || 0}
+                                                            onLike={(e) => handleLike(post._id, e)}
+                                                        />
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <span>{formatDate(post.createdAt)}</span>

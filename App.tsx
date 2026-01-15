@@ -182,7 +182,7 @@ const Layout: React.FC = () => {
               <Link to="/interests/data" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
                 Interests
               </Link>
-              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2">
+              <Link to="/contact/contactinfo" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2">
                 Contact
               </Link>
             </div>
@@ -226,9 +226,9 @@ const Layout: React.FC = () => {
             colorClass="text-[#FFA300] hover:text-[#FFD180]"
           />
           <LiquidTab
-            to="/contact"
+            to="/contact/contactinfo"
             label="Contact"
-            active={location.pathname === '/contact'}
+            active={location.pathname.startsWith('/contact')}
             colorClass="text-purple-500 hover:text-purple-300"
           />
         </div>
@@ -245,7 +245,8 @@ const Layout: React.FC = () => {
         <Route path="/blog" element={<Blog />} />
         <Route path="/interests" element={<Navigate to="/interests/data" replace />} />
         <Route path="/interests/:submenu" element={<Interests isAuthorized={isAuthorized} />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/contact" element={<Navigate to="/contact/contactinfo" replace />} />
+        <Route path="/contact/:tab" element={<Contact />} />
         <Route path="/strava/callback" element={<StravaCallback />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
