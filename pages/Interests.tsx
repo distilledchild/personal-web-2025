@@ -30,6 +30,7 @@ const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
 
 // Art museums interface and data
 interface ArtMuseum {
+    _id?: string;
     id: number;
     city: string;
     city_name?: string;
@@ -1019,7 +1020,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
 
                                                                     {/* Museum Pins - only show when expanded */}
                                                                     {isExpanded && (() => {
-                                                                        // Group museums by coordinates to avoid duplicate pins
+                                                                        // 1. Group museums by exact coordinates (backend data might have dupes or same-building museums)
                                                                         const groupedMuseums = stateMuseums.reduce<Record<string, ArtMuseum[]>>((acc, museum: ArtMuseum) => {
                                                                             if (!museum.coordinates) return acc;
                                                                             const key = `${museum.coordinates[0]},${museum.coordinates[1]}`;
@@ -1039,12 +1040,13 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                                                             const museumToOpen = museums.find((m: ArtMuseum) => m.artworks && m.artworks.length > 0) || museums[0];
 
                                                                             return (
-                                                                                <Marker key={museum.id} coordinates={museum.coordinates as [number, number]}>
+                                                                                <Marker key={museum._id || `museum-${coordKey}`} coordinates={museum.coordinates as [number, number]}>
                                                                                     <g
                                                                                         transform="scale(0.5) translate(-12, -24)"
                                                                                         onMouseEnter={() => setHoveredPin(pinId)}
                                                                                         onMouseLeave={() => setHoveredPin(null)}
                                                                                         onClick={() => handleMuseumClick(museumToOpen)}
+                                                                                        style={{ cursor: 'pointer' }}
                                                                                     >
                                                                                         <path
                                                                                             d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 6.12 8.5 15.5 8.5 15.5s8.5-9.38 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 11.75c-1.79 0-3.25-1.46-3.25-3.25S10.21 5.25 12 5.25s3.25 1.46 3.25 3.25-1.46 3.25-3.25 3.25z"
