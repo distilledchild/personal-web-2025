@@ -24,11 +24,11 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({ user, isAuthorized }) 
         country: ''
     });
 
-    // Fetch user's IP-based location
     useEffect(() => {
         const fetchUserLocation = async () => {
             try {
-                const response = await fetch('http://ip-api.com/json/?fields=status,city,regionName,country,lat,lon');
+                // Use backend proxy to avoid Mixed Content (HTTP vs HTTPS) issues
+                const response = await fetch(`${API_URL}/api/utils/geo`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.status === 'success') {
@@ -127,7 +127,7 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({ user, isAuthorized }) 
     };
 
     const handleSave = async () => {
-        if (!user || !contactInfo) return;
+        if (!user) return;
 
         try {
             let finalLatitude = undefined;
@@ -146,23 +146,36 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({ user, isAuthorized }) 
                 }
             }
 
-            const response = await fetch(`${API_URL}/api/contact/${contactInfo._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    Email: formData.Email,
-                    GitHub: formData.GitHub,
-                    LinkedIn: formData.LinkedIn,
-                    Location: {
-                        city: formData.city,
-                        state: formData.state,
-                        country: formData.country,
-                        latitude: finalLatitude,
-                        longitude: finalLongitude
-                    },
-                    userEmail: user.email
-                })
-            });
+            const payload = {
+                Email: formData.Email,
+                GitHub: formData.GitHub,
+                LinkedIn: formData.LinkedIn,
+                Location: {
+                    city: formData.city,
+                    state: formData.state,
+                    country: formData.country,
+                    latitude: finalLatitude,
+                    longitude: finalLongitude
+                },
+                userEmail: user.email
+            };
+
+            let response;
+            if (contactInfo && contactInfo._id) {
+                // Update existing
+                response = await fetch(`${API_URL}/api/contact/${contactInfo._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                // Create new
+                response = await fetch(`${API_URL}/api/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             if (response.ok) {
                 fetchContactInfo();

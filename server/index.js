@@ -109,7 +109,15 @@ const upload = multer({
 });
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
+    .then(async (connection) => {
+        console.log('Connected to MongoDB');
+        try {
+            const collections = await connection.connection.db.listCollections().toArray();
+            console.log('Available Collections:', collections.map(c => c.name));
+        } catch (e) {
+            console.error('Failed to list collections:', e);
+        }
+    })
     .catch(err => console.error('MongoDB connection error:', err));
 
 
@@ -321,8 +329,13 @@ const contactSchema = new mongoose.Schema({
         longitude: Number,
         ip: String,
         timezone: String
-    }
-}, { collection: 'CONTACT_INFO' });
+    },
+    // Support lowercase fallbacks for flexibility
+    email: String,
+    github: String,
+    linkedin: String,
+    location: Object
+}, { collection: 'CONTACT_INFO' }); // Explicitly set collection name
 
 const Contact = mongoose.model('Contact', contactSchema);
 
@@ -2024,12 +2037,183 @@ const memberSchema = new mongoose.Schema({
 const Member = mongoose.model('Member', memberSchema);
 
 // Get Contact Info
+// Get Contact Info
 app.get('/api/contact', async (req, res) => {
     try {
-        const contact = await Contact.findOne();
+        // Use lean() to get raw JSON, ensuring we see fields even if they don't match Schema case exactly
+        // Also look for ANY document that has an Email field (avoid empty ghost docs)
+        let contact = await Contact.findOne({
+            $or: [
+                { Email: { $exists: true, $ne: "" } },
+                { email: { $exists: true, $ne: "" } }
+            ]
+        }).lean();
+
+        // Fallback: If strict query failed, try generic findOne
+        if (!contact) {
+            contact = await Contact.findOne().lean();
+        }
+
+        console.log('[API] GET /api/contact raw result:', JSON.stringify(contact, null, 2));
+
+        if (contact) {
+            // Normalize keys: If strict TitleCase keys are missing, try to fill them from lowercase equivalents
+            // This handles cases where data was inserted manually or via scripts using lowercase conventions
+            if (!contact.Email && contact.email) contact.Email = contact.email;
+            if (!contact.GitHub && contact.github) contact.GitHub = contact.github;
+            if (!contact.LinkedIn && contact.linkedin) contact.LinkedIn = contact.linkedin;
+            if (!contact.Location && contact.location) contact.Location = contact.location;
+
+            // Ensure Location fields are also accessible if lowercase in DB
+            if (contact.Location) {
+                const loc = contact.Location;
+                if (!loc.city && loc.City) loc.city = loc.City; // Handle reverse case too just in case
+            }
+        } else {
+            console.log('[API] No contact info found in DB collection: CONTACT_INFO');
+        }
+
         res.json(contact);
     } catch (err) {
         console.error('Failed to fetch contact:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create Contact Info
+app.post('/api/contact', async (req, res) => {
+    try {
+        const { Email, GitHub, LinkedIn, Location, userEmail } = req.body;
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(userEmail)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const newContact = new Contact({
+            Email,
+            GitHub,
+            LinkedIn,
+            Location: Location || {}
+        });
+
+        // Duplicate Location Logic from PUT for consistency
+        // Ideally this should be a shared function
+        if (Location) {
+            // Check if location fields are empty (use IP geolocation)
+            const hasLocationData = Location.city && Location.state && Location.country;
+
+            if (!hasLocationData) {
+                // Get user's IP address
+                let userIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+                    req.headers['x-real-ip'] ||
+                    req.connection.remoteAddress ||
+                    req.socket.remoteAddress;
+
+                // Clean up IPv6 localhost format
+                if (userIp && (userIp === '::1' || userIp.includes('127.0.0.1') || userIp.startsWith('::ffff:'))) {
+                    // For localhost/development, use a default IP for testing
+                    console.log('Localhost detected, using public IP for geolocation test');
+                    userIp = ''; // Leave empty to let ip-api.com use the server's IP
+                }
+
+                // Try to get coordinates from IP geolocation API
+                try {
+                    const ipUrl = userIp ? `http://ip-api.com/json/${userIp}?fields=status,message,city,regionName,country,lat,lon,query,timezone` : 'http://ip-api.com/json/?fields=status,message,city,regionName,country,lat,lon,query,timezone';
+                    console.log('Fetching IP geolocation from:', ipUrl);
+
+                    const ipResponse = await fetch(ipUrl);
+                    if (ipResponse.ok) {
+                        const ipData = await ipResponse.json();
+                        console.log('IP Geolocation response:', ipData);
+
+                        if (ipData.status === 'success') {
+                            newContact.Location.latitude = ipData.lat;
+                            newContact.Location.longitude = ipData.lon;
+                            newContact.Location.ip = ipData.query;
+                            newContact.Location.city = ipData.city;
+                            newContact.Location.state = ipData.regionName;
+                            newContact.Location.country = ipData.country;
+                            newContact.Location.timezone = ipData.timezone;
+                            console.log('IP geolocation successful:', newContact.Location);
+                        } else {
+                            console.log('IP geolocation failed:', ipData.message);
+                        }
+                    }
+                } catch (ipErr) {
+                    console.error('Failed to get IP geolocation:', ipErr);
+                }
+            } else if (!Location.latitude || !Location.longitude) {
+                // Has city/state/country but no coordinates - use geocoding
+                try {
+                    const address = `${Location.city}, ${Location.state}, ${Location.country}`;
+                    const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+                    console.log('Geocoding address:', address);
+
+                    const geocodeResponse = await fetch(geocodeUrl, {
+                        headers: { 'User-Agent': 'PersonalWebsite/1.0' }
+                    });
+
+                    if (geocodeResponse.ok) {
+                        const geocodeData = await geocodeResponse.json();
+                        console.log('Geocoding response:', geocodeData);
+
+                        if (geocodeData && geocodeData.length > 0) {
+                            newContact.Location.latitude = parseFloat(geocodeData[0].lat);
+                            newContact.Location.longitude = parseFloat(geocodeData[0].lon);
+                            console.log('Geocoding successful:', { latitude: newContact.Location.latitude, longitude: newContact.Location.longitude });
+
+                            // Fetch timezone
+                            try {
+                                const tzResponse = await fetch(`https://timeapi.io/api/TimeZone/coordinate?latitude=${newContact.Location.latitude}&longitude=${newContact.Location.longitude}`);
+                                if (tzResponse.ok) {
+                                    const tzData = await tzResponse.json();
+                                    newContact.Location.timezone = tzData.timeZone;
+                                }
+                            } catch (tzErr) {
+                                console.error('Failed to fetch timezone:', tzErr);
+                            }
+                        }
+                    }
+                } catch (geocodeErr) {
+                    console.error('Failed to geocode address:', geocodeErr);
+                }
+            }
+        }
+
+        await newContact.save();
+        res.status(201).json(newContact);
+    } catch (err) {
+        console.error('Failed to create contact:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Proxy Endpoint for Client Geolocation (Avoids Mixed Content Error)
+app.get('/api/utils/geo', async (req, res) => {
+    try {
+        // Get user's IP address
+        let userIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+            req.headers['x-real-ip'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress;
+
+        // Clean up IPv6/Localhost
+        if (userIp && (userIp === '::1' || userIp.includes('127.0.0.1') || userIp.startsWith('::ffff:'))) {
+            userIp = ''; // Will default to server's IP if empty
+        }
+
+        // Call IP-API (HTTP is allowed server-side)
+        const ipUrl = userIp
+            ? `http://ip-api.com/json/${userIp}?fields=status,city,regionName,country,lat,lon`
+            : 'http://ip-api.com/json/?fields=status,city,regionName,country,lat,lon';
+
+        const response = await fetch(ipUrl);
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        console.error('[API] Geo proxy error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
