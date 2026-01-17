@@ -27,6 +27,7 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
         description: '',
         category: 'WEB' as 'ME' | 'WEB'
     });
+    const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
 
     useLockBodyScroll(isModalOpen);
 
@@ -148,6 +149,28 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
         });
     };
 
+    // Group milestones by YYYY-MM
+    const groupedMilestones = React.useMemo(() => {
+        const groups: { [key: string]: Milestone[] } = {};
+        milestones.forEach(m => {
+            const d = new Date(m.date);
+            const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(m);
+        });
+        return groups;
+    }, [milestones]);
+
+    const sortedGroupKeys = React.useMemo(() => {
+        return Object.keys(groupedMilestones).sort().reverse();
+    }, [groupedMilestones]);
+
+    const toggleGroup = (key: string) => {
+        setExpandedGroups(prev =>
+            prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+        );
+    };
+
     return (
         <div className="animate-fadeIn relative min-h-[400px]">
             {/* Admin Add Button - Fixed above Login */}
@@ -166,81 +189,108 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
             {/* Vertical Line */}
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-300 -translate-x-1/2"></div>
 
-            {/* Milestones - Reversed to show most recent first */}
-            <div className="space-y-12 py-12">
-                {[...milestones].reverse().map((milestone) => (
-                    <div key={milestone._id} className="relative flex items-center justify-center w-full group">
-                        {/* Center Dot */}
-                        <div className={`
-                            absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-4 border-white z-10
-                            ${milestone.category === 'ME' ? 'bg-slate-300' : 'bg-slate-300'}
-                        `}></div>
+            {/* Milestones Groups */}
+            <div className="py-12 space-y-8">
+                {sortedGroupKeys.map(key => {
+                    const group = groupedMilestones[key];
+                    // Reverse to show newest first within the month
+                    const items = [...group].reverse();
 
-                        {/* Left Side (ME) */}
-                        <div className="w-1/2 pr-12 flex justify-end">
-                            {milestone.category === 'ME' && (
+                    // Split counts
+                    const meCount = group.filter(m => m.category === 'ME').length;
+                    const webCount = group.filter(m => m.category === 'WEB').length;
+
+                    const isExpanded = expandedGroups.includes(key);
+
+                    const [year, month] = key.split('-');
+                    const dateObj = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
+                    const monthName = dateObj.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+                    const displayDate = `${monthName} ${year}`;
+
+                    return (
+                        <div key={key} className="relative w-full">
+                            {/* Group Header */}
+                            <div className="flex justify-center mb-8 relative z-20">
                                 <div
-                                    onClick={() => isAuthorized && openMilestoneModal(milestone)}
+                                    onClick={() => toggleGroup(key)}
                                     className={`
-                                        relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
-                                        ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
+                                        cursor-pointer flex items-center bg-white rounded-full border border-slate-200 shadow-sm hover:shadow-md transition-all py-1 gap-4 select-none group/header
+                                        ${meCount > 0 ? 'pl-1' : 'pl-6'} 
+                                        ${webCount > 0 ? 'pr-1' : 'pr-6'}
                                     `}
                                 >
-                                    {/* Horizontal Connector */}
-                                    <div className="absolute top-1/2 -right-12 w-12 h-0.5 bg-slate-300 -translate-y-1/2"></div>
-
-                                    {/* Responsive Content Layout */}
-                                    <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
-                                        <span className="text-xs font-bold text-slate-400 mb-2 lg:mb-0 lg:whitespace-nowrap">
-                                            {(() => {
-                                                const d = new Date(milestone.date);
-                                                const year = d.getUTCFullYear();
-                                                const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
-                                                return `${month} ${year}`;
-                                            })()}
-                                        </span>
-                                        <div className="lg:border-l lg:border-slate-300 lg:pl-4 flex-1">
-                                            <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
-                                            <p className="text-slate-600 text-sm whitespace-pre-wrap">{renderDescriptionWithLinks(milestone.description)}</p>
+                                    {meCount > 0 && (
+                                        <div className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-md font-bold text-xl group-hover/header:bg-blue-600 transition-colors">
+                                            {meCount}
                                         </div>
-                                    </div>
+                                    )}
+
+                                    <span className="font-bold text-slate-600 text-lg">{displayDate}</span>
+
+                                    {webCount > 0 && (
+                                        <div className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-md font-bold text-xl group-hover/header:bg-blue-600 transition-colors">
+                                            {webCount}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Expanded Items */}
+                            {isExpanded && (
+                                <div className="space-y-12 animate-fadeIn pb-12">
+                                    {items.map((milestone) => (
+                                        <div key={milestone._id} className="relative flex items-center justify-center w-full group">
+                                            {/* Center Dot */}
+                                            <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-4 border-white z-10 bg-slate-300"></div>
+
+                                            {/* Left Side (ME) */}
+                                            <div className="w-1/2 pr-12 flex justify-end">
+                                                {milestone.category === 'ME' && (
+                                                    <div
+                                                        onClick={() => isAuthorized && openMilestoneModal(milestone)}
+                                                        className={`
+                                                             relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
+                                                             ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
+                                                         `}
+                                                    >
+                                                        <div className="absolute top-1/2 -right-12 w-12 h-0.5 bg-slate-300 -translate-y-1/2"></div>
+                                                        <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
+                                                            <div className="lg:border-l lg:border-transparent lg:pl-0 flex-1">
+                                                                <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
+                                                                <p className="text-slate-600 text-sm whitespace-pre-wrap">{renderDescriptionWithLinks(milestone.description)}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Right Side (WEB) */}
+                                            <div className="w-1/2 pl-12 flex justify-start">
+                                                {milestone.category === 'WEB' && (
+                                                    <div
+                                                        onClick={() => isAuthorized && openMilestoneModal(milestone)}
+                                                        className={`
+                                                             relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
+                                                             ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
+                                                         `}
+                                                    >
+                                                        <div className="absolute top-1/2 -left-12 w-12 h-0.5 bg-slate-300 -translate-y-1/2"></div>
+                                                        <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
+                                                            <div className="lg:border-l lg:border-transparent lg:pl-0 flex-1">
+                                                                <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
+                                                                <p className="text-slate-600 text-sm whitespace-pre-wrap">{renderDescriptionWithLinks(milestone.description)}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
-
-                        {/* Right Side (WEB) */}
-                        <div className="w-1/2 pl-12 flex justify-start">
-                            {milestone.category === 'WEB' && (
-                                <div
-                                    onClick={() => isAuthorized && openMilestoneModal(milestone)}
-                                    className={`
-                                        relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
-                                        ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
-                                    `}
-                                >
-                                    {/* Horizontal Connector */}
-                                    <div className="absolute top-1/2 -left-12 w-12 h-0.5 bg-slate-300 -translate-y-1/2"></div>
-
-                                    {/* Responsive Content Layout */}
-                                    <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
-                                        <span className="text-xs font-bold text-slate-400 mb-2 lg:mb-0 lg:whitespace-nowrap">
-                                            {(() => {
-                                                const d = new Date(milestone.date);
-                                                const year = d.getUTCFullYear();
-                                                const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
-                                                return `${month} ${year}`;
-                                            })()}
-                                        </span>
-                                        <div className="lg:border-l lg:border-slate-300 lg:pl-4 flex-1">
-                                            <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
-                                            <p className="text-slate-600 text-sm whitespace-pre-wrap">{renderDescriptionWithLinks(milestone.description)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Modal */}
