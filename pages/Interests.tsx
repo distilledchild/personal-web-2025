@@ -177,6 +177,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     const itemsPerPage = 5;
 
     const [artMuseums, setArtMuseums] = useState<ArtMuseum[]>([]);
+    const [loadingArtworks, setLoadingArtworks] = useState(false);
     const [activeDataTab, setActiveDataTab] = useState<'urban' | 'weather' | 'fc26'>('urban');
 
     useEffect(() => {
@@ -209,10 +210,32 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     };
 
 
-    // Handler for museum pin click
+    // Handler for museum pin click - loads artworks lazily
     const handleMuseumClick = async (museum: ArtMuseum) => {
-        // Artworks are already loaded from backend API
+        // Set the museum first to show the modal immediately
         setSelectedMuseum(museum);
+
+        // If artworks not yet loaded, fetch them
+        if (!museum.artworks || museum.artworks.length === 0) {
+            setLoadingArtworks(true);
+            try {
+                const response = await fetch(`${API_URL}/api/interests/art-museums/${museum.museum_code}/artworks`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Update the museum with loaded artworks
+                    const updatedMuseum = { ...museum, artworks: data.artworks };
+                    setSelectedMuseum(updatedMuseum);
+                    // Also update in artMuseums state for caching
+                    setArtMuseums(prev => prev.map(m =>
+                        m.museum_code === museum.museum_code ? updatedMuseum : m
+                    ));
+                }
+            } catch (error) {
+                console.error('Failed to fetch artworks:', error);
+            } finally {
+                setLoadingArtworks(false);
+            }
+        }
     };
 
     useEffect(() => {
@@ -1332,7 +1355,12 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                             </div>
                                         </div>
                                     );
-                                }) : (
+                                }) : loadingArtworks ? (
+                                    <div className="flex flex-col items-center justify-center py-12">
+                                        <div className="w-8 h-8 border-4 border-slate-300 border-t-[#FFA300] rounded-full animate-spin mb-4"></div>
+                                        <p className="text-slate-500">Loading artworks...</p>
+                                    </div>
+                                ) : (
                                     <p className="text-slate-500">No artworks available</p>
                                 )}
                             </div>

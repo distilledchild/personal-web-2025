@@ -179,25 +179,8 @@ app.get('/api/interests/art-museums', async (req, res) => {
                 console.log(`City not found for code: ${cityCode}, museum: ${museum.museum_name}`);
             }
 
-            // Load artworks from GCS bucket
-            let artworks = [];
-
-            if (museum.museum_code) {
-                try {
-                    // Generate signed URLs for all images in museum folder
-                    artworks = await generateSignedUrlsForPrefix(
-                        storage,
-                        GCS_BUCKET_NAME,
-                        `interests/art/${museum.museum_code}/`,
-                        /\.(png|jpg|jpeg|gif|webp)$/i,
-                        60 // 1 hour expiry
-                    );
-
-                    console.log(`Loaded ${artworks.length} artworks for ${museum.museum_code} from GCS (signed URLs)`);
-                } catch (error) {
-                    console.log(`Error reading GCS bucket for ${museum.museum_code}:`, error.message);
-                }
-            }
+            // Note: Artworks are loaded lazily via /api/interests/art-museums/:code/artworks endpoint
+            // This improves initial page load performance significantly
 
             return {
                 ...museum.toObject(),
@@ -208,13 +191,41 @@ app.get('/api/interests/art-museums', async (req, res) => {
                     ? [cityData.longitude, cityData.latitude]
                     : null,
                 fips_code: stateData ? stateData.fips_code : null,
-                artworks: artworks
+                artworks: [] // Loaded lazily on museum click
             };
         }));
 
         res.json(enrichedMuseums);
     } catch (err) {
         console.error('Error fetching art museums:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get Artworks for a specific museum (Lazy Loading)
+app.get('/api/interests/art-museums/:code/artworks', async (req, res) => {
+    try {
+        const { code } = req.params;
+
+        if (!code) {
+            return res.status(400).json({ error: 'Museum code is required' });
+        }
+
+        const GCS_BUCKET_NAME = process.env.GCS_BUCKET_NAME || 'distilledchild';
+
+        // Generate signed URLs for all images in museum folder
+        const artworks = await generateSignedUrlsForPrefix(
+            storage,
+            GCS_BUCKET_NAME,
+            `interests/art/${code}/`,
+            /\.(png|jpg|jpeg|gif|webp)$/i,
+            60 // 1 hour expiry
+        );
+
+        console.log(`[ART-MUSEUM] Loaded ${artworks.length} artworks for ${code}`);
+        res.json({ artworks });
+    } catch (err) {
+        console.error('[ART-MUSEUM] Error fetching artworks:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

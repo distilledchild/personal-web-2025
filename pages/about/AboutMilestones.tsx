@@ -165,6 +165,13 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
         return Object.keys(groupedMilestones).sort().reverse();
     }, [groupedMilestones]);
 
+    // Automatically expand the most recent (first) group on load
+    useEffect(() => {
+        if (sortedGroupKeys.length > 0 && expandedGroups.length === 0) {
+            setExpandedGroups([sortedGroupKeys[0]]);
+        }
+    }, [sortedGroupKeys]);
+
     const toggleGroup = (key: string) => {
         setExpandedGroups(prev =>
             prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
