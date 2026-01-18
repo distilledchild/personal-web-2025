@@ -1,7 +1,80 @@
 import React from 'react';
-import { Plus, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog } from 'lucide-react';
+import { Plus, Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, Pin, PinOff } from 'lucide-react';
+import {
+    DndContext,
+    DragOverlay,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragStartEvent,
+    DragOverEvent,
+    DragEndEvent,
+    defaultDropAnimationSideEffects,
+    DropAnimation,
+    TouchSensor,
+    useDroppable
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { API_URL } from '../utils/apiConfig';
+
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
+import { useLocation } from 'react-router-dom';
+import { Timer, X, Play, Pause, RotateCcw } from 'lucide-react';
+
+// Shared Shadow Style
+export const floatingShadowStyle = { boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)' };
+
+// ============================================================================
+// FLOATING ACTION BUTTON COMPONENT
+// ============================================================================
+export interface FloatingActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    positionClassName?: string;
+    colorClassName?: string;
+    badgeCount?: number;
+}
+
+export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
+    positionClassName = '',
+    colorClassName = 'bg-white',
+    badgeCount,
+    children,
+    className,
+    style,
+    ...props
+}) => {
+    return (
+        <button
+            className={`
+                w-[58px] h-[58px] rounded-full flex items-center justify-center 
+                transition-all duration-300 hover:scale-105 z-[60] overflow-hidden
+                border border-slate-100
+                ${positionClassName}
+                ${colorClassName}
+                ${className || ''}
+            `}
+            style={{ ...floatingShadowStyle, ...style }}
+            {...props}
+        >
+            <div className="relative flex items-center justify-center w-full h-full">
+                {children}
+                {badgeCount !== undefined && badgeCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-slate-500">
+                        {badgeCount}
+                    </span>
+                )}
+            </div>
+        </button>
+    );
+};
 
 // ============================================================================
 // ANALOG CLOCK COMPONENT
@@ -126,11 +199,10 @@ export const WeatherWidget: React.FC = () => {
         return () => clearInterval(weatherInterval);
     }, []);
 
-    const fixedClass = "fixed bottom-[21rem] left-6 w-14 h-14 bg-white rounded-full transition-all hover:scale-110 flex items-center justify-center z-[100] cursor-pointer group";
-    const strongShadow = { boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 10px 20px -8px rgba(0, 0, 0, 0.4)' };
+    const fixedClass = "fixed bottom-[21rem] left-6 w-[58px] h-[58px] bg-white rounded-full transition-all hover:scale-110 flex items-center justify-center z-[100] cursor-pointer group border border-slate-100";
 
     if (loading) return (
-        <div className={fixedClass} style={strongShadow}>
+        <div className={fixedClass} style={floatingShadowStyle}>
             <div className="w-6 h-6 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin"></div>
         </div>
     );
@@ -156,7 +228,7 @@ export const WeatherWidget: React.FC = () => {
     return (
         <div
             className={fixedClass}
-            style={strongShadow}
+            style={floatingShadowStyle}
             title={`${locationName} Weather`}
         >
             <div className="flex flex-col items-center justify-center">
@@ -175,6 +247,103 @@ export const WeatherWidget: React.FC = () => {
 // ============================================================================
 // KANBAN BOARD COMPONENT
 // ============================================================================
+interface SortableTodoItemProps {
+    todo: any;
+    onTodoClick: (todo: any) => void;
+    getPriorityColor: (priority: string) => string;
+    formatDate: (dateString: string) => string;
+    onPinClick: (todoId: string, isPinned: boolean) => void;
+    isAuthorized?: boolean;
+    pinnedColorClasses?: {
+        card: string;
+        button: string;
+    };
+}
+
+export const SortableTodoItem: React.FC<SortableTodoItemProps> = ({
+    todo,
+    onTodoClick,
+    getPriorityColor,
+    formatDate,
+    onPinClick,
+    isAuthorized,
+    pinnedColorClasses
+}) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: todo._id, disabled: todo.pinned });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.3 : 1
+    };
+
+    const isStrikethrough = todo.status === 'completed' || todo.status === 'cancelled';
+
+    // Default Purple Theme fallback
+    const defaultPinnedCard = 'border-purple-200 bg-purple-50/30';
+    const defaultPinnedBtn = 'text-purple-600 bg-purple-100 hover:bg-purple-200';
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            onClick={() => onTodoClick(todo)}
+            className={`
+                bg-white border rounded-xl p-4 cursor-grab active:cursor-grabbing 
+                hover:shadow-md transition-all duration-200 hover:scale-[1.02] relative group
+                ${todo.pinned
+                    ? (pinnedColorClasses?.card || defaultPinnedCard)
+                    : 'border-slate-200'
+                }
+            `}
+        >
+            {isAuthorized && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onPinClick(todo._id, !todo.pinned);
+                    }}
+                    className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors z-10 opacity-0 group-hover:opacity-100 
+                        ${todo.pinned
+                            ? `opacity-100 ${pinnedColorClasses?.button || defaultPinnedBtn}`
+                            : 'text-slate-400 hover:bg-slate-100'
+                        }
+                    `}
+                    title={todo.pinned ? "Unpin" : "Pin to top"}
+                >
+                    {todo.pinned ? <PinOff size={14} /> : <Pin size={14} />}
+                </button>
+            )}
+
+            <h4 className={`font-bold text-slate-900 mb-2 text-sm break-all pr-6 ${isStrikethrough ? 'line-through text-slate-400' : ''}`}>
+                {todo.title}
+            </h4>
+            <p className={`text-xs text-slate-600 mb-3 line-clamp-2 ${isStrikethrough ? 'line-through text-slate-400' : ''}`}>
+                {todo.description}
+            </p>
+            <div className="flex items-center justify-between text-xs">
+                <span className={`font-bold capitalize ${getPriorityColor(todo.priority)}`}>
+                    {todo.priority}
+                </span>
+                <span className="text-slate-500">
+                    {formatDate(todo.due_date)}
+                </span>
+            </div>
+            {/* Show priority_no for debugging if needed, or hide it */}
+            {/* <div className="text-[10px] text-slate-300 mt-1">Order: {todo.priority_no}</div> */}
+        </div>
+    );
+};
+
 export interface KanbanBoardProps {
     todos: any[];
     projects: any[];
@@ -185,6 +354,8 @@ export interface KanbanBoardProps {
     getPriorityColor: (priority: string) => string;
     formatDate: (dateString: string) => string;
     isAuthorized: boolean;
+    onPinClick: (todoId: string, isPinned: boolean) => void;
+    onReorderTodos: (todos: any[]) => void;
 }
 
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({
@@ -196,154 +367,298 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     onUpdateStatus,
     getPriorityColor,
     formatDate,
-    isAuthorized
+    isAuthorized,
+    onPinClick,
+    onReorderTodos
 }) => {
-    const [draggedTodoId, setDraggedTodoId] = React.useState<string | null>(null);
-    const [dragOverColumn, setDragOverColumn] = React.useState<string | null>(null);
+    const [activeId, setActiveId] = React.useState<string | null>(null);
 
-    // Changed "cancelled" to "project" as first column
+    // Columns config
+    // Columns config
     const columns = [
-        { id: 'project', title: 'Project', color: 'bg-purple-50 border-purple-200', isProject: true },
-        { id: 'pending', title: 'Pending', color: 'bg-slate-50 border-slate-200', isProject: false },
-        { id: 'in_progress', title: 'In Progress', color: 'bg-blue-50 border-blue-200', isProject: false },
-        { id: 'completed', title: 'Completed', color: 'bg-green-50 border-green-200', isProject: false }
+        {
+            id: 'project',
+            title: 'Project',
+            color: 'bg-purple-50 border-purple-200',
+            isProject: true
+        },
+        {
+            id: 'pending',
+            title: 'Pending',
+            color: 'bg-slate-50 border-slate-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-slate-300 bg-slate-100',
+                button: 'text-slate-700 bg-slate-200 hover:bg-slate-300'
+            }
+        },
+        {
+            id: 'in_progress',
+            title: 'In Progress',
+            color: 'bg-blue-50 border-blue-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-blue-300 bg-blue-100',
+                button: 'text-blue-700 bg-blue-200 hover:bg-blue-300'
+            }
+        },
+        {
+            id: 'completed',
+            title: 'Completed',
+            color: 'bg-green-50 border-green-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-green-300 bg-green-100',
+                button: 'text-green-700 bg-green-200 hover:bg-green-300'
+            }
+        }
     ];
 
-    const getTodosByStatus = (status: string) => {
-        return todos.filter(todo => todo.status === status);
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+        useSensor(TouchSensor)
+    );
+
+    // Helper to get todos for a column, sorted properly
+    const getTodosByStatus = (status: string) => todos.filter(todo => todo.status === status);
+
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveId(event.active.id as string);
     };
 
-    const handleDragStart = (e: React.DragEvent, todoId: string) => {
-        setDraggedTodoId(todoId);
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', todoId);
-    };
+    const handleDragOver = (event: DragOverEvent) => {
+        const { active, over } = event;
+        if (!over) return;
 
-    const handleDragOver = (e: React.DragEvent, columnId: string) => {
-        e.preventDefault();
-        // Don't allow dropping on project column
-        if (columnId !== 'project') {
-            setDragOverColumn(columnId);
+        const activeId = active.id;
+        const overId = over.id;
+
+        // Find items
+        const activeTodo = todos.find(t => t._id === activeId);
+        const overTodo = todos.find(t => t._id === overId);
+
+        if (!activeTodo) return;
+
+        // 1. Moving over a column container (empty column)
+        const overColumnId = columns.find(c => c.id === overId)?.id;
+        if (overColumnId && activeTodo.status !== overColumnId && !columns.find(c => c.id === overId)?.isProject) {
+            // Optimistic update: Change status to new column
+            // We can't update 'todos' prop directly, but we rely on handleDragEnd to commit.
+            // For smooth visual, dnd-kit handles it via strategy if items are in same SortableContext.
+            // But here items are in different SortableContexts (columns).
+            // We'll let handleDragEnd handle the status change.
+            return;
+        }
+
+        // 2. Moving over another item in a DIFFERENT column
+        if (overTodo && activeTodo.status !== overTodo.status) {
+            // Also handled in dragEnd
+            return;
         }
     };
 
-    const handleDrop = (e: React.DragEvent, status: string) => {
-        e.preventDefault();
-        setDragOverColumn(null);
-        // Don't allow dropping on project column
-        if (status === 'project') return;
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        setActiveId(null);
 
-        const todoId = draggedTodoId;
-        if (todoId) {
-            onUpdateStatus(todoId, status);
+        if (!over) return;
+
+        const activeId = active.id as string;
+        const overId = over.id as string;
+
+        const activeTodo = todos.find(t => t._id === activeId);
+        if (!activeTodo) return;
+
+        // Case A: Dropped on a Column (Empty or not) -> Change Status
+        const overColumn = columns.find(c => c.id === overId);
+        if (overColumn) {
+            if (!overColumn.isProject && activeTodo.status !== overColumn.id) {
+                onUpdateStatus(activeId, overColumn.id);
+            }
+            return;
         }
-        setDraggedTodoId(null);
+
+        // Case B: Dropped on another Todo -> Reorder or Change Status
+        const overTodo = todos.find(t => t._id === overId);
+        if (overTodo) {
+            // B1: Different Status -> Change Status
+            if (activeTodo.status !== overTodo.status) {
+                onUpdateStatus(activeId, overTodo.status);
+            }
+            // B2: Same Status -> Reorder
+            else {
+                if (activeId !== overId) {
+                    const status = activeTodo.status;
+                    // Get all todos in this column (Filtered)
+                    const columnTodos = getTodosByStatus(status);
+
+                    // Separate Pinned and Unpinned
+                    const pinnedTodos = columnTodos.filter(t => t.pinned);
+                    const unpinnedTodos = columnTodos.filter(t => !t.pinned);
+
+                    // We only reorder unpinned todos (since pinned are disabled/filtered from SortableContext in usage below)
+                    // Wait, if pinned are disabled, they can't be 'over' targets? 
+                    // No, disabled items can still be droppable targets unless we filter them out of SortableContext items.
+                    // We should invoke reorder on Unpinned list mainly.
+
+                    const oldIndex = unpinnedTodos.findIndex(t => t._id === activeId);
+                    const newIndex = unpinnedTodos.findIndex(t => t._id === overId);
+
+                    if (oldIndex !== -1 && newIndex !== -1) {
+                        const newOrder = arrayMove(unpinnedTodos, oldIndex, newIndex);
+
+                        // Assign new priorities: 1 based
+                        // But we must preserve the '0' for pinned items? 
+                        // No, pinned items are separated.
+                        // We update priority_no for unpinned items.
+                        const updates = newOrder.map((todo, index) => ({
+                            ...todo,
+                            priority_no: index + 1
+                        }));
+
+                        // Call handler
+                        onReorderTodos(updates);
+                    }
+                }
+            }
+        }
     };
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 min-h-full">
-            {columns.map(column => {
-                const isDragOver = dragOverColumn === column.id;
-
-                return (
-                    <div
-                        key={column.id}
-                        className={`flex flex-col rounded-xl transition-colors duration-200 ${!column.isProject && isDragOver ? 'bg-slate-100 ring-2 ring-blue-400 ring-opacity-50' : ''}`}
-                        onDragOver={(e) => handleDragOver(e, column.id)}
-                        onDrop={(e) => handleDrop(e, column.id)}
-                    >
-                        <div className={`${column.color} border-2 rounded-xl p-4 mb-3`}>
-                            <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center justify-between flex-wrap gap-2">
-                                <span>{column.title}</span>
-                                <span className="text-xs bg-white px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    {column.isProject
-                                        ? (projects || []).filter(p => p.status === 'ongoing' || p.status === 'paused').length
-                                        : getTodosByStatus(column.id).length}
-                                </span>
-                            </h3>
-                        </div>
-
-                        <div className="flex-1 space-y-3 p-2">
-                            {column.isProject ? (
-                                // Project Column
-                                <>
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+        >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 min-h-full">
+                {columns.map(column => {
+                    if (column.isProject) {
+                        // Project Column (No DnD)
+                        return (
+                            <div key={column.id} className="flex flex-col rounded-xl">
+                                <div className={`${column.color} border-2 rounded-xl p-4 mb-3`}>
+                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center justify-between flex-wrap gap-2">
+                                        <span>{column.title}</span>
+                                        <span className="text-xs bg-white px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            {(projects || []).filter(p => p.status === 'ongoing' || p.status === 'paused').length}
+                                        </span>
+                                    </h3>
+                                </div>
+                                <div className="flex-1 space-y-3 p-2">
                                     {(projects || []).filter(p => p.status === 'ongoing' || p.status === 'paused').map(project => (
                                         <div
                                             key={project._id}
                                             onClick={() => onProjectClick(project)}
-                                            className={`
-                                                ${column.color} border rounded-xl p-4 cursor-pointer
-                                                hover:shadow-md transition-all duration-200 hover:scale-[1.02]
-                                            `}
+                                            className={`${column.color} border rounded-xl p-4 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]`}
                                         >
-                                            <h4 className="font-bold text-slate-900 text-sm break-all">
-                                                {project.project_name}
-                                            </h4>
+                                            <h4 className="font-bold text-slate-900 text-sm break-all">{project.project_name}</h4>
                                         </div>
                                     ))}
-                                    {/* Add Project Button - Always visible for authorized users */}
                                     {isAuthorized && (
-                                        <div
-                                            onClick={onAddProjectClick}
-                                            className={`
-                                                ${column.color} border-2 border-dashed rounded-xl p-4 cursor-pointer
-                                                hover:shadow-md transition-all duration-200 hover:scale-[1.02]
-                                                flex items-center justify-center min-h-[100px]
-                                            `}
-                                        >
+                                        <div onClick={onAddProjectClick} className={`${column.color} border-2 border-dashed rounded-xl p-4 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02] flex items-center justify-center min-h-[100px]`}>
                                             <Plus className="w-8 h-8 text-purple-400" />
                                         </div>
                                     )}
-                                </>
-                            ) : (
-                                // TODO Columns
-                                <>
-                                    {getTodosByStatus(column.id).map(todo => {
-                                        const isStrikethrough = todo.status === 'completed' || todo.status === 'cancelled';
-                                        const isDragging = draggedTodoId === todo._id;
+                                </div>
+                            </div>
+                        );
+                    }
 
-                                        return (
-                                            <div
+                    // Todo Column
+                    const columnTodos = getTodosByStatus(column.id);
+                    const pinnedTodos = columnTodos.filter(t => t.pinned);
+                    const unpinnedTodos = columnTodos.filter(t => !t.pinned);
+
+                    return (
+                        <div key={column.id} className="flex flex-col rounded-xl">
+                            {/* Droppable Container for Empty Column */}
+                            {/* We attach droppable to the whole column div or a specific area? */}
+                            {/* Actually dnd-kit SortableContext handles items. If empty, we need a specific Droppable area. */}
+                            {/* For simplicity we rely on items. If empty, we can make the container droppable using useDroppable in a wrapper. */}
+                            {/* But here we just use activeId logic in onDragEnd to detect column drop. */}
+                            <DroppableColumn id={column.id}>
+                                <div className={`${column.color} border-2 rounded-xl p-4 mb-3`}>
+                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider flex items-center justify-between flex-wrap gap-2">
+                                        <span>{column.title}</span>
+                                        <span className="text-xs bg-white px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            {columnTodos.length}
+                                        </span>
+                                    </h3>
+                                </div>
+
+                                <div className="flex-1 space-y-3 p-2 min-h-[200px]">
+                                    {/* Pinned Items (Static) */}
+                                    {pinnedTodos.length > 0 && (
+                                        <div className="mb-4 space-y-3">
+                                            {pinnedTodos.map(todo => (
+                                                <SortableTodoItem
+                                                    key={todo._id}
+                                                    todo={todo}
+                                                    onTodoClick={onTodoClick}
+                                                    getPriorityColor={getPriorityColor}
+                                                    formatDate={formatDate}
+                                                    onPinClick={onPinClick}
+                                                    isAuthorized={isAuthorized}
+                                                    pinnedColorClasses={(column as any).pinnedColorClasses}
+                                                />
+                                            ))}
+                                            <div className="border-b border-slate-200" />
+                                        </div>
+                                    )}
+
+                                    {/* Sortable Unpinned Items */}
+                                    <SortableContext
+                                        items={unpinnedTodos.map(t => t._id)}
+                                        strategy={verticalListSortingStrategy}
+                                        id={column.id} // Important for distinguishing contexts
+                                    >
+                                        {unpinnedTodos.map(todo => (
+                                            <SortableTodoItem
                                                 key={todo._id}
-                                                draggable
-                                                onDragStart={(e) => handleDragStart(e, todo._id)}
-                                                onClick={() => onTodoClick(todo)}
-                                                className={`
-                                                    ${column.color} border rounded-xl p-4 cursor-grab active:cursor-grabbing 
-                                                    hover:shadow-md transition-all duration-200 hover:scale-[1.02]
-                                                    ${isDragging ? 'opacity-50 scale-95' : 'opacity-100'}
-                                                `}
-                                            >
-                                                <h4 className={`font-bold text-slate-900 mb-2 text-sm break-all ${isStrikethrough ? 'line-through text-slate-400' : ''}`}>
-                                                    {todo.title}
-                                                </h4>
-                                                <p className={`text-xs text-slate-600 mb-3 line-clamp-2 ${isStrikethrough ? 'line-through text-slate-400' : ''}`}>
-                                                    {todo.description}
-                                                </p>
-                                                <div className="flex items-center justify-between text-xs">
-                                                    <span className={`font-bold capitalize ${getPriorityColor(todo.priority)}`}>
-                                                        {todo.priority}
-                                                    </span>
-                                                    <span className="text-slate-500">
-                                                        {formatDate(todo.due_date)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {getTodosByStatus(column.id).length === 0 && (
+                                                todo={todo}
+                                                onTodoClick={onTodoClick}
+                                                getPriorityColor={getPriorityColor}
+                                                formatDate={formatDate}
+                                                onPinClick={onPinClick}
+                                                isAuthorized={isAuthorized}
+                                                pinnedColorClasses={(column as any).pinnedColorClasses}
+                                            />
+                                        ))}
+                                    </SortableContext>
+
+                                    {columnTodos.length === 0 && (
                                         <div className="text-center text-slate-400 text-sm py-8 border-2 border-dashed border-slate-200 rounded-xl">
                                             Drop items here
                                         </div>
                                     )}
-                                </>
-                            )}
+                                </div>
+                            </DroppableColumn>
                         </div>
+                    );
+                })}
+            </div>
+
+            <DragOverlay>
+                {activeId ? (
+                    <div className="bg-white border border-blue-400 rounded-xl p-4 shadow-xl opacity-90 scale-105 transform rotate-2 cursor-grabbing w-[300px]">
+                        {/* Render a simple preview */}
+                        <h4 className="font-bold text-slate-900 mb-2 text-sm">
+                            {todos.find(t => t._id === activeId)?.title}
+                        </h4>
                     </div>
-                );
-            })}
-        </div >
+                ) : null}
+            </DragOverlay>
+        </DndContext>
     );
+};
+
+// Helper for Droppable Column Area
+const DroppableColumn = ({ id, children }: { id: string, children: React.ReactNode }) => {
+    const { setNodeRef } = useDroppable({ id });
+    return <div ref={setNodeRef} className="flex flex-col h-full">{children}</div>;
 };
 
 // ============================================================================
@@ -351,21 +666,43 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 // ============================================================================
 export const sortTodos = (todosToSort: any[]) => {
     return [...todosToSort].sort((a, b) => {
-        // 1. Priority: High > Medium > Low
-        const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
-        const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
-        if (priorityDiff !== 0) return priorityDiff;
+        // 1. Pinned items first
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
 
-        // 2. Deadline: Closest date first (ascending)
-        // Treat missing deadline as far future
-        const dateA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
-        const dateB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
-        if (dateA !== dateB) return dateA - dateB;
+        if (a.pinned && b.pinned) {
+            // Both pinned: Sort by creation date (Newest first)
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+            return dateB - dateA;
+        }
+
+        // 2. Unpinned items
+        // If priority_no exists (>0), sort by it ascending (1, 2, 3...)
+        // priority_no == 0 means "unranked" (bottom)
+        const pA = a.priority_no || 0;
+        const pB = b.priority_no || 0;
+
+        if (pA > 0 && pB > 0) {
+            if (pA !== pB) return pA - pB;
+        }
+        if (pA > 0 && pB === 0) return -1; // Ranked items above unranked
+        if (pA === 0 && pB > 0) return 1;
 
         // 3. Status: In Progress > Pending > Completed > Cancelled
         const statusOrder: { [key: string]: number } = { in_progress: 1, pending: 2, completed: 3, cancelled: 4 };
         const statusDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
-        return statusDiff;
+        if (statusDiff !== 0) return statusDiff;
+
+        // 4. Priority: High > Medium > Low
+        const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
+        const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+        if (priorityDiff !== 0) return priorityDiff;
+
+        // 5. Deadline: Closest date first
+        const dateA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+        const dateB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+        return dateA - dateB;
     });
 };
 
@@ -991,5 +1328,202 @@ export const SuccessPopup: React.FC<SuccessPopupProps> = ({ show, message, onClo
                 </div>
             </div>
         </div>
+    );
+};
+
+// ============================================================================
+// TIMER WIDGET COMPONENT
+// ============================================================================
+export const TimerWidget: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
+    const location = useLocation();
+    const isTodoPage = location.pathname.startsWith('/todo');
+
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [timeLeft, setTimeLeft] = React.useState(0);
+    const [isRunning, setIsRunning] = React.useState(false);
+    const [isFinished, setIsFinished] = React.useState(false);
+
+    // Audio Context for beep
+    const soundIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    const playBeep = () => {
+        try {
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioContext) return;
+
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 880; // A5
+            gainNode.gain.value = 0.1;
+
+            oscillator.start();
+            setTimeout(() => { oscillator.stop(); }, 200);
+        } catch (e) {
+            console.error("Audio playback failed", e);
+        }
+    };
+
+    const startSoundLoop = () => {
+        if (soundIntervalRef.current) return;
+        playBeep(); // Play immediately
+        soundIntervalRef.current = setInterval(playBeep, 1000); // Loop every second
+    };
+
+    const stopSoundLoop = () => {
+        if (soundIntervalRef.current) {
+            clearInterval(soundIntervalRef.current);
+            soundIntervalRef.current = null;
+        }
+    };
+
+    // Cleanup sound on unmount
+    React.useEffect(() => {
+        return () => stopSoundLoop();
+    }, []);
+
+    // Effect for timer
+    React.useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isRunning && timeLeft > 0) {
+            interval = setInterval(() => {
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        // Timer finished
+                        setIsRunning(false);
+                        setIsFinished(true);
+                        startSoundLoop();
+                        if (Notification.permission === 'granted') {
+                            new Notification("Time's up!", { body: "Your timer has finished." });
+                        }
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isRunning, timeLeft]);
+
+    // Request notification permission on mount
+    React.useEffect(() => {
+        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    if (!isAuthorized || !isTodoPage) return null;
+
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    };
+
+    const setTimer = (minutes: number) => {
+        setTimeLeft(minutes * 60);
+        setIsRunning(true);
+        setIsFinished(false);
+        stopSoundLoop();
+        setIsOpen(false);
+    };
+
+    return (
+        <>
+            {/* Timer Button */}
+            <FloatingActionButton
+                onClick={() => {
+                    if (isFinished) {
+                        stopSoundLoop();
+                        setIsFinished(false);
+                        setTimeLeft(0);
+                    } else {
+                        setIsOpen(!isOpen);
+                    }
+                }}
+                positionClassName="fixed bottom-44 left-6"
+                colorClassName={`${isFinished
+                    ? 'bg-red-600 text-white border-2 border-white animate-bounce'
+                    : isRunning
+                        ? 'bg-blue-600 text-white animate-pulse'
+                        : 'bg-gray-500 text-white hover:bg-gray-600'
+                    }`}
+                title="Timer"
+            >
+                {isRunning ? (
+                    <span className="text-xs font-bold">{formatTime(timeLeft)}</span>
+                ) : (
+                    <Timer size={24} />
+                )}
+            </FloatingActionButton>
+
+            {/* Popover */}
+            {isOpen && (
+                <div className="fixed left-24 bottom-44 z-[61] bg-white rounded-xl shadow-xl p-4 w-64 border border-slate-200 animate-in slide-in-from-left-2">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-bold text-slate-700">Timer</h3>
+                        <button onClick={() => setIsOpen(false)} title="Close" aria-label="Close"><X size={16} className="text-slate-400" /></button>
+                    </div>
+
+                    {timeLeft > 0 ? (
+                        <div className="flex flex-col items-center space-y-4">
+                            <div className="text-4xl font-mono font-bold text-slate-800">
+                                {formatTime(timeLeft)}
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setIsRunning(!isRunning)}
+                                    className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700"
+                                    title={isRunning ? "Pause" : "Start"}
+                                    aria-label={isRunning ? "Pause" : "Start"}
+                                >
+                                    {isRunning ? <Pause size={20} /> : <Play size={20} />}
+                                </button>
+                                <button
+                                    onClick={() => { setIsRunning(false); setTimeLeft(0); setIsFinished(false); stopSoundLoop(); }}
+                                    className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700"
+                                    title="Reset"
+                                    aria-label="Reset"
+                                >
+                                    <RotateCcw size={20} />
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            <div className="grid grid-cols-3 gap-2">
+                                {[5, 10, 15, 25, 30, 60].map(m => (
+                                    <button
+                                        key={m}
+                                        onClick={() => setTimer(m)}
+                                        className="px-2 py-2 bg-slate-100 hover:bg-slate-200 rounded text-sm font-medium text-slate-700"
+                                    >
+                                        {m}m
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                                <input
+                                    type="number"
+                                    placeholder="Min"
+                                    className="w-full px-2 py-1 border border-slate-300 rounded text-sm"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const val = parseInt((e.target as HTMLInputElement).value);
+                                            if (val > 0) setTimer(val);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+        </>
     );
 };

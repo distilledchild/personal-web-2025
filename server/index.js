@@ -313,8 +313,10 @@ const todoListSchema = new mongoose.Schema({
     category: { type: String, enum: ['personal', 'dev'], default: 'personal' },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    status: { type: String, enum: ['pending', 'in_progress', 'completed', 'cancelled'], default: 'pending' },
+    status: { type: String, enum: ['pending', 'in_progress', 'completed', 'cancelled'], default: 'in_progress' },
     priority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
+    priority_no: { type: Number, default: 0 },
+    pinned: { type: Boolean, default: false },
     due_date: Date,
     start_time: Date,
     end_time: Date,
@@ -2409,6 +2411,7 @@ app.get('/api/todos', async (req, res) => {
             },
             {
                 $sort: {
+                    pinned: -1, // Pinned items first
                     priorityWeight: 1,
                     hasDueDate: 1,
                     due_date: 1
@@ -2442,8 +2445,12 @@ app.post('/api/todos', async (req, res) => {
             category: category || 'personal',
             title,
             description,
-            status: 'pending',
+            title,
+            description,
+            status: 'in_progress',
             priority: priority || 'medium',
+            pinned: false,
+            priority_no: 0,
             due_date: due_date ? fromZonedTime(due_date, timeZone) : null,
             start_time: start_time ? fromZonedTime(start_time, timeZone) : null,
             end_time: end_time ? fromZonedTime(end_time, timeZone) : null,
@@ -2502,6 +2509,69 @@ app.put('/api/todos/:id', async (req, res) => {
         res.json(todo);
     } catch (err) {
         console.error('Error updating todo:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Reorder TODOs
+app.put('/api/todos/reorder', async (req, res) => {
+    try {
+        const { email, todos } = req.body; // todos: [{ _id, priority_no }]
+
+        if (!email || !todos || !Array.isArray(todos)) {
+            return res.status(400).json({ error: 'Email and todos array are required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        // Bulk write for performance
+        const bulkOps = todos.map(todo => ({
+            updateOne: {
+                filter: { _id: todo._id },
+                update: { $set: { priority_no: todo.priority_no } }
+            }
+        }));
+
+        await TodoList.bulkWrite(bulkOps);
+        res.json({ message: 'Todos reordered successfully' });
+    } catch (err) {
+        console.error('Error reordering todos:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Toggle Pin Status
+app.put('/api/todos/:id/pin', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email, pinned } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+
+        // Check authorization
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+        if (!authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const todo = await TodoList.findById(id);
+        if (!todo) {
+            return res.status(404).json({ error: 'TODO not found' });
+        }
+
+        todo.pinned = pinned;
+        todo.updated_at = new Date();
+        await todo.save();
+
+        res.json(todo);
+    } catch (err) {
+        console.error('Error pinning todo:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

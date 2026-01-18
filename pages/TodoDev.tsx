@@ -13,7 +13,8 @@ import {
     TodoDetailModal,
     EditTodoModal,
     SuccessPopup,
-    TodoFormData
+    TodoFormData,
+    FloatingActionButton
 } from '../components/TodoComponents';
 import { API_URL } from '../utils/apiConfig';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
@@ -310,6 +311,51 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
     const handleProjectClick = (project: any) => {
         setSelectedProject(project);
         setIsProjectEditMode(false);
+    };
+
+    const handlePinTodo = async (todoId: string, isPinned: boolean) => {
+        if (!user || !user.email) return;
+        try {
+            const response = await fetch(`${API_URL}/api/todos/${todoId}/pin`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: user.email,
+                    pinned: isPinned
+                })
+            });
+
+            if (response.ok) {
+                const updatedTodo = await response.json();
+                setTodos(sortTodos(todos.map(t => t._id === todoId ? updatedTodo : t)));
+            }
+        } catch (error) {
+            console.error('Failed to pin todo:', error);
+        }
+    };
+
+    const handleReorderTodos = async (reorderedTodos: any[]) => {
+        // Optimistic update
+        const updatedTodosMap = new Map(reorderedTodos.map(t => [t._id, t]));
+        const newTodosState = todos.map(t => updatedTodosMap.get(t._id) || t);
+        setTodos(sortTodos(newTodosState));
+
+        if (!user || !user.email) return;
+
+        try {
+            const payload = reorderedTodos.map(t => ({ _id: t._id, priority_no: t.priority_no }));
+            await fetch(`${API_URL}/api/todos/reorder`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: user.email,
+                    todos: payload
+                })
+            });
+        } catch (error) {
+            console.error('Failed to reorder todos:', error);
+            fetchTodos(); // Revert on error
+        }
     };
 
     // Handle Technologies input with auto-formatting (semicolon separator)
@@ -651,6 +697,8 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
                             getPriorityColor={getPriorityColor}
                             formatDate={formatDate}
                             isAuthorized={isAuthorized}
+                            onPinClick={handlePinTodo}
+                            onReorderTodos={handleReorderTodos}
                         />
                     </div>
                 </div>
@@ -662,29 +710,26 @@ export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects: 
             {/* Fixed Action Buttons */}
             {isAuthorized && (
                 <>
-                    <button
+                    <FloatingActionButton
                         onClick={() => setFilterMode(prev => prev === 'today' ? 'all' : 'today')}
-                        className={`fixed bottom-64 left-6 w-14 h-14 rounded-full transition-all hover:scale-110 flex items-center justify-center z-40 todo-action-button
-                            ${filterMode === 'today' ? 'bg-blue-600 text-white' : 'bg-gray-500 text-white hover:bg-gray-600'}`}
+                        positionClassName="fixed bottom-64 left-6"
+                        colorClassName={`${filterMode === 'today' ? 'bg-blue-600 text-white' : 'bg-gray-500 text-white hover:bg-gray-600'}`}
                         title="Show today's tasks"
+                        badgeCount={todayCount}
+                        className="todo-action-button"
                     >
-                        <div className="relative">
-                            <Bell size={24} />
-                            {todayCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-500">
-                                    {todayCount}
-                                </span>
-                            )}
-                        </div>
-                    </button>
+                        <Bell size={24} />
+                    </FloatingActionButton>
 
-                    <button
+                    <FloatingActionButton
                         onClick={() => setShowCreateModal(true)}
-                        className="fixed bottom-24 left-6 w-14 h-14 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center z-40 todo-action-button"
+                        positionClassName="fixed bottom-24 left-6"
+                        colorClassName="bg-gray-500 text-white hover:bg-gray-600"
                         title="Create new TODO"
+                        className="todo-action-button"
                     >
                         <Plus size={28} />
-                    </button>
+                    </FloatingActionButton>
                 </>
             )}
 

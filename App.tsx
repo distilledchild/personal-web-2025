@@ -253,7 +253,7 @@ const Layout: React.FC = () => {
       </Routes>
 
       <GoogleLogin />
-      <CalComButton isAuthorized={isAuthorized} />
+      <TimerWidget isAuthorized={isAuthorized} />
     </div>
   );
 };
@@ -306,10 +306,10 @@ const GoogleLogin: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 left-6 z-50">
-      <button
+      <FloatingActionButton
         onClick={handleLogin}
-        className="bg-white p-0 rounded-full shadow-lg hover:shadow-xl border border-slate-100 transition-all duration-300 hover:scale-105 overflow-hidden w-[58px] h-[58px] flex items-center justify-center"
         title={user ? `Logged in as ${user.name}` : "Login with Google"}
+        className="border border-slate-100"
       >
         {user ? (
           <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
@@ -318,7 +318,7 @@ const GoogleLogin: React.FC = () => {
             <span className="text-white font-bold text-2xl">G</span>
           </div>
         )}
-      </button>
+      </FloatingActionButton>
     </div>
   );
 };
@@ -375,34 +375,9 @@ const OAuthCallback: React.FC = () => {
   );
 };
 
-import { getCalApi } from "@calcom/embed-react";
-import { Calendar } from 'lucide-react';
+import { FloatingActionButton, TimerWidget } from './components/TodoComponents';
 
-const CalComButton: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
-  const location = useLocation();
-  const isTodoPage = location.pathname.startsWith('/todo');
 
-  useEffect(() => {
-    (async function () {
-      const cal = await getCalApi({});
-      cal("ui", { "styles": { "branding": { "brandColor": "#000000" } }, "hideEventTypeDetails": false, "layout": "month_view" });
-    })();
-  }, []);
-
-  // Only show for authorized users (admins) AND only on /todo page
-  if (!isAuthorized || !isTodoPage) return null;
-
-  return (
-    <button
-      data-cal-link="petekim/15min"
-      data-cal-config='{"layout":"month_view"}'
-      className="fixed left-6 z-[60] w-[58px] h-[58px] bg-gray-500 text-white rounded-full shadow-lg hover:bg-gray-600 border border-slate-100 transition-all duration-300 hover:scale-105 flex items-center justify-center bottom-44"
-      title="Schedule a meeting"
-    >
-      <Calendar size={24} color="white" />
-    </button>
-  );
-};
 
 const App: React.FC = () => {
   return (
