@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { ThreeDNA } from './components/ThreeDNA';
-import { MobileBackground } from './components/MobileBackground';
-import { useIsMobile } from './hooks/useIsMobile';
 import { Todo } from './pages/Todo';
 import { About } from './pages/About';
 import { Research } from './pages/Research';
@@ -13,46 +11,40 @@ import { Contact } from './pages/Contact';
 import { StravaCallback } from './pages/StravaCallback';
 import { API_URL } from './utils/apiConfig';
 
-const Home: React.FC = () => {
-  const isMobile = useIsMobile();
+const Home: React.FC = () => (
+  <div className="relative w-full h-[100dvh] flex flex-col items-center justify-center overflow-hidden bg-black">
+    {/* 3D Background Layer - Z index 0 */}
+    <ThreeDNA />
 
-  return (
-    <div className="relative w-full h-[100dvh] flex flex-col items-center justify-center overflow-hidden bg-black">
-      {/* Background Layer - Z index 0: Use lightweight CSS on mobile, 3D on desktop */}
-      {isMobile ? <MobileBackground /> : <ThreeDNA />}
-
-      {/* Content Overlay - Z index 10, Pointer Events None allows clicking through to Canvas */}
-      <div className="relative z-10 text-center space-y-4 px-4 pointer-events-none select-none mt-[-5vh]">
-        <h1 className="text-6xl md:text-8xl font-extrabold tracking-tight drop-shadow-2xl">
-          <span className="text-white">Computational </span>
-          <br className="md:hidden" />
-          <span
-            className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-purple-400 animate-gradient pr-2"
-            style={{
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            Biology
-          </span>
-        </h1>
-        <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          unraveling the 3D genome, one interaction at a time.
-        </p>
-      </div>
-
-      {/* Instruction Text - Centered and Animated - Hidden on mobile */}
-      {!isMobile && (
-        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none hidden md:block">
-          <p className="text-lg md:text-xl text-white font-light animate-double-blink">
-            Drag or Scroll to Interact
-          </p>
-        </div>
-      )}
+    {/* Content Overlay - Z index 10, Pointer Events None allows clicking through to Canvas */}
+    <div className="relative z-10 text-center space-y-4 px-4 pointer-events-none select-none mt-[-5vh]">
+      <h1 className="text-6xl md:text-8xl font-extrabold tracking-tight drop-shadow-2xl">
+        <span className="text-white">Computational </span>
+        <br className="md:hidden" />
+        <span
+          className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-green-400 to-purple-400 animate-gradient pr-2"
+          style={{
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}
+        >
+          Biology
+        </span>
+      </h1>
+      <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        unraveling the 3D genome, one interaction at a time.
+      </p>
     </div>
-  );
-};
+
+    {/* Instruction Text - Centered and Animated */}
+    <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-20 pointer-events-none select-none hidden md:block">
+      <p className="text-lg md:text-xl text-white font-light animate-double-blink">
+        Drag or Scroll to Interact
+      </p>
+    </div>
+  </div>
+);
 
 // Liquid Crystal Tab Component - 95% of original size
 const LiquidTab = ({ to, label, active, colorClass, badgeCount }: { to: string; label: string; active: boolean; colorClass: string; badgeCount?: number }) => (
