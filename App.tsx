@@ -12,7 +12,7 @@ import { StravaCallback } from './pages/StravaCallback';
 import { API_URL } from './utils/apiConfig';
 
 const Home: React.FC = () => (
-  <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
+  <div className="relative w-full h-[100dvh] flex flex-col items-center justify-center overflow-hidden bg-black">
     {/* 3D Background Layer - Z index 0 */}
     <ThreeDNA />
 

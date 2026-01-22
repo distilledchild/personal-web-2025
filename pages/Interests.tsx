@@ -17,6 +17,7 @@ import {
     BarChart,
     Cell
 } from 'recharts';
+import { PageHeader } from '../components/PageHeader';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -350,70 +351,22 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     return (
         <div className="flex flex-col h-screen bg-white overflow-hidden">
             {/* Fixed Header Section */}
-            <div className="pt-32 pb-0 px-6 bg-white flex-shrink-0">
-                <div className="max-w-7xl mx-auto">
-                    <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">
-                        Topics
-                    </h2>
-
-                    {/* Tabs Navigation */}
-                    <div className="flex flex-wrap justify-center gap-2 mb-6">
-                        <button
-                            onClick={() => navigate('/interests/data')}
-                            className={`
-                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'data'
-                                    ? 'border-[#FFA300] text-[#FFA300]'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-              `}
-                        >
-                            <BarChart3 size={20} />
-                            <span>Data</span>
-                        </button>
-                        <button
-                            onClick={() => navigate('/interests/art')}
-                            className={`
-                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'art'
-                                    ? 'border-[#FFA300] text-[#FFA300]'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-              `}
-                        >
-                            <Palette size={20} />
-                            <span>Art</span>
-                        </button>
-                        <button
-                            onClick={() => navigate('/interests/workout')}
-                            className={`
-                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'workout'
-                                    ? 'border-[#FFA300] text-[#FFA300]'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-              `}
-                        >
-                            <Dumbbell size={20} />
-                            <span>Workout</span>
-                        </button>
-                        <button
-                            onClick={() => navigate('/interests/travel')}
-                            className={`
-                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                ${activeTab === 'travel'
-                                    ? 'border-[#FFA300] text-[#FFA300]'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-              `}
-                        >
-                            <Plane size={20} />
-                            <span>Travel</span>
-                        </button>
-                    </div>
-                    <hr className="border-slate-100" />
-                </div>
-            </div>
+            <PageHeader
+                title="Topics"
+                tabs={[
+                    { id: 'data', label: 'Data', icon: BarChart3 },
+                    { id: 'art', label: 'Art', icon: Palette },
+                    { id: 'workout', label: 'Workout', icon: Dumbbell },
+                    { id: 'travel', label: 'Travel', icon: Plane }
+                ]}
+                activeTab={activeTab}
+                onTabChange={(id) => navigate(`/interests/${id}`)}
+                activeColor="border-[#FFA300] text-[#FFA300]"
+            />
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto scrollbar-hide px-6 pb-20">
-                <div className="max-w-7xl mx-auto pt-8">
+                <div className="max-w-7xl mx-auto">
                     {activeTab === 'travel' && (
                         <div className="animate-fadeIn space-y-8">
                             <div className="flex justify-between items-center">

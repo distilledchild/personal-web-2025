@@ -4,6 +4,7 @@ import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianG
 import { FileText, GitBranch, Database, Sliders, Search, Cat } from 'lucide-react';
 import { ResearchHiCBrowser } from './ResearchHiCBrowser';
 import { ResearchBreedchain } from './ResearchBreedchain';
+import { PageHeader } from '../components/PageHeader';
 
 const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
   name: `Loc ${i * 10}kb`,
@@ -25,11 +26,7 @@ const PEInteractions = () => (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6"> */}
       <div>
-        <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-          <GitBranch size={24} className="text-teal-500" />
-          Promoter–Enhancer Interaction Mapping
-        </h3>
-        <p className="text-slate-500 mt-2 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
+        <p className="text-slate-500 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
       </div>
       <div className="flex gap-3">
         <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
@@ -79,11 +76,7 @@ const SingleCell = () => (
   <div className="space-y-8 animate-fadeIn">
     {/* <div className="border-b border-slate-100 pb-6"> */}
     <div>
-      <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-        <Database size={24} className="text-teal-500" />
-        Single-cell Sequencing Analysis
-      </h3>
-      <p className="text-slate-500 mt-2 text-lg">Dimensionality reduction (UMAP) and clustering of 10k PBMCs.</p>
+      <p className="text-slate-500 text-lg">Dimensionality reduction (UMAP) and clustering of 10k PBMCs.</p>
     </div>
 
     <div className="h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100">
@@ -115,11 +108,7 @@ const EnhancerID = () => (
   <div className="space-y-8 animate-fadeIn">
     {/* <div className="border-b border-slate-100 pb-6"> */}
     <div>
-      <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-        <FileText size={24} className="text-teal-500" />
-        Computational Enhancer Identification
-      </h3>
-      <p className="text-slate-500 mt-2 text-lg">Deep learning prediction of enhancer regions using sequence motifs and conservation.</p>
+      <p className="text-slate-500 text-lg">Deep learning prediction of enhancer regions using sequence motifs and conservation.</p>
     </div>
 
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -207,47 +196,25 @@ export const Research: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-white overflow-hidden">
-      {/* Fixed Header Section */}
-      <div className="pt-32 pb-0 px-6 bg-white flex-shrink-0">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-4xl font-bold text-slate-900">Projects</h2>
-          </div>
-
-          {/* Responsive Tabs Grid */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            {tabs.map((tab, idx) => {
-              // Extract the base color class (e.g., 'text-blue-600') to use for border
-              const textColorClass = tab.color.split(' ')[0];
-              const borderColorClass = textColorClass.replace('text-', 'border-');
-
-              return (
-                <button
-                  key={idx}
-                  onClick={() => navigate(`/research/${tab.slug}`)}
-                  className={`flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300 ${activeTab === idx
-                    ? `${textColorClass} ${borderColorClass}`
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                    }`}
-                >
-                  <tab.icon size={20} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          <hr className="border-slate-100" />
-        </div>
-      </div>
+      <PageHeader
+        title="Projects"
+        tabs={tabs.map(tab => ({
+          ...tab,
+          id: tab.slug // Use slug as id for PageHeader
+        }))}
+        activeTab={submenu || 'hicbrowser'}
+        onTabChange={(id) => navigate(`/research/${id}`)}
+        activeColor="text-teal-500 border-teal-500"
+      />
 
       {/* Scrollable Content Area */}
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-6 pb-20">
-        <div className="max-w-7xl mx-auto pt-8">
-          {activeTab === 0 && <ResearchHiCBrowser />}
-          {activeTab === 1 && <ResearchBreedchain />}
-          {activeTab === 2 && <PEInteractions />}
-          {activeTab === 3 && <SingleCell />}
-          {activeTab === 4 && <EnhancerID />}
+        <div className="max-w-7xl mx-auto">
+          {(activeTab === 0) && <ResearchHiCBrowser />}
+          {(activeTab === 1) && <ResearchBreedchain />}
+          {(activeTab === 2) && <PEInteractions />}
+          {(activeTab === 3) && <SingleCell />}
+          {(activeTab === 4) && <EnhancerID />}
         </div>
       </div>
     </div>

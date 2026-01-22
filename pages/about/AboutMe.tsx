@@ -93,19 +93,6 @@ export const AboutMe: React.FC<AboutMeProps> = ({ user, isAuthorized }) => {
 
     return (
         <div className="animate-fadeIn space-y-8 text-slate-700 leading-relaxed text-lg relative" style={{ textAlign: 'justify' }}>
-            {/* Admin Add Button */}
-            {isAuthorized && (
-                <div className="fixed bottom-24 left-6 z-50">
-                    <button
-                        onClick={openAboutMeModal}
-                        className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
-                        title="Edit About Me"
-                    >
-                        <Plus size={28} />
-                    </button>
-                </div>
-            )}
-
             <p dangerouslySetInnerHTML={{ __html: aboutMe?.introduction || '' }} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
@@ -128,6 +115,19 @@ export const AboutMe: React.FC<AboutMeProps> = ({ user, isAuthorized }) => {
             </div>
 
             <p dangerouslySetInnerHTML={{ __html: aboutMe?.future_goal || '' }} />
+
+            {/* Admin Add Button */}
+            {isAuthorized && (
+                <div className="fixed bottom-24 left-6 z-50">
+                    <button
+                        onClick={openAboutMeModal}
+                        className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
+                        title="Edit About Me"
+                    >
+                        <Plus size={28} />
+                    </button>
+                </div>
+            )}
 
             {/* Modal */}
             {isModalOpen && (

@@ -5,11 +5,7 @@ export const ResearchBreedchain: React.FC = () => (
     <div className="space-y-8 animate-fadeIn">
         {/* Header Section */}
         <div>
-            <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-                <Cat size={24} className="text-teal-500" />
-                Breedchain: Blockchain-Based Breed Management System
-            </h3>
-            <p className="text-slate-500 mt-2 text-lg">
+            <p className="text-slate-500 text-lg">
                 A decentralized system for managing animal lineage, breeding records, and genetic information using <a
                     href="https://www.ibm.com/think/topics/hyperledger"
                     target="_blank"

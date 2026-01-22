@@ -4,6 +4,7 @@ import { API_URL } from '../utils/apiConfig';
 import { AboutMe } from './about/AboutMe';
 import { AboutMilestones } from './about/AboutMilestones';
 import { AboutAcademics } from './about/AboutAcademics';
+import { PageHeader } from '../components/PageHeader';
 
 export const About: React.FC = () => {
     const { tab } = useParams<{ tab: string }>();
@@ -61,56 +62,21 @@ export const About: React.FC = () => {
 
     return (
         <div className="flex flex-col h-screen bg-white">
-            {/* Fixed Header Section */}
-            <div className="pt-32 pb-0 px-6 bg-white flex-shrink-0">
-                <div className="max-w-7xl mx-auto">
-                    <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">
-                        Intro
-                    </h2>
-
-                    {/* Tabs Navigation */}
-                    <div className="flex flex-wrap justify-center gap-2 mb-6">
-                        <button
-                            onClick={() => handleTabChange('me')}
-                            className={`
-                                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                                ${activeTab === 'me'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-                            `}
-                        >
-                            Me
-                        </button>
-                        <button
-                            onClick={() => handleTabChange('milestones')}
-                            className={`
-                                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                                ${activeTab === 'milestones'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-                            `}
-                        >
-                            Milestones
-                        </button>
-                        <button
-                            onClick={() => handleTabChange('academics')}
-                            className={`
-                                flex items-center gap-2 px-6 py-4 border-b-2 text-lg font-bold transition-all duration-300
-                                ${activeTab === 'academics'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}
-                            `}
-                        >
-                            Academic
-                        </button>
-                    </div>
-                    <hr className="border-slate-100" />
-                </div>
-            </div>
+            <PageHeader
+                title="Intro"
+                tabs={[
+                    { id: 'me', label: 'Me' },
+                    { id: 'milestones', label: 'Milestones' },
+                    { id: 'academics', label: 'Academic' }
+                ]}
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+                activeColor="border-blue-600 text-blue-600"
+            />
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto px-6 pb-20">
-                <div className="max-w-7xl mx-auto pt-8">
+                <div className="max-w-7xl mx-auto">
                     {activeTab === 'me' && <AboutMe user={user} isAuthorized={isAuthorized} />}
                     {activeTab === 'milestones' && <AboutMilestones user={user} isAuthorized={isAuthorized} />}
                     {activeTab === 'academics' && <AboutAcademics user={user} isAuthorized={isAuthorized} />}

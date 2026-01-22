@@ -180,22 +180,7 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
 
     return (
         <div className="animate-fadeIn relative min-h-[400px]">
-            {/* Admin Add Button - Fixed above Login */}
-            {isAuthorized && (
-                <div className="fixed bottom-24 left-6 z-50">
-                    <button
-                        onClick={() => openMilestoneModal()}
-                        className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
-                        title="Add Milestone"
-                    >
-                        <Plus size={28} />
-                    </button>
-                </div>
-            )}
-
-            {/* Vertical Line */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-300 -translate-x-1/2"></div>
-
+            {/* West of code ... */}
             {/* Milestones Groups */}
             <div className="py-12 space-y-8">
                 {sortedGroupKeys.map(key => {
@@ -299,6 +284,19 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                     );
                 })}
             </div>
+
+            {/* Admin Add Button - Fixed above Login */}
+            {isAuthorized && (
+                <div className="fixed bottom-24 left-6 z-50">
+                    <button
+                        onClick={() => openMilestoneModal()}
+                        className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-all hover:scale-110"
+                        title="Add Milestone"
+                    >
+                        <Plus size={28} />
+                    </button>
+                </div>
+            )}
 
             {/* Modal */}
             {isModalOpen && (
