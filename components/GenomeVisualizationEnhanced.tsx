@@ -63,8 +63,11 @@ export const GenomeVisualizationEnhanced: React.FC = () => {
                         .map(c => c.chr)
                         .filter(c => c !== selectedChr);
 
-                    // Fire and forget - don't await
-                    prefetchAllChromosomes(otherChrs);
+                    // Fire and forget - don't await, but delay to prioritize UI rendering
+                    setTimeout(() => {
+                        console.log('Starting background prefetch of other chromosomes...');
+                        prefetchAllChromosomes(otherChrs);
+                    }, 2000);
                 }
             } catch (error) {
                 console.error('Failed to load genome data:', error);

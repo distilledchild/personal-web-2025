@@ -23,7 +23,7 @@ const mockScatterData = Array.from({ length: 100 }, () => ({
 // Removed "card" styling (bg-white, border, shadow) to make it look like a full page section
 const PEInteractions = () => (
   <div className="space-y-8 animate-fadeIn">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-6">
       {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6"> */}
       <div>
         <p className="text-slate-500 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
