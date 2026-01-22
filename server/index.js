@@ -648,6 +648,76 @@ app.post('/api/tech-blog', async (req, res) => {
     }
 });
 
+// --- API Key Authentication for Automated Blog Uploads ---
+const validateBlogApiKey = (req, res, next) => {
+    const apiKey = req.headers['x-api-key'];
+    const expectedKey = process.env.BLOG_API_KEY;
+
+    if (!expectedKey) {
+        console.error('[TECH-BLOG-AUTO] BLOG_API_KEY not configured in environment');
+        return res.status(500).json({ error: 'API key not configured on server' });
+    }
+
+    if (!apiKey || apiKey !== expectedKey) {
+        console.error('[TECH-BLOG-AUTO] Invalid or missing API key');
+        return res.status(401).json({ error: 'Invalid or missing API key' });
+    }
+
+    next();
+};
+
+// Automated Blog Post Creation (for n8n and external services)
+app.post('/api/tech-blog/auto', validateBlogApiKey, async (req, res) => {
+    try {
+        console.log('[TECH-BLOG-AUTO] Automated POST request received');
+        const { category, title, content, author, tags } = req.body;
+
+        // Validate required fields
+        if (!category || !title || !content) {
+            console.error('[TECH-BLOG-AUTO] Missing required fields');
+            return res.status(400).json({ error: 'Category, title, and content are required' });
+        }
+
+        // Set default author if not provided
+        const blogAuthor = author || {
+            name: 'Auto Post',
+            email: 'distilledchild@gmail.com',
+            avatar: ''
+        };
+
+        const newBlog = new TechBlog({
+            category,
+            title,
+            content,
+            author: {
+                name: blogAuthor.name,
+                email: blogAuthor.email,
+                avatar: blogAuthor.avatar || ''
+            },
+            likes: 0,
+            views: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isPublished: true,
+            show: 'Y',
+            likedBy: [],
+            tags: tags || [],
+            isAutomated: true
+        });
+
+        const savedBlog = await newBlog.save();
+        console.log('[TECH-BLOG-AUTO] Automated post saved successfully:', savedBlog._id);
+        res.status(201).json({
+            success: true,
+            message: 'Blog post created successfully',
+            post: savedBlog
+        });
+    } catch (err) {
+        console.error('[TECH-BLOG-AUTO] Error creating automated post:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // ... (skip upload-image, opal-generate, like)
 
 // Update Tech and Bio Post
