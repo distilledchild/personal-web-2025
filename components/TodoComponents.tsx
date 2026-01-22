@@ -1398,7 +1398,7 @@ export const TimerWidget: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized 
                         setIsRunning(false);
                         setIsFinished(true);
                         startSoundLoop();
-                        if (Notification.permission === 'granted') {
+                        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
                             new Notification("Time's up!", { body: "Your timer has finished." });
                         }
                         return 0;
@@ -1410,9 +1410,9 @@ export const TimerWidget: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized 
         return () => clearInterval(interval);
     }, [isRunning, timeLeft]);
 
-    // Request notification permission on mount
+    // Request notification permission on mount (only if Notification API is available)
     React.useEffect(() => {
-        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        if (typeof Notification !== 'undefined' && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
             Notification.requestPermission();
         }
     }, []);
