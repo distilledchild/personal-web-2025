@@ -649,6 +649,7 @@ app.post('/api/tech-blog', async (req, res) => {
 });
 
 // --- API Key Authentication for Automated Blog Uploads ---
+// --- API Key Authentication for Automated Blog Uploads ---
 const validateBlogApiKey = (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
     const expectedKey = process.env.BLOG_API_KEY;
@@ -805,8 +806,18 @@ app.put('/api/tech-blog/:id', async (req, res) => {
     }
 });
 
-// Upload image to GCS for Tech and Bio
-app.post('/api/tech-blog/upload-image', validateBlogApiKey, upload.single('image'), async (req, res) => {
+// Upload image to GCS for Tech and Bio (Conditional Auth)
+app.post('/api/tech-blog/upload-image', upload.single('image'), (req, res, next) => {
+    // If request identifies as n8n, require API key
+    const isN8N = req.body.authorName === 'n8n' ||
+        (req.body.author && (req.body.author === 'n8n' || req.body.author.name === 'n8n')) ||
+        req.body.isAutomated === 'true' || req.body.isAutomated === true;
+
+    if (isN8N) {
+        return validateBlogApiKey(req, res, next);
+    }
+    next();
+}, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No image file provided' });
@@ -868,8 +879,17 @@ app.post('/api/tech-blog/upload-image', validateBlogApiKey, upload.single('image
     }
 });
 
-// Upload base64 image to GCS (for n8n and AI-generated images)
-app.post('/api/tech-blog/upload-image-base64', validateBlogApiKey, async (req, res) => {
+// Upload base64 image to GCS (Conditional Auth)
+app.post('/api/tech-blog/upload-image-base64', (req, res, next) => {
+    const isN8N = req.body.authorName === 'n8n' ||
+        (req.body.author && (req.body.author === 'n8n' || req.body.author.name === 'n8n')) ||
+        req.body.isAutomated === true;
+
+    if (isN8N) {
+        return validateBlogApiKey(req, res, next);
+    }
+    next();
+}, async (req, res) => {
     try {
         console.log('[TECH-BLOG-AUTO] Base64 image upload request received');
         const { base64Data, mimeType, category, fileName } = req.body;

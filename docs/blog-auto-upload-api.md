@@ -15,6 +15,29 @@ POST https://distilledchild.space/api/tech-blog/auto
 | `x-api-key` | `BLOG_API_KEY` 환경 변수 값 |
 | `Content-Type` | `application/json` |
 
+## n8n Credential vs Header (Confusion Guide)
+
+n8n 설정 시 가장 헷갈리는 부분인 **Credential Name**과 **Header Name**의 차이입니다.
+
+```mermaid
+graph TD
+    subgraph n8n_UI ["n8n Credentials UI"]
+        CredName["<b>Credential Name (사용자 지정 이름)</b><br/>예: dc-blog-api-key"]
+        
+        subgraph CredSettings ["Inside Credential Settings"]
+            HeaderName["<b>Name (헤더 이름)</b><br/>반드시 x-api-key"]
+            HeaderValue["<b>Value (실제 키값)</b><br/>서버의 BLOG_API_KEY 값"]
+        end
+    end
+    
+    CredName --> CredSettings
+    HeaderName --> Request["HTTP Header: x-api-key"]
+    HeaderValue --> Request
+```
+
+1. **Credential Name**: n8n 내부에서 노드를 설정할 때 리스트에 뜨는 이름입니다. (메모지 같은 역할)
+2. **Key Name (Header Name)**: 실제로 서버가 전달받는 이름입니다. 반드시 **`x-api-key`** 여야 합니다.
+
 ## Request Body
 
 ```json
@@ -27,7 +50,11 @@ POST https://distilledchild.space/api/tech-blog/auto
     "email": "distilledchild@gmail.com",
     "avatar": "https://..."
   },
-  "tags": ["n8n", "automation"] // Optional
+  "tags": ["n8n", "automation"], // Optional
+  "references": [                // Optional: 참조 URL 목록
+    "https://example.com/article1",
+    "https://example.com/article2"
+  ]
 }
 ```
 
@@ -39,6 +66,7 @@ POST https://distilledchild.space/api/tech-blog/auto
 ### Optional Fields
 - `author`: 기본값은 `distilledchild@gmail.com`
 - `tags`: 문자열 배열
+- `references`: 참조 URL 문자열 배열
 
 ## Response
 
