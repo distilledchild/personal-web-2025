@@ -47,18 +47,30 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post, isLiked, onLike, onCli
                 </span>
 
                 {/* Tags moved to header for space efficiency */}
+                {/* Tags moved to header for space efficiency */}
                 {post.tags && post.tags.length > 0 && (
                     <div className="flex gap-1">
-                        {post.tags.slice(0, 2).map((tag: string, idx: number) => (
-                            <span key={idx} className={`text-[9px] font-medium ${post.textColor} bg-white/60 px-1.5 py-0.5 rounded`}>
-                                {tag}
-                            </span>
-                        ))}
-                        {post.tags.length > 2 && (
-                            <span className={`text-[9px] font-medium ${post.textColor} bg-white/60 px-1.5 py-0.5 rounded`}>
-                                +{post.tags.length - 2}
-                            </span>
-                        )}
+                        {(() => {
+                            const normalizedTags = post.tags
+                                .flatMap((t: string) => t.split(','))
+                                .map((t: string) => t.trim())
+                                .filter((t: string) => t);
+
+                            return (
+                                <>
+                                    {normalizedTags.slice(0, 2).map((tag: string, idx: number) => (
+                                        <span key={idx} className={`text-[9px] font-medium ${post.textColor} bg-white/60 px-1.5 py-0.5 rounded`}>
+                                            {tag}
+                                        </span>
+                                    ))}
+                                    {normalizedTags.length > 2 && (
+                                        <span className={`text-[9px] font-medium ${post.textColor} bg-white/60 px-1.5 py-0.5 rounded`}>
+                                            +{normalizedTags.length - 2}
+                                        </span>
+                                    )}
+                                </>
+                            );
+                        })()}
                     </div>
                 )}
             </div>

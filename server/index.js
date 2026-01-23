@@ -32,7 +32,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Root route for health check
 app.get('/', (req, res) => {
@@ -281,7 +282,8 @@ const techBlogSchema = new mongoose.Schema({
     },
     likedBy: [{ type: String }],  // Array of email strings
     show: { type: String, default: 'Y' },  // 'Y' or 'N'
-    isAutomated: { type: Boolean, default: false }
+    isAutomated: { type: Boolean, default: false },
+    references: [{ type: String }]  // Array of reference URLs
 }, { collection: 'TECH_BLOG' });
 
 const TechBlog = mongoose.model('TechBlog', techBlogSchema);
@@ -602,8 +604,6 @@ app.get('/api/tech-blog', async (req, res) => {
 // Create Tech and Bio Post
 app.post('/api/tech-blog', async (req, res) => {
     try {
-        console.log('[TECH-BLOG] POST request received:', req.body);
-        console.log('[TECH-BLOG] Tags received:', req.body.tags, 'Type:', typeof req.body.tags);
         const { category, title, content, author, isAutomated } = req.body;
 
         if (!category || !title || !content || !author || !author.email) {
@@ -635,7 +635,7 @@ app.post('/api/tech-blog', async (req, res) => {
             show: 'Y',
             likedBy: [],
             tags: req.body.tags || [],
-            isAutomated: isAutomated || false
+            isAutomated: false
         });
 
         const savedBlog = await newBlog.save();
@@ -669,8 +669,14 @@ const validateBlogApiKey = (req, res, next) => {
 // Automated Blog Post Creation (for n8n and external services)
 app.post('/api/tech-blog/auto', validateBlogApiKey, async (req, res) => {
     try {
-        console.log('[TECH-BLOG-AUTO] Automated POST request received');
-        const { category, title, content, author, tags } = req.body;
+        const { category, title, content, author, tags, references } = req.body;
+
+        // Strictly enforce requested defaults for automated (n8n) posts
+        const finalIsPublished = false;
+        const finalIsAutomated = true;
+        const finalShow = 'N';
+
+        console.log(`[TECH-BLOG-AUTO] Enforcing strict flags - isPublished: ${finalIsPublished}, isAutomated: ${finalIsAutomated}, show: ${finalShow}`);
 
         // Validate required fields
         if (!category || !title || !content) {
@@ -698,11 +704,31 @@ app.post('/api/tech-blog/auto', validateBlogApiKey, async (req, res) => {
             views: 0,
             createdAt: new Date(),
             updatedAt: new Date(),
-            isPublished: true,
-            show: 'Y',
+            isPublished: finalIsPublished,
+            show: finalShow,
             likedBy: [],
-            tags: tags || [],
-            isAutomated: true
+            tags: (() => {
+                // Normalize tags: handle string or array, split by comma, flatten, and hyphenate spaces
+                let tagList = [];
+                if (typeof tags === 'string') {
+                    tagList = tags.split(',');
+                } else if (Array.isArray(tags)) {
+                    tagList = tags.flatMap(t => String(t).split(','));
+                }
+
+                return tagList
+                    .map(t => t.trim())
+                    .filter(t => t)
+                    .map(t => t.replace(/\s+/g, '-')); // Replace spaces with hyphens
+            })(),
+            isAutomated: finalIsAutomated,
+            references: (() => {
+                // Normalize references: if string, split by newline or space-separated URLs
+                if (typeof references === 'string') {
+                    return references.split(/[\n\s]+/).map(r => r.trim()).filter(r => r.startsWith('http'));
+                }
+                return Array.isArray(references) ? references.map(r => String(r).trim()).filter(r => r) : [];
+            })()
         });
 
         const savedBlog = await newBlog.save();
@@ -749,6 +775,24 @@ app.put('/api/tech-blog/:id', async (req, res) => {
         if (title) blog.title = title;
         if (content) blog.content = content;
         if (req.body.tags) blog.tags = req.body.tags;
+
+        // Handle boolean updates for isPublished and isAutomated
+        if (req.body.isPublished !== undefined) {
+            blog.isPublished = typeof req.body.isPublished === 'string'
+                ? req.body.isPublished.toLowerCase() === 'true'
+                : !!req.body.isPublished;
+        }
+
+        if (req.body.isAutomated !== undefined) {
+            blog.isAutomated = typeof req.body.isAutomated === 'string'
+                ? req.body.isAutomated.toLowerCase() === 'true'
+                : !!req.body.isAutomated;
+        }
+
+        if (req.body.show !== undefined) {
+            blog.show = req.body.show;
+        }
+
         blog.updatedAt = new Date();
 
         const updatedBlog = await blog.save();
@@ -762,7 +806,7 @@ app.put('/api/tech-blog/:id', async (req, res) => {
 });
 
 // Upload image to GCS for Tech and Bio
-app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res) => {
+app.post('/api/tech-blog/upload-image', validateBlogApiKey, upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No image file provided' });
@@ -820,6 +864,75 @@ app.post('/api/tech-blog/upload-image', upload.single('image'), async (req, res)
         blobStream.end(file.buffer);
     } catch (err) {
         console.error('Image upload error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Upload base64 image to GCS (for n8n and AI-generated images)
+app.post('/api/tech-blog/upload-image-base64', validateBlogApiKey, async (req, res) => {
+    try {
+        console.log('[TECH-BLOG-AUTO] Base64 image upload request received');
+        const { base64Data, mimeType, category, fileName } = req.body;
+
+        if (!base64Data) {
+            return res.status(400).json({ error: 'base64Data is required' });
+        }
+
+        // Convert base64 to buffer
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        // Generate filename
+        const timestamp = Date.now();
+        const extension = (mimeType || 'image/png').split('/')[1] || 'png';
+        const finalFileName = fileName || `infographic-${timestamp}.${extension}`;
+
+        const bucketName = process.env.GCS_BUCKET_NAME || 'distilledchild';
+        const bucket = storage.bucket(bucketName);
+
+        // Category-based path
+        let prefix;
+        if (category === 'Biology') {
+            prefix = 'blog/bio';
+        } else if (category === 'Tech') {
+            prefix = 'blog/tech';
+        } else {
+            prefix = 'blog/misc';
+        }
+
+        const blob = bucket.file(`${prefix}/${finalFileName}`);
+
+        // Create a write stream
+        const blobStream = blob.createWriteStream({
+            resumable: false,
+            metadata: {
+                contentType: mimeType || 'image/png',
+            },
+        });
+
+        blobStream.on('error', (err) => {
+            console.error('[TECH-BLOG-AUTO] Upload error:', err);
+            res.status(500).json({ error: 'Failed to upload image' });
+        });
+
+        blobStream.on('finish', async () => {
+            // Make the file public
+            await blob.makePublic();
+
+            // Generate public URL
+            const publicUrl = `https://storage.googleapis.com/${bucketName}/${prefix}/${finalFileName}`;
+
+            console.log('[TECH-BLOG-AUTO] Image uploaded successfully:', publicUrl);
+            res.json({
+                success: true,
+                url: publicUrl,
+                fileName: finalFileName
+            });
+        });
+
+        // Write the buffer to GCS
+        blobStream.end(buffer);
+    } catch (err) {
+        console.error('[TECH-BLOG-AUTO] Image upload error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

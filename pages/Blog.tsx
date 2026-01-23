@@ -359,6 +359,8 @@ export const Blog: React.FC = () => {
                         ...editData,
                         tags: tagsArray,
                         isAutomated: false,
+                        isPublished: true,
+                        show: 'Y',
                         author: {
                             name: user.name,
                             email: user.email,
@@ -945,17 +947,26 @@ export const Blog: React.FC = () => {
                                 </div>
 
                                 {/* Tags Section */}
-                                {allPosts[selectedPost].tags && allPosts[selectedPost].tags.length > 0 && (
-                                    <div className="mt-8 pt-6 border-t border-slate-200">
-                                        <div className="flex flex-wrap gap-2">
-                                            {allPosts[selectedPost].tags.map((tag: string, idx: number) => (
-                                                <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium">
-                                                    #{tag}
-                                                </span>
-                                            ))}
-                                        </div>
+                                <div className="mt-8 pt-6 border-t border-slate-200">
+                                    <div className="flex flex-wrap gap-2">
+                                        {(() => {
+                                            const normalizedTags = allPosts[selectedPost].tags
+                                                .flatMap((t: string) => t.split(','))
+                                                .map((t: string) => t.trim())
+                                                .filter((t: string) => t);
+
+                                            return (
+                                                <>
+                                                    {normalizedTags.map((tag: string, idx: number) => (
+                                                        <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm font-medium">
+                                                            #{tag}
+                                                        </span>
+                                                    ))}
+                                                </>
+                                            );
+                                        })()}
                                     </div>
-                                )}
+                                </div>
 
                                 {/* Footer in modal */}
                                 <div className={`mt-4 flex items-center justify-between ${!allPosts[selectedPost].tags || allPosts[selectedPost].tags.length === 0 ? 'pt-6 border-t border-slate-200' : ''}`}>
