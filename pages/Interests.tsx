@@ -18,6 +18,7 @@ import {
     Cell
 } from 'recharts';
 import { PageHeader } from '../components/PageHeader';
+import { Pagination } from '../components/Pagination';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -673,39 +674,16 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                             </table>
                                         </div>
 
-                                        {/* Pagination Controls */}
-                                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-                                            <p className="text-sm text-slate-600">
-                                                Showing <span className="font-bold text-slate-900">{startIndex + 1}</span> to{' '}
-                                                <span className="font-bold text-slate-900">{Math.min(endIndex, stravaActivities.length)}</span> of{' '}
-                                                <span className="font-bold text-slate-900">{stravaActivities.length}</span> activities
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={handlePrevPage}
-                                                    disabled={currentPage === 1}
-                                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === 1
-                                                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                                        : 'bg-[#FFA300] text-white hover:bg-[#FF8C00] shadow-sm hover:shadow-md'
-                                                        }`}
-                                                >
-                                                    <ChevronLeft size={20} />
-                                                </button>
-                                                <span className="text-sm font-medium text-slate-700">
-                                                    Page {currentPage} of {totalPages}
-                                                </span>
-                                                <button
-                                                    onClick={handleNextPage}
-                                                    disabled={currentPage === totalPages}
-                                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${currentPage === totalPages
-                                                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                                        : 'bg-[#FFA300] text-white hover:bg-[#FF8C00] shadow-sm hover:shadow-md'
-                                                        }`}
-                                                >
-                                                    <ChevronRight size={20} />
-                                                </button>
-                                            </div>
-                                        </div>
+                                    </div>
+
+                                    {/* Pagination Controls - Detached */}
+                                    <div className="mt-8">
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={setCurrentPage}
+                                            theme="orange"
+                                        />
                                     </div>
                                 </>
                             ) : (

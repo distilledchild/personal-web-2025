@@ -590,9 +590,9 @@ app.get('/api/travel/states', async (req, res) => {
 // Tech and Bio Endpoint
 app.get('/api/tech-blog', async (req, res) => {
     try {
-        // Return all active posts (show='Y') regardless of isPublished status
-        // Frontend will handle filtering for public vs admin views
-        const blogs = await TechBlog.find({ show: 'Y' })
+        // Return all posts (including pending ones with show='N')
+        // Frontend handles filtering for public vs admin views
+        const blogs = await TechBlog.find({})
             .sort({ createdAt: -1 });
         res.json(blogs);
     } catch (err) {
@@ -806,6 +806,17 @@ app.put('/api/tech-blog/:id', async (req, res) => {
     }
 });
 
+// Helper to determine GCS storage prefix based on category
+const getStoragePrefix = (category) => {
+    const lowerCategory = (category || '').toLowerCase();
+    if (lowerCategory === 'biology' || lowerCategory === 'bio') {
+        return 'blog/bio';
+    } else if (lowerCategory === 'tech') {
+        return 'blog/tech';
+    }
+    return 'blog/misc';
+};
+
 // Upload image to GCS for Tech and Bio (Conditional Auth)
 app.post('/api/tech-blog/upload-image', upload.single('image'), (req, res, next) => {
     // If request identifies as n8n, require API key
@@ -832,15 +843,8 @@ app.post('/api/tech-blog/upload-image', upload.single('image'), (req, res, next)
         // 카테고리 분기
         const category = req.body.category; // 클라이언트에서 전달
         console.log('Received category:', category);
-        let prefix;
-        if (category === 'Biology') {
-            prefix = 'blog/bio';
-        } else if (category === 'Tech') {
-            prefix = 'blog/tech';
-        } else {
-            // 기본값
-            prefix = 'blog/misc';
-        }
+        // Use helper for prefix
+        const prefix = getStoragePrefix(category);
 
         const blob = bucket.file(`${prefix}/${fileName}`);
 
@@ -909,16 +913,8 @@ app.post('/api/tech-blog/upload-image-base64', (req, res, next) => {
         const bucketName = process.env.GCS_BUCKET_NAME || 'distilledchild';
         const bucket = storage.bucket(bucketName);
 
-        // Category-based path
-        let prefix;
-        if (category === 'Biology') {
-            prefix = 'blog/bio';
-        } else if (category === 'Tech') {
-            prefix = 'blog/tech';
-        } else {
-            prefix = 'blog/misc';
-        }
-
+        // Use helper for prefix
+        const prefix = getStoragePrefix(category);
         const blob = bucket.file(`${prefix}/${finalFileName}`);
 
         // Create a write stream
@@ -952,7 +948,7 @@ app.post('/api/tech-blog/upload-image-base64', (req, res, next) => {
         // Write the buffer to GCS
         blobStream.end(buffer);
     } catch (err) {
-        console.error('[TECH-BLOG-AUTO] Image upload error:', err);
+        console.error('[TECH-BLOG-AUTO] Error processing base64 image:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

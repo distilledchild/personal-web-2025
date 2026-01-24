@@ -9,6 +9,7 @@ import { BlogCard } from '../components/BlogCard';
 import { LikeButton } from '../components/LikeButton';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import { API_URL } from '../utils/apiConfig';
+import { Pagination } from '../components/Pagination';
 
 export const Blog: React.FC = () => {
     const location = useLocation();
@@ -24,6 +25,7 @@ export const Blog: React.FC = () => {
     const [editData, setEditData] = React.useState({ category: '', title: '', content: '', tags: '', existingImages: [] as string[] });
     const [showDiscardDialog, setShowDiscardDialog] = React.useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+    const [showPublishDialog, setShowPublishDialog] = React.useState(false);
     const [isCreateMode, setIsCreateMode] = React.useState(false);
     const [showValidationDialog, setShowValidationDialog] = React.useState(false);
     const [uploadingImage, setUploadingImage] = React.useState(false);
@@ -272,8 +274,6 @@ export const Blog: React.FC = () => {
         if (selectedPost === null || !allPosts[selectedPost]) return;
 
         try {
-
-
             const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -289,7 +289,50 @@ export const Blog: React.FC = () => {
                 setSelectedPost(null);
             }
         } catch (error) {
-            console.error('Failed to delete post:', error);
+            // ... already caught
+        }
+    };
+
+    // Handle publish
+    // Handle publish
+    const handlePublishClick = () => {
+        setShowPublishDialog(true);
+    };
+
+    const handleConfirmPublish = async () => {
+        if (selectedPost === null || !allPosts[selectedPost]) return;
+        const postId = allPosts[selectedPost]._id;
+
+        try {
+            const response = await fetch(`${API_URL}/api/tech-blog/${postId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    isPublished: true,
+                    show: 'Y',
+                    email: user.email
+                })
+            });
+
+            if (response.ok) {
+                const updatedPost = await response.json();
+                // Update local state
+                setBlogPosts(prev => prev.map(post =>
+                    post._id === updatedPost._id ? updatedPost : post
+                ));
+                setToastMessage('Post published successfully!');
+                setToastPos({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+                setShowToast(true);
+                setShowPublishDialog(false);
+                setSelectedPost(null); // Close modal
+                setTimeout(() => {
+                    setShowToast(false);
+                    // Redirect to /blog/tech-bio
+                    navigate('/blog/tech-bio');
+                }, 1000);
+            }
+        } catch (error) {
+            console.error('Failed to publish post:', error);
         }
     };
 
@@ -529,16 +572,23 @@ export const Blog: React.FC = () => {
     const activePosts = allPosts.filter(post => post.isPublished);
     const pendingPosts = allPosts.filter(post => !post.isPublished);
 
-    // State to track if we are showing only pending posts
-    const [showPendingOnly, setShowPendingOnly] = React.useState(false);
+    // State to track active filter
+    const [activeFilter, setActiveFilter] = React.useState<'All' | 'Tech' | 'Biology' | 'Pending'>('All');
     const [showNoPendingDialog, setShowNoPendingDialog] = React.useState(false);
 
-    const handlePendingClick = () => {
-        if (pendingPosts.length === 0) {
+    const handleFilterClick = (filter: 'All' | 'Tech' | 'Biology' | 'Pending') => {
+        if (filter === 'Pending' && pendingPosts.length === 0) {
             setShowNoPendingDialog(true);
             return;
         }
-        setShowPendingOnly(!showPendingOnly);
+        // Toggle off behavior? Or simple switch? 
+        // User behavior usually expects clicking "Tech" shows Tech. Clicking "Tech" again *might* reset, but let's stick to switching.
+        if (activeFilter === filter) {
+            setActiveFilter('All');
+        } else {
+            setActiveFilter(filter);
+        }
+        setCurrentPage(1);
     };
 
     const filteredPosts = isSearching
@@ -554,19 +604,22 @@ export const Blog: React.FC = () => {
             const dateB = new Date(b.createdAt).getTime();
             return dateB - dateA;
         })
-        : showPendingOnly
+        : activeFilter === 'Pending'
             ? pendingPosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
                 // Sort by createdAt ASCENDING (Oldest first) for Pending view
                 const dateA = new Date(a.createdAt).getTime();
                 const dateB = new Date(b.createdAt).getTime();
                 return dateA - dateB;
             })
-            : activePosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
-                // Always sort by createdAt descending (most recent first) for normal view
-                const dateA = new Date(a.createdAt).getTime();
-                const dateB = new Date(b.createdAt).getTime();
-                return dateB - dateA;
-            });
+            : activePosts
+                .filter(post => activeFilter === 'All' || post.category === activeFilter)
+                .map((post, index) => ({ ...post, globalIndex: index }))
+                .sort((a, b) => {
+                    // Always sort by createdAt descending (most recent first) for normal view
+                    const dateA = new Date(a.createdAt).getTime();
+                    const dateB = new Date(b.createdAt).getTime();
+                    return dateB - dateA;
+                });
 
     // Pagination logic
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
@@ -666,12 +719,22 @@ export const Blog: React.FC = () => {
                                                 {/* Sidebar TOC */}
                                                 <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
 
-                                                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Latest Posts</h3>
+                                                    <h3
+                                                        className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 cursor-pointer hover:text-slate-600 transition-colors"
+                                                        onClick={() => handleFilterClick('All')}
+                                                    >
+                                                        Latest Posts
+                                                    </h3>
                                                     <hr className="border-slate-200 my-2" />
 
                                                     {/* Tech Section */}
-                                                    <h4 className="text-sm font-bold text-pink-500 mb-2">Tech</h4>
-                                                    {filteredPosts
+                                                    <h4
+                                                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Tech' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                                                        onClick={() => handleFilterClick('Tech')}
+                                                    >
+                                                        Tech
+                                                    </h4>
+                                                    {activePosts
                                                         .map((post, index) => ({ ...post, originalIndex: index }))
                                                         .filter(post => post.category === 'Tech')
                                                         .slice(0, 3)
@@ -700,15 +763,23 @@ export const Blog: React.FC = () => {
                                                     <hr className="border-slate-200 my-4" />
 
                                                     {/* Bio Section */}
-                                                    <h4 className="text-sm font-bold text-pink-500 mb-2">Bio</h4>
-                                                    {filteredPosts
+                                                    <h4
+                                                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Biology' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                                                        onClick={() => handleFilterClick('Biology')}
+                                                    >
+                                                        Bio
+                                                    </h4>
+                                                    {activePosts
                                                         .map((post, index) => ({ ...post, originalIndex: index }))
                                                         .filter(post => post.category === 'Biology')
                                                         .slice(0, 3)
                                                         .map((post) => (
                                                             <div
                                                                 key={post._id || post.originalIndex}
-                                                                onClick={() => setSelectedPost(post.originalIndex)}
+                                                                onClick={() => {
+                                                                    const idx = allPosts.findIndex(p => p._id === post._id);
+                                                                    setSelectedPost(idx);
+                                                                }}
                                                                 className={`
                     group cursor-pointer transition-all duration-200
                     bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
@@ -729,8 +800,8 @@ export const Blog: React.FC = () => {
                                                         <>
                                                             <hr className="border-slate-200 my-4" />
                                                             <h4
-                                                                className="text-sm font-bold text-pink-500 mb-2 flex justify-between items-center cursor-pointer hover:text-pink-700 transition-colors"
-                                                                onClick={handlePendingClick}
+                                                                className={`text-sm font-bold mb-2 flex justify-between items-center cursor-pointer transition-colors ${activeFilter === 'Pending' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                                                                onClick={() => handleFilterClick('Pending')}
                                                             >
                                                                 <span>Pending</span>
                                                                 <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-xs">
@@ -778,94 +849,61 @@ export const Blog: React.FC = () => {
                                                             </div>
                                                         ))}
                                                     </div>
+
+                                                    {/* Pagination and Search Row */}
+                                                    <div className="flex items-center justify-between mt-8 pb-8 px-4">
+                                                        {/* Left Spacer */}
+                                                        <div className="flex-1"></div>
+
+                                                        {/* Pagination (Centered) */}
+                                                        <Pagination
+                                                            currentPage={currentPage}
+                                                            totalPages={totalPages}
+                                                            onPageChange={handlePageChange}
+                                                            theme="pink"
+                                                        />
+
+                                                        {/* Search Section (Right Aligned) */}
+                                                        <div className="flex-1 flex justify-end">
+                                                            <div className="flex items-center gap-2 w-full max-w-xs justify-end">
+                                                                <input
+                                                                    type="text"
+                                                                    value={searchQuery}
+                                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault();
+                                                                            handleSearch();
+                                                                        }
+                                                                    }}
+                                                                    placeholder="Search posts..."
+                                                                    className="w-48 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
+                                                                />
+                                                                <button
+                                                                    onClick={handleSearch}
+                                                                    className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-pink-300 transition-all flex items-center justify-center group"
+                                                                    title="Search"
+                                                                >
+                                                                    <svg
+                                                                        className="w-5 h-5 text-pink-500"
+                                                                        fill="currentColor"
+                                                                        viewBox="0 0 20 20"
+                                                                    >
+                                                                        <path
+                                                                            fillRule="evenodd"
+                                                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                                                            clipRule="evenodd"
+                                                                        />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}
 
-                                    {/* Pagination Controls with Search */}
-                                    {!loading && allPosts.length > 0 && (
-                                        <div className="flex justify-between items-center gap-4 mt-6 pb-4 flex-shrink-0">
-                                            {/* Empty spacer for alignment */}
-                                            <div className="flex-1 max-w-sm"></div>
 
-                                            {/* Pagination Section */}
-                                            {filteredPosts.length > postsPerPage && (
-                                                <div className="flex justify-center items-center gap-2">
-                                                    <button
-                                                        onClick={() => handlePageChange(currentPage - 1)}
-                                                        disabled={currentPage === 1}
-                                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
-                                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                            }`}
-                                                    >
-                                                        Previous
-                                                    </button>
-
-                                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                                                        <button
-                                                            key={pageNum}
-                                                            onClick={() => handlePageChange(pageNum)}
-                                                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
-                                                                ? 'bg-pink-500 text-white'
-                                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                                }`}
-                                                        >
-                                                            {pageNum}
-                                                        </button>
-                                                    ))}
-
-                                                    <button
-                                                        onClick={() => handlePageChange(currentPage + 1)}
-                                                        disabled={currentPage === totalPages}
-                                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
-                                                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                            }`}
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {/* Search Section */}
-                                            <div className="flex items-center gap-2 flex-1 max-w-sm">
-                                                <input
-                                                    type="text"
-                                                    value={searchQuery}
-                                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            e.preventDefault();
-                                                            handleSearch();
-                                                        }
-                                                    }}
-                                                    placeholder="Search posts by title, content, or tags..."
-                                                    className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
-                                                />
-                                                {/* Search button - always shows magnifying glass */}
-                                                <button
-                                                    onClick={handleSearch}
-                                                    className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-pink-300 transition-all flex items-center justify-center group"
-                                                    title="Search"
-                                                >
-                                                    {/* Magnifying glass icon */}
-                                                    <svg
-                                                        className="w-5 h-5 text-pink-500"
-                                                        fill="currentColor"
-                                                        viewBox="0 0 20 20"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-                                                </button>
-
-                                            </div>
-                                        </div>
-                                    )}
                                 </>) : (
                                 <div className="flex-1 flex items-center justify-center">
                                     <div className="text-slate-400 text-xl font-medium flex flex-col items-center gap-4">
@@ -876,7 +914,7 @@ export const Blog: React.FC = () => {
                             )}
                         </div>
                     </div>
-                </div>
+                </div >
             </div >
 
             {/* Modal Popup - View/Edit Mode */}
@@ -988,7 +1026,16 @@ export const Blog: React.FC = () => {
                                     <div className="flex gap-4">
                                         {/* Delete/Update buttons for Admin (Authorized) users */}
                                         {isAuthorized && (
-                                            <>
+                                            <div className="flex gap-4">
+                                                {/* Publish button for pending posts */}
+                                                {!allPosts[selectedPost].isPublished && (
+                                                    <button
+                                                        onClick={handlePublishClick}
+                                                        className="px-6 py-3 bg-green-600 text-white rounded-full font-bold hover:bg-green-700 transition-colors"
+                                                    >
+                                                        Publish
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={handleEdit}
                                                     className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
@@ -1001,7 +1048,7 @@ export const Blog: React.FC = () => {
                                                 >
                                                     Delete
                                                 </button>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                     <button
@@ -1091,20 +1138,46 @@ export const Blog: React.FC = () => {
                 showDeleteDialog && (
                     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
-                            <h3 className="text-xl font-bold text-slate-900 mb-4">글 삭제 확인</h3>
-                            <p className="text-slate-600 mb-6">글을 삭제하시겠습니까?</p>
+                            <h3 className="text-xl font-bold text-slate-900 mb-4">Delete Confirmation</h3>
+                            <p className="text-slate-600 mb-6">Are you sure you want to delete this post?</p>
                             <div className="flex gap-4 justify-end">
                                 <button
                                     onClick={handleCancelDelete}
                                     className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
                                 >
-                                    취소
+                                    Cancel
                                 </button>
                                 <button
                                     onClick={handleConfirmDelete}
                                     className="px-6 py-2 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
                                 >
-                                    확인
+                                    Confirm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Publish Confirmation Dialog */}
+            {
+                showPublishDialog && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl relative">
+                            <h3 className="text-xl font-bold text-slate-900 mb-4">Publish Confirmation</h3>
+                            <p className="text-slate-600 mb-6">Are you sure you want to publish this post?</p>
+                            <div className="flex gap-4 justify-end">
+                                <button
+                                    onClick={() => setShowPublishDialog(false)}
+                                    className="px-6 py-2 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmPublish}
+                                    className="px-6 py-2 bg-green-600 text-white rounded-full font-bold hover:bg-green-700 transition-colors"
+                                >
+                                    Confirm
                                 </button>
                             </div>
                         </div>

@@ -13,6 +13,7 @@ import {
     SuccessPopup,
     TodoFormData
 } from '../components/TodoComponents';
+import { Pagination } from '../components/Pagination';
 import { API_URL } from '../utils/apiConfig';
 
 interface TodoPersonalProps {
@@ -500,40 +501,16 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
                     </div>
 
                     {/* Pagination and Search Section */}
-                    <div className="flex justify-between items-center gap-4 mt-4">
+                    <div className="flex justify-between items-center gap-4 mt-8">
                         <div className="flex-1 max-w-sm"></div>
 
                         {/* Pagination Controls */}
-                        <div className="flex justify-center items-center gap-2">
-                            <button
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50"
-                            >
-                                Previous
-                            </button>
-
-                            {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-                                <button
-                                    key={page}
-                                    onClick={() => handlePageChange(page)}
-                                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page
-                                        ? 'bg-gray-500 text-white'
-                                        : 'text-slate-600 hover:bg-slate-100'
-                                        }`}
-                                >
-                                    {page}
-                                </button>
-                            ))}
-
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === (totalPages || 1)}
-                                className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 disabled:opacity-50 hover:bg-slate-50"
-                            >
-                                Next
-                            </button>
-                        </div>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages || 1}
+                            onPageChange={handlePageChange}
+                            theme="gray"
+                        />
 
                         {/* Search Section */}
                         <div className="flex items-center gap-2 flex-1 max-w-sm justify-end">

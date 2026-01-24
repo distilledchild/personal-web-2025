@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, MessageSquare } from 'lucide-react';
 import { GuestbookCard } from '../../components/GuestbookCard';
+import { Pagination } from '../../components/Pagination';
 import { API_URL } from '../../utils/apiConfig';
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
@@ -259,42 +260,13 @@ export const Guestbook: React.FC<GuestbookProps> = ({ user, isAuthorized }) => {
                                     </div>
 
                                     {/* Pagination Controls - Always visible */}
-                                    <div className="flex justify-center items-center gap-2 mt-8">
-                                        <button
-                                            onClick={() => setCurrentPage(currentPage - 1)}
-                                            disabled={currentPage === 1}
-                                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === 1
-                                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                }`}
-                                        >
-                                            Previous
-                                        </button>
-
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                                            <button
-                                                key={pageNum}
-                                                onClick={() => setCurrentPage(pageNum)}
-                                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === pageNum
-                                                    ? 'bg-purple-500 text-white'
-                                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                    }`}
-                                            >
-                                                {pageNum}
-                                            </button>
-                                        ))}
-
-                                        <button
-                                            onClick={() => setCurrentPage(currentPage + 1)}
-                                            disabled={currentPage === totalPages}
-                                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${currentPage === totalPages
-                                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                                }`}
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
+                                        theme="purple"
+                                        className="mt-8"
+                                    />
                                 </>
                             );
                         })()}
