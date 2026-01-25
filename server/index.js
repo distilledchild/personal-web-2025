@@ -284,7 +284,7 @@ const techBlogSchema = new mongoose.Schema({
     show: { type: String, default: 'Y' },  // 'Y' or 'N'
     isAutomated: { type: Boolean, default: false },
     references: [{ type: String }]  // Array of reference URLs
-}, { collection: 'TECH_BLOG' });
+}, { collection: 'BLOG' });
 
 const TechBlog = mongoose.model('TechBlog', techBlogSchema);
 
@@ -813,6 +813,8 @@ const getStoragePrefix = (category) => {
         return 'blog/bio';
     } else if (lowerCategory === 'tech') {
         return 'blog/tech';
+    } else if (lowerCategory === 'cooking' || lowerCategory === 'cook') {
+        return 'blog/cook';
     }
     return 'blog/misc';
 };

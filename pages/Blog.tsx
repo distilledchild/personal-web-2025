@@ -10,6 +10,8 @@ import { LikeButton } from '../components/LikeButton';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
 import { API_URL } from '../utils/apiConfig';
 import { Pagination } from '../components/Pagination';
+import { BlogLayout } from '../components/BlogLayout';
+import { BlogGrid } from '../components/BlogGrid';
 
 export const Blog: React.FC = () => {
     const location = useLocation();
@@ -30,8 +32,7 @@ export const Blog: React.FC = () => {
     const [showValidationDialog, setShowValidationDialog] = React.useState(false);
     const [uploadingImage, setUploadingImage] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
-    const [useOpal, setUseOpal] = React.useState(false);
-    const [showOpalDialog, setShowOpalDialog] = React.useState(false);
+
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchQuery, setSearchQuery] = React.useState('');
     const [isSearching, setIsSearching] = React.useState(false);
@@ -355,71 +356,41 @@ export const Blog: React.FC = () => {
 
     // Handle create save
     const handleCreateSave = async () => {
-        // Validation check (relaxed for OPAL - only title required)
-        if (useOpal) {
-            if (!editData.title.trim()) {
-                setShowValidationDialog(true);
-                return;
-            }
-        } else {
-            if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
-                setShowValidationDialog(true);
-                return;
-            }
+        // Validation check
+        if (!editData.category.trim() || !editData.title.trim() || !editData.content.trim()) {
+            setShowValidationDialog(true);
+            return;
         }
 
         try {
 
+            // Normal save
+            const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
+            console.log('[FRONTEND] Sending CREATE with tags:', tagsArray);
 
-            // If OPAL is checked, call OPAL API
-            if (useOpal) {
-                const opalResponse = await fetch(`${API_URL}/api/tech-blog/opal-generate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        category: editData.category,
-                        title: editData.title,
-                        content: editData.content
-                    })
-                });
+            const response = await fetch(`${API_URL}/api/tech-blog`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...editData,
+                    tags: tagsArray,
+                    isAutomated: false,
+                    isPublished: true,
+                    show: 'Y',
+                    author: {
+                        name: user.name,
+                        email: user.email,
+                        avatar: user.picture
+                    }
+                })
+            });
 
-                if (opalResponse.ok) {
-                    // Show success dialog
-                    setShowOpalDialog(true);
-                } else {
-                    const errorData = await opalResponse.json();
-                    alert(`OPAL workflow failed: ${errorData.error || 'Unknown error'}`);
-                }
-            } else {
-                // Normal save (unchecked OPAL)
-                const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
-                console.log('[FRONTEND] Sending CREATE with tags:', tagsArray);
-
-                const response = await fetch(`${API_URL}/api/tech-blog`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ...editData,
-                        tags: tagsArray,
-                        isAutomated: false,
-                        isPublished: true,
-                        show: 'Y',
-                        author: {
-                            name: user.name,
-                            email: user.email,
-                            avatar: user.picture
-                        }
-                    })
-                });
-
-                if (response.ok) {
-                    const newPost = await response.json();
-                    // Add to local state
-                    setBlogPosts(prev => [newPost, ...prev]);
-                    setIsCreateMode(false);
-                    setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
-                    setUseOpal(false);
-                }
+            if (response.ok) {
+                const newPost = await response.json();
+                // Add to local state
+                setBlogPosts(prev => [newPost, ...prev]);
+                setIsCreateMode(false);
+                setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
             }
         } catch (error) {
             console.error('Failed to create post:', error);
@@ -569,14 +540,37 @@ export const Blog: React.FC = () => {
 
     // Filter posts based on search query (button/enter triggered)
     // ONLY show published posts in the main grid unless showing pending
-    const activePosts = allPosts.filter(post => post.isPublished);
-    const pendingPosts = allPosts.filter(post => !post.isPublished);
+    // Also filter by activeTab (Tech vs Life)
+    const activePosts = allPosts.filter(post => {
+        if (!post.isPublished) return false;
+
+        if (activeTab === 'life') {
+            const cat = (post.category || '').toLowerCase();
+            return cat === 'cooking' || cat === 'cook';
+        }
+
+        return true;
+    });
+
+    // Pending posts (Admin only) - exclude from Tech/Life split logic for now or apply same? 
+    // Usually pending posts are reviewed in a separate view, so maybe keep them all or filter too? 
+    // For simplicity, let's filter them too so admin sees relevant pending posts.
+    const pendingPosts = allPosts.filter(post => {
+        if (post.isPublished) return false;
+
+        if (activeTab === 'life') {
+            const cat = (post.category || '').toLowerCase();
+            return cat === 'cooking' || cat === 'cook';
+        }
+
+        return true;
+    });
 
     // State to track active filter
-    const [activeFilter, setActiveFilter] = React.useState<'All' | 'Tech' | 'Biology' | 'Pending'>('All');
+    const [activeFilter, setActiveFilter] = React.useState<string>('All');
     const [showNoPendingDialog, setShowNoPendingDialog] = React.useState(false);
 
-    const handleFilterClick = (filter: 'All' | 'Tech' | 'Biology' | 'Pending') => {
+    const handleFilterClick = (filter: string) => {
         if (filter === 'Pending' && pendingPosts.length === 0) {
             setShowNoPendingDialog(true);
             return;
@@ -688,234 +682,191 @@ export const Blog: React.FC = () => {
             .trim();
     };
 
+    const renderSidebar = () => (
+        <>
+            <h3
+                className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 cursor-pointer hover:text-slate-600 transition-colors"
+                onClick={() => handleFilterClick('All')}
+            >
+                Latest Posts
+            </h3>
+            <hr className="border-slate-200 my-2" />
+
+            {/* Sidebar content based on Active Tab */}
+            {activeTab === 'life' ? (
+                /* LIFE Sidebar */
+                <>
+                    {/* Cooking Section */}
+                    <h4
+                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Cooking' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                        onClick={() => handleFilterClick('Cooking')}
+                    >
+                        Cooking
+                    </h4>
+                    {activePosts
+                        .map((post, index) => ({ ...post, originalIndex: index }))
+                        .filter(post => post.category === 'Cooking')
+                        .slice(0, 3)
+                        .map((post) => (
+                            <div
+                                key={post._id || post.originalIndex}
+                                onClick={() => {
+                                    const idx = allPosts.findIndex(p => p._id === post._id);
+                                    setSelectedPost(idx);
+                                }}
+                                className={`
+                                    group cursor-pointer transition-all duration-200
+                                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                    hover:${post.color} hover:${post.borderColor}
+                                `}
+                            >
+                                <p className={`
+                                    text-sm font-medium text-slate-600 truncate
+                                    group-hover:${post.textColor}
+                                `}>
+                                    {post.title}
+                                </p>
+                            </div>
+                        ))}
+                </>
+            ) : (
+                /* TECH Sidebar */
+                <>
+                    {/* Tech Section */}
+                    <h4
+                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Tech' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                        onClick={() => handleFilterClick('Tech')}
+                    >
+                        Tech
+                    </h4>
+                    {activePosts
+                        .map((post, index) => ({ ...post, originalIndex: index }))
+                        .filter(post => post.category === 'Tech')
+                        .slice(0, 3)
+                        .map((post) => (
+                            <div
+                                key={post._id || post.originalIndex}
+                                onClick={() => {
+                                    const idx = allPosts.findIndex(p => p._id === post._id);
+                                    setSelectedPost(idx);
+                                }}
+                                className={`
+                                    group cursor-pointer transition-all duration-200
+                                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                    hover:${post.color} hover:${post.borderColor}
+                                `}
+                            >
+                                <p className={`
+                                    text-sm font-medium text-slate-600 truncate
+                                    group-hover:${post.textColor}
+                                `}>
+                                    {post.title}
+                                </p>
+                            </div>
+                        ))}
+
+                    <hr className="border-slate-200 my-4" />
+
+                    {/* Bio Section */}
+                    <h4
+                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Biology' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                        onClick={() => handleFilterClick('Biology')}
+                    >
+                        Bio
+                    </h4>
+                    {activePosts
+                        .map((post, index) => ({ ...post, originalIndex: index }))
+                        .filter(post => post.category === 'Biology')
+                        .slice(0, 3)
+                        .map((post) => (
+                            <div
+                                key={post._id || post.originalIndex}
+                                onClick={() => {
+                                    const idx = allPosts.findIndex(p => p._id === post._id);
+                                    setSelectedPost(idx);
+                                }}
+                                className={`
+                                    group cursor-pointer transition-all duration-200
+                                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                    hover:${post.color} hover:${post.borderColor}
+                                `}
+                            >
+                                <p className={`
+                                    text-sm font-medium text-slate-600 truncate
+                                    group-hover:${post.textColor}
+                                `}>
+                                    {post.title}
+                                </p>
+                            </div>
+                        ))}
+                </>
+            )}
+
+            {/* PENDING Post Section (Admin Only) */}
+            {isAuthorized && (
+                <>
+                    <hr className="border-slate-200 my-4" />
+                    <h4
+                        className={`text-sm font-bold mb-2 flex justify-between items-center cursor-pointer transition-colors ${activeFilter === 'Pending' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
+                        onClick={() => handleFilterClick('Pending')}
+                    >
+                        <span>Pending</span>
+                        <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-xs">
+                            {pendingPosts.length}
+                        </span>
+                    </h4>
+                    {pendingPosts
+                        .slice(0, 3)
+                        .map((post) => {
+                            const originalIndex = allPosts.findIndex(p => p._id === post._id);
+                            return (
+                                <div
+                                    key={post._id}
+                                    onClick={() => setSelectedPost(originalIndex)}
+                                    className={`
+                                        group cursor-pointer transition-all duration-200
+                                        bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                        hover:${post.color} hover:${post.borderColor}
+                                    `}
+                                >
+                                    <p className={`
+                                        text-sm font-medium text-slate-600 truncate
+                                        group-hover:${post.textColor}
+                                    `}>
+                                        {post.title}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                </>
+            )}
+        </>
+    );
+
     return (
         <>
-            <div className="h-screen bg-white flex flex-col overflow-hidden">
-                <PageHeader
-                    title="Blog"
-                    tabs={tabs}
-                    activeTab={activeTab}
-                    onTabChange={(id) => navigate(`/blog/${id}`)}
-                    activeColor="border-pink-500 text-pink-500"
+            <BlogLayout
+                title="Blog"
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={(id) => navigate(`/blog/${id}`)}
+                sidebar={renderSidebar()}
+            >
+                <BlogGrid
+                    posts={posts}
+                    loading={loading}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    onPostClick={(localIndex) => setSelectedPost(getGlobalIndex(localIndex))}
+                    onLike={handleLike}
+                    isLikedByUser={isLikedByUser}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    onSearch={handleSearch}
+                    emptyMessage={activeTab === 'life' ? "Life Blog Under Construction" : "No posts found."}
                 />
-
-                <div className="flex-1 min-h-0 relative">
-                    <div className="absolute inset-0 px-6 pb-4">
-                        <div className="max-w-7xl mx-auto w-full h-full flex flex-col">
-                            {activeTab === 'tech-bio' ? (
-                                <>
-
-                                    {
-                                        loading ? (
-                                            <div className="flex-1 flex items-center justify-center" >
-                                                <div className="text-slate-400">Loading posts...</div>
-                                            </div>
-                                        ) : posts.length === 0 ? (
-                                            <div className="flex-1 flex items-center justify-center">
-                                                <div className="text-slate-400">No posts found.</div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 overflow-y-auto scrollbar-hide lg:overflow-hidden">
-                                                {/* Sidebar TOC */}
-                                                <div className="lg:w-64 flex-shrink-0 space-y-3 lg:overflow-y-auto scrollbar-hide pr-2 pb-20 lg:pb-0">
-
-                                                    <h3
-                                                        className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 cursor-pointer hover:text-slate-600 transition-colors"
-                                                        onClick={() => handleFilterClick('All')}
-                                                    >
-                                                        Latest Posts
-                                                    </h3>
-                                                    <hr className="border-slate-200 my-2" />
-
-                                                    {/* Tech Section */}
-                                                    <h4
-                                                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Tech' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
-                                                        onClick={() => handleFilterClick('Tech')}
-                                                    >
-                                                        Tech
-                                                    </h4>
-                                                    {activePosts
-                                                        .map((post, index) => ({ ...post, originalIndex: index }))
-                                                        .filter(post => post.category === 'Tech')
-                                                        .slice(0, 3)
-                                                        .map((post) => (
-                                                            <div
-                                                                key={post._id || post.originalIndex}
-                                                                onClick={() => {
-                                                                    const idx = allPosts.findIndex(p => p._id === post._id);
-                                                                    setSelectedPost(idx);
-                                                                }}
-                                                                className={`
-                    group cursor-pointer transition-all duration-200
-                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                    hover:${post.color} hover:${post.borderColor}
-                  `}
-                                                            >
-                                                                <p className={`
-                    text-sm font-medium text-slate-600 truncate
-                    group-hover:${post.textColor}
-                  `}>
-                                                                    {post.title}
-                                                                </p>
-                                                            </div>
-                                                        ))}
-
-                                                    <hr className="border-slate-200 my-4" />
-
-                                                    {/* Bio Section */}
-                                                    <h4
-                                                        className={`text-sm font-bold mb-2 cursor-pointer transition-colors ${activeFilter === 'Biology' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
-                                                        onClick={() => handleFilterClick('Biology')}
-                                                    >
-                                                        Bio
-                                                    </h4>
-                                                    {activePosts
-                                                        .map((post, index) => ({ ...post, originalIndex: index }))
-                                                        .filter(post => post.category === 'Biology')
-                                                        .slice(0, 3)
-                                                        .map((post) => (
-                                                            <div
-                                                                key={post._id || post.originalIndex}
-                                                                onClick={() => {
-                                                                    const idx = allPosts.findIndex(p => p._id === post._id);
-                                                                    setSelectedPost(idx);
-                                                                }}
-                                                                className={`
-                    group cursor-pointer transition-all duration-200
-                    bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                    hover:${post.color} hover:${post.borderColor}
-                  `}
-                                                            >
-                                                                <p className={`
-                    text-sm font-medium text-slate-600 truncate
-                    group-hover:${post.textColor}
-                  `}>
-                                                                    {post.title}
-                                                                </p>
-                                                            </div>
-                                                        ))}
-
-                                                    {/* PENDING Post Section (Admin Only) - Moved to bottom */}
-                                                    {isAuthorized && (
-                                                        <>
-                                                            <hr className="border-slate-200 my-4" />
-                                                            <h4
-                                                                className={`text-sm font-bold mb-2 flex justify-between items-center cursor-pointer transition-colors ${activeFilter === 'Pending' ? 'text-pink-700 underline' : 'text-pink-500 hover:text-pink-700'}`}
-                                                                onClick={() => handleFilterClick('Pending')}
-                                                            >
-                                                                <span>Pending</span>
-                                                                <span className="bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full text-xs">
-                                                                    {pendingPosts.length}
-                                                                </span>
-                                                            </h4>
-                                                            {pendingPosts
-                                                                .slice(0, 3)
-                                                                .map((post) => {
-                                                                    const originalIndex = allPosts.findIndex(p => p._id === post._id);
-                                                                    return (
-                                                                        <div
-                                                                            key={post._id}
-                                                                            onClick={() => setSelectedPost(originalIndex)}
-                                                                            className={`
-                                                                group cursor-pointer transition-all duration-200
-                                                                bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                                                                hover:${post.color} hover:${post.borderColor}
-                                                            `}
-                                                                        >
-                                                                            <p className={`
-                                                                text-sm font-medium text-slate-600 truncate
-                                                                group-hover:${post.textColor}
-                                                            `}>
-                                                                                {post.title}
-                                                                            </p>
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                        </>
-                                                    )}
-                                                </div>
-
-                                                {/* Grid */}
-                                                <div className="flex-1 flex flex-col min-h-0 lg:overflow-y-auto scrollbar-hide">
-                                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2 pb-20 lg:pb-2">
-                                                        {posts.map((post, i) => (
-                                                            <div key={post._id || i} className="h-full">
-                                                                <BlogCard
-                                                                    post={post}
-                                                                    isLiked={isLikedByUser(post)}
-                                                                    onLike={(e) => handleLike(post._id, e)}
-                                                                    onClick={() => setSelectedPost(getGlobalIndex(i))}
-                                                                />
-                                                            </div>
-                                                        ))}
-                                                    </div>
-
-                                                    {/* Pagination and Search Row */}
-                                                    <div className="flex items-center justify-between mt-8 pb-8 px-4">
-                                                        {/* Left Spacer */}
-                                                        <div className="flex-1"></div>
-
-                                                        {/* Pagination (Centered) */}
-                                                        <Pagination
-                                                            currentPage={currentPage}
-                                                            totalPages={totalPages}
-                                                            onPageChange={handlePageChange}
-                                                            theme="pink"
-                                                        />
-
-                                                        {/* Search Section (Right Aligned) */}
-                                                        <div className="flex-1 flex justify-end">
-                                                            <div className="flex items-center gap-2 w-full max-w-xs justify-end">
-                                                                <input
-                                                                    type="text"
-                                                                    value={searchQuery}
-                                                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                                                    onKeyDown={(e) => {
-                                                                        if (e.key === 'Enter') {
-                                                                            e.preventDefault();
-                                                                            handleSearch();
-                                                                        }
-                                                                    }}
-                                                                    placeholder="Search posts..."
-                                                                    className="w-48 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
-                                                                />
-                                                                <button
-                                                                    onClick={handleSearch}
-                                                                    className="w-10 h-10 rounded-lg bg-white border border-slate-300 hover:border-pink-300 transition-all flex items-center justify-center group"
-                                                                    title="Search"
-                                                                >
-                                                                    <svg
-                                                                        className="w-5 h-5 text-pink-500"
-                                                                        fill="currentColor"
-                                                                        viewBox="0 0 20 20"
-                                                                    >
-                                                                        <path
-                                                                            fillRule="evenodd"
-                                                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                                                            clipRule="evenodd"
-                                                                        />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-
-                                </>) : (
-                                <div className="flex-1 flex items-center justify-center">
-                                    <div className="text-slate-400 text-xl font-medium flex flex-col items-center gap-4">
-                                        <Coffee size={48} className="text-slate-300" />
-                                        <span>Life Blog Under Construction</span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div >
-            </div >
+            </BlogLayout>
 
             {/* Modal Popup - View/Edit Mode */}
             {
@@ -1060,7 +1011,7 @@ export const Blog: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div >
                 )
             }
 
@@ -1191,7 +1142,7 @@ export const Blog: React.FC = () => {
                 isOpen={isCreateMode}
                 editData={editData}
                 postColor="bg-pink-50"
-                useOpal={useOpal}
+
                 uploadingImage={uploadingImage}
                 isDragging={isDragging}
                 onClose={handleCreateCancel}
@@ -1201,7 +1152,7 @@ export const Blog: React.FC = () => {
                 onContentChange={(content: string) => setEditData({ ...editData, content })}
                 onTagInput={handleTagInput}
                 onTagBlur={handleTagBlur}
-                onOpalChange={setUseOpal}
+
                 onImageUpload={handleFileSelect}
                 onRemoveImage={handleRemoveImage}
                 onDragOver={handleDragOver}
@@ -1209,31 +1160,6 @@ export const Blog: React.FC = () => {
                 onDrop={handleDrop}
             />
 
-            {/* OPAL Success Dialog */}
-            {
-                showOpalDialog && (
-                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl relative text-center">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-3xl">✅</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">Request Sent to OPAL</h3>
-                            <p className="text-slate-600 mb-8">Your request has been successfully sent to the OPAL workflow.</p>
-                            <button
-                                onClick={() => {
-                                    setShowOpalDialog(false);
-                                    setIsCreateMode(false);
-                                    setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
-                                    setUseOpal(false);
-                                }}
-                                className="w-full px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                )
-            }
 
             {/* Validation Dialog */}
             {

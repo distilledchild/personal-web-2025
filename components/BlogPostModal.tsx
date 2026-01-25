@@ -36,7 +36,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({
     isOpen,
     editData,
     postColor = 'bg-pink-50',
-    useOpal = false,
+
     uploadingImage,
     isDragging,
     onClose,
@@ -46,7 +46,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({
     onContentChange,
     onTagInput,
     onTagBlur,
-    onOpalChange,
+
     onImageUpload,
     onRemoveImage,
     onDragOver,
@@ -114,23 +114,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({
                                 placeholder="tag1; tag2; tag3"
                             />
                         </div>
-                        {isCreateMode && onOpalChange && (
-                            <div className="flex items-center gap-4">
-                                <label className="text-sm font-bold text-slate-700 w-24">OPAL:</label>
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="use-opal"
-                                        checked={useOpal}
-                                        onChange={(e) => onOpalChange(e.target.checked)}
-                                        className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                                    />
-                                    <label htmlFor="use-opal" className="text-sm text-slate-600 cursor-pointer">
-                                        Use OPAL workflow to generate content
-                                    </label>
-                                </div>
-                            </div>
-                        )}
+
                     </div>
                 </div>
 
