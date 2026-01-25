@@ -4,6 +4,7 @@ import { Plus, Monitor, Coffee } from 'lucide-react';
 import { PageHeader, TabItem } from '../components/PageHeader';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { BlogPostModal } from '../components/BlogPostModal';
 import { BlogCard } from '../components/BlogCard';
 import { LikeButton } from '../components/LikeButton';
@@ -12,6 +13,18 @@ import { API_URL } from '../utils/apiConfig';
 import { Pagination } from '../components/Pagination';
 import { BlogLayout } from '../components/BlogLayout';
 import { BlogGrid } from '../components/BlogGrid';
+
+const COOKING_TEMPLATE = `* **Prep Time:** 30 min
+* **Difficulty:** Easy
+* **Servings:** 2
+
+### 🥔 Ingredients
+- [ ] 
+- [ ] 
+
+### 👨‍🍳 Instructions
+1. Step 1
+2. Step 2`;
 
 export const Blog: React.FC = () => {
     const location = useLocation();
@@ -350,7 +363,17 @@ export const Blog: React.FC = () => {
 
     // Handle create button click
     const handleCreate = () => {
-        setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
+        if (activeTab === 'life') {
+            setEditData({
+                category: 'Cooking',
+                title: '',
+                content: COOKING_TEMPLATE,
+                tags: '',
+                existingImages: []
+            });
+        } else {
+            setEditData({ category: '', title: '', content: '', tags: '', existingImages: [] });
+        }
         setIsCreateMode(true);
     };
 
@@ -538,25 +561,31 @@ export const Blog: React.FC = () => {
         ...colorThemes[i % colorThemes.length]
     }));
 
+
     // Filter posts based on search query (button/enter triggered)
     // ONLY show published posts in the main grid unless showing pending
     // Also filter by activeTab (Tech vs Life)
     const activePosts = allPosts.filter(post => {
-        if (!post.isPublished) return false;
+        // Treat undefined as true (legacy data from BLOG collection might miss this field)
+        // Check for boolean true, string "true", or undefined/null (not explicitly false)
+        const isPublished = post.isPublished === true || post.isPublished === 'true' || (post.isPublished !== false && post.isPublished !== 'false');
+
+        if (!isPublished) return false;
+
+        const cat = (post.category || '').toLowerCase();
 
         if (activeTab === 'life') {
-            const cat = (post.category || '').toLowerCase();
             return cat === 'cooking' || cat === 'cook';
+        } else {
+            // Tech & Bio tab: Show only Tech or Biology
+            return cat === 'tech' || cat === 'biology';
         }
-
-        return true;
     });
 
-    // Pending posts (Admin only) - exclude from Tech/Life split logic for now or apply same? 
-    // Usually pending posts are reviewed in a separate view, so maybe keep them all or filter too? 
-    // For simplicity, let's filter them too so admin sees relevant pending posts.
+    // Pending posts (Admin only) - filter out published ones
     const pendingPosts = allPosts.filter(post => {
-        if (post.isPublished) return false;
+        const isPublished = post.isPublished === true || post.isPublished === 'true' || (post.isPublished !== false && post.isPublished !== 'false');
+        if (isPublished) return false;
 
         if (activeTab === 'life') {
             const cat = (post.category || '').toLowerCase();
@@ -569,6 +598,36 @@ export const Blog: React.FC = () => {
     // State to track active filter
     const [activeFilter, setActiveFilter] = React.useState<string>('All');
     const [showNoPendingDialog, setShowNoPendingDialog] = React.useState(false);
+
+
+
+    // Handle Category Change with Dynamic Template
+    const handleCategoryChange = (category: string) => {
+        let newContent = editData.content;
+
+        if (category === 'Cooking') {
+            // If content is empty/whitespace, apply template
+            if (!newContent || !newContent.trim()) {
+                newContent = COOKING_TEMPLATE;
+            }
+        } else {
+            // Switching AWAY from Cooking
+            // If content matches the template exactly (user didn't edit), clear it
+            if (newContent === COOKING_TEMPLATE) {
+                newContent = '';
+            }
+        }
+
+        setEditData({ ...editData, category, content: newContent });
+    };
+
+    // Reset filter and pagination when activeTab changes
+    React.useEffect(() => {
+        setActiveFilter('All');
+        setCurrentPage(1);
+        setSearchQuery('');
+        setIsSearching(false);
+    }, [activeTab]);
 
     const handleFilterClick = (filter: string) => {
         if (filter === 'Pending' && pendingPosts.length === 0) {
@@ -890,7 +949,7 @@ export const Blog: React.FC = () => {
                             <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
                                 <div className="markdown-content text-slate-700 leading-relaxed">
                                     <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
+                                        remarkPlugins={[remarkGfm, remarkBreaks]}
                                         components={{
                                             // Headings
                                             h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mb-4 mt-6 text-slate-900" {...props} />,
@@ -1027,7 +1086,7 @@ export const Blog: React.FC = () => {
                         isDragging={isDragging}
                         onClose={handleCloseEdit}
                         onSave={handleSave}
-                        onCategoryChange={(category: string) => setEditData({ ...editData, category })}
+                        onCategoryChange={handleCategoryChange}
                         onTitleChange={(title: string) => setEditData({ ...editData, title })}
                         onContentChange={(content: string) => setEditData({ ...editData, content })}
                         onTagInput={handleTagInput}
@@ -1147,7 +1206,7 @@ export const Blog: React.FC = () => {
                 isDragging={isDragging}
                 onClose={handleCreateCancel}
                 onSave={handleCreateSave}
-                onCategoryChange={(category: string) => setEditData({ ...editData, category })}
+                onCategoryChange={handleCategoryChange}
                 onTitleChange={(title: string) => setEditData({ ...editData, title })}
                 onContentChange={(content: string) => setEditData({ ...editData, content })}
                 onTagInput={handleTagInput}

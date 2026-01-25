@@ -91,6 +91,7 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({
                                 <option value="">Select category...</option>
                                 <option value="Biology">Biology</option>
                                 <option value="Tech">Tech</option>
+                                <option value="Cooking">Cooking</option>
                             </select>
                         </div>
                         <div className="flex items-center gap-4">

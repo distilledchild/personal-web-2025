@@ -20,18 +20,14 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post, isLiked, onLike, onCli
         if (!markdown) return '';
         return markdown
             .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
-            .replace(/^#{1,6}\s+/gm, '')
-            .replace(/```[\s\S]*?```/g, '')
-            .replace(/`([^`]+)`/g, '$1')
-            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-            .replace(/(\*\*|__)(.*?)\1/g, '$2')
-            .replace(/(\*|_)(.*?)\1/g, '$2')
-            .replace(/^>\s+/gm, '')
-            .replace(/^([-_*]){3,}$/gm, '')
-            .replace(/^[\s]*[-*+]\s+/gm, '')
-            .replace(/^[\s]*\d+\.\s+/gm, '')
-            .replace(/\n\s*\n/g, ' ')
-            .replace(/\s+/g, ' ')
+            .replace(/^#{1,6}\s+(.*)$/gm, '||BR||$1') // Mark Headers
+            .replace(/^[\s]*[-*+]\s+/gm, '||BR||• ') // Mark List Items
+            .replace(/(\*\*|__)(.*?)\1/g, '$2') // Bold
+            .replace(/(\*|_)(.*?)\1/g, '$2') // Italic
+            .replace(/`([^`]+)`/g, '$1') // Code
+            .replace(/\n+/g, ' ') // Flatten logical newlines
+            .replace(/\|\|BR\|\|/g, '\n') // Restore our breaks
+            .replace(/  +/g, ' ') // Trim multiple spaces
             .trim();
     };
 
@@ -80,7 +76,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post, isLiked, onLike, onCli
                     {post.title}
                 </h3>
 
-                <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3 whitespace-pre-line">
                     {stripMarkdown(post.content || '').substring(0, 150)}...
                 </p>
 
