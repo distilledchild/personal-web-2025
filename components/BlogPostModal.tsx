@@ -53,11 +53,11 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({
     onDragLeave,
     onDrop,
 }) => {
-    if (!isOpen) return null;
-
     const isCreateMode = mode === 'create';
 
     useLockBodyScroll(isOpen);
+
+    if (!isOpen) return null;
 
     return (
         <div

@@ -765,10 +765,20 @@ app.put('/api/tech-blog/:id', async (req, res) => {
             return res.status(404).json({ error: 'Blog post not found' });
         }
 
-        // Check if user is the author
-        if (blog.author.email !== email) {
-            console.error('[TECH-BLOG] Unauthorized update attempt by:', email);
-            return res.status(403).json({ error: 'Unauthorized: Only author can update' });
+        // Check if user is the author OR is in the authorized list
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+
+        const authorEmail = blog.author?.email || '';
+        const requestEmail = email || '';
+
+        const isAuthor = authorEmail.toLowerCase() === requestEmail.toLowerCase();
+        // Case-insensitive admin check
+        const isAdmin = authorizedEmails.map(e => e.toLowerCase()).includes(requestEmail.toLowerCase());
+
+        if (!isAuthor && !isAdmin) {
+            console.error(`[TECH-BLOG] Unauthorized update attempt. Stored Author: '${authorEmail}', Requestor: '${requestEmail}'`);
+            console.error(`[TECH-BLOG] comparisons - isAuthor: ${isAuthor}, isAdmin: ${isAdmin}`);
+            return res.status(403).json({ error: `Unauthorized: Stored author '${authorEmail}' does not match requestor '${requestEmail}'` });
         }
 
         // Update fields
@@ -1018,9 +1028,19 @@ app.delete('/api/tech-blog/:id', async (req, res) => {
             return res.status(404).json({ error: 'Blog post not found' });
         }
 
-        // Check if user is the author
-        if (blog.author.email !== email) {
-            return res.status(403).json({ error: 'Unauthorized: Only author can delete' });
+        // Check if user is the author OR is in the authorized list
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+
+        const authorEmail = blog.author?.email || '';
+        const requestEmail = email || '';
+
+        const isAuthor = authorEmail.toLowerCase() === requestEmail.toLowerCase();
+        // Case-insensitive admin check
+        const isAdmin = authorizedEmails.map(e => e.toLowerCase()).includes(requestEmail.toLowerCase());
+
+        if (!isAuthor && !isAdmin) {
+            console.error(`[TECH-BLOG] Unauthorized delete attempt. Stored Author: '${authorEmail}', Requestor: '${requestEmail}'`);
+            return res.status(403).json({ error: `Unauthorized: Stored author '${authorEmail}' does not match requestor '${requestEmail}'` });
         }
 
         // Soft delete: set show to 'N'

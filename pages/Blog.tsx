@@ -14,17 +14,17 @@ import { Pagination } from '../components/Pagination';
 import { BlogLayout } from '../components/BlogLayout';
 import { BlogGrid } from '../components/BlogGrid';
 
-const COOKING_TEMPLATE = `* **Prep Time:** 30 min
-* **Difficulty:** Easy
-* **Servings:** 2
+const COOKING_TEMPLATE = `# 
 
 ### 🥔 Ingredients
-- [ ] 
-- [ ] 
+* 
 
 ### 👨‍🍳 Instructions
-1. Step 1
-2. Step 2`;
+* **Step 1**: 
+* **Step 2**: 
+* **Step 3**: 
+* **Step 4**: 
+* **Step 5**: `;
 
 export const Blog: React.FC = () => {
     const location = useLocation();
@@ -984,7 +984,16 @@ export const Blog: React.FC = () => {
                                             th: ({ node, ...props }) => <th className="border border-slate-300 px-4 py-2 text-left font-bold" {...props} />,
                                             td: ({ node, ...props }) => <td className="border border-slate-300 px-4 py-2" {...props} />,
                                             // Images
-                                            img: ({ node, ...props }) => <img className="max-w-full h-auto rounded-lg my-4" {...props} />,
+                                            img: ({ node, ...props }) => (
+                                                <span className="block my-4">
+                                                    <img
+                                                        className="max-w-full h-auto rounded-lg bg-slate-50 min-h-[200px] object-contain mx-auto border border-slate-100"
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        {...props}
+                                                    />
+                                                </span>
+                                            ),
                                             // Strong and emphasis
                                             strong: ({ node, ...props }) => <strong className="font-bold text-slate-900" {...props} />,
                                             em: ({ node, ...props }) => <em className="italic" {...props} />,
