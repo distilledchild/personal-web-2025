@@ -28,7 +28,7 @@ const COOKING_TEMPLATE = `#
 
 export const Blog: React.FC = () => {
     const location = useLocation();
-    const [selectedPost, setSelectedPost] = React.useState<number | null>(null);
+    const [selectedPostId, setSelectedPostId] = React.useState<string | null>(null);
     const [blogPosts, setBlogPosts] = React.useState<any[]>([]);
     const [user, setUser] = React.useState<any>(null);
     const [isAuthorized, setIsAuthorized] = React.useState(false);
@@ -45,6 +45,71 @@ export const Blog: React.FC = () => {
     const [showValidationDialog, setShowValidationDialog] = React.useState(false);
     const [uploadingImage, setUploadingImage] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
+
+    // Unified Color Theme: All Pink
+    const colorThemes = React.useMemo(() => [
+        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
+        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
+        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
+        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
+    ], []);
+
+    // Combine blog posts with themes
+    const allPosts = React.useMemo(() => blogPosts.map((post, i) => ({
+        ...post,
+        ...colorThemes[i % colorThemes.length],
+        originalIndex: i
+    })), [blogPosts, colorThemes]);
+
+    // Markdown components - memoized to prevent re-renders
+    const markdownComponents = React.useMemo(() => ({
+        // Headings
+        h1: ({ node, ...props }: any) => <h1 className="text-3xl font-bold mb-4 mt-6 text-slate-900" {...props} />,
+        h2: ({ node, ...props }: any) => <h2 className="text-2xl font-bold mb-3 mt-5 text-slate-900 border-b pb-2" {...props} />,
+        h3: ({ node, ...props }: any) => <h3 className="text-xl font-bold mb-2 mt-4 text-slate-900" {...props} />,
+        h4: ({ node, ...props }: any) => <h4 className="text-lg font-bold mb-2 mt-3 text-slate-900" {...props} />,
+        h5: ({ node, ...props }: any) => <h5 className="text-base font-bold mb-2 mt-3 text-slate-900" {...props} />,
+        h6: ({ node, ...props }: any) => <h6 className="text-sm font-bold mb-2 mt-3 text-slate-900" {...props} />,
+        // Paragraphs
+        p: ({ node, ...props }: any) => <p className="mb-4 leading-7" {...props} />,
+        // Lists
+        ul: ({ node, ...props }: any) => <ul className="list-disc list-inside mb-4 ml-4 space-y-2" {...props} />,
+        ol: ({ node, ...props }: any) => <ol className="list-decimal list-inside mb-4 ml-4 space-y-2" {...props} />,
+        li: ({ node, ...props }: any) => <li className="leading-7" {...props} />,
+        // Links
+        a: ({ node, ...props }: any) => <a className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" {...props} />,
+        // Code
+        code: ({ node, inline, ...props }: any) =>
+            inline
+                ? <code className="bg-slate-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                : <code className="block bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono mb-4" {...props} />,
+        pre: ({ node, ...props }: any) => <pre className="mb-4" {...props} />,
+        // Blockquotes
+        blockquote: ({ node, ...props }: any) => <blockquote className="border-l-4 border-slate-300 pl-4 italic my-4 text-slate-600" {...props} />,
+        // Horizontal rule
+        hr: ({ node, ...props }: any) => <hr className="my-6 border-slate-300" {...props} />,
+        // Tables
+        table: ({ node, ...props }: any) => <table className="min-w-full border-collapse border border-slate-300 mb-4" {...props} />,
+        thead: ({ node, ...props }: any) => <thead className="bg-slate-100" {...props} />,
+        tbody: ({ node, ...props }: any) => <tbody {...props} />,
+        tr: ({ node, ...props }: any) => <tr className="border-b border-slate-300" {...props} />,
+        th: ({ node, ...props }: any) => <th className="border border-slate-300 px-4 py-2 text-left font-bold" {...props} />,
+        td: ({ node, ...props }: any) => <td className="border border-slate-300 px-4 py-2" {...props} />,
+        // Images
+        img: ({ node, ...props }: any) => (
+            <span className="block my-4">
+                <img
+                    className="max-w-full h-auto rounded-lg bg-slate-50 min-h-[200px] object-contain mx-auto border border-slate-100"
+                    loading="lazy"
+                    decoding="async"
+                    {...props}
+                />
+            </span>
+        ),
+        // Strong and emphasis
+        strong: ({ node, ...props }: any) => <strong className="font-bold text-slate-900" {...props} />,
+        em: ({ node, ...props }: any) => <em className="italic" {...props} />,
+    }), []);
 
     const [currentPage, setCurrentPage] = React.useState(1);
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -92,15 +157,18 @@ export const Blog: React.FC = () => {
             if (userData) {
                 try {
                     const parsedUser = JSON.parse(userData);
-                    // Add userId from OAuth sub or id
-                    setUser({
+                    const newUser = {
                         ...parsedUser,
                         userId: parsedUser.sub || parsedUser.id || parsedUser.email
+                    };
+
+                    // Only update state if different
+                    setUser((prev: any) => {
+                        if (JSON.stringify(prev) === JSON.stringify(newUser)) return prev;
+                        return newUser;
                     });
 
                     // Check authorization from MEMBER collection
-
-
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     if (response.ok) {
                         const data = await response.json();
@@ -136,19 +204,24 @@ export const Blog: React.FC = () => {
     // ESC key listener for modal
     React.useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && selectedPost !== null) {
+            if (e.key === 'Escape' && selectedPostId !== null) {
                 e.preventDefault();
-                setSelectedPost(null);
+                setSelectedPostId(null);
             }
         };
 
-        if (selectedPost !== null) {
+        if (selectedPostId !== null) {
             window.addEventListener('keydown', handleEsc);
             return () => window.removeEventListener('keydown', handleEsc);
         }
-    }, [selectedPost]);
+    }, [selectedPostId]);
 
-    useLockBodyScroll(selectedPost !== null && !isEditMode);
+    // Derived selected post object
+    const selectedPost = React.useMemo(() =>
+        allPosts.find(p => p._id === selectedPostId) || null,
+        [allPosts, selectedPostId]);
+
+    useLockBodyScroll(selectedPostId !== null && !isEditMode);
 
     // Handle like/unlike
     const handleLike = async (postId: string, e: React.MouseEvent) => {
@@ -206,8 +279,8 @@ export const Blog: React.FC = () => {
 
     // Handle edit button click
     const handleEdit = () => {
-        if (selectedPost !== null && allPosts[selectedPost]) {
-            const content = allPosts[selectedPost].content || '';
+        if (selectedPost) {
+            const content = selectedPost.content || '';
             // Extract existing images from markdown content
             const imageRegex = /!\[.*?\]\((https?:\/\/[^\)]+)\)/g;
             const existingImages: string[] = [];
@@ -217,10 +290,10 @@ export const Blog: React.FC = () => {
             }
 
             setEditData({
-                category: allPosts[selectedPost].category || '',
-                title: allPosts[selectedPost].title || '',
+                category: selectedPost.category || '',
+                title: selectedPost.title || '',
                 content: content,
-                tags: allPosts[selectedPost].tags ? allPosts[selectedPost].tags.join('; ') : '',
+                tags: selectedPost.tags ? selectedPost.tags.join('; ') : '',
                 existingImages: existingImages
             });
             setIsEditMode(true);
@@ -229,7 +302,7 @@ export const Blog: React.FC = () => {
 
     // Handle save
     const handleSave = async () => {
-        if (selectedPost === null || !allPosts[selectedPost]) return;
+        if (!selectedPost) return;
 
         try {
 
@@ -237,7 +310,7 @@ export const Blog: React.FC = () => {
             const tagsArray = editData.tags.split(';').map(t => t.trim()).filter(t => t);
             console.log('[FRONTEND] Sending UPDATE with tags:', tagsArray);
 
-            const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
+            const response = await fetch(`${API_URL}/api/tech-blog/${selectedPost._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -254,7 +327,7 @@ export const Blog: React.FC = () => {
                     post._id === updatedPost._id ? updatedPost : post
                 ));
                 setIsEditMode(false);
-                // Keep selectedPost to stay on detail page
+                // Keep selectedPostId to stay on detail page
             }
         } catch (error) {
             console.error('Failed to update post:', error);
@@ -270,7 +343,7 @@ export const Blog: React.FC = () => {
     const handleDiscard = () => {
         setIsEditMode(false);
         setShowDiscardDialog(false);
-        setSelectedPost(null);
+        setSelectedPostId(null);
     };
 
     // Handle continue editing
@@ -285,10 +358,10 @@ export const Blog: React.FC = () => {
 
     // Handle confirm delete
     const handleConfirmDelete = async () => {
-        if (selectedPost === null || !allPosts[selectedPost]) return;
+        if (!selectedPost) return;
 
         try {
-            const response = await fetch(`${API_URL}/api/tech-blog/${allPosts[selectedPost]._id}`, {
+            const response = await fetch(`${API_URL}/api/tech-blog/${selectedPost._id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -298,9 +371,9 @@ export const Blog: React.FC = () => {
 
             if (response.ok) {
                 // Remove from local state
-                setBlogPosts(prev => prev.filter(post => post._id !== allPosts[selectedPost]._id));
+                setBlogPosts(prev => prev.filter(post => post._id !== selectedPost._id));
                 setShowDeleteDialog(false);
-                setSelectedPost(null);
+                setSelectedPostId(null);
             }
         } catch (error) {
             // ... already caught
@@ -314,8 +387,8 @@ export const Blog: React.FC = () => {
     };
 
     const handleConfirmPublish = async () => {
-        if (selectedPost === null || !allPosts[selectedPost]) return;
-        const postId = allPosts[selectedPost]._id;
+        if (!selectedPost) return;
+        const postId = selectedPost._id;
 
         try {
             const response = await fetch(`${API_URL}/api/tech-blog/${postId}`, {
@@ -338,7 +411,7 @@ export const Blog: React.FC = () => {
                 setToastPos({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
                 setShowToast(true);
                 setShowPublishDialog(false);
-                setSelectedPost(null); // Close modal
+                setSelectedPostId(null); // Close modal
                 setTimeout(() => {
                     setShowToast(false);
                     // Redirect to /blog/tech-bio
@@ -353,7 +426,7 @@ export const Blog: React.FC = () => {
     // Handle cancel delete
     const handleCancelDelete = () => {
         setShowDeleteDialog(false);
-        setSelectedPost(null);
+        setSelectedPostId(null);
     };
 
     // Check if user can create posts
@@ -547,19 +620,7 @@ export const Blog: React.FC = () => {
         });
     };
 
-    // Unified Color Theme: All Pink
-    const colorThemes = [
-        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
-        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
-        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
-        { color: "bg-pink-50", textColor: "text-pink-700", borderColor: "border-pink-100", hoverBorderColor: "hover:border-pink-200", hoverColor: "group-hover:text-pink-600" },
-    ];
 
-    // Combine blog posts with themes
-    const allPosts = blogPosts.map((post, i) => ({
-        ...post,
-        ...colorThemes[i % colorThemes.length]
-    }));
 
 
     // Filter posts based on search query (button/enter triggered)
@@ -645,7 +706,7 @@ export const Blog: React.FC = () => {
     };
 
     const filteredPosts = isSearching
-        ? activePosts.map((post, index) => ({ ...post, globalIndex: index })).filter(post => {
+        ? activePosts.filter(post => {
             const searchLower = searchQuery.toLowerCase();
             const titleMatch = post.title?.toLowerCase().includes(searchLower);
             const contentMatch = post.content?.toLowerCase().includes(searchLower);
@@ -658,7 +719,7 @@ export const Blog: React.FC = () => {
             return dateB - dateA;
         })
         : activeFilter === 'Pending'
-            ? pendingPosts.map((post, index) => ({ ...post, globalIndex: index })).sort((a, b) => {
+            ? pendingPosts.sort((a, b) => {
                 // Sort by createdAt ASCENDING (Oldest first) for Pending view
                 const dateA = new Date(a.createdAt).getTime();
                 const dateB = new Date(b.createdAt).getTime();
@@ -666,7 +727,6 @@ export const Blog: React.FC = () => {
             })
             : activePosts
                 .filter(post => activeFilter === 'All' || post.category === activeFilter)
-                .map((post, index) => ({ ...post, globalIndex: index }))
                 .sort((a, b) => {
                     // Always sort by createdAt descending (most recent first) for normal view
                     const dateA = new Date(a.createdAt).getTime();
@@ -680,16 +740,16 @@ export const Blog: React.FC = () => {
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const posts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
-    // Get global index for selectedPost (since posts is now paginated)
+    // Get global index for selectedPost (using originalIndex from allPosts)
     const getGlobalIndex = (localIndex: number) => {
         const post = posts[localIndex];
-        return post?.globalIndex ?? indexOfFirstPost + localIndex;
+        return post?.originalIndex ?? -1;
     };
 
     // Handle page change
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
-        setSelectedPost(null); // Close any open post when changing pages
+        setSelectedPostId(null); // Close any open post when changing pages
     };
 
     // Handle search - triggered by button click or enter key
@@ -768,10 +828,9 @@ export const Blog: React.FC = () => {
                         .slice(0, 3)
                         .map((post) => (
                             <div
-                                key={post._id || post.originalIndex}
+                                key={post._id}
                                 onClick={() => {
-                                    const idx = allPosts.findIndex(p => p._id === post._id);
-                                    setSelectedPost(idx);
+                                    setSelectedPostId(post._id);
                                 }}
                                 className={`
                                     group cursor-pointer transition-all duration-200
@@ -804,10 +863,9 @@ export const Blog: React.FC = () => {
                         .slice(0, 3)
                         .map((post) => (
                             <div
-                                key={post._id || post.originalIndex}
+                                key={post._id}
                                 onClick={() => {
-                                    const idx = allPosts.findIndex(p => p._id === post._id);
-                                    setSelectedPost(idx);
+                                    setSelectedPostId(post._id);
                                 }}
                                 className={`
                                     group cursor-pointer transition-all duration-200
@@ -839,10 +897,9 @@ export const Blog: React.FC = () => {
                         .slice(0, 3)
                         .map((post) => (
                             <div
-                                key={post._id || post.originalIndex}
+                                key={post._id}
                                 onClick={() => {
-                                    const idx = allPosts.findIndex(p => p._id === post._id);
-                                    setSelectedPost(idx);
+                                    setSelectedPostId(post._id);
                                 }}
                                 className={`
                                     group cursor-pointer transition-all duration-200
@@ -881,7 +938,7 @@ export const Blog: React.FC = () => {
                             return (
                                 <div
                                     key={post._id}
-                                    onClick={() => setSelectedPost(originalIndex)}
+                                    onClick={() => setSelectedPostId(post._id)}
                                     className={`
                                         group cursor-pointer transition-all duration-200
                                         bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
@@ -917,7 +974,10 @@ export const Blog: React.FC = () => {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
-                    onPostClick={(localIndex) => setSelectedPost(getGlobalIndex(localIndex))}
+                    onPostClick={(localIndex) => {
+                        const post = posts[localIndex];
+                        if (post && post._id) setSelectedPostId(post._id);
+                    }}
                     onLike={handleLike}
                     isLikedByUser={isLikedByUser}
                     searchQuery={searchQuery}
@@ -929,77 +989,30 @@ export const Blog: React.FC = () => {
 
             {/* Modal Popup - View/Edit Mode */}
             {
-                selectedPost !== null && allPosts[selectedPost] && !isEditMode && (
+                selectedPost && !isEditMode && (
                     <div
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modalBackdrop"
-                        onClick={() => setSelectedPost(null)}
+                        onClick={() => setSelectedPostId(null)}
                     >
                         <div
                             className="bg-white rounded-3xl max-w-4xl w-full max-h-[85vh] overflow-hidden shadow-2xl animate-modalContent"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className={`${allPosts[selectedPost].color} p-8`}>
-                                <span className={`text-xs font-bold uppercase tracking-wider ${allPosts[selectedPost].textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}>
-                                    {allPosts[selectedPost].category}
+                            <div className={`${selectedPost.color} p-8`}>
+                                <span className={`text-xs font-bold uppercase tracking-wider ${selectedPost.textColor} bg-white/80 w-fit px-3 py-1.5 rounded-md`}>
+                                    {selectedPost.category}
                                 </span>
                                 <h2 className="text-3xl font-bold text-slate-900 mt-4">
-                                    {allPosts[selectedPost].title}
+                                    {selectedPost.title}
                                 </h2>
                             </div>
                             <div className="p-8 overflow-y-auto max-h-[calc(85vh-200px)]">
                                 <div className="markdown-content text-slate-700 leading-relaxed">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkGfm, remarkBreaks]}
-                                        components={{
-                                            // Headings
-                                            h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mb-4 mt-6 text-slate-900" {...props} />,
-                                            h2: ({ node, ...props }) => <h2 className="text-2xl font-bold mb-3 mt-5 text-slate-900 border-b pb-2" {...props} />,
-                                            h3: ({ node, ...props }) => <h3 className="text-xl font-bold mb-2 mt-4 text-slate-900" {...props} />,
-                                            h4: ({ node, ...props }) => <h4 className="text-lg font-bold mb-2 mt-3 text-slate-900" {...props} />,
-                                            h5: ({ node, ...props }) => <h5 className="text-base font-bold mb-2 mt-3 text-slate-900" {...props} />,
-                                            h6: ({ node, ...props }) => <h6 className="text-sm font-bold mb-2 mt-3 text-slate-900" {...props} />,
-                                            // Paragraphs
-                                            p: ({ node, ...props }) => <p className="mb-4 leading-7" {...props} />,
-                                            // Lists
-                                            ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 ml-4 space-y-2" {...props} />,
-                                            ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 ml-4 space-y-2" {...props} />,
-                                            li: ({ node, ...props }) => <li className="leading-7" {...props} />,
-                                            // Links
-                                            a: ({ node, ...props }) => <a className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" {...props} />,
-                                            // Code
-                                            code: ({ node, inline, ...props }: any) =>
-                                                inline
-                                                    ? <code className="bg-slate-100 text-red-600 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
-                                                    : <code className="block bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono mb-4" {...props} />,
-                                            pre: ({ node, ...props }) => <pre className="mb-4" {...props} />,
-                                            // Blockquotes
-                                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-slate-300 pl-4 italic my-4 text-slate-600" {...props} />,
-                                            // Horizontal rule
-                                            hr: ({ node, ...props }) => <hr className="my-6 border-slate-300" {...props} />,
-                                            // Tables
-                                            table: ({ node, ...props }) => <table className="min-w-full border-collapse border border-slate-300 mb-4" {...props} />,
-                                            thead: ({ node, ...props }) => <thead className="bg-slate-100" {...props} />,
-                                            tbody: ({ node, ...props }) => <tbody {...props} />,
-                                            tr: ({ node, ...props }) => <tr className="border-b border-slate-300" {...props} />,
-                                            th: ({ node, ...props }) => <th className="border border-slate-300 px-4 py-2 text-left font-bold" {...props} />,
-                                            td: ({ node, ...props }) => <td className="border border-slate-300 px-4 py-2" {...props} />,
-                                            // Images
-                                            img: ({ node, ...props }) => (
-                                                <span className="block my-4">
-                                                    <img
-                                                        className="max-w-full h-auto rounded-lg bg-slate-50 min-h-[200px] object-contain mx-auto border border-slate-100"
-                                                        loading="lazy"
-                                                        decoding="async"
-                                                        {...props}
-                                                    />
-                                                </span>
-                                            ),
-                                            // Strong and emphasis
-                                            strong: ({ node, ...props }) => <strong className="font-bold text-slate-900" {...props} />,
-                                            em: ({ node, ...props }) => <em className="italic" {...props} />,
-                                        }}
+                                        components={markdownComponents}
                                     >
-                                        {allPosts[selectedPost].content}
+                                        {selectedPost.content}
                                     </ReactMarkdown>
                                 </div>
 
@@ -1007,7 +1020,7 @@ export const Blog: React.FC = () => {
                                 <div className="mt-8 pt-6 border-t border-slate-200">
                                     <div className="flex flex-wrap gap-2">
                                         {(() => {
-                                            const normalizedTags = allPosts[selectedPost].tags
+                                            const normalizedTags = selectedPost.tags
                                                 .flatMap((t: string) => t.split(','))
                                                 .map((t: string) => t.trim())
                                                 .filter((t: string) => t);
@@ -1026,18 +1039,18 @@ export const Blog: React.FC = () => {
                                 </div>
 
                                 {/* Footer in modal */}
-                                <div className={`mt-4 flex items-center justify-between ${!allPosts[selectedPost].tags || allPosts[selectedPost].tags.length === 0 ? 'pt-6 border-t border-slate-200' : ''}`}>
+                                <div className={`mt-4 flex items-center justify-between ${!selectedPost.tags || selectedPost.tags.length === 0 ? 'pt-6 border-t border-slate-200' : ''}`}>
                                     <button
-                                        onClick={(e) => handleLike(allPosts[selectedPost]._id, e)}
+                                        onClick={(e) => handleLike(selectedPost._id, e)}
                                         className="flex items-center gap-3 cursor-pointer hover:scale-110 transition-transform"
                                     >
-                                        <span className={`text-2xl ${isLikedByUser(allPosts[selectedPost]) ? 'text-red-500' : 'text-gray-400'}`}>
-                                            {isLikedByUser(allPosts[selectedPost]) ? '❤️' : '🤍'}
+                                        <span className={`text-2xl ${isLikedByUser(selectedPost) ? 'text-red-500' : 'text-gray-400'}`}>
+                                            {isLikedByUser(selectedPost) ? '❤️' : '🤍'}
                                         </span>
-                                        <span className="font-medium text-slate-700 text-base">{allPosts[selectedPost].likes || 0}</span>
+                                        <span className="font-medium text-slate-700 text-base">{selectedPost.likes || 0}</span>
                                     </button>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-slate-500">{formatDate(allPosts[selectedPost].createdAt)}</span>
+                                        <span className="text-slate-500">{formatDate(selectedPost.createdAt)}</span>
                                     </div>
                                 </div>
 
@@ -1047,7 +1060,7 @@ export const Blog: React.FC = () => {
                                         {isAuthorized && (
                                             <div className="flex gap-4">
                                                 {/* Publish button for pending posts */}
-                                                {!allPosts[selectedPost].isPublished && (
+                                                {!selectedPost.isPublished && (
                                                     <button
                                                         onClick={handlePublishClick}
                                                         className="px-6 py-3 bg-green-600 text-white rounded-full font-bold hover:bg-green-700 transition-colors"
@@ -1055,12 +1068,14 @@ export const Blog: React.FC = () => {
                                                         Publish
                                                     </button>
                                                 )}
-                                                <button
-                                                    onClick={handleEdit}
-                                                    className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
-                                                >
-                                                    Update
-                                                </button>
+                                                {(user && isAuthorized) && (
+                                                    <button
+                                                        onClick={handleEdit}
+                                                        className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
+                                                    >
+                                                        Update
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={handleDelete}
                                                     className="px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors"
@@ -1071,7 +1086,7 @@ export const Blog: React.FC = () => {
                                         )}
                                     </div>
                                     <button
-                                        onClick={() => setSelectedPost(null)}
+                                        onClick={() => setSelectedPostId(null)}
                                         className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-700 transition-colors"
                                     >
                                         Close
@@ -1085,12 +1100,12 @@ export const Blog: React.FC = () => {
 
             {/* Edit Mode Modal */}
             {
-                selectedPost !== null && allPosts[selectedPost] && (
+                selectedPost && (
                     <BlogPostModal
                         mode="edit"
                         isOpen={isEditMode}
                         editData={editData}
-                        postColor={allPosts[selectedPost].color}
+                        postColor={selectedPost.color}
                         uploadingImage={uploadingImage}
                         isDragging={isDragging}
                         onClose={handleCloseEdit}
