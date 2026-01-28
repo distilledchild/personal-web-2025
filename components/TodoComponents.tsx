@@ -354,6 +354,7 @@ export interface KanbanBoardProps {
     getPriorityColor: (priority: string) => string;
     formatDate: (dateString: string) => string;
     isAuthorized: boolean;
+    category?: string;
     onPinClick: (todoId: string, isPinned: boolean) => void;
     onReorderTodos: (todos: any[]) => void;
 }
@@ -368,14 +369,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     getPriorityColor,
     formatDate,
     isAuthorized,
+    category,
     onPinClick,
     onReorderTodos
 }) => {
     const [activeId, setActiveId] = React.useState<string | null>(null);
 
+    const isNoteBoard = category === 'note';
+
     // Columns config
-    // Columns config
-    const columns = [
+    const statusColumns = [
         {
             id: 'project',
             title: 'Project',
@@ -414,6 +417,51 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         }
     ];
 
+    const noteColumns = [
+        {
+            id: 'Personal',
+            title: 'Personal',
+            color: 'bg-purple-50 border-purple-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-purple-300 bg-purple-100',
+                button: 'text-purple-700 bg-purple-200 hover:bg-purple-300'
+            }
+        },
+        {
+            id: 'Work',
+            title: 'Work',
+            color: 'bg-slate-50 border-slate-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-slate-300 bg-slate-100',
+                button: 'text-slate-700 bg-slate-200 hover:bg-slate-300'
+            }
+        },
+        {
+            id: 'Academy',
+            title: 'Academy',
+            color: 'bg-blue-50 border-blue-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-blue-300 bg-blue-100',
+                button: 'text-blue-700 bg-blue-200 hover:bg-blue-300'
+            }
+        },
+        {
+            id: 'Miscellaneous',
+            title: 'Miscellaneous',
+            color: 'bg-green-50 border-green-200',
+            isProject: false,
+            pinnedColorClasses: {
+                card: 'border-green-300 bg-green-100',
+                button: 'text-green-700 bg-green-200 hover:bg-green-300'
+            }
+        }
+    ];
+
+    const columns = isNoteBoard ? noteColumns : statusColumns;
+
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -421,7 +469,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     );
 
     // Helper to get todos for a column, sorted properly
-    const getTodosByStatus = (status: string) => todos.filter(todo => todo.status === status);
+    const getTodosByColumn = (columnId: string) => {
+        if (isNoteBoard) {
+            return todos.filter(todo => todo.sort === columnId);
+        }
+        return todos.filter(todo => todo.status === columnId);
+    };
 
     const handleDragStart = (event: DragStartEvent) => {
         setActiveId(event.active.id as string);
@@ -442,18 +495,18 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
         // 1. Moving over a column container (empty column)
         const overColumnId = columns.find(c => c.id === overId)?.id;
-        if (overColumnId && activeTodo.status !== overColumnId && !columns.find(c => c.id === overId)?.isProject) {
-            // Optimistic update: Change status to new column
-            // We can't update 'todos' prop directly, but we rely on handleDragEnd to commit.
-            // For smooth visual, dnd-kit handles it via strategy if items are in same SortableContext.
-            // But here items are in different SortableContexts (columns).
-            // We'll let handleDragEnd handle the status change.
-            return;
+        if (overColumnId && !columns.find(c => c.id === overId)?.isProject) {
+            const currentField = isNoteBoard ? activeTodo.sort : activeTodo.status;
+            if (currentField !== overColumnId) {
+                // Dragging over a different column
+                return;
+            }
         }
 
         // 2. Moving over another item in a DIFFERENT column
-        if (overTodo && activeTodo.status !== overTodo.status) {
-            // Also handled in dragEnd
+        const overTodoField = isNoteBoard ? overTodo?.sort : overTodo?.status;
+        const activeTodoField = isNoteBoard ? activeTodo.sort : activeTodo.status;
+        if (overTodo && activeTodoField !== overTodoField) {
             return;
         }
     };
@@ -470,37 +523,35 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         const activeTodo = todos.find(t => t._id === activeId);
         if (!activeTodo) return;
 
-        // Case A: Dropped on a Column (Empty or not) -> Change Status
+        // Case A: Dropped on a Column (Empty or not) -> Change Status/Sort
         const overColumn = columns.find(c => c.id === overId);
         if (overColumn) {
-            if (!overColumn.isProject && activeTodo.status !== overColumn.id) {
+            const currentField = isNoteBoard ? activeTodo.sort : activeTodo.status;
+            if (!overColumn.isProject && currentField !== overColumn.id) {
                 onUpdateStatus(activeId, overColumn.id);
             }
             return;
         }
 
-        // Case B: Dropped on another Todo -> Reorder or Change Status
+        // Case B: Dropped on another Todo -> Reorder or Change Status/Sort
         const overTodo = todos.find(t => t._id === overId);
         if (overTodo) {
-            // B1: Different Status -> Change Status
-            if (activeTodo.status !== overTodo.status) {
-                onUpdateStatus(activeId, overTodo.status);
+            const activeField = isNoteBoard ? activeTodo.sort : activeTodo.status;
+            const overField = isNoteBoard ? overTodo.sort : overTodo.status;
+
+            // B1: Different Column -> Change Status/Sort
+            if (activeField !== overField) {
+                onUpdateStatus(activeId, overField);
             }
-            // B2: Same Status -> Reorder
+            // B2: Same Column -> Reorder
             else {
                 if (activeId !== overId) {
-                    const status = activeTodo.status;
                     // Get all todos in this column (Filtered)
-                    const columnTodos = getTodosByStatus(status);
+                    const columnTodos = getTodosByColumn(activeField);
 
                     // Separate Pinned and Unpinned
                     const pinnedTodos = columnTodos.filter(t => t.pinned);
                     const unpinnedTodos = columnTodos.filter(t => !t.pinned);
-
-                    // We only reorder unpinned todos (since pinned are disabled/filtered from SortableContext in usage below)
-                    // Wait, if pinned are disabled, they can't be 'over' targets? 
-                    // No, disabled items can still be droppable targets unless we filter them out of SortableContext items.
-                    // We should invoke reorder on Unpinned list mainly.
 
                     const oldIndex = unpinnedTodos.findIndex(t => t._id === activeId);
                     const newIndex = unpinnedTodos.findIndex(t => t._id === overId);
@@ -508,16 +559,11 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     if (oldIndex !== -1 && newIndex !== -1) {
                         const newOrder = arrayMove(unpinnedTodos, oldIndex, newIndex);
 
-                        // Assign new priorities: 1 based
-                        // But we must preserve the '0' for pinned items? 
-                        // No, pinned items are separated.
-                        // We update priority_no for unpinned items.
                         const updates = newOrder.map((todo, index) => ({
                             ...todo,
                             priority_no: index + 1
                         }));
 
-                        // Call handler
                         onReorderTodos(updates);
                     }
                 }
@@ -568,7 +614,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     }
 
                     // Todo Column
-                    const columnTodos = getTodosByStatus(column.id);
+                    const columnTodos = getTodosByColumn(column.id);
                     const pinnedTodos = columnTodos.filter(t => t.pinned);
                     const unpinnedTodos = columnTodos.filter(t => !t.pinned);
 
@@ -678,26 +724,41 @@ export const sortTodos = (todosToSort: any[]) => {
         }
 
         // 2. Unpinned items
-        // If priority_no exists (>0), sort by it ascending (1, 2, 3...)
-        // priority_no == 0 means "unranked" (bottom)
-        const pA = a.priority_no || 0;
-        const pB = b.priority_no || 0;
+        const isNote = a.category === 'note' || b.category === 'note';
 
-        if (pA > 0 && pB > 0) {
-            if (pA !== pB) return pA - pB;
+        if (isNote) {
+            // Priority: High > Medium > Low takes precedence for notes
+            const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
+            const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+            if (priorityDiff !== 0) return priorityDiff;
+
+            // Then manual rank
+            const pA = a.priority_no || 0;
+            const pB = b.priority_no || 0;
+            if (pA > 0 && pB > 0 && pA !== pB) return pA - pB;
+            if (pA > 0 && pB === 0) return -1;
+            if (pA === 0 && pB > 0) return 1;
+
+            // Then status
+            const statusOrder: { [key: string]: number } = { in_progress: 1, pending: 2, completed: 3, cancelled: 4 };
+            const statusDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
+            if (statusDiff !== 0) return statusDiff;
+        } else {
+            // Standard strategy: Manual rank > Status > Priority
+            const pA = a.priority_no || 0;
+            const pB = b.priority_no || 0;
+            if (pA > 0 && pB > 0 && pA !== pB) return pA - pB;
+            if (pA > 0 && pB === 0) return -1;
+            if (pA === 0 && pB > 0) return 1;
+
+            const statusOrder: { [key: string]: number } = { in_progress: 1, pending: 2, completed: 3, cancelled: 4 };
+            const statusDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
+            if (statusDiff !== 0) return statusDiff;
+
+            const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
+            const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+            if (priorityDiff !== 0) return priorityDiff;
         }
-        if (pA > 0 && pB === 0) return -1; // Ranked items above unranked
-        if (pA === 0 && pB > 0) return 1;
-
-        // 3. Status: In Progress > Pending > Completed > Cancelled
-        const statusOrder: { [key: string]: number } = { in_progress: 1, pending: 2, completed: 3, cancelled: 4 };
-        const statusDiff = (statusOrder[a.status] || 5) - (statusOrder[b.status] || 5);
-        if (statusDiff !== 0) return statusDiff;
-
-        // 4. Priority: High > Medium > Low
-        const priorityOrder: { [key: string]: number } = { high: 3, medium: 2, low: 1 };
-        const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
-        if (priorityDiff !== 0) return priorityDiff;
 
         // 5. Deadline: Closest date first
         const dateA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
@@ -745,7 +806,8 @@ export interface CreateTodoModalProps {
     onClose: () => void;
     onCreate: (formData: TodoFormData) => void;
     projects: any[];
-    defaultCategory?: 'personal' | 'dev';
+    defaultCategory?: 'personal' | 'dev' | 'note';
+    title?: string;
 }
 
 export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
@@ -753,7 +815,8 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
     onClose,
     onCreate,
     projects,
-    defaultCategory = 'personal'
+    defaultCategory = 'personal',
+    title = 'Create New TODO'
 }) => {
     const [formData, setFormData] = React.useState<TodoFormData>({
         title: '',
@@ -804,7 +867,7 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
             >
                 {/* Header */}
                 <div className="p-8 pb-4 flex-shrink-0 border-b border-slate-100">
-                    <h3 className="text-2xl font-bold text-slate-900">Create New TODO</h3>
+                    <h3 className="text-2xl font-bold text-slate-900">{title}</h3>
                 </div>
 
                 {/* Scrollable Content */}
@@ -821,6 +884,7 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
                             >
                                 <option value="personal">Personal</option>
                                 <option value="dev">Dev</option>
+                                <option value="note">Note</option>
                             </select>
                         </div>
 
@@ -836,14 +900,16 @@ export const CreateTodoModal: React.FC<CreateTodoModalProps> = ({
                                 aria-label="Select sort"
                             >
                                 <option value="">Select...</option>
-                                {formData.category === 'personal' ? (
+                                {formData.category === 'personal' || formData.category === 'note' ? (
                                     <>
-                                        <option value="Academy">Academy</option>
                                         <option value="Personal">Personal</option>
                                         <option value="Work">Work</option>
+                                        <option value="Academy">Academy</option>
+                                        <option value="Miscellaneous">Miscellaneous</option>
                                     </>
                                 ) : (
                                     <>
+                                        <option value="Miscellaneous">Miscellaneous</option>
                                         {(projects || []).filter(p => p.status === 'ongoing' || p.status === 'paused').map(project => (
                                             <option key={project._id} value={project._id}>
                                                 {project.project_name}
@@ -986,7 +1052,8 @@ export const TodoDetailModal: React.FC<TodoDetailModalProps> = ({
                         {/* Category Badge */}
                         <div>
                             <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Category</h4>
-                            <span className={`px-3 py-1 rounded-full text-sm font-bold capitalize inline-block ${todo.category === 'dev' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                            <span className={`px-3 py-1 rounded-full text-sm font-bold capitalize inline-block ${todo.category === 'dev' ? 'bg-purple-100 text-purple-700' :
+                                todo.category === 'note' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
                                 }`}>
                                 {todo.category || 'personal'}
                             </span>
@@ -1160,6 +1227,7 @@ export const EditTodoModal: React.FC<EditTodoModalProps> = ({
                             >
                                 <option value="personal">Personal</option>
                                 <option value="dev">Dev</option>
+                                <option value="note">Note</option>
                             </select>
                         </div>
 
@@ -1175,14 +1243,16 @@ export const EditTodoModal: React.FC<EditTodoModalProps> = ({
                                 aria-label="Edit sort"
                             >
                                 <option value="">Select...</option>
-                                {formData.category === 'personal' ? (
+                                {formData.category === 'personal' || formData.category === 'note' ? (
                                     <>
-                                        <option value="Academy">Academy</option>
                                         <option value="Personal">Personal</option>
                                         <option value="Work">Work</option>
+                                        <option value="Academy">Academy</option>
+                                        <option value="Miscellaneous">Miscellaneous</option>
                                     </>
                                 ) : (
                                     <>
+                                        <option value="Miscellaneous">Miscellaneous</option>
                                         {projects.filter(p => p.status === 'ongoing' || p.status === 'paused').map(project => (
                                             <option key={project._id} value={project._id}>
                                                 {project.project_name}

@@ -1,20 +1,20 @@
 import React from 'react';
 import { TodoKanbanView } from '../components/TodoKanbanView';
 
-interface TodoDevProps {
+interface TodoNoteProps {
     user: any;
     isAuthorized: boolean;
     projects: any[];
 }
 
-export const TodoDev: React.FC<TodoDevProps> = ({ user, isAuthorized, projects }) => {
+export const TodoNote: React.FC<TodoNoteProps> = ({ user, isAuthorized, projects }) => {
     return (
         <TodoKanbanView
             user={user}
             isAuthorized={isAuthorized}
             projects={projects}
-            category="dev"
-            createModalTitle="Create New Dev TODO"
+            category="note"
+            createModalTitle="Create New Note"
         />
     );
 };

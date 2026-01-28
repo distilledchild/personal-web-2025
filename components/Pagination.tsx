@@ -190,8 +190,8 @@ export const Pagination: React.FC<PaginationProps> = ({
                                 key={page}
                                 onClick={() => onPageChange(page as number)}
                                 className={`w-10 h-10 rounded-lg font-medium transition-colors ${currentPage === page
-                                        ? `${active} ${activeHover}`
-                                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                    ? `${active} ${activeHover}`
+                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                                     }`}
                             >
                                 {page}

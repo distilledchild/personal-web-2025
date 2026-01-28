@@ -312,7 +312,7 @@ const Workout = mongoose.model('Workout', workoutSchema);
 // TODO List Schema
 const todoListSchema = new mongoose.Schema({
     email: { type: String, required: true },
-    category: { type: String, enum: ['personal', 'dev'], default: 'personal' },
+    category: { type: String, enum: ['personal', 'dev', 'note'], default: 'personal' },
     title: { type: String, required: true },
     description: { type: String, required: true },
     status: { type: String, enum: ['pending', 'in_progress', 'completed', 'cancelled'], default: 'in_progress' },
