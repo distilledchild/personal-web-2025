@@ -1063,6 +1063,10 @@ const aboutMeSchema = new mongoose.Schema({
     research_interests: [String],
     hobbies: [String],
     future_goal: String,
+    profile_pic_position: {
+        x: { type: Number, default: 50 },
+        y: { type: Number, default: 50 }
+    },
     show: { type: String, default: 'Y' },
     updated_at: { type: Date, default: Date.now }
 }, { collection: 'ABOUT_ME' });
@@ -1263,7 +1267,7 @@ app.post('/api/about-me', async (req, res) => {
 app.put('/api/about-me/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { introduction, research_interests, hobbies, future_goal, email } = req.body;
+        const { introduction, research_interests, hobbies, future_goal, profile_pic_position, email } = req.body;
 
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
         if (!authorizedEmails.includes(email)) {
@@ -1277,12 +1281,79 @@ app.put('/api/about-me/:id', async (req, res) => {
         if (research_interests !== undefined) aboutMe.research_interests = research_interests;
         if (hobbies !== undefined) aboutMe.hobbies = hobbies;
         if (future_goal !== undefined) aboutMe.future_goal = future_goal;
+        if (profile_pic_position !== undefined) aboutMe.profile_pic_position = profile_pic_position;
         aboutMe.updated_at = new Date();
 
         await aboutMe.save();
         res.json(aboutMe);
     } catch (err) {
         console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Upload profile picture to GCS
+app.post('/api/about-me/upload-profile-pic', upload.single('image'), async (req, res) => {
+    try {
+        const { email, isCropped } = req.body;
+        const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
+
+        if (!email || !authorizedEmails.includes(email)) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image file provided' });
+        }
+
+        const file = req.file;
+        const bucketName = process.env.GCS_BUCKET_NAME || 'distilledchild';
+        const bucket = storage.bucket(bucketName);
+        const prefix = 'misc';
+
+        // If this is a cropped image, only save to main file
+        // If this is a new upload (not cropped), save to both original and main
+        const mainFileName = 'distilledchild-profile-pic.jpg';
+        const originalFileName = 'distilledchild-profile-pic-original.jpg';
+
+        const uploadToGCS = (targetFileName) => {
+            return new Promise((resolve, reject) => {
+                const blob = bucket.file(`${prefix}/${targetFileName}`);
+                const blobStream = blob.createWriteStream({
+                    resumable: false,
+                    metadata: {
+                        contentType: 'image/jpeg',
+                    },
+                });
+
+                blobStream.on('error', (err) => {
+                    console.error(`[ABOUT-ME] Upload error for ${targetFileName}:`, err);
+                    reject(err);
+                });
+
+                blobStream.on('finish', async () => {
+                    await blob.makePublic();
+                    const publicUrl = `https://storage.googleapis.com/${bucketName}/${prefix}/${targetFileName}`;
+                    console.log(`[ABOUT-ME] Profile picture saved: ${publicUrl}`);
+                    resolve(publicUrl);
+                });
+
+                blobStream.end(file.buffer);
+            });
+        };
+
+        if (isCropped === 'true') {
+            // Only save the cropped version to main file
+            const url = await uploadToGCS(mainFileName);
+            res.json({ success: true, url });
+        } else {
+            // Save to both original and main (new image upload)
+            await uploadToGCS(originalFileName);
+            const url = await uploadToGCS(mainFileName);
+            res.json({ success: true, url });
+        }
+    } catch (err) {
+        console.error('[ABOUT-ME] Image upload error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
