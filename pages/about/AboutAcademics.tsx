@@ -51,6 +51,7 @@ interface AboutAcademicData {
     links?: {
         ORCiD: string;
         GoogleScholar: string;
+        cv?: string;
     };
 }
 
@@ -62,11 +63,14 @@ interface AboutAcademicsProps {
 export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthorized }) => {
     const [aboutAcademic, setAboutAcademic] = useState<AboutAcademicData | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isIframeLoading, setIsIframeLoading] = useState(true);
 
     // Academic Links Form
     const [academicLinksForm, setAcademicLinksForm] = useState({
         ORCiD: '',
-        GoogleScholar: ''
+        GoogleScholar: '',
+        cv: ''
     });
 
     useLockBodyScroll(isModalOpen);
@@ -77,6 +81,7 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
 
     const fetchAboutAcademic = async () => {
         try {
+            setIsLoading(true);
             const response = await fetch(`${API_URL}/api/about-academic?t=${new Date().getTime()}`);
             if (response.ok) {
                 const data = await response.json();
@@ -84,6 +89,8 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
             }
         } catch (error) {
             console.error('Failed to fetch about academic:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -100,7 +107,8 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
 
             console.log('Saving academic links:', {
                 ORCiD: academicLinksForm.ORCiD,
-                GoogleScholar: academicLinksForm.GoogleScholar
+                GoogleScholar: academicLinksForm.GoogleScholar,
+                cv: academicLinksForm.cv
             });
 
             const response = await fetch(url, {
@@ -109,7 +117,8 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
                 body: JSON.stringify({
                     links: {
                         ORCiD: academicLinksForm.ORCiD,
-                        GoogleScholar: academicLinksForm.GoogleScholar
+                        GoogleScholar: academicLinksForm.GoogleScholar,
+                        cv: academicLinksForm.cv
                     },
                     email: user.email
                 })
@@ -135,7 +144,8 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
             // Set links form
             setAcademicLinksForm({
                 ORCiD: links?.ORCiD || '',
-                GoogleScholar: links?.GoogleScholar || ''
+                GoogleScholar: links?.GoogleScholar || '',
+                cv: links?.cv || ''
             });
         }
         setIsModalOpen(true);
@@ -145,22 +155,62 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
         setIsModalOpen(false);
     };
 
+    // Helper to convert Google Drive share links to preview links
+    const getEmbedUrl = (url: string) => {
+        if (!url) return '';
+
+        // Handle Google Drive links
+        if (url.includes('drive.google.com')) {
+            // If it's already a preview link, return it
+            if (url.includes('/preview')) return url;
+
+            // Extract ID from share URLs
+            // Format 1: /file/d/ID/view
+            const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (fileIdMatch && fileIdMatch[1]) {
+                return `https://drive.google.com/file/d/${fileIdMatch[1]}/preview?usp=sharing`;
+            }
+        }
+
+        return url;
+    };
+
     return (
         <div className="animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0 relative">
             {/* Right Side - CV Content */}
             <div className="flex-1 min-h-0 overflow-y-auto">
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
                     <h3 className="text-2xl font-bold text-slate-900 mb-6">Curriculum Vitae</h3>
+                    {console.log('Current Academic Data:', aboutAcademic)}
+                    {console.log('CV URL:', aboutAcademic?.links?.cv)}
+                    {console.log('Embed URL:', getEmbedUrl(aboutAcademic?.links?.cv || ''))}
 
                     {/* PDF Viewer */}
                     <div className="mb-8">
-                        <div className="w-full h-[800px] border border-slate-200 rounded-lg overflow-hidden">
-                            <iframe
-                                src="https://drive.google.com/file/d/1woLM4zcYV1kWI0sl4_OpLcAgQpLMmnma/preview"
-                                className="w-full h-full"
-                                allow="autoplay"
-                                title="Curriculum Vitae PDF"
-                            />
+                        <div className="w-full h-[800px] border border-slate-200 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center relative">
+                            {/* Loading State */}
+                            {(isLoading || isIframeLoading) && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-10 w-full h-full">
+                                    <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+                                    <p className="text-slate-500 animate-pulse">Loading Document...</p>
+                                </div>
+                            )}
+
+                            {aboutAcademic?.links?.cv ? (
+                                <iframe
+                                    src={getEmbedUrl(aboutAcademic.links.cv)}
+                                    className={`w-full h-full transition-opacity duration-500 ${isIframeLoading ? 'opacity-0' : 'opacity-100'}`}
+                                    allow="autoplay"
+                                    title="Curriculum Vitae PDF"
+                                    onLoad={() => setIsIframeLoading(false)}
+                                />
+                            ) : (
+                                !isLoading && (
+                                    <div className="text-slate-400 flex flex-col items-center">
+                                        <p>CV has not been uploaded yet.</p>
+                                    </div>
+                                )
+                            )}
                         </div>
                     </div>
                 </div>
@@ -199,6 +249,17 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
                             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
                                 <h4 className="text-lg font-bold text-slate-800 mb-4">External Links</h4>
                                 <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-1">Google Drive CV URL (Share Link)</label>
+                                        <input
+                                            type="text"
+                                            value={academicLinksForm.cv}
+                                            onChange={e => setAcademicLinksForm(prev => ({ ...prev, cv: e.target.value }))}
+                                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="https://drive.google.com/file/d/.../view?usp=sharing"
+                                        />
+                                        <p className="text-xs text-slate-500 mt-1">Paste the 'Share' link from Google Drive. It will be automatically converted for embedding.</p>
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-bold text-slate-700 mb-1">ORCiD URL</label>
                                         <input

@@ -1120,7 +1120,8 @@ const aboutAcademicSchema = new mongoose.Schema({
     }],
     links: {
         ORCiD: String,
-        GoogleScholar: String
+        GoogleScholar: String,
+        cv: String
     },
     show: { type: String, default: 'Y' },
     updated_at: { type: Date, default: Date.now }
@@ -1424,7 +1425,8 @@ app.put('/api/about-academic/:id', async (req, res) => {
             console.log('Updating links:', links);
             aboutAcademic.links = {
                 ORCiD: links.ORCiD,
-                GoogleScholar: links.GoogleScholar
+                GoogleScholar: links.GoogleScholar,
+                cv: links.cv
             };
         }
 
