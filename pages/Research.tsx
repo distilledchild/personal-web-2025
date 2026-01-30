@@ -4,6 +4,7 @@ import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianG
 import { FileText, GitBranch, Database, Sliders, Search, Cat } from 'lucide-react';
 import { ResearchHiCBrowser } from './ResearchHiCBrowser';
 import { ResearchBreedchain } from './ResearchBreedchain';
+import { ResearchPEInteractions } from './ResearchPEInteractions';
 import { PageHeader } from '../components/PageHeader';
 
 const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
@@ -20,57 +21,7 @@ const mockScatterData = Array.from({ length: 100 }, () => ({
   cluster: Math.random() > 0.5 ? 'Cluster A' : 'Cluster B'
 }));
 
-// Removed "card" styling (bg-white, border, shadow) to make it look like a full page section
-const PEInteractions = () => (
-  <div className="space-y-8 animate-fadeIn">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-6">
-      {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6"> */}
-      <div>
-        <p className="text-slate-500 text-lg">Interactive Visualization simulating R Shiny output from <code className="bg-slate-100 px-2 py-1 rounded text-sm">enhancer_promoter_interaction.R</code></p>
-      </div>
-      <div className="flex gap-3">
-        <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
-          <option>Gene: MYC</option>
-          <option>Gene: SOX2</option>
-          <option>Gene: TP53</option>
-        </select>
-        <select className="bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-lg border border-slate-200 outline-none cursor-pointer hover:bg-slate-100 transition-colors">
-          <option>Res: 5kb</option>
-          <option>Res: 10kb</option>
-        </select>
-      </div>
-    </div>
 
-    <div className="h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={mockInteractionData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={4} stroke="#94a3b8" />
-          <YAxis stroke="#94a3b8" />
-          <Tooltip
-            contentStyle={{ backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
-          />
-          <Legend wrapperStyle={{ paddingTop: '20px' }} />
-          <Bar dataKey="enhancer" barSize={30} fill="#BFDBFE" name="Enhancer Signal" radius={[4, 4, 0, 0]} />
-          <Line type="monotone" dataKey="interaction" stroke="#2863EB" strokeWidth={4} name="Interaction Freq" dot={false} />
-          <Line type="step" dataKey="ctcf" stroke="#db2777" strokeWidth={3} strokeDasharray="5 5" name="CTCF Density" dot={false} />
-        </ComposedChart>
-      </ResponsiveContainer>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600">
-      <div className="bg-white p-4 rounded-xl border border-slate-100">
-        <strong className="block text-slate-900 mb-1">File Source</strong> data_chr8_myc.tsv
-      </div>
-      <div className="bg-white p-4 rounded-xl border border-slate-100">
-        <strong className="block text-slate-900 mb-1">Significant Loops</strong> 142 detected (FDR &lt; 0.05)
-      </div>
-      <div className="bg-white p-4 rounded-xl border border-slate-100">
-        <strong className="block text-slate-900 mb-1">Algorithm</strong> Fit-Hi-C / HiCCUPS
-      </div>
-    </div>
-  </div>
-);
 
 const SingleCell = () => (
   <div className="space-y-8 animate-fadeIn">
@@ -212,7 +163,7 @@ export const Research: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           {(activeTab === 0) && <ResearchHiCBrowser />}
           {(activeTab === 1) && <ResearchBreedchain />}
-          {(activeTab === 2) && <PEInteractions />}
+          {(activeTab === 2) && <ResearchPEInteractions />}
           {(activeTab === 3) && <SingleCell />}
           {(activeTab === 4) && <EnhancerID />}
         </div>
