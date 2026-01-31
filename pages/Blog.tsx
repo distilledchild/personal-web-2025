@@ -73,7 +73,7 @@ export const Blog: React.FC = () => {
         // Paragraphs
         p: ({ node, ...props }: any) => <p className="mb-4 leading-7" {...props} />,
         // Lists
-        ul: ({ node, ...props }: any) => <ul className="list-disc list-inside mb-4 ml-4 space-y-2" {...props} />,
+        ul: ({ node, ...props }: any) => <ul className="list-disc list-outside mb-4 ml-6 space-y-2" {...props} />,
         ol: ({ node, ...props }: any) => <ol className="list-decimal list-inside mb-4 ml-4 space-y-2" {...props} />,
         li: ({ node, ...props }: any) => <li className="leading-7" {...props} />,
         // Links
@@ -193,7 +193,7 @@ export const Blog: React.FC = () => {
         window.addEventListener('storage', checkAuth);
 
         // Poll for changes in same tab (since storage event doesn't fire in same tab)
-        const interval = setInterval(checkAuth, 1000);
+        const interval = setInterval(checkAuth, 5000);
 
         return () => {
             window.removeEventListener('storage', checkAuth);

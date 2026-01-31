@@ -108,7 +108,7 @@ const Layout: React.FC = () => {
     window.addEventListener('storage', checkAuth);
 
     // Poll for changes in same tab (since storage event doesn't fire in same tab)
-    const interval = setInterval(checkAuth, 1000);
+    const interval = setInterval(checkAuth, 5000);
 
     return () => {
       window.removeEventListener('storage', checkAuth);
