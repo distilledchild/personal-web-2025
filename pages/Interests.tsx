@@ -181,6 +181,56 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     const [artMuseums, setArtMuseums] = useState<ArtMuseum[]>([]);
     const [loadingArtworks, setLoadingArtworks] = useState(false);
     const [activeDataTab, setActiveDataTab] = useState<'urban' | 'weather' | 'fc26'>('urban');
+    const [isAdminUser, setIsAdminUser] = useState(false);
+
+    useEffect(() => {
+        const fetchAdminRole = async () => {
+            try {
+                const stored = localStorage.getItem('user_profile');
+                if (!stored) {
+                    setIsAdminUser(false);
+                    return;
+                }
+
+                const profile = JSON.parse(stored);
+                const email = profile?.email;
+                if (!email) {
+                    setIsAdminUser(false);
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/api/member/role/${encodeURIComponent(email)}`);
+                if (!response.ok) {
+                    setIsAdminUser(false);
+                    return;
+                }
+
+                const roleData = await response.json();
+                setIsAdminUser(String(roleData?.role || '').toUpperCase() === 'ADMIN');
+            } catch (error) {
+                console.error('Failed to fetch admin role:', error);
+                setIsAdminUser(false);
+            }
+        };
+
+        fetchAdminRole();
+
+        const handleStorageChange = () => {
+            fetchAdminRole();
+        };
+
+        const handleWindowFocus = () => {
+            fetchAdminRole();
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('focus', handleWindowFocus);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('focus', handleWindowFocus);
+        };
+    }, [isAuthorized]);
 
     useEffect(() => {
         if (activeTab === 'art') {
@@ -477,8 +527,8 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                     <h3 className="text-2xl font-bold text-slate-900 mb-2">Workout Activities</h3>
                                     <p className="text-slate-500 text-lg">My workout activities from Strava</p>
                                 </div>
-                                {/* Show Strava sync button only in development (localhost) */}
-                                {isAuthorized && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+                                {/* Show Strava sync button only for logged-in ADMIN users (including production) */}
+                                {isAuthorized && isAdminUser && (
                                     <button
                                         onClick={handleStravaAuth}
                                         className="px-6 py-3 bg-gradient-to-r from-[#FFA300] to-[#FF8C00] text-white font-bold rounded-xl hover:from-[#FF8C00] hover:to-[#FF7700] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -690,7 +740,11 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                 <div className="p-12 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
                                     <Dumbbell size={48} className="mx-auto mb-4 opacity-50" />
                                     <p className="mb-4">No activities found</p>
-                                    <p className="text-sm">Click "Sync from Strava" to authorize and load your activities</p>
+                                    <p className="text-sm">
+                                        {isAuthorized && isAdminUser
+                                            ? 'Click "Sync from Strava" to authorize and load your activities'
+                                            : 'No synced Strava activities are available yet.'}
+                                    </p>
                                 </div>
                             )}
                         </div>
