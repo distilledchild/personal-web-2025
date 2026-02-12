@@ -309,7 +309,7 @@ export const Research: React.FC = () => {
           id: tab.slug // Use slug as id for PageHeader
         }))}
         activeTab={submenu || 'hicbrowser'}
-        onTabChange={(id) => navigate(`/ research / ${id} `)}
+        onTabChange={(id) => navigate(`/research/${id}`)}
         activeColor="text-teal-500 border-teal-500"
       />
 
