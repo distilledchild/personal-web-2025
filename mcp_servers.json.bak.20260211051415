@@ -1,0 +1,15 @@
+{
+    "mcpServers": {
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "."
+            ]
+        },
+        "deepwiki": {
+            "url": "https://mcp.deepwiki.com/mcp"
+        }
+    }
+}

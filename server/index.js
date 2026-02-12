@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { generateSignedUrl, generateSignedUrlsForPrefix, isValidFilePath } from './utils/gcsHelper.js';
+import billingRoutes from './routes/billing.js';
 
 
 
@@ -39,6 +40,9 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.get('/', (req, res) => {
     res.send('Hello from Cloud Run! 🚀 Server v2.1.0 - Contact Info Update');
 });
+
+// Register Billing Routes
+app.use('/api/billing', billingRoutes);
 
 // Load environment variables
 import dotenv from 'dotenv';
@@ -281,7 +285,7 @@ const techBlogSchema = new mongoose.Schema({
         avatar: String
     },
     likedBy: [{ type: String }],  // Array of email strings
-    show: { type: String, default: 'Y' },  // 'Y' or 'N'
+    show: { type: String, default: 'Y' },  // 'Y' (visible), 'N' (pending), 'D' (deleted)
     isAutomated: { type: Boolean, default: false },
     references: [{ type: String }]  // Array of reference URLs
 }, { collection: 'BLOG' });
@@ -667,6 +671,66 @@ const validateBlogApiKey = (req, res, next) => {
     next();
 };
 
+const shouldSyncToObsidian = (blogDoc) => {
+    const isPublished = blogDoc?.isPublished === true || blogDoc?.isPublished === 'true';
+    const isShown = String(blogDoc?.show || '').toUpperCase() === 'Y';
+    return isPublished && isShown;
+};
+
+const triggerPublishedBlogSync = async (post) => {
+    const webhookUrl = process.env.N8N_BLOG_PUBLISH_WEBHOOK_URL;
+    if (!webhookUrl) {
+        console.log('[TECH-BLOG] N8N_BLOG_PUBLISH_WEBHOOK_URL not set, skipping publish sync trigger');
+        return;
+    }
+
+    const token = process.env.N8N_BLOG_PUBLISH_WEBHOOK_TOKEN || '';
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['x-webhook-token'] = token;
+    }
+
+    const payload = {
+        source: 'distilledchild-blog',
+        event: 'blog_published',
+        post: {
+            id: String(post._id),
+            category: post.category || '',
+            title: post.title || '',
+            content: post.content || '',
+            tags: Array.isArray(post.tags) ? post.tags : [],
+            slug: post.slug || '',
+            isPublished: !!post.isPublished,
+            show: post.show || 'N',
+            isAutomated: !!post.isAutomated,
+            author: post.author || {},
+            references: Array.isArray(post.references) ? post.references : [],
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+        },
+    };
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error('[TECH-BLOG] Failed to trigger n8n publish webhook:', response.status, text);
+            return;
+        }
+
+        console.log('[TECH-BLOG] n8n publish webhook triggered successfully for post:', post._id);
+    } catch (error) {
+        console.error('[TECH-BLOG] Error triggering n8n publish webhook:', error);
+    }
+};
+
 // Automated Blog Post Creation (for n8n and external services)
 app.post('/api/tech-blog/auto', validateBlogApiKey, async (req, res) => {
     try {
@@ -765,6 +829,8 @@ app.put('/api/tech-blog/:id', async (req, res) => {
             return res.status(404).json({ error: 'Blog post not found' });
         }
 
+        const wasSyncEligible = shouldSyncToObsidian(blog);
+
         // Check if user is the author OR is in the authorized list
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
 
@@ -801,7 +867,8 @@ app.put('/api/tech-blog/:id', async (req, res) => {
         }
 
         if (req.body.show !== undefined) {
-            blog.show = req.body.show;
+            const normalizedShow = String(req.body.show).trim().toUpperCase();
+            blog.show = ['Y', 'N', 'D'].includes(normalizedShow) ? normalizedShow : 'N';
         }
 
         blog.updatedAt = new Date();
@@ -809,6 +876,12 @@ app.put('/api/tech-blog/:id', async (req, res) => {
         const updatedBlog = await blog.save();
         console.log('[TECH-BLOG] Post updated successfully:', updatedBlog._id);
         console.log('[TECH-BLOG] Updated tags:', updatedBlog.tags);
+
+        const isSyncEligible = shouldSyncToObsidian(updatedBlog);
+        if (!wasSyncEligible && isSyncEligible) {
+            await triggerPublishedBlogSync(updatedBlog);
+        }
+
         res.json(updatedBlog);
     } catch (err) {
         console.error('[TECH-BLOG] Error updating post:', err);
@@ -1043,8 +1116,8 @@ app.delete('/api/tech-blog/:id', async (req, res) => {
             return res.status(403).json({ error: `Unauthorized: Stored author '${authorEmail}' does not match requestor '${requestEmail}'` });
         }
 
-        // Soft delete: set show to 'N'
-        blog.show = 'N';
+        // Soft delete: mark as deleted so it does not collide with pending drafts.
+        blog.show = 'D';
         blog.updatedAt = new Date();
 
         await blog.save();

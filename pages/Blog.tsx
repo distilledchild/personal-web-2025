@@ -623,37 +623,49 @@ export const Blog: React.FC = () => {
 
 
 
-    // Filter posts based on search query (button/enter triggered)
-    // ONLY show published posts in the main grid unless showing pending
-    // Also filter by activeTab (Tech vs Life)
-    const activePosts = allPosts.filter(post => {
-        // Treat undefined as true (legacy data from BLOG collection might miss this field)
-        // Check for boolean true, string "true", or undefined/null (not explicitly false)
-        const isPublished = post.isPublished === true || post.isPublished === 'true' || (post.isPublished !== false && post.isPublished !== 'false');
+    const normalizePublished = (value: any): boolean => {
+        if (typeof value === 'boolean') return value;
+        if (typeof value === 'string') {
+            const normalized = value.trim().toLowerCase();
+            if (normalized === 'true' || normalized === '1' || normalized === 'y') return true;
+            if (normalized === 'false' || normalized === '0' || normalized === 'n') return false;
+        }
+        // Legacy rows may omit this field; keep previous default behavior.
+        return true;
+    };
 
-        if (!isPublished) return false;
+    const normalizeShow = (value: any): 'Y' | 'N' | 'D' => {
+        const normalized = String(value ?? 'Y').trim().toUpperCase();
+        if (normalized === 'N') return 'N';
+        if (normalized === 'D') return 'D';
+        return 'Y';
+    };
+
+    // Filter posts based on search query (button/enter triggered)
+    // Main grid: published and visible only.
+    const activePosts = allPosts.filter(post => {
+        const isPublished = normalizePublished(post.isPublished);
+        const showStatus = normalizeShow(post.show);
+        if (!isPublished || showStatus !== 'Y') return false;
 
         const cat = (post.category || '').toLowerCase();
-
         if (activeTab === 'life') {
             return cat === 'cooking' || cat === 'cook';
-        } else {
-            // Tech & Bio tab: Show only Tech or Biology
-            return cat === 'tech' || cat === 'biology';
         }
+        return cat === 'tech' || cat === 'biology';
     });
 
-    // Pending posts (Admin only) - filter out published ones
+    // Pending posts (Admin only): unpublished drafts that are not deleted.
     const pendingPosts = allPosts.filter(post => {
-        const isPublished = post.isPublished === true || post.isPublished === 'true' || (post.isPublished !== false && post.isPublished !== 'false');
-        if (isPublished) return false;
+        const isPublished = normalizePublished(post.isPublished);
+        const showStatus = normalizeShow(post.show);
+        if (isPublished || showStatus !== 'N') return false;
 
+        const cat = (post.category || '').toLowerCase();
         if (activeTab === 'life') {
-            const cat = (post.category || '').toLowerCase();
             return cat === 'cooking' || cat === 'cook';
         }
-
-        return true;
+        return cat === 'tech' || cat === 'biology';
     });
 
     // State to track active filter

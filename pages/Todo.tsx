@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { TodoPersonal } from './TodoPersonal';
 import { TodoDev } from './TodoDev';
 import { TodoNote } from './TodoNote';
+import { TodoBilling } from './TodoBilling';
 import { API_URL } from '../utils/apiConfig';
 import { PageHeader } from '../components/PageHeader';
 
@@ -26,7 +27,7 @@ export const Todo: React.FC = () => {
     const [projects, setProjects] = React.useState<any[]>([]);
 
     // Derive activeTab from URL parameter
-    const activeTab = (tab === 'dev' ? 'dev' : tab === 'note' ? 'note' : 'personal') as 'personal' | 'dev' | 'note';
+    const activeTab = (tab === 'dev' ? 'dev' : tab === 'note' ? 'note' : tab === 'billing' ? 'billing' : 'personal') as 'personal' | 'dev' | 'note' | 'billing';
 
     React.useEffect(() => {
         const checkAuth = async () => {
@@ -85,7 +86,8 @@ export const Todo: React.FC = () => {
                 tabs={[
                     { id: 'personal', label: 'Personal' },
                     { id: 'dev', label: 'Dev' },
-                    { id: 'note', label: 'Note' }
+                    { id: 'note', label: 'Note' },
+                    { id: 'billing', label: 'Billing' }
                 ]}
                 activeTab={activeTab}
                 onTabChange={(id) => navigate(`/todo/${id}`)}
@@ -107,6 +109,8 @@ export const Todo: React.FC = () => {
                             isAuthorized={isAuthorized}
                             projects={projects}
                         />
+                    ) : activeTab === 'billing' ? (
+                        <TodoBilling isAuthorized={isAuthorized} />
                     ) : (
                         <TodoNote
                             user={user}

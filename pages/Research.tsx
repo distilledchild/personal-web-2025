@@ -1,105 +1,242 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
-import { FileText, GitBranch, Database, Sliders, Search, Cat } from 'lucide-react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { FileText, GitBranch, Database, Search, Cat } from 'lucide-react';
 import { ResearchHiCBrowser } from './ResearchHiCBrowser';
 import { ResearchBreedchain } from './ResearchBreedchain';
 import { ResearchPEInteractions } from './ResearchPEInteractions';
 import { PageHeader } from '../components/PageHeader';
 
-const mockInteractionData = Array.from({ length: 50 }, (_, i) => ({
-  name: `Loc ${i * 10}kb`,
-  interaction: Math.abs(Math.sin(i * 0.2) * 10) + Math.random() * 5,
-  ctcf: Math.abs(Math.cos(i * 0.2) * 8),
-  enhancer: i > 20 && i < 35 ? 15 : 2
-}));
+const singleCellQCMetrics = [
+  { label: 'Total Cells', value: '1,903', note: 'F344_SHR_M_E007_E118' },
+  { label: 'Median Genes / Cell', value: '560', note: 'split-pipe report' },
+  { label: 'Median TSCP / Cell', value: '770', note: 'cell_tscp_cutoff: 341' },
+  { label: 'Mean Reads / Cell', value: '3,647.76', note: '6,941,686 total reads' },
+  { label: 'Transcriptome Map Fraction', value: '64.13%', note: 'rn7-mod1-mclover3' },
+  { label: 'Reads in Cells', value: '55.67%', note: 'fraction_reads_in_cells' },
+];
 
-const mockScatterData = Array.from({ length: 100 }, () => ({
-  x: Math.random() * 100,
-  y: Math.random() * 100,
-  z: Math.random() * 500, // expression
-  cluster: Math.random() > 0.5 ? 'Cluster A' : 'Cluster B'
-}));
+const clusterDistribution = [
+  { cluster: 'C1', cells: 561 },
+  { cluster: 'C2', cells: 332 },
+  { cluster: 'C3', cells: 240 },
+  { cluster: 'C4', cells: 197 },
+  { cluster: 'C5', cells: 170 },
+  { cluster: 'C6', cells: 159 },
+  { cluster: 'C7', cells: 139 },
+  { cluster: 'C8', cells: 105 },
+];
 
+const round1WellDistribution = [
+  { well: 'D10', cells: 697 },
+  { well: 'D11', cells: 600 },
+  { well: 'D12', cells: 606 },
+];
 
+const markerPanels = [
+  { label: 'Glutamatergic', genes: 'SATB2, LRRC7, GRIN2B' },
+  { label: 'GABAergic', genes: 'GAD1, GAD2, VIP/Lamp5/Sncg signatures' },
+  { label: 'Microglia', genes: 'AIF1, CX3CR1, P2RY12' },
+  { label: 'Endothelial', genes: 'CLDN5, FLT1, PECAM1' },
+  { label: 'Dopamine axis', genes: 'DRD1, DRD2, PDE4B' },
+];
 
 const SingleCell = () => (
   <div className="space-y-8 animate-fadeIn">
-    {/* <div className="border-b border-slate-100 pb-6"> */}
-    <div>
-      <p className="text-slate-500 text-lg">Dimensionality reduction (UMAP) and clustering of 10k PBMCs.</p>
+    <div className="space-y-3">
+      <h3 className="text-2xl font-bold text-slate-900">SUD-PFC-SC-SEQ (Rat PFC)</h3>
+      <p className="text-slate-600 text-base leading-relaxed">
+        Parse Biosciences Evercode WT (`split-pipe v1.1.2`) run audit for sample
+        <span className="font-semibold text-slate-800"> F344_SHR_M_E007_E118</span>.
+        This view summarizes verified metrics from the July 9, 2024 run and downstream Seurat interpretation.
+      </p>
+      <div className="flex flex-wrap gap-2 text-xs font-semibold">
+        {['Chemistry v2', 'Kit WT', 'Genome rn7-mod1-mclover3', 'Leiden clusters: 8'].map((tag) => (
+          <span key={tag} className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-teal-700">
+            {tag}
+          </span>
+        ))}
+      </div>
     </div>
 
-    <div className="h-[500px] w-full bg-slate-50 rounded-2xl p-6 border border-slate-100">
-      <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis type="number" dataKey="x" name="UMAP_1" stroke="#94a3b8" tick={false} />
-          <YAxis type="number" dataKey="y" name="UMAP_2" stroke="#94a3b8" tick={false} />
-          <ZAxis type="number" dataKey="z" range={[50, 400]} name="Expression" />
-          <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ borderRadius: '12px' }} />
-          <Legend wrapperStyle={{ paddingTop: '20px' }} />
-          <Scatter name="Cluster A (Neural)" data={mockScatterData.filter(d => d.cluster === 'Cluster A')} fill="#DB2777" shape="circle" />
-          <Scatter name="Cluster B (Progenitor)" data={mockScatterData.filter(d => d.cluster === 'Cluster B')} fill="#4ade80" shape="triangle" />
-        </ScatterChart>
-      </ResponsiveContainer>
-    </div>
-
-    <div className="flex gap-4 overflow-x-auto pb-2">
-      {['QC Passed: 98%', 'Doublets Removed', 'Mito < 5%'].map((tag, i) => (
-        <span key={i} className="bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border border-slate-200">
-          {tag}
-        </span>
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {singleCellQCMetrics.map((metric) => (
+        <div key={metric.label} className="rounded-2xl border border-slate-200 bg-white p-4">
+          <p className="text-sm font-medium text-slate-500">{metric.label}</p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">{metric.value}</p>
+          <p className="mt-1 text-xs text-slate-400">{metric.note}</p>
+        </div>
       ))}
+    </div>
+
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="h-[360px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100">
+        <p className="mb-2 text-sm font-semibold text-slate-700">Cluster Distribution</p>
+        <ResponsiveContainer width="100%" height="92%">
+          <BarChart data={clusterDistribution}>
+            <defs>
+              <linearGradient id="singleCellClusterBarGradient" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor="#2dd4bf" />
+                <stop offset="100%" stopColor="#0d9488" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="cluster" stroke="#64748b" />
+            <YAxis stroke="#64748b" />
+            <Tooltip contentStyle={{ borderRadius: '12px' }} />
+            <Bar dataKey="cells" fill="url(#singleCellClusterBarGradient)" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="h-[360px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100">
+        <p className="mb-2 text-sm font-semibold text-slate-700">Round-1 Well Cell Counts</p>
+        <ResponsiveContainer width="100%" height="92%">
+          <BarChart data={round1WellDistribution}>
+            <defs>
+              <linearGradient id="singleCellWellBarGradient" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stopColor="#2dd4bf" />
+                <stop offset="100%" stopColor="#0d9488" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="well" stroke="#64748b" />
+            <YAxis stroke="#64748b" />
+            <Tooltip contentStyle={{ borderRadius: '12px' }} />
+            <Bar dataKey="cells" fill="url(#singleCellWellBarGradient)" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="rounded-2xl border border-slate-200 p-5">
+        <h4 className="text-lg font-bold text-slate-900 mb-3">Processing & QC Rules</h4>
+        <ul className="text-sm text-slate-700 space-y-2">
+          <li><strong>Platform:</strong> Parse Evercode WT, split-pipe v1.1.2</li>
+          <li><strong>Sample wells:</strong> D10-D12 (3 wells)</li>
+          <li><strong>Seurat filter:</strong> nFeature_RNA &lt; 2000, nCount_RNA &lt; 3000, percent.mt &lt; 3</li>
+          <li><strong>Clustering:</strong> PCA dims 1:30, resolution 1.5 (Seurat), Leiden (split-pipe)</li>
+          <li><strong>Status:</strong> analysis_process.json = <span className="font-semibold">good</span></li>
+        </ul>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 p-5">
+        <h4 className="text-lg font-bold text-slate-900 mb-3">Marker Panels Used for Annotation</h4>
+        <ul className="text-sm text-slate-700 space-y-2">
+          {markerPanels.map((panel) => (
+            <li key={panel.label}>
+              <strong>{panel.label}:</strong> {panel.genes}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+      <h4 className="text-lg font-bold text-amber-900 mb-2">Current Interpretation Boundary</h4>
+      <p className="text-sm text-amber-900/90 leading-relaxed">
+        This run robustly captures major PFC populations, but rare-cell claims remain provisional at the current depth
+        (`1,903` cells). For SUD-specific contrasts, the next step is explicit group design integration
+        (strain/treatment/batch) and per-cluster differential testing with strict multiple-testing control.
+      </p>
     </div>
   </div>
 );
 
 const EnhancerID = () => (
   <div className="space-y-8 animate-fadeIn">
-    {/* <div className="border-b border-slate-100 pb-6"> */}
-    <div>
-      <p className="text-slate-500 text-lg">Deep learning prediction of enhancer regions using sequence motifs and conservation.</p>
+    <div className="space-y-3">
+      <h3 className="text-2xl font-bold text-slate-900">Deep Learning Framework for Rat Promoter-Enhancer Interactions</h3>
+      <p className="text-slate-600 text-base leading-relaxed">
+        This page summarizes the working plan from the project notes to connect Hi-C loops, sequence variation,
+        and Enformer predictions for breed-specific regulatory interpretation in HRDP rat frontal cortex.
+      </p>
+      <div className="flex flex-wrap gap-2 text-xs font-semibold">
+        {['HRDP (10 strains)', 'No WGS required', 'Hi-C variant calling', 'Enformer (196,608 bp)', 'Loop-aware validation'].map((tag) => (
+          <span key={tag} className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-teal-700">
+            {tag}
+          </span>
+        ))}
+      </div>
     </div>
 
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div>
-        <h4 className="text-lg font-bold text-slate-900 mb-4">Model Architecture & Pipeline</h4>
-        <p className="text-slate-600 mb-6 leading-relaxed">
-          We utilize a CNN-LSTM hybrid architecture to capture both local motif patterns and long-range sequence dependencies. Input features include one-hot encoded DNA sequences, conservation scores (PhyloP), and chromatin accessibility signals (ATAC-seq).
-        </p>
-
-        <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto shadow-inner">
-          <code className="text-sm font-mono leading-relaxed">
-            <span className="text-purple-400">def</span> <span className="text-blue-400">predict_enhancer</span>(sequence, atac_signal):<br />
-            &nbsp;&nbsp;<span className="text-slate-500"># Load pre-trained weights</span><br />
-            &nbsp;&nbsp;model = load_model(<span className="text-yellow-300">'enhancer_net_v2.h5'</span>)<br />
-            &nbsp;&nbsp;<span className="text-slate-500"># Feature extraction</span><br />
-            &nbsp;&nbsp;features = extract_motifs(sequence)<br />
-            &nbsp;&nbsp;conservation = get_phyloP_score(sequence)<br />
-            &nbsp;&nbsp;<span className="text-purple-400">return</span> model.predict([features, conservation])
-          </code>
-        </div>
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="rounded-2xl border border-slate-200 p-5">
+        <h4 className="text-lg font-bold text-slate-900 mb-3">Scientific Focus</h4>
+        <ul className="text-sm text-slate-700 space-y-2">
+          <li><strong>Question:</strong> Which sequence differences across strains explain differences in loop-supported promoter-enhancer regulation.</li>
+          <li><strong>Input data:</strong> Hi-C FASTQ or BAM, loop anchors, and promoter-linked loop catalogs.</li>
+          <li><strong>Core assumption:</strong> Hi-C reads can be reused for SNP and indel calling when chimeric-aware alignment and strict QC are applied.</li>
+          <li><strong>Priority regions:</strong> Loop anchors and loop-centered windows where Hi-C read density is relatively high.</li>
+        </ul>
       </div>
 
-      <div className="space-y-6">
-        <div className="border border-slate-100 p-6 rounded-2xl">
-          <h4 className="font-bold text-slate-900 mb-3 text-lg">Input Features</h4>
-          <ul className="list-disc list-inside text-slate-700 space-y-2">
-            <li><strong>Sequence:</strong> 1kb window centered on peak</li>
-            <li><strong>Accessibility:</strong> ATAC-seq peak intensity</li>
-            <li><strong>Epigenetics:</strong> H3K27ac ChIP-seq signal</li>
-            <li><strong>Conservation:</strong> 100-way vertebrate alignment</li>
-          </ul>
+      <div className="rounded-2xl border border-slate-200 p-5">
+        <h4 className="text-lg font-bold text-slate-900 mb-3">Why Enformer</h4>
+        <ul className="text-sm text-slate-700 space-y-2">
+          <li><strong>Long-range context:</strong> Enformer models distal effects in large sequence windows using transformer attention.</li>
+          <li><strong>Rich outputs:</strong> CAGE and chromatin tracks are usable as functional priors for loop interpretation.</li>
+          <li><strong>Variant effects:</strong> Delta prediction between strain-specific sequences provides a direct in silico effect size.</li>
+          <li><strong>Practical fit:</strong> 196,608 bp windows can be centered on loop anchors to align sequence prediction with 3D contacts.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="space-y-4">
+      <h4 className="text-lg font-bold text-slate-900">Computational Pipeline</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rounded-xl border border-slate-200 p-4">
+          <p className="text-sm font-semibold text-slate-900 mb-2">Step 1. Hi-C Variant Calling</p>
+          <p className="text-sm text-slate-600">Use BWA-MEM with chimeric-aware options, remove duplicates, then call variants with GATK HaplotypeCaller.</p>
         </div>
-        <div className="border border-slate-100 p-6 rounded-2xl">
-          <h4 className="font-bold text-slate-900 mb-3 text-lg">Performance Metrics</h4>
-          <ul className="list-disc list-inside text-slate-700 space-y-2">
-            <li><strong>AUROC:</strong> 0.94</li>
-            <li><strong>AUPR:</strong> 0.89</li>
-            <li><strong>Validation:</strong> CRISPRi validated regions</li>
-          </ul>
+        <div className="rounded-xl border border-slate-200 p-4">
+          <p className="text-sm font-semibold text-slate-900 mb-2">Step 2. Strain-Specific Consensus FASTA</p>
+          <p className="text-sm text-slate-600">Apply filtered VCFs to mRatBN7.2 and build per-strain genomes with bcftools consensus.</p>
         </div>
+        <div className="rounded-xl border border-slate-200 p-4">
+          <p className="text-sm font-semibold text-slate-900 mb-2">Step 3. Enformer Input and Inference</p>
+          <p className="text-sm text-slate-600">Extract 196 kb windows around anchor midpoints, run Enformer, and compute strain-level delta scores.</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 p-4">
+          <p className="text-sm font-semibold text-slate-900 mb-2">Step 4. Loop-Attention Concordance</p>
+          <p className="text-sm text-slate-600">Compare attention and track signals against Hi-C loops using distance-corrected correlation, Jaccard overlap, and virtual 4C.</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto shadow-inner">
+      <code className="text-sm font-mono leading-relaxed">
+        <span className="text-slate-400"># Step 1: Hi-C based variant calling (per strain)</span><br />
+        <span className="text-yellow-300">bwa mem -5SP -t 16 mRatBN7.2.fa R1.fastq.gz R2.fastq.gz | samtools sort -o sorted.bam</span><br />
+        <span className="text-yellow-300">gatk MarkDuplicates -I sorted.bam -O dedup.bam -M metrics.txt --REMOVE_DUPLICATES true</span><br />
+        <span className="text-yellow-300">gatk HaplotypeCaller -R mRatBN7.2.fa -I dedup.bam -O strain.g.vcf.gz -ERC GVCF --dont-use-soft-clipped-bases true</span><br />
+        <br />
+        <span className="text-slate-400"># Step 2-3: consensus + Enformer input windows</span><br />
+        <span className="text-yellow-300">bcftools filter -e &apos;QD &lt; 2.0 || FS &gt; 60.0&apos; -O z -o filtered.vcf.gz raw.vcf.gz</span><br />
+        <span className="text-yellow-300">bcftools consensus -f mRatBN7.2.fa -o strain.fa filtered.vcf.gz</span><br />
+        <span className="text-yellow-300">bedtools getfasta -fi strain.fa -bed loop_windows_196kb.bed -fo enformer_input.fa</span><br />
+      </code>
+    </div>
+
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="rounded-2xl border border-slate-200 p-5">
+        <h4 className="text-lg font-bold text-slate-900 mb-3">Validation and Readouts</h4>
+        <ul className="text-sm text-slate-700 space-y-2">
+          <li><strong>Delta effect check:</strong> Compare prediction differences between strains at differential loops.</li>
+          <li><strong>Attention versus loops:</strong> Quantify overlap between top attention pixels and HICCUP loop anchors.</li>
+          <li><strong>Distance-corrected correlation:</strong> Compare predicted long-range signal and Hi-C contact after genomic-distance correction.</li>
+          <li><strong>Null controls:</strong> Apply permutation and shuffled-region tests before claiming strain-specific regulation.</li>
+        </ul>
+      </div>
+
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+        <h4 className="text-lg font-bold text-amber-900 mb-2">Important Caveats</h4>
+        <p className="text-sm text-amber-900/90 leading-relaxed">
+          Hi-C based variant calling is feasible, but coverage remains non-uniform because of restriction site bias and
+          chimeric read structure. Claims should be restricted to well-covered loop-anchor regions, include strict variant QC,
+          and report uncertainty for low-depth regions outside anchor-focused analyses.
+        </p>
       </div>
     </div>
   </div>
