@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -46,7 +47,7 @@ const SingleCell = () => (
     <div className="space-y-3">
       <h3 className="text-2xl font-bold text-slate-900">SUD-PFC-SC-SEQ (Rat PFC)</h3>
       <p className="text-slate-600 text-base leading-relaxed">
-        Parse Biosciences Evercode WT (`split-pipe v1.1.2`) run audit for sample
+        Parse Biosciences Evercode WT (`split - pipe v1.1.2`) run audit for sample
         <span className="font-semibold text-slate-800"> F344_SHR_M_E007_E118</span>.
         This view summarizes verified metrics from the July 9, 2024 run and downstream Seurat interpretation.
       </p>
@@ -137,7 +138,7 @@ const SingleCell = () => (
       <h4 className="text-lg font-bold text-amber-900 mb-2">Current Interpretation Boundary</h4>
       <p className="text-sm text-amber-900/90 leading-relaxed">
         This run robustly captures major PFC populations, but rare-cell claims remain provisional at the current depth
-        (`1,903` cells). For SUD-specific contrasts, the next step is explicit group design integration
+        (`1, 903` cells). For SUD-specific contrasts, the next step is explicit group design integration
         (strain/treatment/batch) and per-cluster differential testing with strict multiple-testing control.
       </p>
     </div>
@@ -188,34 +189,51 @@ const EnhancerID = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-xl border border-slate-200 p-4">
           <p className="text-sm font-semibold text-slate-900 mb-2">Step 1. Hi-C Variant Calling</p>
-          <p className="text-sm text-slate-600">Use BWA-MEM with chimeric-aware options, remove duplicates, then call variants with GATK HaplotypeCaller.</p>
+          <p className="text-sm text-slate-600">Align with BWA-MEM (-5SP), mark duplicates, and call variants using GATK HaplotypeCaller & GenotypeGVCFs.</p>
         </div>
         <div className="rounded-xl border border-slate-200 p-4">
           <p className="text-sm font-semibold text-slate-900 mb-2">Step 2. Strain-Specific Consensus FASTA</p>
-          <p className="text-sm text-slate-600">Apply filtered VCFs to mRatBN7.2 and build per-strain genomes with bcftools consensus.</p>
+          <p className="text-sm text-slate-600">Filter VCF to SNP-only to preserve coordinates, generate consensus genome via bcftools.</p>
         </div>
         <div className="rounded-xl border border-slate-200 p-4">
           <p className="text-sm font-semibold text-slate-900 mb-2">Step 3. Enformer Input and Inference</p>
-          <p className="text-sm text-slate-600">Extract 196 kb windows around anchor midpoints, run Enformer, and compute strain-level delta scores.</p>
+          <p className="text-sm text-slate-600">Extract 196 kb sequences centered on loop anchors from the custom genome.</p>
         </div>
         <div className="rounded-xl border border-slate-200 p-4">
           <p className="text-sm font-semibold text-slate-900 mb-2">Step 4. Loop-Attention Concordance</p>
-          <p className="text-sm text-slate-600">Compare attention and track signals against Hi-C loops using distance-corrected correlation, Jaccard overlap, and virtual 4C.</p>
+          <p className="text-sm text-slate-600">Correlate Enformer attention maps with Hi-C contact matrices using distance-corrected metrics.</p>
         </div>
       </div>
     </div>
 
+
     <div className="bg-slate-900 rounded-2xl p-6 overflow-x-auto shadow-inner">
       <code className="text-sm font-mono leading-relaxed">
-        <span className="text-slate-400"># Step 1: Hi-C based variant calling (per strain)</span><br />
-        <span className="text-yellow-300">bwa mem -5SP -t 16 mRatBN7.2.fa R1.fastq.gz R2.fastq.gz | samtools sort -o sorted.bam</span><br />
-        <span className="text-yellow-300">gatk MarkDuplicates -I sorted.bam -O dedup.bam -M metrics.txt --REMOVE_DUPLICATES true</span><br />
-        <span className="text-yellow-300">gatk HaplotypeCaller -R mRatBN7.2.fa -I dedup.bam -O strain.g.vcf.gz -ERC GVCF --dont-use-soft-clipped-bases true</span><br />
+        <span className="text-slate-400"># Step 0: Reference prep (run once per reference)</span><br />
+        <span className="text-yellow-300">samtools faidx rn7chr.fa</span><br />
+        <span className="text-yellow-300">gatk CreateSequenceDictionary -R rn7chr.fa</span><br />
         <br />
-        <span className="text-slate-400"># Step 2-3: consensus + Enformer input windows</span><br />
-        <span className="text-yellow-300">bcftools filter -e &apos;QD &lt; 2.0 || FS &gt; 60.0&apos; -O z -o filtered.vcf.gz raw.vcf.gz</span><br />
-        <span className="text-yellow-300">bcftools consensus -f mRatBN7.2.fa -o strain.fa filtered.vcf.gz</span><br />
-        <span className="text-yellow-300">bedtools getfasta -fi strain.fa -bed loop_windows_196kb.bed -fo enformer_input.fa</span><br />
+        <span className="text-slate-400"># Step 1: Hi-C based variant calling (Sample 592)</span><br />
+        <span className="text-yellow-300">bwa mem -5SP -t 16 rn7chr.fa 592_R1.fastq.gz 592_R2.fastq.gz | samtools view -b - &gt; 592_raw.bam</span><br />
+        <span className="text-yellow-300">samtools sort -@ 8 -o 592_sorted.bam 592_raw.bam</span><br />
+        <span className="text-yellow-300">samtools index 592_sorted.bam</span><br />
+        <br />
+        <span className="text-yellow-300">gatk MarkDuplicates -I 592_sorted.bam -O 592_dedup.bam -M metrics.txt --REMOVE_DUPLICATES true</span><br />
+        <span className="text-yellow-300">samtools index 592_dedup.bam</span><br />
+        <br />
+        <span className="text-yellow-300">gatk HaplotypeCaller -R rn7chr.fa -I 592_dedup.bam -O 592_output.g.vcf.gz -ERC GVCF --dont-use-soft-clipped-bases true</span><br />
+        <span className="text-yellow-300">gatk GenotypeGVCFs -R rn7chr.fa -V 592_output.g.vcf.gz -O 592_raw.vcf.gz</span><br />
+        <span className="text-yellow-300">tabix -p vcf 592_raw.vcf.gz</span><br />
+        <br />
+        <span className="text-slate-400"># Step 2: SNP-only consensus (preserve coordinates)</span><br />
+        <span className="text-yellow-300">bcftools filter -e &apos;QD &lt; 2.0 || FS &gt; 60.0&apos; -O z -o 592_filtered.vcf.gz 592_raw.vcf.gz</span><br />
+        <span className="text-yellow-300">bcftools view -V indels -O z -o 592_snps_only.vcf.gz 592_filtered.vcf.gz</span><br />
+        <span className="text-yellow-300">tabix -p vcf 592_snps_only.vcf.gz</span><br />
+        <span className="text-yellow-300">bcftools consensus -f rn7chr.fa -o 592_genome.fa 592_snps_only.vcf.gz</span><br />
+        <br />
+        <span className="text-slate-400"># Step 3: Enformer input extraction</span><br />
+        <span className="text-slate-400"># NOTE: loop_anchors.bed must be BED (0-based, half-open)</span><br />
+        <span className="text-yellow-300">bedtools getfasta -fi 592_genome.fa -bed loop_anchors.bed -fo input_sequences.fa</span><br />
       </code>
     </div>
 
@@ -239,7 +257,7 @@ const EnhancerID = () => (
         </p>
       </div>
     </div>
-  </div>
+  </div >
 );
 
 export const Research: React.FC = () => {
@@ -291,7 +309,7 @@ export const Research: React.FC = () => {
           id: tab.slug // Use slug as id for PageHeader
         }))}
         activeTab={submenu || 'hicbrowser'}
-        onTabChange={(id) => navigate(`/research/${id}`)}
+        onTabChange={(id) => navigate(`/ research / ${id} `)}
         activeColor="text-teal-500 border-teal-500"
       />
 
