@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { FileText, GitBranch, Database, Search, Cat } from 'lucide-react';
-import { ResearchHiCBrowser } from './ResearchHiCBrowser';
+import { ResearchLoopBrowser } from './ResearchLoopBrowser';
 import { ResearchBreedchain } from './ResearchBreedchain';
 import { ResearchPEInteractions } from './ResearchPEInteractions';
 import { PageHeader } from '../components/PageHeader';
@@ -264,17 +264,35 @@ export const Research: React.FC = () => {
   const { submenu } = useParams<{ submenu?: string }>();
   const navigate = useNavigate();
 
+  const isDev = import.meta.env.DEV;
+
+  // Lazy-load Hi-C browser only in dev so it doesn't ship/load in production.
+  const ResearchHiCBrowser = React.useMemo(() => {
+    if (!isDev) return null;
+    return React.lazy(async () => {
+      const mod = await import('./ResearchHiCBrowser');
+      return { default: mod.ResearchHiCBrowser };
+    });
+  }, [isDev]);
+
   const tabs = [
-    { label: 'Hi-C Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' },
+    { label: 'Loop Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'loopbrowser' },
+    ...(isDev ? [{ label: 'Hi-C Browser', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' }] : []),
     { label: 'Breedchain', icon: Cat, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'breedchain' },
     { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
     { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
     { label: 'DL & Enhancer', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
   ];
 
-  // Determine active tab from URL, default to first tab
-  const activeTabIndex = tabs.findIndex(tab => tab.slug === submenu);
-  const activeTab = activeTabIndex !== -1 ? activeTabIndex : 0;
+  const defaultSlug = tabs[0]?.slug || 'loopbrowser';
+  const requestedSlug = submenu && tabs.some((t) => t.slug === submenu) ? submenu : defaultSlug;
+
+  // Normalize URL if user hits an invalid (or dev-only) tab slug.
+  React.useEffect(() => {
+    if (submenu !== requestedSlug) {
+      navigate(`/research/${requestedSlug}`, { replace: true });
+    }
+  }, [submenu, requestedSlug, navigate]);
 
   // Prefetch initial genome data (chr1) in background when Research page loads
   React.useEffect(() => {
@@ -308,7 +326,7 @@ export const Research: React.FC = () => {
           ...tab,
           id: tab.slug // Use slug as id for PageHeader
         }))}
-        activeTab={submenu || 'hicbrowser'}
+        activeTab={requestedSlug}
         onTabChange={(id) => navigate(`/research/${id}`)}
         activeColor="text-teal-500 border-teal-500"
       />
@@ -316,11 +334,16 @@ export const Research: React.FC = () => {
       {/* Scrollable Content Area */}
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-6 pb-20">
         <div className="max-w-7xl mx-auto">
-          {(activeTab === 0) && <ResearchHiCBrowser />}
-          {(activeTab === 1) && <ResearchBreedchain />}
-          {(activeTab === 2) && <ResearchPEInteractions />}
-          {(activeTab === 3) && <SingleCell />}
-          {(activeTab === 4) && <EnhancerID />}
+          {requestedSlug === 'loopbrowser' && <ResearchLoopBrowser />}
+          {requestedSlug === 'hicbrowser' && ResearchHiCBrowser ? (
+            <React.Suspense fallback={<div className="py-10 text-slate-400 text-sm">Loading Hi-C browser…</div>}>
+              <ResearchHiCBrowser />
+            </React.Suspense>
+          ) : null}
+          {requestedSlug === 'breedchain' && <ResearchBreedchain />}
+          {requestedSlug === 'peinteractions' && <ResearchPEInteractions />}
+          {requestedSlug === 'singlecellseq' && <SingleCell />}
+          {requestedSlug === 'deeplearningenhancer' && <EnhancerID />}
         </div>
       </div>
     </div>

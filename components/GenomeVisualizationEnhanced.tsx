@@ -199,8 +199,10 @@ export const GenomeVisualizationEnhanced: React.FC = () => {
                 }
                 // console.log("Assigned loopColor:::::::::::::::::::", loopColor);
 
-                // Arc height is now 6x marker height (1.5x of previous 4x)
-                const arcHeight = markerHeight * 6;
+                // Reduce the large whitespace above the loop layer by increasing arc height.
+                // We use a "base" arc height and then halve the remaining top whitespace.
+                const baseArcHeight = markerHeight * 6;
+                const arcHeight = Math.min(chromosomeY - 10, (chromosomeY + baseArcHeight) / 2);
 
                 // Draw parabolic arc
                 ctx.strokeStyle = loopColor;

@@ -75,6 +75,7 @@ const Layout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [userRole, setUserRole] = React.useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = React.useState(false);
+  const researchDefaultPath = import.meta.env.DEV ? '/research/hicbrowser' : '/research/loopbrowser';
 
   React.useEffect(() => {
     const checkAuth = async () => {
@@ -173,7 +174,7 @@ const Layout: React.FC = () => {
               <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-blue-500 hover:text-blue-300 transition-colors px-4 py-2">
                 About
               </Link>
-              <Link to="/research/hicbrowser" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-teal-500 hover:text-teal-300 transition-colors px-4 py-2">
+              <Link to={researchDefaultPath} onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-teal-500 hover:text-teal-300 transition-colors px-4 py-2">
                 Research
               </Link>
               <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
@@ -208,7 +209,7 @@ const Layout: React.FC = () => {
             colorClass="text-blue-500 hover:text-blue-300"
           />
           <LiquidTab
-            to="/research/hicbrowser"
+            to={researchDefaultPath}
             label="Research"
             active={location.pathname.startsWith('/research')}
             colorClass="text-teal-500 hover:text-teal-300"
@@ -240,7 +241,7 @@ const Layout: React.FC = () => {
         <Route path="/todo/:tab" element={<Todo />} />
         <Route path="/about" element={<Navigate to="/about/me" replace />} />
         <Route path="/about/:tab" element={<About />} />
-        <Route path="/research" element={<Navigate to="/research/hicbrowser" replace />} />
+        <Route path="/research" element={<Navigate to={researchDefaultPath} replace />} />
         <Route path="/research/:submenu" element={<Research />} />
         <Route path="/blog" element={<Navigate to="/blog/tech-bio" replace />} />
         <Route path="/blog/:tab" element={<Blog />} />
