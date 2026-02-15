@@ -370,8 +370,10 @@ export const Blog: React.FC = () => {
             });
 
             if (response.ok) {
-                // Remove from local state
-                setBlogPosts(prev => prev.filter(post => post._id !== selectedPost._id));
+                // Soft delete: update local state to show='D' (matches server behavior)
+                setBlogPosts(prev => prev.map(post =>
+                    post._id === selectedPost._id ? { ...post, show: 'D' } : post
+                ));
                 setShowDeleteDialog(false);
                 setSelectedPostId(null);
             }
@@ -655,11 +657,12 @@ export const Blog: React.FC = () => {
         return cat === 'tech' || cat === 'biology';
     });
 
-    // Pending posts (Admin only): unpublished drafts that are not deleted.
+    // Pending posts (Admin only): automated unpublished drafts that are not deleted.
     const pendingPosts = allPosts.filter(post => {
         const isPublished = normalizePublished(post.isPublished);
         const showStatus = normalizeShow(post.show);
-        if (isPublished || showStatus !== 'N') return false;
+        // Only automated (n8n) posts with isPublished=false and show='N' are pending
+        if (isPublished || showStatus !== 'N' || !post.isAutomated) return false;
 
         const cat = (post.category || '').toLowerCase();
         if (activeTab === 'life') {
