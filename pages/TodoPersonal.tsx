@@ -20,9 +20,10 @@ interface TodoPersonalProps {
     user: any;
     isAuthorized: boolean;
     projects: any[];
+    securityAuditPanel?: React.ReactNode;
 }
 
-export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, projects }) => {
+export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, projects, securityAuditPanel }) => {
     // ============================================================================
     // CORE STATE - Todos
     // ============================================================================
@@ -431,6 +432,8 @@ export const TodoPersonal: React.FC<TodoPersonalProps> = ({ user, isAuthorized, 
                             <AnalogClock timezone="Asia/Seoul" label="Seoul" />
                         </div>
                     </div>
+
+                    {securityAuditPanel}
                 </div>
 
                 {/* Right: TODO Table */}

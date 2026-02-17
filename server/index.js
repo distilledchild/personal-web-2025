@@ -2427,6 +2427,9 @@ const securityAuditResultSchema = new mongoose.Schema({
     durationMs: Number,
     exitCode: Number,
     output: String,
+    sourceMachine: String,
+    sourceTimezone: String,
+    reportedAt: Date,
     updatedAt: { type: Date, default: Date.now }
 }, { collection: 'SECURITY_AUDIT_RESULT' });
 
@@ -2436,6 +2439,28 @@ const OPENCLAW_AUDIT_KEY = 'openclaw_security_audit_deep';
 const OPENCLAW_AUDIT_COMMAND = 'openclaw security audit --deep';
 const OPENCLAW_AUDIT_INTERVAL_MS = 60 * 60 * 1000;
 let openclawAuditInProgress = false;
+const validAuditStatuses = ['idle', 'running', 'success', 'failed'];
+
+const parseAuditDate = (rawValue, fieldName) => {
+    if (rawValue === undefined || rawValue === null || rawValue === '') return null;
+    const parsed = new Date(rawValue);
+    if (Number.isNaN(parsed.getTime())) {
+        throw new Error(`Invalid ${fieldName}`);
+    }
+    return parsed;
+};
+
+const normalizeAuditStatus = (rawStatus, exitCode) => {
+    if (typeof rawStatus === 'string' && rawStatus.trim()) {
+        const normalized = rawStatus.trim().toLowerCase();
+        if (validAuditStatuses.includes(normalized)) {
+            return normalized;
+        }
+        return null;
+    }
+    if (exitCode === null || exitCode === undefined) return 'success';
+    return exitCode === 0 ? 'success' : 'failed';
+};
 
 const isAdminMember = async (email) => {
     if (!email) return false;
@@ -2464,6 +2489,9 @@ const runOpenclawSecurityAudit = async () => {
                     status: 'running',
                     startedAt,
                     nextRunAt,
+                    sourceMachine: 'server',
+                    sourceTimezone: 'UTC',
+                    reportedAt: new Date(),
                     updatedAt: new Date()
                 }
             },
@@ -2508,6 +2536,9 @@ const runOpenclawSecurityAudit = async () => {
                         exitCode: null,
                         output,
                         nextRunAt,
+                        sourceMachine: 'server',
+                        sourceTimezone: 'UTC',
+                        reportedAt: new Date(),
                         updatedAt: new Date()
                     }
                 },
@@ -2532,6 +2563,9 @@ const runOpenclawSecurityAudit = async () => {
                         exitCode: code,
                         output,
                         nextRunAt,
+                        sourceMachine: 'server',
+                        sourceTimezone: 'UTC',
+                        reportedAt: new Date(),
                         updatedAt: new Date()
                     }
                 },
@@ -2563,6 +2597,116 @@ const setupOpenclawSecurityAuditScheduler = () => {
     console.log('[SECURITY-AUDIT] Scheduler started (every 1 hour)');
 };
 
+app.post('/api/security-audit/report', async (req, res) => {
+    try {
+        const endpointToken = process.env.OPENCLAW_AUDIT_REPORT_TOKEN || process.env.SECURITY_AUDIT_REPORT_TOKEN;
+        if (!endpointToken) {
+            return res.status(503).json({ error: 'Audit report endpoint is not configured' });
+        }
+
+        const authHeader = req.get('authorization') || '';
+        if (!authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Bearer token is required' });
+        }
+
+        const providedToken = authHeader.slice(7).trim();
+        if (providedToken !== endpointToken) {
+            return res.status(403).json({ error: 'Invalid token' });
+        }
+
+        const payload = req.body || {};
+        const rawExitCode = payload.exitCode;
+        let exitCode = null;
+        if (rawExitCode !== undefined && rawExitCode !== null && rawExitCode !== '') {
+            const parsedExitCode = Number(rawExitCode);
+            if (!Number.isInteger(parsedExitCode)) {
+                return res.status(400).json({ error: 'exitCode must be an integer' });
+            }
+            exitCode = parsedExitCode;
+        }
+
+        const status = normalizeAuditStatus(payload.status, exitCode);
+        if (!status) {
+            return res.status(400).json({ error: `status must be one of: ${validAuditStatuses.join(', ')}` });
+        }
+
+        const startedAt = parseAuditDate(payload.startedAt, 'startedAt');
+        const finishedAtFromPayload = parseAuditDate(payload.finishedAt, 'finishedAt');
+        const nextRunAtFromPayload = parseAuditDate(payload.nextRunAt, 'nextRunAt');
+        const reportedAtFromPayload = parseAuditDate(payload.reportedAt, 'reportedAt');
+
+        const finishedAt = finishedAtFromPayload || (status === 'running' ? null : new Date());
+        const nextRunAt = nextRunAtFromPayload || (finishedAt ? new Date(finishedAt.getTime() + OPENCLAW_AUDIT_INTERVAL_MS) : null);
+        const reportedAt = reportedAtFromPayload || new Date();
+
+        const rawDurationMs = payload.durationMs;
+        let durationMs = null;
+        if (rawDurationMs !== undefined && rawDurationMs !== null && rawDurationMs !== '') {
+            const parsedDurationMs = Number(rawDurationMs);
+            if (!Number.isFinite(parsedDurationMs) || parsedDurationMs < 0) {
+                return res.status(400).json({ error: 'durationMs must be a non-negative number' });
+            }
+            durationMs = Math.round(parsedDurationMs);
+        } else if (startedAt && finishedAt) {
+            durationMs = Math.max(0, finishedAt.getTime() - startedAt.getTime());
+        }
+
+        const command = typeof payload.command === 'string' && payload.command.trim()
+            ? payload.command.trim().slice(0, 256)
+            : OPENCLAW_AUDIT_COMMAND;
+        const sourceMachine = typeof payload.sourceMachine === 'string' && payload.sourceMachine.trim()
+            ? payload.sourceMachine.trim().slice(0, 128)
+            : 'external-reporter';
+        const sourceTimezone = typeof payload.sourceTimezone === 'string' && payload.sourceTimezone.trim()
+            ? payload.sourceTimezone.trim().slice(0, 64)
+            : null;
+        const output = (
+            typeof payload.output === 'string'
+                ? payload.output
+                : payload.output === undefined || payload.output === null
+                    ? ''
+                    : JSON.stringify(payload.output)
+        ).slice(-15000);
+
+        const latest = await SecurityAuditResult.findOneAndUpdate(
+            { key: OPENCLAW_AUDIT_KEY },
+            {
+                $set: {
+                    key: OPENCLAW_AUDIT_KEY,
+                    command,
+                    status,
+                    startedAt,
+                    finishedAt,
+                    nextRunAt,
+                    durationMs,
+                    exitCode,
+                    output,
+                    sourceMachine,
+                    sourceTimezone,
+                    reportedAt,
+                    updatedAt: new Date()
+                }
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+
+        res.json({
+            success: true,
+            key: latest.key,
+            status: latest.status,
+            sourceMachine: latest.sourceMachine,
+            updatedAt: latest.updatedAt
+        });
+    } catch (err) {
+        const message = err instanceof Error ? err.message : 'Internal server error';
+        if (message.startsWith('Invalid ')) {
+            return res.status(400).json({ error: message });
+        }
+        console.error('[SECURITY-AUDIT] Failed to receive report:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 app.get('/api/security-audit/latest', async (req, res) => {
     try {
         const { email } = req.query;
@@ -2582,6 +2726,7 @@ app.get('/api/security-audit/latest', async (req, res) => {
                 key: OPENCLAW_AUDIT_KEY,
                 command: OPENCLAW_AUDIT_COMMAND,
                 status: 'idle',
+                sourceMachine: 'unknown',
                 output: 'No audit result yet.'
             });
         }
@@ -2595,7 +2740,11 @@ app.get('/api/security-audit/latest', async (req, res) => {
             nextRunAt: latest.nextRunAt,
             durationMs: latest.durationMs,
             exitCode: latest.exitCode,
-            output: latest.output || ''
+            output: latest.output || '',
+            sourceMachine: latest.sourceMachine || 'unknown',
+            sourceTimezone: latest.sourceTimezone || null,
+            reportedAt: latest.reportedAt || null,
+            updatedAt: latest.updatedAt || null
         });
     } catch (err) {
         console.error('[SECURITY-AUDIT] Failed to fetch latest result:', err);

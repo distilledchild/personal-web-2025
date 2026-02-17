@@ -7,6 +7,8 @@ import { TodoBilling } from './TodoBilling';
 import { API_URL } from '../utils/apiConfig';
 import { PageHeader } from '../components/PageHeader';
 
+const AUDIT_STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000;
+
 export const Todo: React.FC = () => {
     // ============================================================================
     // ROUTER & URL PARAMETERS
@@ -109,6 +111,64 @@ export const Todo: React.FC = () => {
         return () => clearInterval(interval);
     }, [isAdmin, user?.email, fetchSecurityAuditResult]);
 
+    const formatAuditDate = (value: any) => {
+        if (!value) return '-';
+        const parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) return '-';
+        return parsed.toLocaleString();
+    };
+
+    const latestAuditTimeRaw = auditResult?.finishedAt || auditResult?.updatedAt || auditResult?.startedAt;
+    const latestAuditTime = latestAuditTimeRaw ? new Date(latestAuditTimeRaw) : null;
+    const isAuditStale = !latestAuditTime || Number.isNaN(latestAuditTime.getTime())
+        ? true
+        : (Date.now() - latestAuditTime.getTime()) > AUDIT_STALE_THRESHOLD_MS;
+
+    const securityAuditPanel = isAdmin ? (
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-bold text-slate-800">OpenClaw Audit</h4>
+                <button
+                    onClick={fetchSecurityAuditResult}
+                    className="text-xs px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700"
+                >
+                    Refresh
+                </button>
+            </div>
+
+            {auditLoading && (
+                <p className="text-xs text-slate-500">Loading security audit...</p>
+            )}
+
+            {auditError && (
+                <p className="text-xs text-red-600">{auditError}</p>
+            )}
+
+            {!auditLoading && !auditError && auditResult && (
+                <div className="space-y-2">
+                    <div className="text-xs text-slate-600">
+                        <span className="font-semibold">Status:</span>{' '}
+                        <span className={auditResult.status === 'success' ? 'text-green-600 font-semibold' : auditResult.status === 'failed' ? 'text-red-600 font-semibold' : 'text-slate-700 font-semibold'}>
+                            {String(auditResult.status || 'unknown').toUpperCase()}
+                        </span>
+                        {isAuditStale && (
+                            <span className="ml-2 text-amber-600 font-semibold">STALE</span>
+                        )}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                        <div>Source: {auditResult.sourceMachine || 'unknown'}</div>
+                        <div>Last Run: {formatAuditDate(auditResult.finishedAt)}</div>
+                        <div>Last Seen: {formatAuditDate(auditResult.updatedAt || auditResult.reportedAt || auditResult.startedAt)}</div>
+                        <div>Next Run: {formatAuditDate(auditResult.nextRunAt)}</div>
+                    </div>
+                    <pre className="text-[11px] text-slate-700 bg-slate-50 border border-slate-100 rounded-lg p-2 max-h-36 overflow-auto whitespace-pre-wrap">
+                        {auditResult.output || 'No output'}
+                    </pre>
+                </div>
+            )}
+        </div>
+    ) : null;
+
     if (authLoading) {
         return (
             <div className="flex flex-col h-screen bg-white items-center justify-center">
@@ -140,6 +200,7 @@ export const Todo: React.FC = () => {
                             user={user}
                             isAuthorized={isAuthorized}
                             projects={projects}
+                            securityAuditPanel={securityAuditPanel}
                         />
                     ) : activeTab === 'dev' ? (
                         <TodoDev
@@ -148,7 +209,10 @@ export const Todo: React.FC = () => {
                             projects={projects}
                         />
                     ) : activeTab === 'billing' ? (
-                        <TodoBilling isAuthorized={isAuthorized} />
+                        <TodoBilling
+                            isAuthorized={isAuthorized}
+                            securityAuditPanel={securityAuditPanel}
+                        />
                     ) : (
                         <TodoNote
                             user={user}
@@ -159,45 +223,6 @@ export const Todo: React.FC = () => {
                 </div>
             </div>
 
-            {isAdmin && (
-                <div className="fixed bottom-24 left-24 z-40 w-80 bg-white border border-slate-200 rounded-2xl p-4 shadow-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-sm font-bold text-slate-800">OpenClaw Audit</h4>
-                        <button
-                            onClick={fetchSecurityAuditResult}
-                            className="text-xs px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700"
-                        >
-                            Refresh
-                        </button>
-                    </div>
-
-                    {auditLoading && (
-                        <p className="text-xs text-slate-500">Loading security audit...</p>
-                    )}
-
-                    {auditError && (
-                        <p className="text-xs text-red-600">{auditError}</p>
-                    )}
-
-                    {!auditLoading && !auditError && auditResult && (
-                        <div className="space-y-2">
-                            <div className="text-xs text-slate-600">
-                                <span className="font-semibold">Status:</span>{' '}
-                                <span className={auditResult.status === 'success' ? 'text-green-600 font-semibold' : auditResult.status === 'failed' ? 'text-red-600 font-semibold' : 'text-slate-700 font-semibold'}>
-                                    {String(auditResult.status || 'unknown').toUpperCase()}
-                                </span>
-                            </div>
-                            <div className="text-xs text-slate-500">
-                                <div>Last Run: {auditResult.finishedAt ? new Date(auditResult.finishedAt).toLocaleString() : '-'}</div>
-                                <div>Next Run: {auditResult.nextRunAt ? new Date(auditResult.nextRunAt).toLocaleString() : '-'}</div>
-                            </div>
-                            <pre className="text-[11px] text-slate-700 bg-slate-50 border border-slate-100 rounded-lg p-2 max-h-36 overflow-auto whitespace-pre-wrap">
-                                {auditResult.output || 'No output'}
-                            </pre>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>
     );
 };

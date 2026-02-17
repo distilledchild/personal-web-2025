@@ -13,6 +13,14 @@ This contains everything you need to run this app locally.
 3. Run the app:
    `npm run dev`
 
+## OpenClaw Audit (Remote Reporter)
+
+If you want to run OpenClaw audit on a separate Ubuntu laptop and push results into `/todo`, use:
+
+- Backend env: `OPENCLAW_AUDIT_REPORT_TOKEN`
+- Optional remote-only mode: `ENABLE_OPENCLAW_AUDIT=false`
+- Setup guide: `docs/openclaw-audit-remote-reporter.md`
+
 # 🛠️ Technical Stack
 
 This document outlines the modern full-stack architecture used in the **DistilledChild** portfolio project. The application combines high-performance frontend rendering with real-time backend capabilities.

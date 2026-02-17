@@ -34,9 +34,10 @@ interface BillingAccountCost {
 
 interface TodoBillingProps {
     isAuthorized: boolean;
+    securityAuditPanel?: React.ReactNode;
 }
 
-export const TodoBilling: React.FC<TodoBillingProps> = ({ isAuthorized }) => {
+export const TodoBilling: React.FC<TodoBillingProps> = ({ isAuthorized, securityAuditPanel }) => {
     const [data, setData] = useState<BillingData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -474,6 +475,8 @@ export const TodoBilling: React.FC<TodoBillingProps> = ({ isAuthorized }) => {
                             <AnalogClock timezone="Asia/Seoul" label="Seoul" />
                         </div>
                     </div>
+
+                    {securityAuditPanel}
 
                 </div>
 

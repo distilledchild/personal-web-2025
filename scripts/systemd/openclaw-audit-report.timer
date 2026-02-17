@@ -1,0 +1,11 @@
+[Unit]
+Description=Run OpenClaw security audit every hour
+
+[Timer]
+OnBootSec=5m
+OnUnitActiveSec=1h
+Persistent=true
+Unit=openclaw-audit-report.service
+
+[Install]
+WantedBy=timers.target

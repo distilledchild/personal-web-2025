@@ -1,0 +1,9 @@
+[Unit]
+Description=Run OpenClaw security audit and upload result
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=%h/.config/openclaw-audit.env
+ExecStart=%h/.local/bin/openclaw-audit-reporter.sh
