@@ -19,7 +19,11 @@ export const Todo: React.FC = () => {
     // ============================================================================
     const [user, setUser] = React.useState<any>(null);
     const [isAuthorized, setIsAuthorized] = React.useState(false);
+    const [isAdmin, setIsAdmin] = React.useState(false);
     const [authLoading, setAuthLoading] = React.useState(true);
+    const [auditResult, setAuditResult] = React.useState<any>(null);
+    const [auditLoading, setAuditLoading] = React.useState(false);
+    const [auditError, setAuditError] = React.useState<string | null>(null);
 
     // ============================================================================
     // PROJECT STATE (shared for both tabs)
@@ -42,6 +46,7 @@ export const Todo: React.FC = () => {
                     const response = await fetch(`${API_URL}/api/member/role/${parsedUser.email}`);
                     const data = await response.json();
                     setIsAuthorized(data.authorized);
+                    setIsAdmin(String(data.role || '').toUpperCase() === 'ADMIN');
                 } catch (e) {
                     console.error('Failed to parse user data', e);
                 }
@@ -70,6 +75,39 @@ export const Todo: React.FC = () => {
             navigate('/');
         }
     }, [authLoading, isAuthorized, navigate]);
+
+    const fetchSecurityAuditResult = React.useCallback(async () => {
+        if (!isAdmin || !user?.email) return;
+        setAuditLoading(true);
+        setAuditError(null);
+        try {
+            const params = new URLSearchParams({ email: user.email });
+            const response = await fetch(`${API_URL}/api/security-audit/latest?${params.toString()}`);
+            if (!response.ok) {
+                let message = 'Failed to fetch security audit result';
+                try {
+                    const errJson = await response.json();
+                    message = errJson?.error || message;
+                } catch {
+                    // Keep fallback message.
+                }
+                throw new Error(message);
+            }
+            const result = await response.json();
+            setAuditResult(result);
+        } catch (err: any) {
+            setAuditError(err.message || 'Failed to fetch security audit result');
+        } finally {
+            setAuditLoading(false);
+        }
+    }, [isAdmin, user?.email]);
+
+    React.useEffect(() => {
+        if (!isAdmin || !user?.email) return;
+        fetchSecurityAuditResult();
+        const interval = setInterval(fetchSecurityAuditResult, 60000);
+        return () => clearInterval(interval);
+    }, [isAdmin, user?.email, fetchSecurityAuditResult]);
 
     if (authLoading) {
         return (
@@ -120,6 +158,46 @@ export const Todo: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            {isAdmin && (
+                <div className="fixed bottom-24 left-24 z-40 w-80 bg-white border border-slate-200 rounded-2xl p-4 shadow-lg">
+                    <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-bold text-slate-800">OpenClaw Audit</h4>
+                        <button
+                            onClick={fetchSecurityAuditResult}
+                            className="text-xs px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+
+                    {auditLoading && (
+                        <p className="text-xs text-slate-500">Loading security audit...</p>
+                    )}
+
+                    {auditError && (
+                        <p className="text-xs text-red-600">{auditError}</p>
+                    )}
+
+                    {!auditLoading && !auditError && auditResult && (
+                        <div className="space-y-2">
+                            <div className="text-xs text-slate-600">
+                                <span className="font-semibold">Status:</span>{' '}
+                                <span className={auditResult.status === 'success' ? 'text-green-600 font-semibold' : auditResult.status === 'failed' ? 'text-red-600 font-semibold' : 'text-slate-700 font-semibold'}>
+                                    {String(auditResult.status || 'unknown').toUpperCase()}
+                                </span>
+                            </div>
+                            <div className="text-xs text-slate-500">
+                                <div>Last Run: {auditResult.finishedAt ? new Date(auditResult.finishedAt).toLocaleString() : '-'}</div>
+                                <div>Next Run: {auditResult.nextRunAt ? new Date(auditResult.nextRunAt).toLocaleString() : '-'}</div>
+                            </div>
+                            <pre className="text-[11px] text-slate-700 bg-slate-50 border border-slate-100 rounded-lg p-2 max-h-36 overflow-auto whitespace-pre-wrap">
+                                {auditResult.output || 'No output'}
+                            </pre>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

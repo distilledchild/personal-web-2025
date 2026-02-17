@@ -474,6 +474,7 @@ export const TodoBilling: React.FC<TodoBillingProps> = ({ isAuthorized }) => {
                             <AnalogClock timezone="Asia/Seoul" label="Seoul" />
                         </div>
                     </div>
+
                 </div>
 
                 <div className="flex-1">

@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import { spawn } from 'child_process';
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { generateSignedUrl, generateSignedUrlsForPrefix, isValidFilePath } from './utils/gcsHelper.js';
 import billingRoutes from './routes/billing.js';
@@ -2416,6 +2417,192 @@ const memberSchema = new mongoose.Schema({
 
 const Member = mongoose.model('Member', memberSchema);
 
+const securityAuditResultSchema = new mongoose.Schema({
+    key: { type: String, required: true, unique: true },
+    command: { type: String, required: true },
+    status: { type: String, enum: ['idle', 'running', 'success', 'failed'], default: 'idle' },
+    startedAt: Date,
+    finishedAt: Date,
+    nextRunAt: Date,
+    durationMs: Number,
+    exitCode: Number,
+    output: String,
+    updatedAt: { type: Date, default: Date.now }
+}, { collection: 'SECURITY_AUDIT_RESULT' });
+
+const SecurityAuditResult = mongoose.model('SecurityAuditResult', securityAuditResultSchema);
+
+const OPENCLAW_AUDIT_KEY = 'openclaw_security_audit_deep';
+const OPENCLAW_AUDIT_COMMAND = 'openclaw security audit --deep';
+const OPENCLAW_AUDIT_INTERVAL_MS = 60 * 60 * 1000;
+let openclawAuditInProgress = false;
+
+const isAdminMember = async (email) => {
+    if (!email) return false;
+    const member = await Member.findOne({ email });
+    if (!member) return false;
+    return String(member.role || '').toUpperCase() === 'ADMIN';
+};
+
+const runOpenclawSecurityAudit = async () => {
+    if (openclawAuditInProgress) {
+        console.log('[SECURITY-AUDIT] Previous run still in progress, skipping this cycle');
+        return;
+    }
+    openclawAuditInProgress = true;
+
+    const startedAt = new Date();
+    const nextRunAt = new Date(startedAt.getTime() + OPENCLAW_AUDIT_INTERVAL_MS);
+
+    try {
+        await SecurityAuditResult.findOneAndUpdate(
+            { key: OPENCLAW_AUDIT_KEY },
+            {
+                $set: {
+                    key: OPENCLAW_AUDIT_KEY,
+                    command: OPENCLAW_AUDIT_COMMAND,
+                    status: 'running',
+                    startedAt,
+                    nextRunAt,
+                    updatedAt: new Date()
+                }
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+    } catch (error) {
+        openclawAuditInProgress = false;
+        throw error;
+    }
+
+    return new Promise((resolve) => {
+        let child;
+        try {
+            child = spawn('openclaw', ['security', 'audit', '--deep']);
+        } catch (error) {
+            openclawAuditInProgress = false;
+            console.error('[SECURITY-AUDIT] Failed to spawn openclaw:', error);
+            resolve();
+            return;
+        }
+        let stdout = '';
+        let stderr = '';
+
+        child.stdout.on('data', (chunk) => {
+            stdout += chunk.toString();
+        });
+
+        child.stderr.on('data', (chunk) => {
+            stderr += chunk.toString();
+        });
+
+        child.on('error', async (error) => {
+            const finishedAt = new Date();
+            const output = [stdout, stderr, error.message].filter(Boolean).join('\n').slice(-15000);
+            await SecurityAuditResult.findOneAndUpdate(
+                { key: OPENCLAW_AUDIT_KEY },
+                {
+                    $set: {
+                        status: 'failed',
+                        finishedAt,
+                        durationMs: finishedAt.getTime() - startedAt.getTime(),
+                        exitCode: null,
+                        output,
+                        nextRunAt,
+                        updatedAt: new Date()
+                    }
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+            console.error('[SECURITY-AUDIT] openclaw execution error:', error.message);
+            openclawAuditInProgress = false;
+            resolve();
+        });
+
+        child.on('close', async (code) => {
+            const finishedAt = new Date();
+            const status = code === 0 ? 'success' : 'failed';
+            const output = [stdout, stderr].filter(Boolean).join('\n').slice(-15000);
+            await SecurityAuditResult.findOneAndUpdate(
+                { key: OPENCLAW_AUDIT_KEY },
+                {
+                    $set: {
+                        status,
+                        finishedAt,
+                        durationMs: finishedAt.getTime() - startedAt.getTime(),
+                        exitCode: code,
+                        output,
+                        nextRunAt,
+                        updatedAt: new Date()
+                    }
+                },
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+            console.log(`[SECURITY-AUDIT] openclaw finished with status=${status}, code=${code}`);
+            openclawAuditInProgress = false;
+            resolve();
+        });
+    });
+};
+
+const setupOpenclawSecurityAuditScheduler = () => {
+    if (process.env.ENABLE_OPENCLAW_AUDIT === 'false') {
+        console.log('[SECURITY-AUDIT] Scheduler disabled by ENABLE_OPENCLAW_AUDIT=false');
+        return;
+    }
+
+    runOpenclawSecurityAudit().catch((error) => {
+        console.error('[SECURITY-AUDIT] Initial run failed:', error);
+    });
+
+    setInterval(() => {
+        runOpenclawSecurityAudit().catch((error) => {
+            console.error('[SECURITY-AUDIT] Scheduled run failed:', error);
+        });
+    }, OPENCLAW_AUDIT_INTERVAL_MS);
+
+    console.log('[SECURITY-AUDIT] Scheduler started (every 1 hour)');
+};
+
+app.get('/api/security-audit/latest', async (req, res) => {
+    try {
+        const { email } = req.query;
+
+        if (!email || typeof email !== 'string') {
+            return res.status(400).json({ error: 'email query parameter is required' });
+        }
+
+        const isAdmin = await isAdminMember(email);
+        if (!isAdmin) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const latest = await SecurityAuditResult.findOne({ key: OPENCLAW_AUDIT_KEY });
+        if (!latest) {
+            return res.json({
+                key: OPENCLAW_AUDIT_KEY,
+                command: OPENCLAW_AUDIT_COMMAND,
+                status: 'idle',
+                output: 'No audit result yet.'
+            });
+        }
+
+        res.json({
+            key: latest.key,
+            command: latest.command,
+            status: latest.status,
+            startedAt: latest.startedAt,
+            finishedAt: latest.finishedAt,
+            nextRunAt: latest.nextRunAt,
+            durationMs: latest.durationMs,
+            exitCode: latest.exitCode,
+            output: latest.output || ''
+        });
+    } catch (err) {
+        console.error('[SECURITY-AUDIT] Failed to fetch latest result:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Get Contact Info
 // Get Contact Info
 app.get('/api/contact', async (req, res) => {
@@ -3153,6 +3340,8 @@ app.delete('/api/projects/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+setupOpenclawSecurityAuditScheduler();
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
