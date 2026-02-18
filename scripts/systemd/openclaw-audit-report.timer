@@ -1,9 +1,9 @@
 [Unit]
-Description=Run OpenClaw security audit every hour
+Description=Run OpenClaw security audit every 10 minutes
 
 [Timer]
 OnBootSec=5m
-OnUnitActiveSec=1h
+OnUnitActiveSec=10m
 Persistent=true
 Unit=openclaw-audit-report.service
 

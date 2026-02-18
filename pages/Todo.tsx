@@ -8,6 +8,26 @@ import { API_URL } from '../utils/apiConfig';
 import { PageHeader } from '../components/PageHeader';
 
 const AUDIT_STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000;
+const AUDIT_POLL_INTERVAL_MS = 5 * 60 * 1000;
+const AUDIT_MISSED_GRACE_MS = 5 * 60 * 1000;
+const ANSI_ESCAPE_REGEX = /(?:\u001B|\u009B|\uFFFD)\[[0-?]*[ -/]*[@-~]/g;
+
+const sanitizeAuditOutput = (value: unknown): string => {
+    if (value === null || value === undefined) return '';
+    const raw = typeof value === 'string' ? value : JSON.stringify(value);
+    return raw
+        .replace(ANSI_ESCAPE_REGEX, '')
+        .replace(/\u0000/g, '')
+        .trim();
+};
+
+const removeSummaryLineFromAuditOutput = (value: string): string => {
+    return value
+        .split('\n')
+        .filter((line) => !/^\s*summary:\s*\d+\s*critical[^\d]+\d+\s*warn[^\d]+\d+\s*info\s*$/i.test(line.trim()))
+        .join('\n')
+        .trim();
+};
 
 export const Todo: React.FC = () => {
     // ============================================================================
@@ -107,7 +127,7 @@ export const Todo: React.FC = () => {
     React.useEffect(() => {
         if (!isAdmin || !user?.email) return;
         fetchSecurityAuditResult();
-        const interval = setInterval(fetchSecurityAuditResult, 60000);
+        const interval = setInterval(fetchSecurityAuditResult, AUDIT_POLL_INTERVAL_MS);
         return () => clearInterval(interval);
     }, [isAdmin, user?.email, fetchSecurityAuditResult]);
 
@@ -119,10 +139,16 @@ export const Todo: React.FC = () => {
     };
 
     const latestAuditTimeRaw = auditResult?.finishedAt || auditResult?.updatedAt || auditResult?.startedAt;
+    const nextRunAtRaw = auditResult?.nextRunAt;
     const latestAuditTime = latestAuditTimeRaw ? new Date(latestAuditTimeRaw) : null;
+    const nextRunAt = nextRunAtRaw ? new Date(nextRunAtRaw) : null;
+    const auditCritical = Number.isFinite(Number(auditResult?.critical)) ? Number(auditResult?.critical) : 0;
+    const auditWarn = Number.isFinite(Number(auditResult?.warn)) ? Number(auditResult?.warn) : 0;
+    const auditInfo = Number.isFinite(Number(auditResult?.info)) ? Number(auditResult?.info) : 0;
     const isAuditStale = !latestAuditTime || Number.isNaN(latestAuditTime.getTime())
         ? true
         : (Date.now() - latestAuditTime.getTime()) > AUDIT_STALE_THRESHOLD_MS;
+    const isAuditOverdue = !!nextRunAt && !Number.isNaN(nextRunAt.getTime()) && Date.now() > (nextRunAt.getTime() + AUDIT_MISSED_GRACE_MS);
 
     const securityAuditPanel = isAdmin ? (
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
@@ -161,8 +187,21 @@ export const Todo: React.FC = () => {
                         <div>Last Seen: {formatAuditDate(auditResult.updatedAt || auditResult.reportedAt || auditResult.startedAt)}</div>
                         <div>Next Run: {formatAuditDate(auditResult.nextRunAt)}</div>
                     </div>
+                    {isAuditOverdue && (
+                        <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1">
+                            예정된 주기 이후에도 새 리포트가 없습니다. Ubuntu 노트북 전원/네트워크/리포터 상태를 확인하세요.
+                        </p>
+                    )}
+                    <div className="text-xs flex items-center gap-2">
+                        <span className="font-semibold text-slate-700">Counts:</span>
+                        <span className={auditCritical > 0 ? 'px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold' : 'px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold'}>
+                            critical {auditCritical}
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-semibold">warn {auditWarn}</span>
+                        <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">info {auditInfo}</span>
+                    </div>
                     <pre className="text-[11px] text-slate-700 bg-slate-50 border border-slate-100 rounded-lg p-2 max-h-36 overflow-auto whitespace-pre-wrap">
-                        {auditResult.output || 'No output'}
+                        {removeSummaryLineFromAuditOutput(sanitizeAuditOutput(auditResult.output)) || 'No output'}
                     </pre>
                 </div>
             )}

@@ -24,6 +24,13 @@ cp scripts/systemd/openclaw-audit-report.timer ~/.config/systemd/user/
 chmod +x ~/.local/bin/openclaw-audit-reporter.sh
 ```
 
+One-shot setup (recommended):
+
+```bash
+chmod +x scripts/systemd/setup-openclaw-audit-user-timer.sh
+./scripts/systemd/setup-openclaw-audit-user-timer.sh
+```
+
 Create env file:
 
 ```bash
@@ -32,7 +39,11 @@ OPENCLAW_AUDIT_REPORT_URL=https://distilledchild.space/api/security-audit/report
 OPENCLAW_AUDIT_REPORT_TOKEN=replace_with_the_same_backend_token
 OPENCLAW_AUDIT_SOURCE_MACHINE=ubuntu-laptop
 OPENCLAW_AUDIT_SOURCE_TIMEZONE=Asia/Seoul
-OPENCLAW_AUDIT_INTERVAL_SECONDS=3600
+OPENCLAW_AUDIT_INTERVAL_SECONDS=600
+OPENCLAW_AUDIT_UPLOAD_MAX_RETRIES=3
+OPENCLAW_AUDIT_UPLOAD_RETRY_DELAY_SECONDS=5
+OPENCLAW_AUDIT_UPLOAD_CONNECT_TIMEOUT_SECONDS=10
+OPENCLAW_AUDIT_UPLOAD_MAX_TIME_SECONDS=30
 ENV
 ```
 
@@ -43,6 +54,15 @@ systemctl --user daemon-reload
 systemctl --user enable --now openclaw-audit-report.timer
 systemctl --user status openclaw-audit-report.timer
 ```
+
+Ensure auto-run after reboot/logout:
+
+```bash
+sudo loginctl enable-linger $USER
+loginctl show-user $USER -p Linger
+```
+
+Expected output: `Linger=yes`
 
 Manual test:
 
@@ -62,5 +82,13 @@ In `/todo`, OpenClaw Audit shows:
 
 - `Source`: reporter machine id
 - `Last Seen`: when backend last received a report
+- `Counts`: `critical`, `warn`, `info` (numeric)
+- `critical > 0` is highlighted in red
 - `STALE`: shown when no fresh update has arrived for 2+ hours
+- `Overdue` warning: shown when `nextRunAt + 5m` has passed with no new report (check Ubuntu power/network/reporter)
+- Polling interval: every 5 minutes (manual Refresh available)
 
+Backend storage policy:
+- Latest snapshot: `SECURITY_AUDIT_RESULT` (upsert)
+- Run history: `SECURITY_AUDIT_HISTORY` (append)
+- History retention: TTL 30 days

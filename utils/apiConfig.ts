@@ -9,8 +9,13 @@
  * - Production: https://api.distilledchild.space
  */
 export const getApiUrl = (): string => {
-    // Check if we're in development (localhost)
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    // Highest priority: explicit env override
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+
+    // Local development hosts
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         return 'http://localhost:4000';
     }
 
@@ -22,4 +27,3 @@ export const getApiUrl = (): string => {
  * API_URL constant for convenience
  */
 export const API_URL = getApiUrl();
-

@@ -289,13 +289,15 @@ const GoogleLogin: React.FC = () => {
       return;
     }
 
-    const isProduction = window.location.hostname !== 'localhost';
-    const redirectUri = isProduction
-      ? 'https://www.distilledchild.space/oauth/google/callback'
-      : 'http://localhost:3000/oauth/google/callback';
+    const redirectUri =
+      import.meta.env.VITE_GOOGLE_REDIRECT_URI ||
+      `${window.location.origin}/oauth/google/callback`;
+    const googleClientId =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+      '511732610766-qma8v1ljq0qia68rtvuq790shn03bvmo.apps.googleusercontent.com';
 
     const params = new URLSearchParams({
-      client_id: '511732610766-qma8v1ljq0qia68rtvuq790shn03bvmo.apps.googleusercontent.com',
+      client_id: googleClientId,
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'email profile',
@@ -337,10 +339,13 @@ const OAuthCallback: React.FC = () => {
 
   useEffect(() => {
     if (code) {
+      const redirectUri =
+        import.meta.env.VITE_GOOGLE_REDIRECT_URI ||
+        `${window.location.origin}/oauth/google/callback`;
       fetch(`${API_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code, redirectUri })
       })
         .then(async res => {
           if (!res.ok) {

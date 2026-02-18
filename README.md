@@ -20,6 +20,7 @@ If you want to run OpenClaw audit on a separate Ubuntu laptop and push results i
 - Backend env: `OPENCLAW_AUDIT_REPORT_TOKEN`
 - Optional remote-only mode: `ENABLE_OPENCLAW_AUDIT=false`
 - Setup guide: `docs/openclaw-audit-remote-reporter.md`
+- End-to-end flow: `docs/openclaw-audit-end-to-end.md`
 
 # 🛠️ Technical Stack
 

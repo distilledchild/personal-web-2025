@@ -23,6 +23,8 @@ const corsOptions = {
     origin: [
         'http://localhost:3000',
         'http://localhost:5173',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:5173',
         'https://www.distilledchild.space',
         'https://distilledchild.space',
         'https://personal-web-2025-mauve.vercel.app'
@@ -530,10 +532,33 @@ app.post('/api/guestbook/:id/like', async (req, res) => {
 
 // Google OAuth Endpoint
 app.post('/api/auth/google', async (req, res) => {
-    const { code } = req.body;
+    const { code, redirectUri } = req.body;
     if (!code) return res.status(400).json({ error: 'No code provided' });
 
     try {
+        let effectiveRedirectUri = REDIRECT_URI;
+        if (typeof redirectUri === 'string' && redirectUri.trim()) {
+            try {
+                const parsed = new URL(redirectUri);
+                const isLocalHost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+                const hasExpectedPath = parsed.pathname === '/oauth/google/callback';
+
+                if (isProduction) {
+                    if (redirectUri === REDIRECT_URI) {
+                        effectiveRedirectUri = redirectUri;
+                    } else {
+                        return res.status(400).json({ error: 'Invalid redirect URI for production' });
+                    }
+                } else if (isLocalHost && hasExpectedPath) {
+                    effectiveRedirectUri = redirectUri;
+                } else {
+                    return res.status(400).json({ error: 'Invalid redirect URI' });
+                }
+            } catch {
+                return res.status(400).json({ error: 'Invalid redirect URI' });
+            }
+        }
+
         // 1. Exchange code for tokens
         const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
@@ -542,7 +567,7 @@ app.post('/api/auth/google', async (req, res) => {
                 code,
                 client_id: GOOGLE_CLIENT_ID,
                 client_secret: GOOGLE_CLIENT_SECRET,
-                redirect_uri: REDIRECT_URI,
+                redirect_uri: effectiveRedirectUri,
                 grant_type: 'authorization_code',
             }),
         });
@@ -1519,8 +1544,8 @@ const server = createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "http://localhost:5173",
             "http://localhost:3000",
+            "http://127.0.0.1:3000",
             "https://www.distilledchild.space",
             "https://distilledchild.space",
             "https://personal-web-2025-mauve.vercel.app"
@@ -2426,6 +2451,9 @@ const securityAuditResultSchema = new mongoose.Schema({
     nextRunAt: Date,
     durationMs: Number,
     exitCode: Number,
+    critical: { type: Number, default: 0 },
+    warn: { type: Number, default: 0 },
+    info: { type: Number, default: 0 },
     output: String,
     sourceMachine: String,
     sourceTimezone: String,
@@ -2434,12 +2462,102 @@ const securityAuditResultSchema = new mongoose.Schema({
 }, { collection: 'SECURITY_AUDIT_RESULT' });
 
 const SecurityAuditResult = mongoose.model('SecurityAuditResult', securityAuditResultSchema);
+const SECURITY_AUDIT_HISTORY_TTL_SECONDS = 30 * 24 * 60 * 60;
+
+const securityAuditHistorySchema = new mongoose.Schema({
+    key: { type: String, required: true, index: true },
+    command: { type: String, required: true },
+    status: { type: String, enum: ['idle', 'running', 'success', 'failed'], default: 'idle' },
+    startedAt: Date,
+    finishedAt: Date,
+    nextRunAt: Date,
+    durationMs: Number,
+    exitCode: Number,
+    critical: { type: Number, default: 0 },
+    warn: { type: Number, default: 0 },
+    info: { type: Number, default: 0 },
+    output: String,
+    sourceMachine: String,
+    sourceTimezone: String,
+    reportedAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now }
+}, { collection: 'SECURITY_AUDIT_HISTORY' });
+
+securityAuditHistorySchema.index({ createdAt: 1 }, { expireAfterSeconds: SECURITY_AUDIT_HISTORY_TTL_SECONDS });
+
+const SecurityAuditHistory = mongoose.model('SecurityAuditHistory', securityAuditHistorySchema);
 
 const OPENCLAW_AUDIT_KEY = 'openclaw_security_audit_deep';
 const OPENCLAW_AUDIT_COMMAND = 'openclaw security audit --deep';
 const OPENCLAW_AUDIT_INTERVAL_MS = 60 * 60 * 1000;
 let openclawAuditInProgress = false;
 const validAuditStatuses = ['idle', 'running', 'success', 'failed'];
+const ANSI_ESCAPE_REGEX = /(?:\u001B|\u009B|\uFFFD)\[[0-?]*[ -/]*[@-~]/g;
+
+const sanitizeAuditOutput = (value) => {
+    if (value === null || value === undefined) return '';
+    const raw = typeof value === 'string' ? value : JSON.stringify(value);
+    return raw
+        .replace(ANSI_ESCAPE_REGEX, '')
+        .replace(/\u0000/g, '')
+        .trim();
+};
+
+const parseAuditCount = (rawValue, fieldName) => {
+    if (rawValue === undefined || rawValue === null || rawValue === '') return null;
+    const parsed = Number(rawValue);
+    if (!Number.isInteger(parsed) || parsed < 0) {
+        throw new Error(`${fieldName} must be a non-negative integer`);
+    }
+    return parsed;
+};
+
+const extractAuditSeverityCounts = (value) => {
+    const output = sanitizeAuditOutput(value);
+    if (!output) {
+        return { critical: 0, warn: 0, info: 0 };
+    }
+
+    const summaryMatch = output.match(/summary:\s*(\d+)\s*critical[^\d]+(\d+)\s*warn[^\d]+(\d+)\s*info/i);
+    if (summaryMatch) {
+        return {
+            critical: Number(summaryMatch[1]) || 0,
+            warn: Number(summaryMatch[2]) || 0,
+            info: Number(summaryMatch[3]) || 0
+        };
+    }
+
+    return {
+        critical: (output.match(/\bcritical\b/gi) || []).length,
+        warn: (output.match(/\bwarn(?:ing)?\b/gi) || []).length,
+        info: (output.match(/\binfo\b/gi) || []).length
+    };
+};
+
+const appendSecurityAuditHistory = async (doc) => {
+    try {
+        await SecurityAuditHistory.create({
+            key: doc.key || OPENCLAW_AUDIT_KEY,
+            command: doc.command || OPENCLAW_AUDIT_COMMAND,
+            status: doc.status || 'idle',
+            startedAt: doc.startedAt || null,
+            finishedAt: doc.finishedAt || null,
+            nextRunAt: doc.nextRunAt || null,
+            durationMs: doc.durationMs ?? null,
+            exitCode: doc.exitCode ?? null,
+            critical: Number.isInteger(doc.critical) ? doc.critical : 0,
+            warn: Number.isInteger(doc.warn) ? doc.warn : 0,
+            info: Number.isInteger(doc.info) ? doc.info : 0,
+            output: sanitizeAuditOutput(doc.output || '').slice(-15000),
+            sourceMachine: doc.sourceMachine || 'unknown',
+            sourceTimezone: doc.sourceTimezone || null,
+            reportedAt: doc.reportedAt || new Date(),
+            createdAt: new Date()
+        });
+    } catch (error) {
+        console.error('[SECURITY-AUDIT] Failed to append history:', error);
+    }
+};
 
 const parseAuditDate = (rawValue, fieldName) => {
     if (rawValue === undefined || rawValue === null || rawValue === '') return null;
@@ -2487,6 +2605,9 @@ const runOpenclawSecurityAudit = async () => {
                     key: OPENCLAW_AUDIT_KEY,
                     command: OPENCLAW_AUDIT_COMMAND,
                     status: 'running',
+                    critical: 0,
+                    warn: 0,
+                    info: 0,
                     startedAt,
                     nextRunAt,
                     sourceMachine: 'server',
@@ -2525,12 +2646,17 @@ const runOpenclawSecurityAudit = async () => {
 
         child.on('error', async (error) => {
             const finishedAt = new Date();
-            const output = [stdout, stderr, error.message].filter(Boolean).join('\n').slice(-15000);
+            const reportedAt = new Date();
+            const output = sanitizeAuditOutput([stdout, stderr, error.message].filter(Boolean).join('\n')).slice(-15000);
+            const counts = extractAuditSeverityCounts(output);
             await SecurityAuditResult.findOneAndUpdate(
                 { key: OPENCLAW_AUDIT_KEY },
                 {
                     $set: {
                         status: 'failed',
+                        critical: counts.critical,
+                        warn: counts.warn,
+                        info: counts.info,
                         finishedAt,
                         durationMs: finishedAt.getTime() - startedAt.getTime(),
                         exitCode: null,
@@ -2538,12 +2664,29 @@ const runOpenclawSecurityAudit = async () => {
                         nextRunAt,
                         sourceMachine: 'server',
                         sourceTimezone: 'UTC',
-                        reportedAt: new Date(),
+                        reportedAt,
                         updatedAt: new Date()
                     }
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
+            await appendSecurityAuditHistory({
+                key: OPENCLAW_AUDIT_KEY,
+                command: OPENCLAW_AUDIT_COMMAND,
+                status: 'failed',
+                startedAt,
+                finishedAt,
+                nextRunAt,
+                durationMs: finishedAt.getTime() - startedAt.getTime(),
+                exitCode: null,
+                critical: counts.critical,
+                warn: counts.warn,
+                info: counts.info,
+                output,
+                sourceMachine: 'server',
+                sourceTimezone: 'UTC',
+                reportedAt
+            });
             console.error('[SECURITY-AUDIT] openclaw execution error:', error.message);
             openclawAuditInProgress = false;
             resolve();
@@ -2552,12 +2695,17 @@ const runOpenclawSecurityAudit = async () => {
         child.on('close', async (code) => {
             const finishedAt = new Date();
             const status = code === 0 ? 'success' : 'failed';
-            const output = [stdout, stderr].filter(Boolean).join('\n').slice(-15000);
+            const reportedAt = new Date();
+            const output = sanitizeAuditOutput([stdout, stderr].filter(Boolean).join('\n')).slice(-15000);
+            const counts = extractAuditSeverityCounts(output);
             await SecurityAuditResult.findOneAndUpdate(
                 { key: OPENCLAW_AUDIT_KEY },
                 {
                     $set: {
                         status,
+                        critical: counts.critical,
+                        warn: counts.warn,
+                        info: counts.info,
                         finishedAt,
                         durationMs: finishedAt.getTime() - startedAt.getTime(),
                         exitCode: code,
@@ -2565,12 +2713,29 @@ const runOpenclawSecurityAudit = async () => {
                         nextRunAt,
                         sourceMachine: 'server',
                         sourceTimezone: 'UTC',
-                        reportedAt: new Date(),
+                        reportedAt,
                         updatedAt: new Date()
                     }
                 },
                 { upsert: true, new: true, setDefaultsOnInsert: true }
             );
+            await appendSecurityAuditHistory({
+                key: OPENCLAW_AUDIT_KEY,
+                command: OPENCLAW_AUDIT_COMMAND,
+                status,
+                startedAt,
+                finishedAt,
+                nextRunAt,
+                durationMs: finishedAt.getTime() - startedAt.getTime(),
+                exitCode: code,
+                critical: counts.critical,
+                warn: counts.warn,
+                info: counts.info,
+                output,
+                sourceMachine: 'server',
+                sourceTimezone: 'UTC',
+                reportedAt
+            });
             console.log(`[SECURITY-AUDIT] openclaw finished with status=${status}, code=${code}`);
             openclawAuditInProgress = false;
             resolve();
@@ -2597,20 +2762,37 @@ const setupOpenclawSecurityAuditScheduler = () => {
     console.log('[SECURITY-AUDIT] Scheduler started (every 1 hour)');
 };
 
+const resolveAuditReportTokens = () => {
+    const primaryToken = (process.env.OPENCLAW_AUDIT_REPORT_TOKEN || process.env.SECURITY_AUDIT_REPORT_TOKEN || '').trim();
+    const allowBlogApiKeyFallback = process.env.OPENCLAW_AUDIT_ALLOW_BLOG_API_KEY === 'true';
+    const blogApiKeyToken = allowBlogApiKeyFallback ? (process.env.BLOG_API_KEY || '').trim() : '';
+    return { primaryToken, allowBlogApiKeyFallback, blogApiKeyToken };
+};
+
+const extractAuditReportTokenFromRequest = (req) => {
+    const authHeader = req.get('authorization') || '';
+    if (authHeader.startsWith('Bearer ')) {
+        return authHeader.slice(7).trim();
+    }
+    const apiKeyHeader = req.get('x-api-key') || '';
+    if (apiKeyHeader) return apiKeyHeader.trim();
+    return '';
+};
+
 app.post('/api/security-audit/report', async (req, res) => {
     try {
-        const endpointToken = process.env.OPENCLAW_AUDIT_REPORT_TOKEN || process.env.SECURITY_AUDIT_REPORT_TOKEN;
-        if (!endpointToken) {
+        const { primaryToken, blogApiKeyToken } = resolveAuditReportTokens();
+        const allowedTokens = [primaryToken, blogApiKeyToken].filter(Boolean);
+        if (allowedTokens.length === 0) {
             return res.status(503).json({ error: 'Audit report endpoint is not configured' });
         }
 
-        const authHeader = req.get('authorization') || '';
-        if (!authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ error: 'Bearer token is required' });
+        const providedToken = extractAuditReportTokenFromRequest(req);
+        if (!providedToken) {
+            return res.status(401).json({ error: 'Bearer token or x-api-key is required' });
         }
 
-        const providedToken = authHeader.slice(7).trim();
-        if (providedToken !== endpointToken) {
+        if (!allowedTokens.includes(providedToken)) {
             return res.status(403).json({ error: 'Invalid token' });
         }
 
@@ -2660,13 +2842,20 @@ app.post('/api/security-audit/report', async (req, res) => {
         const sourceTimezone = typeof payload.sourceTimezone === 'string' && payload.sourceTimezone.trim()
             ? payload.sourceTimezone.trim().slice(0, 64)
             : null;
-        const output = (
+        const output = sanitizeAuditOutput(
             typeof payload.output === 'string'
                 ? payload.output
                 : payload.output === undefined || payload.output === null
                     ? ''
                     : JSON.stringify(payload.output)
         ).slice(-15000);
+        const parsedCritical = parseAuditCount(payload.critical, 'critical');
+        const parsedWarn = parseAuditCount(payload.warn, 'warn');
+        const parsedInfo = parseAuditCount(payload.info, 'info');
+        const derivedCounts = extractAuditSeverityCounts(output);
+        const critical = parsedCritical ?? derivedCounts.critical;
+        const warn = parsedWarn ?? derivedCounts.warn;
+        const info = parsedInfo ?? derivedCounts.info;
 
         const latest = await SecurityAuditResult.findOneAndUpdate(
             { key: OPENCLAW_AUDIT_KEY },
@@ -2680,6 +2869,9 @@ app.post('/api/security-audit/report', async (req, res) => {
                     nextRunAt,
                     durationMs,
                     exitCode,
+                    critical,
+                    warn,
+                    info,
                     output,
                     sourceMachine,
                     sourceTimezone,
@@ -2689,6 +2881,23 @@ app.post('/api/security-audit/report', async (req, res) => {
             },
             { upsert: true, new: true, setDefaultsOnInsert: true }
         );
+        await appendSecurityAuditHistory({
+            key: OPENCLAW_AUDIT_KEY,
+            command,
+            status,
+            startedAt,
+            finishedAt,
+            nextRunAt,
+            durationMs,
+            exitCode,
+            critical,
+            warn,
+            info,
+            output,
+            sourceMachine,
+            sourceTimezone,
+            reportedAt
+        });
 
         res.json({
             success: true,
@@ -2726,6 +2935,9 @@ app.get('/api/security-audit/latest', async (req, res) => {
                 key: OPENCLAW_AUDIT_KEY,
                 command: OPENCLAW_AUDIT_COMMAND,
                 status: 'idle',
+                critical: 0,
+                warn: 0,
+                info: 0,
                 sourceMachine: 'unknown',
                 output: 'No audit result yet.'
             });
@@ -2740,7 +2952,10 @@ app.get('/api/security-audit/latest', async (req, res) => {
             nextRunAt: latest.nextRunAt,
             durationMs: latest.durationMs,
             exitCode: latest.exitCode,
-            output: latest.output || '',
+            critical: Number.isInteger(latest.critical) ? latest.critical : 0,
+            warn: Number.isInteger(latest.warn) ? latest.warn : 0,
+            info: Number.isInteger(latest.info) ? latest.info : 0,
+            output: sanitizeAuditOutput(latest.output || ''),
             sourceMachine: latest.sourceMachine || 'unknown',
             sourceTimezone: latest.sourceTimezone || null,
             reportedAt: latest.reportedAt || null,
