@@ -10,6 +10,7 @@ UPLOAD_MAX_RETRIES="${OPENCLAW_AUDIT_UPLOAD_MAX_RETRIES:-3}"
 UPLOAD_RETRY_DELAY_SECONDS="${OPENCLAW_AUDIT_UPLOAD_RETRY_DELAY_SECONDS:-5}"
 UPLOAD_CONNECT_TIMEOUT_SECONDS="${OPENCLAW_AUDIT_UPLOAD_CONNECT_TIMEOUT_SECONDS:-10}"
 UPLOAD_MAX_TIME_SECONDS="${OPENCLAW_AUDIT_UPLOAD_MAX_TIME_SECONDS:-30}"
+OPENCLAW_BIN="${OPENCLAW_BIN:-openclaw}"
 
 if [[ -z "${REPORT_TOKEN}" ]]; then
   echo "[openclaw-audit-reporter] OPENCLAW_AUDIT_REPORT_TOKEN is required" >&2
@@ -33,13 +34,25 @@ for numeric_var_name in \
   fi
 done
 
+if ! command -v "${OPENCLAW_BIN}" >/dev/null 2>&1; then
+  latest_nvm_openclaw="$(ls -1d "${HOME}"/.nvm/versions/node/*/bin/openclaw 2>/dev/null | sort -V | tail -n 1 || true)"
+  if [[ -n "${latest_nvm_openclaw}" ]]; then
+    OPENCLAW_BIN="${latest_nvm_openclaw}"
+  fi
+fi
+
+if ! command -v "${OPENCLAW_BIN}" >/dev/null 2>&1 && [[ ! -x "${OPENCLAW_BIN}" ]]; then
+  echo "[openclaw-audit-reporter] openclaw binary not found. Set OPENCLAW_BIN in env file." >&2
+  exit 127
+fi
+
 output_file="$(mktemp)"
 trap 'rm -f "${output_file}"' EXIT
 
 start_epoch="$(date +%s)"
 started_at="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
-if openclaw security audit --deep >"${output_file}" 2>&1; then
+if "${OPENCLAW_BIN}" security audit --deep >"${output_file}" 2>&1; then
   exit_code=0
   status="success"
 else
