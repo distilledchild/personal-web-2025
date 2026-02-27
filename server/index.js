@@ -59,7 +59,7 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 // Determine Redirect URI based on environment
 const isProduction = process.env.NODE_ENV === 'production';
 const REDIRECT_URI = isProduction
-    ? 'https://www.distilledchild.space/oauth/google/callback'
+    ? 'https://distilledchild.space/oauth/google/callback'
     : (process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/oauth/google/callback');
 
 // Database connection
