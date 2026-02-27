@@ -177,6 +177,41 @@ export const AboutAcademics: React.FC<AboutAcademicsProps> = ({ user, isAuthoriz
 
     return (
         <div className="animate-fadeIn flex flex-col lg:flex-row gap-8 flex-1 min-h-0 relative">
+            {/* Left Sidebar - Links Section */}
+            <div className="lg:w-64 flex-shrink-0 space-y-3 overflow-y-auto pr-2">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2">Links</h3>
+                <div className="space-y-3">
+                    {/* ORCiD Link */}
+                    {aboutAcademic?.links?.ORCiD && (
+                        <a
+                            href={aboutAcademic.links.ORCiD.startsWith('http') ? aboutAcademic.links.ORCiD : `https://${aboutAcademic.links.ORCiD}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
+                        >
+                            <p className="text-sm font-medium">
+                                <span style={{ color: '#A6A8AB' }}>ORC</span>
+                                <span style={{ color: '#A5CD39' }}>iD</span>
+                            </p>
+                        </a>
+                    )}
+
+                    {/* Google Scholar Link */}
+                    {aboutAcademic?.links?.GoogleScholar && (
+                        <a
+                            href={aboutAcademic.links.GoogleScholar.startsWith('http') ? aboutAcademic.links.GoogleScholar : `https://${aboutAcademic.links.GoogleScholar}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group cursor-pointer transition-all duration-200 bg-slate-50 px-4 py-3 rounded-lg border border-slate-200 hover:bg-blue-50 hover:border-blue-200 block"
+                        >
+                            <p className="text-sm font-medium text-slate-600 group-hover:text-blue-600 transition-colors">
+                                Google Scholar
+                            </p>
+                        </a>
+                    )}
+                </div>
+            </div>
+
             {/* Right Side - CV Content */}
             <div className="flex-1 min-h-0 overflow-y-auto">
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">

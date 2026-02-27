@@ -281,7 +281,7 @@ export const Research: React.FC = () => {
     { label: 'Breedchain', icon: Cat, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'breedchain' },
     { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
     { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
-    { label: 'DL & Enhancer', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
+    { label: 'AlphaGenome', icon: FileText, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'deeplearningenhancer' },
   ];
 
   const defaultSlug = tabs[0]?.slug || 'loopbrowser';
