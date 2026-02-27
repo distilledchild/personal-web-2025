@@ -189,7 +189,7 @@ export const Todo: React.FC = () => {
                     </div>
                     {isAuditOverdue && (
                         <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded px-2 py-1">
-                            예정된 주기 이후에도 새 리포트가 없습니다. Ubuntu 노트북 전원/네트워크/리포터 상태를 확인하세요.
+                            No new report received after the scheduled interval. Check Ubuntu laptop power, network, or reporter status.
                         </p>
                     )}
                     <div className="text-xs flex items-center gap-2">
