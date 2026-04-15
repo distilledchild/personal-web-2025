@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import { PageHeader } from '../components/PageHeader';
 import { Pagination } from '../components/Pagination';
+import MarketCommodities from '../components/MarketCommodities';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -73,16 +74,7 @@ interface MonthlyStats {
     run: { distance: number; count: number };
 }
 
-interface MarketData {
-    name: string;
-    symbol: string;
-    price: number;
-    change: number;
-    changePercent: number;
-    currency: string;
-    history?: { date: string, close: number }[];
-    error?: string;
-}
+
 
 
 // Helper function to calculate monthly statistics
@@ -164,11 +156,17 @@ const generateCalendarDays = () => {
 };
 
 export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
-    const { submenu } = useParams<{ submenu?: string }>();
+    const { submenu, subId } = useParams<{ submenu?: string; subId?: string }>();
     const navigate = useNavigate();
 
     // Determine active tab from URL, default to 'travel'
     const activeTab = (submenu as 'travel' | 'workout' | 'art' | 'data') || 'travel';
+
+    useEffect(() => {
+        if (activeTab === 'data' && !subId) {
+            navigate('/interests/data/1', { replace: true });
+        }
+    }, [activeTab, subId, navigate]);
 
     const projection = useMemo(() => {
         return geoAlbersUsa()
@@ -192,12 +190,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
 
     const [artMuseums, setArtMuseums] = useState<ArtMuseum[]>([]);
     const [loadingArtworks, setLoadingArtworks] = useState(false);
-    const [activeDataTab, setActiveDataTab] = useState<'urban' | 'weather' | 'fc26' | 'market'>('market');
     const [isAdminUser, setIsAdminUser] = useState(false);
-    
-    // Market Data State
-    const [marketData, setMarketData] = useState<MarketData[]>([]);
-    const [loadingMarket, setLoadingMarket] = useState(false);
 
     useEffect(() => {
         const fetchAdminRole = async () => {
@@ -265,16 +258,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
         }
     }, [activeTab]);
 
-    useEffect(() => {
-        if (activeTab === 'data' && activeDataTab === 'market' && marketData.length === 0) {
-            setLoadingMarket(true);
-            fetch(`${API_URL}/api/finance/market-data`)
-                .then(res => res.json())
-                .then(data => setMarketData(data))
-                .catch(err => console.error('Failed to fetch market data:', err))
-                .finally(() => setLoadingMarket(false));
-        }
-    }, [activeTab, activeDataTab, marketData.length]);
+
 
     const handleStravaAuth = async () => {
         try {
@@ -1144,71 +1128,54 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                 <hr className="border-slate-200 my-2" />
                                 <div className="space-y-3">
                                     <div
-                                        onClick={() => setActiveDataTab('urban')}
+                                        onClick={() => navigate('/interests/data/1')}
                                         className={`
                                             group cursor-pointer transition-all duration-200
                                             bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                                             hover:bg-orange-50 hover:border-orange-200
-                                            ${activeDataTab === 'urban' ? 'bg-orange-50 border-orange-200' : ''}
+                                            ${subId === '1' ? 'bg-orange-50 border-orange-200' : ''}
                                         `}
                                     >
                                         <p className={`
                                             text-sm font-medium text-slate-600 truncate
                                             group-hover:text-orange-600
-                                            ${activeDataTab === 'urban' ? 'text-orange-600' : ''}
+                                            ${subId === '1' ? 'text-orange-600' : ''}
                                         `}>
-                                            Real Estate Time Series
+                                            1. Market & Commodities
                                         </p>
                                     </div>
                                     <div
-                                        onClick={() => setActiveDataTab('fc26')}
+                                        onClick={() => navigate('/interests/data/2')}
                                         className={`
                                             group cursor-pointer transition-all duration-200
                                             bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                                             hover:bg-orange-50 hover:border-orange-200
-                                            ${activeDataTab === 'fc26' ? 'bg-orange-50 border-orange-200' : ''}
+                                            ${subId === '2' ? 'bg-orange-50 border-orange-200' : ''}
                                         `}
                                     >
                                         <p className={`
                                             text-sm font-medium text-slate-600 truncate
                                             group-hover:text-orange-600
-                                            ${activeDataTab === 'fc26' ? 'text-orange-600' : ''}
+                                            ${subId === '2' ? 'text-orange-600' : ''}
                                         `}>
-                                            FC Series Data Analytics
+                                            2. Real Estate Time Series
                                         </p>
                                     </div>
                                     <div
-                                        onClick={() => setActiveDataTab('weather')}
+                                        onClick={() => navigate('/interests/data/3')}
                                         className={`
                                             group cursor-pointer transition-all duration-200
                                             bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
                                             hover:bg-orange-50 hover:border-orange-200
-                                            ${activeDataTab === 'weather' ? 'bg-orange-50 border-orange-200' : ''}
+                                            ${subId === '3' ? 'bg-orange-50 border-orange-200' : ''}
                                         `}
                                     >
                                         <p className={`
                                             text-sm font-medium text-slate-600 truncate
                                             group-hover:text-orange-600
-                                            ${activeDataTab === 'weather' ? 'text-orange-600' : ''}
+                                            ${subId === '3' ? 'text-orange-600' : ''}
                                         `}>
-                                            Weather & Baseball Relation
-                                        </p>
-                                    </div>
-                                    <div
-                                        onClick={() => setActiveDataTab('market')}
-                                        className={`
-                                            group cursor-pointer transition-all duration-200
-                                            bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                                            hover:bg-orange-50 hover:border-orange-200
-                                            ${activeDataTab === 'market' ? 'bg-orange-50 border-orange-200' : ''}
-                                        `}
-                                    >
-                                        <p className={`
-                                            text-sm font-medium text-slate-600 truncate
-                                            group-hover:text-orange-600
-                                            ${activeDataTab === 'market' ? 'text-orange-600' : ''}
-                                        `}>
-                                            Market & Commodities
+                                            3. FC Series Data Analytics
                                         </p>
                                     </div>
                                 </div>
@@ -1216,128 +1183,11 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
 
                             {/* Right Content Area */}
                             <div className="flex-1 space-y-8">
-                                {activeDataTab === 'market' && (
-                                    <>
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <h3 className="text-2xl font-bold text-slate-900 mb-2">Market & Commodities</h3>
-                                                <p className="text-slate-500 text-lg">Real-time indicators & recent trends</p>
-                                            </div>
-                                            {loadingMarket && (
-                                                <div className="text-orange-500 font-medium flex items-center gap-2">
-                                                    <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                                                    Updating...
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                            {marketData.map((item, idx) => (
-                                                <div key={idx} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow relative overflow-hidden">
-                                                    {item.error ? (
-                                                        <div className="flex flex-col h-full justify-center text-center py-4">
-                                                            <h4 className="font-bold text-slate-800 text-lg">{item.name}</h4>
-                                                            <p className="text-red-500 text-sm mt-2">{item.error}</p>
-                                                        </div>
-                                                    ) : (
-                                                        <>
-                                                            <div className="flex justify-between items-start mb-4 relative z-10">
-                                                                <div>
-                                                                    <h4 className="font-bold text-slate-800 text-lg">{item.name}</h4>
-                                                                    <p className="text-slate-400 text-xs font-mono">{item.symbol}</p>
-                                                                </div>
-                                                                <div className={`px-2 py-1 rounded-md text-xs font-bold ${item.change >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                                    {item.change >= 0 ? '+' : ''}{item.changePercent?.toFixed(2)}%
-                                                                </div>
-                                                            </div>
-                                                            <div className="relative z-10">
-                                                                <span className="text-2xl font-black text-slate-900 font-mono tracking-tight">
-                                                                    {item.price?.toLocaleString()}
-                                                                </span>
-                                                                <span className="text-sm font-bold text-slate-400 ml-1">
-                                                                    {item.currency}
-                                                                </span>
-                                                            </div>
-                                                            <div className="mt-6 h-[80px] w-full">
-                                                                {item.history && item.history.length > 0 && (
-                                                                    <ResponsiveContainer width="100%" height="100%">
-                                                                        <ComposedChart data={item.history}>
-                                                                            <Line 
-                                                                                type="monotone" 
-                                                                                dataKey="close" 
-                                                                                stroke={item.change >= 0 ? '#10B981' : '#EF4444'} 
-                                                                                strokeWidth={2} 
-                                                                                dot={false} 
-                                                                                isAnimationActive={false}
-                                                                            />
-                                                                            <YAxis domain={['dataMin', 'dataMax']} hide />
-                                                                        </ComposedChart>
-                                                                    </ResponsiveContainer>
-                                                                )}
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Metal Ratios Block */}
-                                        <div className="mt-8">
-                                            <h4 className="text-xl font-bold text-slate-800 mb-4">Macro Indicators: Metal Ratios</h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {(() => {
-                                                    const gold = marketData.find(item => item.symbol === 'GC=F');
-                                                    const silver = marketData.find(item => item.symbol === 'SI=F');
-                                                    const copper = marketData.find(item => item.symbol === 'HG=F');
-                                                    
-                                                    const gsRatio = gold && silver && silver.price > 0 ? (gold.price / silver.price).toFixed(2) : null;
-                                                    const cgRatio = copper && gold && gold.price > 0 ? (copper.price / gold.price).toFixed(4) : null;
-
-                                                    return (
-                                                        <>
-                                                            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-6 shadow-sm">
-                                                                <div className="flex justify-between items-start">
-                                                                    <div>
-                                                                        <h5 className="font-bold text-slate-800 text-lg mb-1">Gold / Silver Ratio</h5>
-                                                                        <p className="text-sm text-slate-500 mb-4">Exchange Ratio (Risk-Aversion Indicator)</p>
-                                                                    </div>
-                                                                    <div className="p-2 bg-yellow-100 rounded-lg">
-                                                                        <span className="text-yellow-700 font-bold">Safe-Haven</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="text-3xl font-black text-slate-900 font-mono mb-3">
-                                                                    {gsRatio || 'Loading...'}
-                                                                </div>
-                                                                <div className="text-sm bg-orange-100 text-orange-800 px-3 py-2 rounded-lg font-medium inline-block">
-                                                                    💡 &gt; 80 indicates strong risk-off sentiment
-                                                                </div>
-                                                            </div>
-                                                            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-6 shadow-sm">
-                                                                <div className="flex justify-between items-start">
-                                                                    <div>
-                                                                        <h5 className="font-bold text-slate-800 text-lg mb-1">Copper / Gold Ratio</h5>
-                                                                        <p className="text-sm text-slate-500 mb-4">Exchange Ratio (Economic Expansion Indicator)</p>
-                                                                    </div>
-                                                                    <div className="p-2 bg-blue-100 rounded-lg">
-                                                                        <span className="text-blue-700 font-bold">Expansion</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="text-3xl font-black text-slate-900 font-mono mb-3">
-                                                                    {cgRatio || 'Loading...'}
-                                                                </div>
-                                                                <div className="text-sm bg-blue-100 text-blue-800 px-3 py-2 rounded-lg font-medium inline-block">
-                                                                    💡 Uptrend signals economic expansion &amp; rising industrial demand
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    );
-                                                })()}
-                                            </div>
-                                        </div>
-                                    </>
+                                {subId === '1' && (
+                                    <MarketCommodities />
                                 )}
 
-                                {activeDataTab === 'urban' && (
+                                {subId === '2' && (
                                     <>
                                         <div className="flex justify-between items-center">
                                             <div>
@@ -1386,37 +1236,9 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                     </>
                                 )}
 
-                                {activeDataTab === 'weather' && (
-                                    <>
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <h3 className="text-2xl font-bold text-slate-900 mb-2">Weather & Baseball Relation</h3>
-                                                <p className="text-slate-500 text-lg">Detailed analysis and visualization</p>
-                                            </div>
-                                        </div>
 
-                                        <div className="h-[400px] w-full bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-center">
-                                            <p className="text-slate-400 text-lg">Weather & Baseball Relation content coming soon...</p>
-                                        </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                                                <h4 className="font-bold text-blue-900 mb-2">Weather Pattern</h4>
-                                                <p className="text-sm text-blue-800/80">Analysis of weather patterns and their impact.</p>
-                                            </div>
-                                            <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                                                <h4 className="font-bold text-blue-900 mb-2">Baseball Statistics</h4>
-                                                <p className="text-sm text-blue-800/80">Correlation between weather and game outcomes.</p>
-                                            </div>
-                                            <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                                                <h4 className="font-bold text-blue-900 mb-2">Predictive Model</h4>
-                                                <p className="text-sm text-blue-800/80">Machine learning insights for predictions.</p>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {activeDataTab === 'fc26' && (
+                                {subId === '3' && (
                                     <>
                                         <div className="flex justify-between items-center">
                                             <div>

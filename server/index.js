@@ -220,7 +220,7 @@ app.get('/api/finance/market-data', async (req, res) => {
         const tickers = {
             'S&P 500': '^GSPC',
             'NASDAQ': '^IXIC',
-            'Apple': 'AAPL',
+            'WTI Crude Oil': 'CL=F',
             'Gold': 'GC=F',
             'Silver': 'SI=F',
             'Copper': 'HG=F'
