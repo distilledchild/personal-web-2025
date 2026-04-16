@@ -70,6 +70,8 @@ const REDIRECT_URI = isProduction
 import mongoose from 'mongoose';
 import { Storage } from '@google-cloud/storage';
 
+mongoose.set('bufferCommands', false);
+
 // Initialize Google Cloud Storage
 // Supports both file path (local) and JSON string (Railway/Render)
 let storageConfig = {};
@@ -105,6 +107,40 @@ if (process.env.GCP_PROJECT_ID) {
 
 const storage = new Storage(storageConfig);
 
+let dbStatus = 'starting';
+let dbLastError = null;
+
+const DB_READY_STATES = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+};
+
+const getDbHealth = () => ({
+    status: dbStatus,
+    readyState: mongoose.connection.readyState,
+    readyStateLabel: DB_READY_STATES[mongoose.connection.readyState] || 'unknown',
+    lastError: dbLastError
+});
+
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        uptime: process.uptime(),
+        db: getDbHealth()
+    });
+});
+
+app.get('/api/ready', (req, res) => {
+    const isDbConnected = mongoose.connection.readyState === 1;
+    res.status(isDbConnected ? 200 : 503).json({
+        status: isDbConnected ? 'ready' : 'not_ready',
+        uptime: process.uptime(),
+        db: getDbHealth()
+    });
+});
+
 // Configure multer for memory storage
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -120,17 +156,61 @@ const upload = multer({
     }
 });
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(async (connection) => {
-        console.log('Connected to MongoDB');
+mongoose.connection.on('connected', () => {
+    dbStatus = 'connected';
+    dbLastError = null;
+});
+
+mongoose.connection.on('disconnected', () => {
+    dbStatus = 'disconnected';
+});
+
+mongoose.connection.on('error', (err) => {
+    dbStatus = 'error';
+    dbLastError = err.message;
+});
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const connectMongoWithRetry = async () => {
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+        throw new Error('MONGODB_URI is not configured');
+    }
+
+    const maxAttempts = Number.parseInt(process.env.MONGODB_CONNECT_RETRIES || '6', 10);
+    const retryDelayMs = Number.parseInt(process.env.MONGODB_CONNECT_RETRY_DELAY_MS || '5000', 10);
+    const serverSelectionTimeoutMS = Number.parseInt(process.env.MONGODB_CONNECT_TIMEOUT_MS || '10000', 10);
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        dbStatus = 'connecting';
         try {
-            const collections = await connection.connection.db.listCollections().toArray();
-            console.log('Available Collections:', collections.map(c => c.name));
-        } catch (e) {
-            console.error('Failed to list collections:', e);
+            console.log(`[MongoDB] Connecting attempt ${attempt}/${maxAttempts}`);
+            const connection = await mongoose.connect(mongoUri, {
+                serverSelectionTimeoutMS
+            });
+
+            console.log('Connected to MongoDB');
+            try {
+                const collections = await connection.connection.db.listCollections().toArray();
+                console.log('Available Collections:', collections.map(c => c.name));
+            } catch (e) {
+                console.error('Failed to list collections:', e);
+            }
+            return connection;
+        } catch (err) {
+            dbStatus = 'error';
+            dbLastError = err.message;
+            console.error(`[MongoDB] Connection attempt ${attempt}/${maxAttempts} failed:`, err.message);
+
+            if (attempt === maxAttempts) {
+                throw err;
+            }
+
+            await sleep(retryDelayMs);
         }
-    })
-    .catch(err => console.error('MongoDB connection error:', err));
+    }
+};
 
 
 
@@ -4114,9 +4194,21 @@ app.delete('/api/projects/:id', async (req, res) => {
     }
 });
 
-setupOpenclawSecurityAuditScheduler();
-
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-    console.log(`SERVER RUNNING ON PORT ${PORT}`);
-});
+
+const startServer = async () => {
+    try {
+        await connectMongoWithRetry();
+    } catch (err) {
+        console.error('[Startup] MongoDB is not ready; refusing to start server:', err.message);
+        process.exit(1);
+    }
+
+    setupOpenclawSecurityAuditScheduler();
+
+    server.listen(PORT, () => {
+        console.log(`SERVER RUNNING ON PORT ${PORT}`);
+    });
+};
+
+startServer();
