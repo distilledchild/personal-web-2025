@@ -21,7 +21,7 @@ import {
 import { PageHeader } from '../components/PageHeader';
 import { Pagination } from '../components/Pagination';
 import { DataTable, DataTableColumn } from '../components/DataTable';
-import MarketCommodities from '../components/MarketCommodities';
+import GoldMarketWorkspace from '../components/GoldMarketWorkspace';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
@@ -162,11 +162,16 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     const navigate = useNavigate();
 
     // Determine active tab from URL, default to 'travel'
-    const activeTab = (submenu as 'travel' | 'workout' | 'art' | 'data') || 'travel';
+    const activeTab = (submenu as 'travel' | 'workout' | 'art' | 'analysis' | 'data') || 'travel';
 
     useEffect(() => {
-        if (activeTab === 'data' && !subId) {
-            navigate('/interests/data/1', { replace: true });
+        if (activeTab === 'data') {
+            navigate(`/interests/analysis/${subId || '1'}`, { replace: true });
+            return;
+        }
+
+        if (activeTab === 'analysis' && !subId) {
+            navigate('/interests/analysis/1', { replace: true });
         }
     }, [activeTab, subId, navigate]);
 
@@ -453,7 +458,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
             <PageHeader
                 title="Topics"
                 tabs={[
-                    { id: 'data', label: 'Data', icon: BarChart3 },
+                    { id: 'analysis', label: 'Analysis', icon: BarChart3 },
                     { id: 'art', label: 'Art', icon: Palette },
                     { id: 'workout', label: 'Workout', icon: Dumbbell },
                     { id: 'travel', label: 'Travel', icon: Plane }
@@ -1089,7 +1094,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                         </div>
                     )}
 
-                    {activeTab === 'data' && (
+                    {activeTab === 'analysis' && (
                         <div className="animate-fadeIn flex gap-6">
                             {/* Left Navigation - Similar to Tech and Bio */}
                             <div className="w-64 flex-shrink-0 space-y-3">
@@ -1097,7 +1102,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                 <hr className="border-slate-200 my-2" />
                                 <div className="space-y-3">
                                     <div
-                                        onClick={() => navigate('/interests/data/1')}
+                                        onClick={() => navigate('/interests/analysis/1')}
                                         className={`
                                             group cursor-pointer transition-all duration-200
                                             bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
@@ -1114,7 +1119,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                         </p>
                                     </div>
                                     <div
-                                        onClick={() => navigate('/interests/data/2')}
+                                        onClick={() => navigate('/interests/analysis/2')}
                                         className={`
                                             group cursor-pointer transition-all duration-200
                                             bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
@@ -1131,7 +1136,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                         </p>
                                     </div>
                                     <div
-                                        onClick={() => navigate('/interests/data/3')}
+                                        onClick={() => navigate('/interests/analysis/3')}
                                         className={`
                                             group cursor-pointer transition-all duration-200
                                             bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
@@ -1153,7 +1158,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                             {/* Right Content Area */}
                             <div className="flex-1 space-y-8">
                                 {subId === '1' && (
-                                    <MarketCommodities />
+                                    <GoldMarketWorkspace />
                                 )}
 
                                 {subId === '2' && (

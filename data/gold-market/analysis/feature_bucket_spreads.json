@@ -1,0 +1,642 @@
+[
+  {
+    "feature": "dfii10_value",
+    "high_minus_low_avg_return_3m": 0.089712,
+    "high_minus_low_good_entry_rate_3m": 0.375029,
+    "high_minus_low_bad_entry_rate_3m": -0.265958,
+    "low_bucket_return_3m": -0.010343,
+    "high_bucket_return_3m": 0.079369,
+    "low_bad_entry_rate_3m": 0.392857,
+    "high_bad_entry_rate_3m": 0.126899
+  },
+  {
+    "feature": "payems_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.068806,
+    "high_minus_low_good_entry_rate_3m": -0.330775,
+    "high_minus_low_bad_entry_rate_3m": 0.035666,
+    "low_bucket_return_3m": 0.075542,
+    "high_bucket_return_3m": 0.006736,
+    "low_bad_entry_rate_3m": 0.24141,
+    "high_bad_entry_rate_3m": 0.277076
+  },
+  {
+    "feature": "fedfunds_value",
+    "high_minus_low_avg_return_3m": 0.060878,
+    "high_minus_low_good_entry_rate_3m": 0.30625,
+    "high_minus_low_bad_entry_rate_3m": -0.23125,
+    "low_bucket_return_3m": 0.008105,
+    "high_bucket_return_3m": 0.068983,
+    "low_bad_entry_rate_3m": 0.326786,
+    "high_bad_entry_rate_3m": 0.095536
+  },
+  {
+    "feature": "payems_value_change_1m",
+    "high_minus_low_avg_return_3m": -0.047288,
+    "high_minus_low_good_entry_rate_3m": -0.248128,
+    "high_minus_low_bad_entry_rate_3m": 0.017447,
+    "low_bucket_return_3m": 0.056709,
+    "high_bucket_return_3m": 0.009421,
+    "low_bad_entry_rate_3m": 0.264811,
+    "high_bad_entry_rate_3m": 0.282258
+  },
+  {
+    "feature": "fedfunds_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.045297,
+    "high_minus_low_good_entry_rate_3m": -0.227872,
+    "high_minus_low_bad_entry_rate_3m": -0.020962,
+    "low_bucket_return_3m": 0.076006,
+    "high_bucket_return_3m": 0.030709,
+    "low_bad_entry_rate_3m": 0.225836,
+    "high_bad_entry_rate_3m": 0.204874
+  },
+  {
+    "feature": "tnx_close_change_3m",
+    "high_minus_low_avg_return_3m": -0.035931,
+    "high_minus_low_good_entry_rate_3m": -0.185517,
+    "high_minus_low_bad_entry_rate_3m": 0.084713,
+    "low_bucket_return_3m": 0.061958,
+    "high_bucket_return_3m": 0.026027,
+    "low_bad_entry_rate_3m": 0.138211,
+    "high_bad_entry_rate_3m": 0.222924
+  },
+  {
+    "feature": "rrpontsyd_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.03536,
+    "high_minus_low_good_entry_rate_3m": -0.184214,
+    "high_minus_low_bad_entry_rate_3m": 0.16778,
+    "low_bucket_return_3m": 0.051237,
+    "high_bucket_return_3m": 0.015877,
+    "low_bad_entry_rate_3m": 0.099368,
+    "high_bad_entry_rate_3m": 0.267148
+  },
+  {
+    "feature": "fedfunds_value_change_1m",
+    "high_minus_low_avg_return_3m": -0.034307,
+    "high_minus_low_good_entry_rate_3m": -0.156508,
+    "high_minus_low_bad_entry_rate_3m": -0.035128,
+    "low_bucket_return_3m": 0.067644,
+    "high_bucket_return_3m": 0.033337,
+    "low_bad_entry_rate_3m": 0.203587,
+    "high_bad_entry_rate_3m": 0.168459
+  },
+  {
+    "feature": "rrpontsyd_value_change_1m",
+    "high_minus_low_avg_return_3m": -0.030668,
+    "high_minus_low_good_entry_rate_3m": -0.112006,
+    "high_minus_low_bad_entry_rate_3m": 0.11548,
+    "low_bucket_return_3m": 0.046213,
+    "high_bucket_return_3m": 0.015545,
+    "low_bad_entry_rate_3m": 0.123767,
+    "high_bad_entry_rate_3m": 0.239247
+  },
+  {
+    "feature": "t10yie_value",
+    "high_minus_low_avg_return_3m": -0.028163,
+    "high_minus_low_good_entry_rate_3m": -0.139902,
+    "high_minus_low_bad_entry_rate_3m": 0.13125,
+    "low_bucket_return_3m": 0.041194,
+    "high_bucket_return_3m": 0.013031,
+    "low_bad_entry_rate_3m": 0.194643,
+    "high_bad_entry_rate_3m": 0.325893
+  },
+  {
+    "feature": "gld_return_3m",
+    "high_minus_low_avg_return_3m": 0.027876,
+    "high_minus_low_good_entry_rate_3m": 0.093743,
+    "high_minus_low_bad_entry_rate_3m": -0.063257,
+    "low_bucket_return_3m": 0.017487,
+    "high_bucket_return_3m": 0.045363,
+    "low_bad_entry_rate_3m": 0.305738,
+    "high_bad_entry_rate_3m": 0.242481
+  },
+  {
+    "feature": "iau_return_3m",
+    "high_minus_low_avg_return_3m": 0.027663,
+    "high_minus_low_good_entry_rate_3m": 0.088722,
+    "high_minus_low_bad_entry_rate_3m": -0.064516,
+    "low_bucket_return_3m": 0.017208,
+    "high_bucket_return_3m": 0.044871,
+    "low_bad_entry_rate_3m": 0.309298,
+    "high_bad_entry_rate_3m": 0.244782
+  },
+  {
+    "feature": "tnx_return_3m",
+    "high_minus_low_avg_return_3m": -0.027538,
+    "high_minus_low_good_entry_rate_3m": -0.125853,
+    "high_minus_low_bad_entry_rate_3m": 0.102729,
+    "low_bucket_return_3m": 0.042258,
+    "high_bucket_return_3m": 0.01472,
+    "low_bad_entry_rate_3m": 0.176152,
+    "high_bad_entry_rate_3m": 0.278881
+  },
+  {
+    "feature": "payems_value",
+    "high_minus_low_avg_return_3m": 0.026945,
+    "high_minus_low_good_entry_rate_3m": 0.152838,
+    "high_minus_low_bad_entry_rate_3m": -0.04453,
+    "low_bucket_return_3m": 0.042573,
+    "high_bucket_return_3m": 0.069518,
+    "low_bad_entry_rate_3m": 0.171429,
+    "high_bad_entry_rate_3m": 0.126899
+  },
+  {
+    "feature": "gold_futures_return_3m",
+    "high_minus_low_avg_return_3m": 0.026311,
+    "high_minus_low_good_entry_rate_3m": 0.08221,
+    "high_minus_low_bad_entry_rate_3m": -0.049908,
+    "low_bucket_return_3m": 0.018266,
+    "high_bucket_return_3m": 0.044577,
+    "low_bad_entry_rate_3m": 0.2972,
+    "high_bad_entry_rate_3m": 0.247292
+  },
+  {
+    "feature": "t10yie_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.026036,
+    "high_minus_low_good_entry_rate_3m": -0.115916,
+    "high_minus_low_bad_entry_rate_3m": 0.048539,
+    "low_bucket_return_3m": 0.043086,
+    "high_bucket_return_3m": 0.01705,
+    "low_bad_entry_rate_3m": 0.217706,
+    "high_bad_entry_rate_3m": 0.266245
+  },
+  {
+    "feature": "t10y2y_value_change_3m",
+    "high_minus_low_avg_return_3m": 0.025001,
+    "high_minus_low_good_entry_rate_3m": 0.119118,
+    "high_minus_low_bad_entry_rate_3m": 0.022363,
+    "low_bucket_return_3m": 0.018903,
+    "high_bucket_return_3m": 0.043904,
+    "low_bad_entry_rate_3m": 0.222222,
+    "high_bad_entry_rate_3m": 0.244585
+  },
+  {
+    "feature": "t10yie_value_change_1m",
+    "high_minus_low_avg_return_3m": -0.024763,
+    "high_minus_low_good_entry_rate_3m": -0.154796,
+    "high_minus_low_bad_entry_rate_3m": 0.023976,
+    "low_bucket_return_3m": 0.041822,
+    "high_bucket_return_3m": 0.017059,
+    "low_bad_entry_rate_3m": 0.243049,
+    "high_bad_entry_rate_3m": 0.267025
+  },
+  {
+    "feature": "tnx_return_1m",
+    "high_minus_low_avg_return_3m": -0.024354,
+    "high_minus_low_good_entry_rate_3m": -0.119239,
+    "high_minus_low_bad_entry_rate_3m": 0.078671,
+    "low_bucket_return_3m": 0.039728,
+    "high_bucket_return_3m": 0.015374,
+    "low_bad_entry_rate_3m": 0.202691,
+    "high_bad_entry_rate_3m": 0.281362
+  },
+  {
+    "feature": "wti_crude_oil_return_3m",
+    "high_minus_low_avg_return_3m": -0.022786,
+    "high_minus_low_good_entry_rate_3m": -0.078982,
+    "high_minus_low_bad_entry_rate_3m": 0.060524,
+    "low_bucket_return_3m": 0.048448,
+    "high_bucket_return_3m": 0.025662,
+    "low_bad_entry_rate_3m": 0.180668,
+    "high_bad_entry_rate_3m": 0.241192
+  },
+  {
+    "feature": "wti_crude_oil_return_1m",
+    "high_minus_low_avg_return_3m": -0.02149,
+    "high_minus_low_good_entry_rate_3m": -0.082571,
+    "high_minus_low_bad_entry_rate_3m": 0.03188,
+    "low_bucket_return_3m": 0.048625,
+    "high_bucket_return_3m": 0.027135,
+    "low_bad_entry_rate_3m": 0.210952,
+    "high_bad_entry_rate_3m": 0.242832
+  },
+  {
+    "feature": "tnx_close_change_1m",
+    "high_minus_low_avg_return_3m": -0.018058,
+    "high_minus_low_good_entry_rate_3m": -0.09087,
+    "high_minus_low_bad_entry_rate_3m": 0.030282,
+    "low_bucket_return_3m": 0.050482,
+    "high_bucket_return_3m": 0.032424,
+    "low_bad_entry_rate_3m": 0.205381,
+    "high_bad_entry_rate_3m": 0.235663
+  },
+  {
+    "feature": "silver_futures_return_3m",
+    "high_minus_low_avg_return_3m": 0.018053,
+    "high_minus_low_good_entry_rate_3m": 0.094603,
+    "high_minus_low_bad_entry_rate_3m": -0.069137,
+    "low_bucket_return_3m": 0.025178,
+    "high_bucket_return_3m": 0.043231,
+    "low_bad_entry_rate_3m": 0.301989,
+    "high_bad_entry_rate_3m": 0.232852
+  },
+  {
+    "feature": "gold_drawdown_from_252d_high",
+    "high_minus_low_avg_return_3m": 0.017835,
+    "high_minus_low_good_entry_rate_3m": 0.128711,
+    "high_minus_low_bad_entry_rate_3m": -0.069643,
+    "low_bucket_return_3m": 0.032101,
+    "high_bucket_return_3m": 0.049936,
+    "low_bad_entry_rate_3m": 0.230357,
+    "high_bad_entry_rate_3m": 0.160714
+  },
+  {
+    "feature": "days_since_last_fomc",
+    "high_minus_low_avg_return_3m": -0.017604,
+    "high_minus_low_good_entry_rate_3m": -0.133108,
+    "high_minus_low_bad_entry_rate_3m": 0.132988,
+    "low_bucket_return_3m": 0.037358,
+    "high_bucket_return_3m": 0.019754,
+    "low_bad_entry_rate_3m": 0.186047,
+    "high_bad_entry_rate_3m": 0.319035
+  },
+  {
+    "feature": "vix_percentile_1y",
+    "high_minus_low_avg_return_3m": 0.01728,
+    "high_minus_low_good_entry_rate_3m": 0.03056,
+    "high_minus_low_bad_entry_rate_3m": 0.09984,
+    "low_bucket_return_3m": 0.024517,
+    "high_bucket_return_3m": 0.041797,
+    "low_bad_entry_rate_3m": 0.171188,
+    "high_bad_entry_rate_3m": 0.271028
+  },
+  {
+    "feature": "nasdaq_return_3m",
+    "high_minus_low_avg_return_3m": 0.016507,
+    "high_minus_low_good_entry_rate_3m": 0.113947,
+    "high_minus_low_bad_entry_rate_3m": -0.084192,
+    "low_bucket_return_3m": 0.028477,
+    "high_bucket_return_3m": 0.044984,
+    "low_bad_entry_rate_3m": 0.285456,
+    "high_bad_entry_rate_3m": 0.201264
+  },
+  {
+    "feature": "m2sl_value",
+    "high_minus_low_avg_return_3m": 0.016091,
+    "high_minus_low_good_entry_rate_3m": 0.086891,
+    "high_minus_low_bad_entry_rate_3m": -0.063278,
+    "low_bucket_return_3m": 0.04644,
+    "high_bucket_return_3m": 0.062531,
+    "low_bad_entry_rate_3m": 0.191964,
+    "high_bad_entry_rate_3m": 0.128686
+  },
+  {
+    "feature": "t10y2y_value_change_1m",
+    "high_minus_low_avg_return_3m": 0.015137,
+    "high_minus_low_good_entry_rate_3m": 0.085583,
+    "high_minus_low_bad_entry_rate_3m": 0.049082,
+    "low_bucket_return_3m": 0.019759,
+    "high_bucket_return_3m": 0.034896,
+    "low_bad_entry_rate_3m": 0.224215,
+    "high_bad_entry_rate_3m": 0.273297
+  },
+  {
+    "feature": "vix_return_1m",
+    "high_minus_low_avg_return_3m": 0.01351,
+    "high_minus_low_good_entry_rate_3m": 0.063369,
+    "high_minus_low_bad_entry_rate_3m": 0.030062,
+    "low_bucket_return_3m": 0.024142,
+    "high_bucket_return_3m": 0.037652,
+    "low_bad_entry_rate_3m": 0.225314,
+    "high_bad_entry_rate_3m": 0.255376
+  },
+  {
+    "feature": "sp500_return_3m",
+    "high_minus_low_avg_return_3m": 0.013491,
+    "high_minus_low_good_entry_rate_3m": 0.115158,
+    "high_minus_low_bad_entry_rate_3m": -0.106782,
+    "low_bucket_return_3m": 0.030904,
+    "high_bucket_return_3m": 0.044395,
+    "low_bad_entry_rate_3m": 0.314363,
+    "high_bad_entry_rate_3m": 0.207581
+  },
+  {
+    "feature": "vix_close_change_1m",
+    "high_minus_low_avg_return_3m": 0.012442,
+    "high_minus_low_good_entry_rate_3m": 0.0556,
+    "high_minus_low_bad_entry_rate_3m": 0.024672,
+    "low_bucket_return_3m": 0.026429,
+    "high_bucket_return_3m": 0.038871,
+    "low_bad_entry_rate_3m": 0.233393,
+    "high_bad_entry_rate_3m": 0.258065
+  },
+  {
+    "feature": "cpiaucsl_value",
+    "high_minus_low_avg_return_3m": 0.011652,
+    "high_minus_low_good_entry_rate_3m": 0.08076,
+    "high_minus_low_bad_entry_rate_3m": -0.02935,
+    "low_bucket_return_3m": 0.052698,
+    "high_bucket_return_3m": 0.06435,
+    "low_bad_entry_rate_3m": 0.158036,
+    "high_bad_entry_rate_3m": 0.128686
+  },
+  {
+    "feature": "nasdaq_return_1m",
+    "high_minus_low_avg_return_3m": -0.011047,
+    "high_minus_low_good_entry_rate_3m": -0.043512,
+    "high_minus_low_bad_entry_rate_3m": -0.023319,
+    "low_bucket_return_3m": 0.043032,
+    "high_bucket_return_3m": 0.031985,
+    "low_bad_entry_rate_3m": 0.227803,
+    "high_bad_entry_rate_3m": 0.204484
+  },
+  {
+    "feature": "gdpc1_value",
+    "high_minus_low_avg_return_3m": 0.01075,
+    "high_minus_low_good_entry_rate_3m": 0.0558,
+    "high_minus_low_bad_entry_rate_3m": -0.059707,
+    "low_bucket_return_3m": 0.0528,
+    "high_bucket_return_3m": 0.06355,
+    "low_bad_entry_rate_3m": 0.188393,
+    "high_bad_entry_rate_3m": 0.128686
+  },
+  {
+    "feature": "vix_return_3m",
+    "high_minus_low_avg_return_3m": 0.010527,
+    "high_minus_low_good_entry_rate_3m": -0.035028,
+    "high_minus_low_bad_entry_rate_3m": -0.004734,
+    "low_bucket_return_3m": 0.030003,
+    "high_bucket_return_3m": 0.04053,
+    "low_bad_entry_rate_3m": 0.245709,
+    "high_bad_entry_rate_3m": 0.240975
+  },
+  {
+    "feature": "pcepi_value",
+    "high_minus_low_avg_return_3m": 0.010219,
+    "high_minus_low_good_entry_rate_3m": 0.073617,
+    "high_minus_low_bad_entry_rate_3m": -0.022207,
+    "low_bucket_return_3m": 0.054131,
+    "high_bucket_return_3m": 0.06435,
+    "low_bad_entry_rate_3m": 0.150893,
+    "high_bad_entry_rate_3m": 0.128686
+  },
+  {
+    "feature": "days_to_next_fomc",
+    "high_minus_low_avg_return_3m": -0.009818,
+    "high_minus_low_good_entry_rate_3m": 0.02621,
+    "high_minus_low_bad_entry_rate_3m": -0.031467,
+    "low_bucket_return_3m": 0.038761,
+    "high_bucket_return_3m": 0.028943,
+    "low_bad_entry_rate_3m": 0.243074,
+    "high_bad_entry_rate_3m": 0.211607
+  },
+  {
+    "feature": "dfii10_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.009524,
+    "high_minus_low_good_entry_rate_3m": -0.060524,
+    "high_minus_low_bad_entry_rate_3m": 0.04045,
+    "low_bucket_return_3m": 0.046727,
+    "high_bucket_return_3m": 0.037203,
+    "low_bad_entry_rate_3m": 0.181572,
+    "high_bad_entry_rate_3m": 0.222022
+  },
+  {
+    "feature": "central_bank_gold_reserves_top15_change_3m",
+    "high_minus_low_avg_return_3m": -0.009301,
+    "high_minus_low_good_entry_rate_3m": -0.022061,
+    "high_minus_low_bad_entry_rate_3m": -0.019139,
+    "low_bucket_return_3m": 0.042543,
+    "high_bucket_return_3m": 0.033242,
+    "low_bad_entry_rate_3m": 0.206865,
+    "high_bad_entry_rate_3m": 0.187726
+  },
+  {
+    "feature": "central_bank_gold_reserves_top15_tonnes_change_3m",
+    "high_minus_low_avg_return_3m": -0.009301,
+    "high_minus_low_good_entry_rate_3m": -0.022061,
+    "high_minus_low_bad_entry_rate_3m": -0.019139,
+    "low_bucket_return_3m": 0.042543,
+    "high_bucket_return_3m": 0.033242,
+    "low_bad_entry_rate_3m": 0.206865,
+    "high_bad_entry_rate_3m": 0.187726
+  },
+  {
+    "feature": "vix_close_change_3m",
+    "high_minus_low_avg_return_3m": 0.008368,
+    "high_minus_low_good_entry_rate_3m": -0.014489,
+    "high_minus_low_bad_entry_rate_3m": 0.004291,
+    "low_bucket_return_3m": 0.032167,
+    "high_bucket_return_3m": 0.040535,
+    "low_bad_entry_rate_3m": 0.245709,
+    "high_bad_entry_rate_3m": 0.25
+  },
+  {
+    "feature": "m2sl_value_change_1m",
+    "high_minus_low_avg_return_3m": 0.008304,
+    "high_minus_low_good_entry_rate_3m": 0.056464,
+    "high_minus_low_bad_entry_rate_3m": 0.028348,
+    "low_bucket_return_3m": 0.033443,
+    "high_bucket_return_3m": 0.041747,
+    "low_bad_entry_rate_3m": 0.181329,
+    "high_bad_entry_rate_3m": 0.209677
+  },
+  {
+    "feature": "t10y2y_value",
+    "high_minus_low_avg_return_3m": -0.00825,
+    "high_minus_low_good_entry_rate_3m": -0.052678,
+    "high_minus_low_bad_entry_rate_3m": 0.091964,
+    "low_bucket_return_3m": 0.045714,
+    "high_bucket_return_3m": 0.037464,
+    "low_bad_entry_rate_3m": 0.126786,
+    "high_bad_entry_rate_3m": 0.21875
+  },
+  {
+    "feature": "silver_futures_return_1m",
+    "high_minus_low_avg_return_3m": -0.006867,
+    "high_minus_low_good_entry_rate_3m": -0.017822,
+    "high_minus_low_bad_entry_rate_3m": 0.017707,
+    "low_bucket_return_3m": 0.031246,
+    "high_bucket_return_3m": 0.024379,
+    "low_bad_entry_rate_3m": 0.238565,
+    "high_bad_entry_rate_3m": 0.256272
+  },
+  {
+    "feature": "central_bank_gold_reserves_top15_tonnes",
+    "high_minus_low_avg_return_3m": 0.006294,
+    "high_minus_low_good_entry_rate_3m": 0.004748,
+    "high_minus_low_bad_entry_rate_3m": -0.138286,
+    "low_bucket_return_3m": 0.058546,
+    "high_bucket_return_3m": 0.06484,
+    "low_bad_entry_rate_3m": 0.258036,
+    "high_bad_entry_rate_3m": 0.11975
+  },
+  {
+    "feature": "sp500_return_1m",
+    "high_minus_low_avg_return_3m": -0.005377,
+    "high_minus_low_good_entry_rate_3m": -0.028553,
+    "high_minus_low_bad_entry_rate_3m": -0.059192,
+    "low_bucket_return_3m": 0.039116,
+    "high_bucket_return_3m": 0.033739,
+    "low_bad_entry_rate_3m": 0.249327,
+    "high_bad_entry_rate_3m": 0.190135
+  },
+  {
+    "feature": "dxy_close_change_3m",
+    "high_minus_low_avg_return_3m": 0.004134,
+    "high_minus_low_good_entry_rate_3m": 0.014453,
+    "high_minus_low_bad_entry_rate_3m": 0.069325,
+    "low_bucket_return_3m": 0.03246,
+    "high_bucket_return_3m": 0.036594,
+    "low_bad_entry_rate_3m": 0.187895,
+    "high_bad_entry_rate_3m": 0.25722
+  },
+  {
+    "feature": "cpiaucsl_value_change_1m",
+    "high_minus_low_avg_return_3m": -0.004073,
+    "high_minus_low_good_entry_rate_3m": 0.015021,
+    "high_minus_low_bad_entry_rate_3m": -0.019205,
+    "low_bucket_return_3m": 0.038525,
+    "high_bucket_return_3m": 0.034452,
+    "low_bad_entry_rate_3m": 0.216338,
+    "high_bad_entry_rate_3m": 0.197133
+  },
+  {
+    "feature": "copper_futures_return_3m",
+    "high_minus_low_avg_return_3m": -0.003604,
+    "high_minus_low_good_entry_rate_3m": -0.003298,
+    "high_minus_low_bad_entry_rate_3m": 0.009724,
+    "low_bucket_return_3m": 0.044406,
+    "high_bucket_return_3m": 0.040802,
+    "low_bad_entry_rate_3m": 0.225836,
+    "high_bad_entry_rate_3m": 0.23556
+  },
+  {
+    "feature": "copper_futures_return_1m",
+    "high_minus_low_avg_return_3m": -0.003357,
+    "high_minus_low_good_entry_rate_3m": -0.034766,
+    "high_minus_low_bad_entry_rate_3m": -0.03139,
+    "low_bucket_return_3m": 0.039611,
+    "high_bucket_return_3m": 0.036254,
+    "low_bad_entry_rate_3m": 0.238565,
+    "high_bad_entry_rate_3m": 0.207175
+  },
+  {
+    "feature": "m2sl_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.003345,
+    "high_minus_low_good_entry_rate_3m": -0.0586,
+    "high_minus_low_bad_entry_rate_3m": 0.017868,
+    "low_bucket_return_3m": 0.036589,
+    "high_bucket_return_3m": 0.033244,
+    "low_bad_entry_rate_3m": 0.202349,
+    "high_bad_entry_rate_3m": 0.220217
+  },
+  {
+    "feature": "dxy_return_3m",
+    "high_minus_low_avg_return_3m": 0.003086,
+    "high_minus_low_good_entry_rate_3m": 0.019156,
+    "high_minus_low_bad_entry_rate_3m": 0.072026,
+    "low_bucket_return_3m": 0.031496,
+    "high_bucket_return_3m": 0.034582,
+    "low_bad_entry_rate_3m": 0.194219,
+    "high_bad_entry_rate_3m": 0.266245
+  },
+  {
+    "feature": "pcepi_value_change_1m",
+    "high_minus_low_avg_return_3m": 0.002979,
+    "high_minus_low_good_entry_rate_3m": 0.058265,
+    "high_minus_low_bad_entry_rate_3m": -0.022865,
+    "low_bucket_return_3m": 0.031476,
+    "high_bucket_return_3m": 0.034455,
+    "low_bad_entry_rate_3m": 0.258528,
+    "high_bad_entry_rate_3m": 0.235663
+  },
+  {
+    "feature": "gold_futures_return_1m",
+    "high_minus_low_avg_return_3m": -0.002925,
+    "high_minus_low_good_entry_rate_3m": 0.009836,
+    "high_minus_low_bad_entry_rate_3m": 0.066096,
+    "low_bucket_return_3m": 0.026799,
+    "high_bucket_return_3m": 0.023874,
+    "low_bad_entry_rate_3m": 0.236771,
+    "high_bad_entry_rate_3m": 0.302867
+  },
+  {
+    "feature": "cpiaucsl_value_change_3m",
+    "high_minus_low_avg_return_3m": -0.002507,
+    "high_minus_low_good_entry_rate_3m": 0.008323,
+    "high_minus_low_bad_entry_rate_3m": 0.007227,
+    "low_bucket_return_3m": 0.041029,
+    "high_bucket_return_3m": 0.038522,
+    "low_bad_entry_rate_3m": 0.209575,
+    "high_bad_entry_rate_3m": 0.216802
+  },
+  {
+    "feature": "dxy_close_change_1m",
+    "high_minus_low_avg_return_3m": 0.001975,
+    "high_minus_low_good_entry_rate_3m": -0.024166,
+    "high_minus_low_bad_entry_rate_3m": 0.01934,
+    "low_bucket_return_3m": 0.03268,
+    "high_bucket_return_3m": 0.034655,
+    "low_bad_entry_rate_3m": 0.208259,
+    "high_bad_entry_rate_3m": 0.227599
+  },
+  {
+    "feature": "pcepi_value_change_3m",
+    "high_minus_low_avg_return_3m": 0.001968,
+    "high_minus_low_good_entry_rate_3m": 0.039178,
+    "high_minus_low_bad_entry_rate_3m": 0.007028,
+    "low_bucket_return_3m": 0.038494,
+    "high_bucket_return_3m": 0.040462,
+    "low_bad_entry_rate_3m": 0.213189,
+    "high_bad_entry_rate_3m": 0.220217
+  },
+  {
+    "feature": "iau_return_1m",
+    "high_minus_low_avg_return_3m": -0.001432,
+    "high_minus_low_good_entry_rate_3m": 0.01301,
+    "high_minus_low_bad_entry_rate_3m": 0.044927,
+    "low_bucket_return_3m": 0.028065,
+    "high_bucket_return_3m": 0.026633,
+    "low_bad_entry_rate_3m": 0.242938,
+    "high_bad_entry_rate_3m": 0.287865
+  },
+  {
+    "feature": "rrpontsyd_value",
+    "high_minus_low_avg_return_3m": 0.001181,
+    "high_minus_low_good_entry_rate_3m": -0.022811,
+    "high_minus_low_bad_entry_rate_3m": -0.104,
+    "low_bucket_return_3m": 0.0335,
+    "high_bucket_return_3m": 0.034681,
+    "low_bad_entry_rate_3m": 0.239714,
+    "high_bad_entry_rate_3m": 0.135714
+  },
+  {
+    "feature": "dfii10_value_change_1m",
+    "high_minus_low_avg_return_3m": 0.000924,
+    "high_minus_low_good_entry_rate_3m": 0.023108,
+    "high_minus_low_bad_entry_rate_3m": 0.006969,
+    "low_bucket_return_3m": 0.033998,
+    "high_bucket_return_3m": 0.034922,
+    "low_bad_entry_rate_3m": 0.223318,
+    "high_bad_entry_rate_3m": 0.230287
+  },
+  {
+    "feature": "dxy_return_1m",
+    "high_minus_low_avg_return_3m": 0.000779,
+    "high_minus_low_good_entry_rate_3m": -0.024479,
+    "high_minus_low_bad_entry_rate_3m": 0.021114,
+    "low_bucket_return_3m": 0.031535,
+    "high_bucket_return_3m": 0.032314,
+    "low_bad_entry_rate_3m": 0.218133,
+    "high_bad_entry_rate_3m": 0.239247
+  },
+  {
+    "feature": "central_bank_gold_reserves_top15_tonnes_change_1m",
+    "high_minus_low_avg_return_3m": -0.000668,
+    "high_minus_low_good_entry_rate_3m": 0.05879,
+    "high_minus_low_bad_entry_rate_3m": -0.042303,
+    "low_bucket_return_3m": 0.0375,
+    "high_bucket_return_3m": 0.036832,
+    "low_bad_entry_rate_3m": 0.210762,
+    "high_bad_entry_rate_3m": 0.168459
+  },
+  {
+    "feature": "gld_return_1m",
+    "high_minus_low_avg_return_3m": -0.00025,
+    "high_minus_low_good_entry_rate_3m": 0.022418,
+    "high_minus_low_bad_entry_rate_3m": 0.046418,
+    "low_bucket_return_3m": 0.027213,
+    "high_bucket_return_3m": 0.026963,
+    "low_bad_entry_rate_3m": 0.239963,
+    "high_bad_entry_rate_3m": 0.286381
+  }
+]

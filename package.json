@@ -8,6 +8,8 @@
     "dev:frontend": "vite",
     "server": "node server/index.js",
     "start": "node server/index.js",
+    "data:gold": "node scripts/download-gold-market-data.mjs",
+    "data:gold:analyze": "node scripts/analyze-gold-market-data.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "vercel-build": "npm install --legacy-peer-deps && npm run build"

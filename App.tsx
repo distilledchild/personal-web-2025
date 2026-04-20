@@ -177,7 +177,7 @@ const Layout: React.FC = () => {
               <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-pink-500 hover:text-pink-300 transition-colors px-4 py-2">
                 Blog
               </Link>
-              <Link to="/interests/data/1" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
+              <Link to="/interests/analysis/1" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-[#FFA300] hover:text-[#FFD180] transition-colors px-4 py-2">
                 Interests
               </Link>
               <Link to="/contact/contactinfo" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-extrabold text-purple-500 hover:text-purple-300 transition-colors px-4 py-2">
@@ -218,7 +218,7 @@ const Layout: React.FC = () => {
             colorClass="text-pink-500 hover:text-pink-300"
           />
           <LiquidTab
-            to="/interests/data/1"
+            to="/interests/analysis/1"
             label="Interests"
             active={location.pathname.startsWith('/interests')}
             colorClass="text-[#FFA300] hover:text-[#FFD180]"
@@ -242,7 +242,7 @@ const Layout: React.FC = () => {
         <Route path="/research/:submenu" element={<Research />} />
         <Route path="/blog" element={<Navigate to="/blog/tech-bio" replace />} />
         <Route path="/blog/:tab" element={<Blog />} />
-        <Route path="/interests" element={<Navigate to="/interests/data/1" replace />} />
+        <Route path="/interests" element={<Navigate to="/interests/analysis/1" replace />} />
         <Route path="/interests/:submenu" element={<Interests isAuthorized={isAuthorized} />} />
         <Route path="/interests/:submenu/:subId" element={<Interests isAuthorized={isAuthorized} />} />
         <Route path="/contact" element={<Navigate to="/contact/contactinfo" replace />} />

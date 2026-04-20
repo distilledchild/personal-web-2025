@@ -1,0 +1,728 @@
+{
+  "code": "UZ",
+  "id": "M.UZ.RAFAGOLDV_OZT",
+  "name": "Uzbekistan",
+  "source": "DBnomics IMF IFS",
+  "observations": [
+    {
+      "date": "2013-01-01",
+      "tonnes": 170.136145,
+      "million_troy_ounces": 5.47
+    },
+    {
+      "date": "2013-02-01",
+      "tonnes": 175.112705,
+      "million_troy_ounces": 5.63
+    },
+    {
+      "date": "2013-03-01",
+      "tonnes": 180.711335,
+      "million_troy_ounces": 5.81
+    },
+    {
+      "date": "2013-04-01",
+      "tonnes": 194.396875,
+      "million_troy_ounces": 6.25
+    },
+    {
+      "date": "2013-05-01",
+      "tonnes": 202.17275,
+      "million_troy_ounces": 6.5
+    },
+    {
+      "date": "2013-06-01",
+      "tonnes": 209.63759000000002,
+      "million_troy_ounces": 6.74
+    },
+    {
+      "date": "2013-07-01",
+      "tonnes": 207.14931,
+      "million_troy_ounces": 6.66
+    },
+    {
+      "date": "2013-08-01",
+      "tonnes": 197.19619,
+      "million_troy_ounces": 6.34
+    },
+    {
+      "date": "2013-09-01",
+      "tonnes": 206.838275,
+      "million_troy_ounces": 6.65
+    },
+    {
+      "date": "2013-10-01",
+      "tonnes": 196.57412000000002,
+      "million_troy_ounces": 6.32
+    },
+    {
+      "date": "2013-11-01",
+      "tonnes": 204.349995,
+      "million_troy_ounces": 6.57
+    },
+    {
+      "date": "2013-12-01",
+      "tonnes": 217.413465,
+      "million_troy_ounces": 6.99
+    },
+    {
+      "date": "2014-01-01",
+      "tonnes": 224.56727,
+      "million_troy_ounces": 7.22
+    },
+    {
+      "date": "2014-02-01",
+      "tonnes": 231.41004,
+      "million_troy_ounces": 7.44
+    },
+    {
+      "date": "2014-03-01",
+      "tonnes": 228.29969,
+      "million_troy_ounces": 7.34
+    },
+    {
+      "date": "2014-04-01",
+      "tonnes": 235.76453,
+      "million_troy_ounces": 7.58
+    },
+    {
+      "date": "2014-05-01",
+      "tonnes": 243.22937000000002,
+      "million_troy_ounces": 7.82
+    },
+    {
+      "date": "2014-06-01",
+      "tonnes": 250.69421000000003,
+      "million_troy_ounces": 8.06
+    },
+    {
+      "date": "2014-07-01",
+      "tonnes": 248.20593000000002,
+      "million_troy_ounces": 7.98
+    },
+    {
+      "date": "2014-08-01",
+      "tonnes": 248.20593000000002,
+      "million_troy_ounces": 7.98
+    },
+    {
+      "date": "2014-09-01",
+      "tonnes": 262.824575,
+      "million_troy_ounces": 8.45
+    },
+    {
+      "date": "2014-10-01",
+      "tonnes": 270.28941499999996,
+      "million_troy_ounces": 8.69
+    },
+    {
+      "date": "2014-11-01",
+      "tonnes": 277.44322,
+      "million_troy_ounces": 8.92
+    },
+    {
+      "date": "2014-12-01",
+      "tonnes": 274.643905,
+      "million_troy_ounces": 8.83
+    },
+    {
+      "date": "2015-01-01",
+      "tonnes": 281.79771,
+      "million_troy_ounces": 9.06
+    },
+    {
+      "date": "2015-02-01",
+      "tonnes": 278.06529,
+      "million_troy_ounces": 8.94
+    },
+    {
+      "date": "2015-03-01",
+      "tonnes": 275.26597499999997,
+      "million_troy_ounces": 8.85
+    },
+    {
+      "date": "2015-04-01",
+      "tonnes": 282.730815,
+      "million_troy_ounces": 9.09
+    },
+    {
+      "date": "2015-05-01",
+      "tonnes": 290.195655,
+      "million_troy_ounces": 9.33
+    },
+    {
+      "date": "2015-06-01",
+      "tonnes": 297.34946,
+      "million_troy_ounces": 9.56
+    },
+    {
+      "date": "2015-07-01",
+      "tonnes": 304.8143,
+      "million_troy_ounces": 9.8
+    },
+    {
+      "date": "2015-08-01",
+      "tonnes": 304.8143,
+      "million_troy_ounces": 9.8
+    },
+    {
+      "date": "2015-09-01",
+      "tonnes": 309.79086,
+      "million_troy_ounces": 9.96
+    },
+    {
+      "date": "2015-10-01",
+      "tonnes": 306.991545,
+      "million_troy_ounces": 9.87
+    },
+    {
+      "date": "2015-11-01",
+      "tonnes": 314.14535,
+      "million_troy_ounces": 10.1
+    },
+    {
+      "date": "2015-12-01",
+      "tonnes": 311.65707,
+      "million_troy_ounces": 10.02
+    },
+    {
+      "date": "2016-01-01",
+      "tonnes": 308.857755,
+      "million_troy_ounces": 9.93
+    },
+    {
+      "date": "2016-02-01",
+      "tonnes": 315.700525,
+      "million_troy_ounces": 10.15
+    },
+    {
+      "date": "2016-03-01",
+      "tonnes": 323.165365,
+      "million_troy_ounces": 10.39
+    },
+    {
+      "date": "2016-04-01",
+      "tonnes": 320.05501499999997,
+      "million_troy_ounces": 10.29
+    },
+    {
+      "date": "2016-05-01",
+      "tonnes": 327.519855,
+      "million_troy_ounces": 10.53
+    },
+    {
+      "date": "2016-06-01",
+      "tonnes": 334.67366,
+      "million_troy_ounces": 10.76
+    },
+    {
+      "date": "2016-07-01",
+      "tonnes": 332.18538,
+      "million_troy_ounces": 10.68
+    },
+    {
+      "date": "2016-08-01",
+      "tonnes": 329.6971,
+      "million_troy_ounces": 10.6
+    },
+    {
+      "date": "2016-09-01",
+      "tonnes": 336.850905,
+      "million_troy_ounces": 10.83
+    },
+    {
+      "date": "2016-10-01",
+      "tonnes": 334.362625,
+      "million_troy_ounces": 10.75
+    },
+    {
+      "date": "2016-11-01",
+      "tonnes": 331.56331,
+      "million_troy_ounces": 10.66
+    },
+    {
+      "date": "2016-12-01",
+      "tonnes": 328.763995,
+      "million_troy_ounces": 10.57
+    },
+    {
+      "date": "2017-01-01",
+      "tonnes": 336.228835,
+      "million_troy_ounces": 10.81
+    },
+    {
+      "date": "2017-02-01",
+      "tonnes": 343.071605,
+      "million_troy_ounces": 11.03
+    },
+    {
+      "date": "2017-03-01",
+      "tonnes": 340.583325,
+      "million_troy_ounces": 10.95
+    },
+    {
+      "date": "2017-04-01",
+      "tonnes": 337.78400999999997,
+      "million_troy_ounces": 10.86
+    },
+    {
+      "date": "2017-05-01",
+      "tonnes": 335.29573,
+      "million_troy_ounces": 10.78
+    },
+    {
+      "date": "2017-06-01",
+      "tonnes": 342.449535,
+      "million_troy_ounces": 11.01
+    },
+    {
+      "date": "2017-07-01",
+      "tonnes": 339.961255,
+      "million_troy_ounces": 10.93
+    },
+    {
+      "date": "2017-08-01",
+      "tonnes": 319.74397999999997,
+      "million_troy_ounces": 10.28
+    },
+    {
+      "date": "2017-09-01",
+      "tonnes": 317.2557,
+      "million_troy_ounces": 10.2
+    },
+    {
+      "date": "2017-10-01",
+      "tonnes": 321.921225,
+      "million_troy_ounces": 10.35
+    },
+    {
+      "date": "2017-11-01",
+      "tonnes": 329.386065,
+      "million_troy_ounces": 10.59
+    },
+    {
+      "date": "2017-12-01",
+      "tonnes": 336.53987,
+      "million_troy_ounces": 10.82
+    },
+    {
+      "date": "2018-01-01",
+      "tonnes": 324.09847,
+      "million_troy_ounces": 10.42
+    },
+    {
+      "date": "2018-02-01",
+      "tonnes": 320.98812000000004,
+      "million_troy_ounces": 10.32
+    },
+    {
+      "date": "2018-03-01",
+      "tonnes": 328.45296,
+      "million_troy_ounces": 10.56
+    },
+    {
+      "date": "2018-04-01",
+      "tonnes": 329.386065,
+      "million_troy_ounces": 10.59
+    },
+    {
+      "date": "2018-05-01",
+      "tonnes": 336.850905,
+      "million_troy_ounces": 10.83
+    },
+    {
+      "date": "2018-06-01",
+      "tonnes": 344.315745,
+      "million_troy_ounces": 11.07
+    },
+    {
+      "date": "2018-07-01",
+      "tonnes": 351.78058500000003,
+      "million_troy_ounces": 11.31
+    },
+    {
+      "date": "2018-08-01",
+      "tonnes": 359.245425,
+      "million_troy_ounces": 11.55
+    },
+    {
+      "date": "2018-09-01",
+      "tonnes": 366.710265,
+      "million_troy_ounces": 11.79
+    },
+    {
+      "date": "2018-10-01",
+      "tonnes": 374.175105,
+      "million_troy_ounces": 12.03
+    },
+    {
+      "date": "2018-11-01",
+      "tonnes": 381.32891,
+      "million_troy_ounces": 12.26
+    },
+    {
+      "date": "2018-12-01",
+      "tonnes": 355.20197,
+      "million_troy_ounces": 11.42
+    },
+    {
+      "date": "2019-01-01",
+      "tonnes": 342.76057,
+      "million_troy_ounces": 11.02
+    },
+    {
+      "date": "2019-02-01",
+      "tonnes": 339.6914058815551,
+      "million_troy_ounces": 10.9213241558524
+    },
+    {
+      "date": "2019-03-01",
+      "tonnes": 347.11506,
+      "million_troy_ounces": 11.16
+    },
+    {
+      "date": "2019-04-01",
+      "tonnes": 354.890935,
+      "million_troy_ounces": 11.41
+    },
+    {
+      "date": "2019-05-01",
+      "tonnes": 362.355775,
+      "million_troy_ounces": 11.65
+    },
+    {
+      "date": "2019-06-01",
+      "tonnes": 350.22541,
+      "million_troy_ounces": 11.26
+    },
+    {
+      "date": "2019-07-01",
+      "tonnes": 327.83088999999995,
+      "million_troy_ounces": 10.54
+    },
+    {
+      "date": "2019-08-01",
+      "tonnes": 325.65364500000004,
+      "million_troy_ounces": 10.47
+    },
+    {
+      "date": "2019-09-01",
+      "tonnes": 332.18538,
+      "million_troy_ounces": 10.68
+    },
+    {
+      "date": "2019-10-01",
+      "tonnes": 338.71711500000004,
+      "million_troy_ounces": 10.89
+    },
+    {
+      "date": "2019-11-01",
+      "tonnes": 338.40608000000003,
+      "million_troy_ounces": 10.88
+    },
+    {
+      "date": "2019-12-01",
+      "tonnes": 335.9178,
+      "million_troy_ounces": 10.8
+    },
+    {
+      "date": "2020-01-01",
+      "tonnes": 333.74055500000003,
+      "million_troy_ounces": 10.73
+    },
+    {
+      "date": "2020-02-01",
+      "tonnes": 330.63020500000005,
+      "million_troy_ounces": 10.63
+    },
+    {
+      "date": "2020-03-01",
+      "tonnes": 338.09504499999997,
+      "million_troy_ounces": 10.87
+    },
+    {
+      "date": "2020-04-01",
+      "tonnes": 335.9178,
+      "million_troy_ounces": 10.8
+    },
+    {
+      "date": "2020-05-01",
+      "tonnes": 342.76057,
+      "million_troy_ounces": 11.02
+    },
+    {
+      "date": "2020-06-01",
+      "tonnes": 342.200707,
+      "million_troy_ounces": 11.002
+    },
+    {
+      "date": "2020-07-01",
+      "tonnes": 330.63020500000005,
+      "million_troy_ounces": 10.63
+    },
+    {
+      "date": "2020-08-01",
+      "tonnes": 298.904635,
+      "million_troy_ounces": 9.61
+    },
+    {
+      "date": "2020-09-01",
+      "tonnes": 307.30258000000003,
+      "million_troy_ounces": 9.88
+    },
+    {
+      "date": "2020-10-01",
+      "tonnes": 315.700525,
+      "million_troy_ounces": 10.15
+    },
+    {
+      "date": "2020-11-01",
+      "tonnes": 324.09847,
+      "million_troy_ounces": 10.42
+    },
+    {
+      "date": "2020-12-01",
+      "tonnes": 332.496415,
+      "million_troy_ounces": 10.69
+    },
+    {
+      "date": "2021-01-01",
+      "tonnes": 340.583325,
+      "million_troy_ounces": 10.95
+    },
+    {
+      "date": "2021-02-01",
+      "tonnes": 347.73713,
+      "million_troy_ounces": 11.18
+    },
+    {
+      "date": "2021-03-01",
+      "tonnes": 355.82403999999997,
+      "million_troy_ounces": 11.44
+    },
+    {
+      "date": "2021-04-01",
+      "tonnes": 364.221985,
+      "million_troy_ounces": 11.71
+    },
+    {
+      "date": "2021-05-01",
+      "tonnes": 352.71369,
+      "million_troy_ounces": 11.34
+    },
+    {
+      "date": "2021-06-01",
+      "tonnes": 358.001285,
+      "million_troy_ounces": 11.51
+    },
+    {
+      "date": "2021-07-01",
+      "tonnes": 366.39923,
+      "million_troy_ounces": 11.78
+    },
+    {
+      "date": "2021-08-01",
+      "tonnes": 375.10821000000004,
+      "million_troy_ounces": 12.06
+    },
+    {
+      "date": "2021-09-01",
+      "tonnes": 383.506155,
+      "million_troy_ounces": 12.33
+    },
+    {
+      "date": "2021-10-01",
+      "tonnes": 375.10821000000004,
+      "million_troy_ounces": 12.06
+    },
+    {
+      "date": "2021-11-01",
+      "tonnes": 353.646795,
+      "million_troy_ounces": 11.37
+    },
+    {
+      "date": "2021-12-01",
+      "tonnes": 362.04474000000005,
+      "million_troy_ounces": 11.64
+    },
+    {
+      "date": "2022-01-01",
+      "tonnes": 360.8006,
+      "million_troy_ounces": 11.6
+    },
+    {
+      "date": "2022-02-01",
+      "tonnes": 338.71711500000004,
+      "million_troy_ounces": 10.89
+    },
+    {
+      "date": "2022-03-01",
+      "tonnes": 337.472975,
+      "million_troy_ounces": 10.85
+    },
+    {
+      "date": "2022-04-01",
+      "tonnes": 346.181955,
+      "million_troy_ounces": 11.13
+    },
+    {
+      "date": "2022-05-01",
+      "tonnes": 355.20197,
+      "million_troy_ounces": 11.42
+    },
+    {
+      "date": "2022-06-01",
+      "tonnes": 363.91094999999996,
+      "million_troy_ounces": 11.7
+    },
+    {
+      "date": "2022-07-01",
+      "tonnes": 372.61993,
+      "million_troy_ounces": 11.98
+    },
+    {
+      "date": "2022-08-01",
+      "tonnes": 381.32891,
+      "million_troy_ounces": 12.26
+    },
+    {
+      "date": "2022-09-01",
+      "tonnes": 390.03789,
+      "million_troy_ounces": 12.54
+    },
+    {
+      "date": "2022-10-01",
+      "tonnes": 398.74687,
+      "million_troy_ounces": 12.82
+    },
+    {
+      "date": "2022-11-01",
+      "tonnes": 397.191695,
+      "million_troy_ounces": 12.77
+    },
+    {
+      "date": "2022-12-01",
+      "tonnes": 395.947555,
+      "million_troy_ounces": 12.73
+    },
+    {
+      "date": "2023-01-01",
+      "tonnes": 384.43926,
+      "million_troy_ounces": 12.36
+    },
+    {
+      "date": "2023-02-01",
+      "tonnes": 392.52617,
+      "million_troy_ounces": 12.62
+    },
+    {
+      "date": "2023-03-01",
+      "tonnes": 381.32891,
+      "million_troy_ounces": 12.26
+    },
+    {
+      "date": "2023-04-01",
+      "tonnes": 379.77373500000004,
+      "million_troy_ounces": 12.21
+    },
+    {
+      "date": "2023-05-01",
+      "tonnes": 368.88750999999996,
+      "million_troy_ounces": 11.86
+    },
+    {
+      "date": "2023-06-01",
+      "tonnes": 377.285455,
+      "million_troy_ounces": 12.13
+    },
+    {
+      "date": "2023-07-01",
+      "tonnes": 366.088195,
+      "million_troy_ounces": 11.77
+    },
+    {
+      "date": "2023-08-01",
+      "tonnes": 374.79717500000004,
+      "million_troy_ounces": 12.05
+    },
+    {
+      "date": "2023-09-01",
+      "tonnes": 383.81719,
+      "million_troy_ounces": 12.34
+    },
+    {
+      "date": "2023-10-01",
+      "tonnes": 373.242,
+      "million_troy_ounces": 12
+    },
+    {
+      "date": "2023-11-01",
+      "tonnes": 362.04474000000005,
+      "million_troy_ounces": 11.64
+    },
+    {
+      "date": "2023-12-01",
+      "tonnes": 371.37579,
+      "million_troy_ounces": 11.94
+    },
+    {
+      "date": "2024-01-01",
+      "tonnes": 380.395805,
+      "million_troy_ounces": 12.23
+    },
+    {
+      "date": "2024-02-01",
+      "tonnes": 368.576475,
+      "million_troy_ounces": 11.85
+    },
+    {
+      "date": "2024-03-01",
+      "tonnes": 357.69025,
+      "million_troy_ounces": 11.5
+    },
+    {
+      "date": "2024-04-01",
+      "tonnes": 356.44611000000003,
+      "million_troy_ounces": 11.46
+    },
+    {
+      "date": "2024-05-01",
+      "tonnes": 355.82403999999997,
+      "million_troy_ounces": 11.44
+    },
+    {
+      "date": "2024-06-01",
+      "tonnes": 365.15509000000003,
+      "million_troy_ounces": 11.74
+    },
+    {
+      "date": "2024-07-01",
+      "tonnes": 374.79717500000004,
+      "million_troy_ounces": 12.05
+    },
+    {
+      "date": "2024-08-01",
+      "tonnes": 374.48614,
+      "million_troy_ounces": 12.04
+    },
+    {
+      "date": "2024-09-01",
+      "tonnes": 373.86406999999997,
+      "million_troy_ounces": 12.02
+    },
+    {
+      "date": "2024-10-01",
+      "tonnes": 373.242,
+      "million_troy_ounces": 12
+    },
+    {
+      "date": "2024-11-01",
+      "tonnes": 382.26201499999996,
+      "million_troy_ounces": 12.29
+    },
+    {
+      "date": "2024-12-01",
+      "tonnes": 382.57305,
+      "million_troy_ounces": 12.3
+    }
+  ]
+}
