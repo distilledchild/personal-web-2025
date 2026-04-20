@@ -265,21 +265,9 @@ export const Research: React.FC = () => {
   const { submenu } = useParams<{ submenu?: string }>();
   const navigate = useNavigate();
 
-  const isDev = import.meta.env.DEV;
-
-  // Lazy-load Hi-C browser only in dev so it doesn't ship/load in production.
-  const ResearchHiCBrowser = React.useMemo(() => {
-    if (!isDev) return null;
-    return React.lazy(async () => {
-      const mod = await import('./ResearchHiCBrowser');
-      return { default: mod.ResearchHiCBrowser };
-    });
-  }, [isDev]);
-
   const tabs = [
     { label: 'PaperFinder', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'paperfinder' },
     { label: 'Loop Browser', icon: Search, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'loopbrowser' },
-    ...(isDev ? [{ label: 'Hi-C Browser', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'hicbrowser' }] : []),
     { label: 'Breedchain', icon: Cat, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'breedchain' },
     { label: 'PE Interactions', icon: GitBranch, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'peinteractions' },
     { label: 'Single-cell Seq', icon: Database, color: 'text-teal-500 border-teal-500', activeBg: 'bg-teal-50 ring-teal-200', slug: 'singlecellseq' },
@@ -337,11 +325,6 @@ export const Research: React.FC = () => {
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-6 pb-20">
         <div className="max-w-7xl mx-auto">
           {requestedSlug === 'loopbrowser' && <ResearchLoopBrowser />}
-          {requestedSlug === 'hicbrowser' && ResearchHiCBrowser ? (
-            <React.Suspense fallback={<div className="py-10 text-slate-400 text-sm">Loading Hi-C browser…</div>}>
-              <ResearchHiCBrowser />
-            </React.Suspense>
-          ) : null}
           {requestedSlug === 'breedchain' && <ResearchBreedchain />}
           {requestedSlug === 'peinteractions' && <ResearchPEInteractions />}
           {requestedSlug === 'paperfinder' && <ResearchPaperFinder />}
