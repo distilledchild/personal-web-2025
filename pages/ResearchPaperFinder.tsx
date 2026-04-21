@@ -69,6 +69,7 @@ const PublicationCell: React.FC<{ paper: PaperFinderPaper }> = ({ paper }) => {
 };
 
 const itemsPerPage = 5;
+type YearSortDirection = 'default' | 'asc' | 'desc';
 
 export const ResearchPaperFinder: React.FC = () => {
   const [query, setQuery] = React.useState('');
@@ -79,6 +80,7 @@ export const ResearchPaperFinder: React.FC = () => {
   const [error, setError] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [yearSortDirection, setYearSortDirection] = React.useState<YearSortDirection>('default');
 
   const searchPapers = React.useCallback(async (nextQuery?: string) => {
     const trimmedQuery = (nextQuery ?? query).trim();
@@ -114,12 +116,14 @@ export const ResearchPaperFinder: React.FC = () => {
       setSubmittedQuery(data.query || trimmedQuery);
       setWarning(data.enrichmentWarning || '');
       setCurrentPage(1);
+      setYearSortDirection('default');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Search failed.';
       setError(message);
       setPapers([]);
       setSubmittedQuery(trimmedQuery);
       setCurrentPage(1);
+      setYearSortDirection('default');
     } finally {
       setIsLoading(false);
     }
@@ -130,11 +134,45 @@ export const ResearchPaperFinder: React.FC = () => {
     searchPapers();
   };
 
-  const totalPages = Math.max(1, Math.ceil(papers.length / itemsPerPage));
+  const toggleYearSort = React.useCallback(() => {
+    setYearSortDirection((currentDirection) => {
+      if (currentDirection === 'default') return 'asc';
+      if (currentDirection === 'asc') return 'desc';
+      return 'default';
+    });
+    setCurrentPage(1);
+  }, []);
+
+  const sortedPapers = React.useMemo(() => {
+    if (yearSortDirection === 'default') return papers;
+
+    return [...papers].sort((leftPaper, rightPaper) => {
+      const leftYear = leftPaper.year ?? Number.POSITIVE_INFINITY;
+      const rightYear = rightPaper.year ?? Number.POSITIVE_INFINITY;
+
+      if (leftYear === rightYear) {
+        const leftScore = leftPaper.score ?? Number.NEGATIVE_INFINITY;
+        const rightScore = rightPaper.score ?? Number.NEGATIVE_INFINITY;
+        return rightScore - leftScore;
+      }
+
+      return yearSortDirection === 'asc'
+        ? leftYear - rightYear
+        : rightYear - leftYear;
+    });
+  }, [papers, yearSortDirection]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedPapers.length / itemsPerPage));
   const currentPapers = React.useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return papers.slice(startIndex, startIndex + itemsPerPage);
-  }, [currentPage, papers]);
+    return sortedPapers.slice(startIndex, startIndex + itemsPerPage);
+  }, [currentPage, sortedPapers]);
+
+  const yearSortIndicator = yearSortDirection === 'asc'
+    ? '↑'
+    : yearSortDirection === 'desc'
+      ? '↓'
+      : '↕';
 
   const columns = React.useMemo<DataTableColumn<PaperFinderPaper>[]>(() => [
     {
@@ -171,7 +209,17 @@ export const ResearchPaperFinder: React.FC = () => {
     },
     {
       key: 'year',
-      header: 'Year',
+      header: (
+        <button
+          type="button"
+          onClick={toggleYearSort}
+          className="inline-flex items-center gap-1 font-bold text-slate-700 transition hover:text-teal-700"
+          aria-label={`Sort by year (${yearSortDirection})`}
+        >
+          <span>Year</span>
+          <span className="text-xs">{yearSortIndicator}</span>
+        </button>
+      ),
       headerClassName: 'w-[8%]',
       className: 'align-top font-bold text-slate-800',
       render: (paper) => paper.pubDate || paper.year || 'NA',
@@ -246,7 +294,7 @@ export const ResearchPaperFinder: React.FC = () => {
         </div>
       ),
     },
-  ], []);
+  ], [toggleYearSort, yearSortDirection, yearSortIndicator]);
 
   return (
     <div className="animate-fadeIn space-y-8">
@@ -273,7 +321,7 @@ export const ResearchPaperFinder: React.FC = () => {
                 id="paperfinder-query"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="shadow enhancer"
+                placeholder="Enter a search term"
                 className="h-12 w-full rounded-lg border border-teal-200 bg-white pl-11 pr-4 text-base font-medium text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
               />
             </div>
