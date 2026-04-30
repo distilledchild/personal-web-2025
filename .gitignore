@@ -34,4 +34,4 @@ GCP_RUN_SETUP_GUIDE.md
 # Agent/AI generated
 .claude/
 output/
-.cache/cv-sync-state.json
+.cache/

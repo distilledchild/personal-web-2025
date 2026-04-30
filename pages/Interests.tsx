@@ -160,9 +160,11 @@ const generateCalendarDays = () => {
 export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
     const { submenu, subId } = useParams<{ submenu?: string; subId?: string }>();
     const navigate = useNavigate();
+    const adminOnlyAnalysisIds = new Set(['2', '3']);
 
     // Determine active tab from URL, default to 'travel'
     const activeTab = (submenu as 'travel' | 'workout' | 'art' | 'analysis' | 'data') || 'travel';
+    const [adminCheckLoading, setAdminCheckLoading] = useState(true);
 
     useEffect(() => {
         if (activeTab === 'data') {
@@ -205,12 +207,14 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                 const stored = getStoredUserProfile<any>();
                 if (!stored) {
                     setIsAdminUser(false);
+                    setAdminCheckLoading(false);
                     return;
                 }
 
                 const email = stored?.email;
                 if (!email) {
                     setIsAdminUser(false);
+                    setAdminCheckLoading(false);
                     return;
                 }
 
@@ -219,6 +223,8 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
             } catch (error) {
                 console.error('Failed to fetch admin role:', error);
                 setIsAdminUser(false);
+            } finally {
+                setAdminCheckLoading(false);
             }
         };
 
@@ -229,6 +235,16 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
             unsubscribe();
         };
     }, [isAuthorized]);
+
+    useEffect(() => {
+        if (adminCheckLoading) return;
+        if (activeTab === 'travel' && !isAdminUser) {
+            navigate('/interests/analysis/1', { replace: true });
+        }
+        if (activeTab === 'analysis' && subId && adminOnlyAnalysisIds.has(subId) && !isAdminUser) {
+            navigate('/interests/analysis/1', { replace: true });
+        }
+    }, [activeTab, adminCheckLoading, isAdminUser, navigate, subId]);
 
     useEffect(() => {
         if (activeTab === 'art') {
@@ -452,17 +468,35 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
 
     // Removed unused tooltip handlers
 
+    const interestTabs = [
+        { id: 'analysis', label: 'Analysis', icon: BarChart3 },
+        { id: 'art', label: 'Art', icon: Palette },
+        { id: 'workout', label: 'Workout', icon: Dumbbell },
+        ...(isAdminUser ? [{ id: 'travel', label: 'Travel', icon: Plane }] : [])
+    ];
+
+    if (adminCheckLoading) {
+        return (
+            <div className="flex flex-col h-screen bg-white items-center justify-center">
+                <p className="text-slate-500">Loading...</p>
+            </div>
+        );
+    }
+
+    if (activeTab === 'travel' && !isAdminUser) {
+        return null;
+    }
+
+    if (activeTab === 'analysis' && subId && adminOnlyAnalysisIds.has(subId) && !isAdminUser) {
+        return null;
+    }
+
     return (
         <div className="flex flex-col h-screen bg-white overflow-hidden">
             {/* Fixed Header Section */}
             <PageHeader
                 title="Topics"
-                tabs={[
-                    { id: 'analysis', label: 'Analysis', icon: BarChart3 },
-                    { id: 'art', label: 'Art', icon: Palette },
-                    { id: 'workout', label: 'Workout', icon: Dumbbell },
-                    { id: 'travel', label: 'Travel', icon: Plane }
-                ]}
+                tabs={interestTabs}
                 activeTab={activeTab}
                 onTabChange={(id) => navigate(`/interests/${id}`)}
                 activeColor="border-[#FFA300] text-[#FFA300]"
@@ -1118,40 +1152,44 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                             1. Gold Timing Model
                                         </p>
                                     </div>
-                                    <div
-                                        onClick={() => navigate('/interests/analysis/2')}
-                                        className={`
-                                            group cursor-pointer transition-all duration-200
-                                            bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                                            hover:bg-orange-50 hover:border-orange-200
-                                            ${subId === '2' ? 'bg-orange-50 border-orange-200' : ''}
-                                        `}
-                                    >
-                                        <p className={`
-                                            text-sm font-medium text-slate-600 truncate
-                                            group-hover:text-orange-600
-                                            ${subId === '2' ? 'text-orange-600' : ''}
-                                        `}>
-                                            2. Real Estate Time Series
-                                        </p>
-                                    </div>
-                                    <div
-                                        onClick={() => navigate('/interests/analysis/3')}
-                                        className={`
-                                            group cursor-pointer transition-all duration-200
-                                            bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
-                                            hover:bg-orange-50 hover:border-orange-200
-                                            ${subId === '3' ? 'bg-orange-50 border-orange-200' : ''}
-                                        `}
-                                    >
-                                        <p className={`
-                                            text-sm font-medium text-slate-600 truncate
-                                            group-hover:text-orange-600
-                                            ${subId === '3' ? 'text-orange-600' : ''}
-                                        `}>
-                                            3. FC Series Data Analytics
-                                        </p>
-                                    </div>
+                                    {isAdminUser && (
+                                        <div
+                                            onClick={() => navigate('/interests/analysis/2')}
+                                            className={`
+                                                group cursor-pointer transition-all duration-200
+                                                bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                                hover:bg-orange-50 hover:border-orange-200
+                                                ${subId === '2' ? 'bg-orange-50 border-orange-200' : ''}
+                                            `}
+                                        >
+                                            <p className={`
+                                                text-sm font-medium text-slate-600 truncate
+                                                group-hover:text-orange-600
+                                                ${subId === '2' ? 'text-orange-600' : ''}
+                                            `}>
+                                                2. Real Estate Time Series
+                                            </p>
+                                        </div>
+                                    )}
+                                    {isAdminUser && (
+                                        <div
+                                            onClick={() => navigate('/interests/analysis/3')}
+                                            className={`
+                                                group cursor-pointer transition-all duration-200
+                                                bg-slate-50 px-4 py-3 rounded-lg border border-slate-200
+                                                hover:bg-orange-50 hover:border-orange-200
+                                                ${subId === '3' ? 'bg-orange-50 border-orange-200' : ''}
+                                            `}
+                                        >
+                                            <p className={`
+                                                text-sm font-medium text-slate-600 truncate
+                                                group-hover:text-orange-600
+                                                ${subId === '3' ? 'text-orange-600' : ''}
+                                            `}>
+                                                3. FC Series Data Analytics
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
