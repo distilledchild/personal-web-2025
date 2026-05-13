@@ -76,6 +76,25 @@ interface MonthlyStats {
     run: { distance: number; count: number };
 }
 
+const isRideActivity = (sportType: string): boolean => {
+    const normalized = sportType.toLowerCase();
+    return normalized.includes('ride') || normalized === 'bike' || normalized === 'virtualride';
+};
+
+const formatPacePerKm = (distanceMeters: number, movingTimeSeconds: number): string => {
+    if (!distanceMeters || !movingTimeSeconds) return '-';
+
+    const secondsPerKm = movingTimeSeconds / (distanceMeters / 1000);
+    const minutes = Math.floor(secondsPerKm / 60);
+    const seconds = Math.round(secondsPerKm % 60);
+
+    if (seconds === 60) {
+        return `${minutes + 1}:00 /km`;
+    }
+
+    return `${minutes}:${String(seconds).padStart(2, '0')} /km`;
+};
+
 
 
 
@@ -421,7 +440,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
             render: (activity) => (
                 activity.sport_type.toLowerCase() === 'walk' ? (
                     <PersonStanding size={24} className="text-[#FFCC80]" />
-                ) : activity.sport_type.toLowerCase().includes('ride') || activity.sport_type.toLowerCase() === 'bike' || activity.sport_type.toLowerCase() === 'virtualride' ? (
+                ) : isRideActivity(activity.sport_type) ? (
                     <Bike size={24} className="text-[#FF7700]" />
                 ) : activity.sport_type.toLowerCase() === 'run' || activity.sport_type.toLowerCase() === 'running' ? (
                     <Footprints size={24} className="text-[#FFA300]" />
@@ -446,9 +465,9 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
             render: (activity) => `${activity.total_elevation_gain.toFixed(0)} m`
         },
         {
-            key: 'avgSpeed',
-            header: 'Avg Speed',
-            render: (activity) => `${(activity.average_speed * 3.6).toFixed(1)} km/h`
+            key: 'avgPace',
+            header: 'Avg Pace',
+            render: (activity) => formatPacePerKm(activity.distance, activity.moving_time)
         }
     ], []);
 
