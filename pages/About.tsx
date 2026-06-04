@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AboutMe } from './about/AboutMe';
 import { AboutMilestones } from './about/AboutMilestones';
 import { AboutAcademics } from './about/AboutAcademics';
+import { AboutTechStack } from './about/AboutTechStack';
 import { PageHeader } from '../components/PageHeader';
 import { fetchMemberRole, getStoredUserProfile, subscribeToUserProfileChanges } from '../utils/auth';
 
@@ -44,7 +45,7 @@ export const About: React.FC = () => {
     }, []);
 
     // Map URL param to valid tabs, default to 'me'
-    const activeTab = (tab === 'me' || tab === 'milestones' || tab === 'academics') ? tab : 'me';
+    const activeTab = (tab === 'me' || tab === 'milestones' || tab === 'academics' || tab === 'tech-stack') ? tab : 'me';
 
     const handleTabChange = (newTab: string) => {
         navigate(`/about/${newTab}`);
@@ -57,7 +58,8 @@ export const About: React.FC = () => {
                 tabs={[
                     { id: 'me', label: 'Me' },
                     { id: 'milestones', label: 'Milestones' },
-                    { id: 'academics', label: 'Academic' }
+                    { id: 'academics', label: 'Academic' },
+                    { id: 'tech-stack', label: 'Tech Stack' }
                 ]}
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
@@ -70,6 +72,7 @@ export const About: React.FC = () => {
                     {activeTab === 'me' && <AboutMe user={user} isAuthorized={isAuthorized} />}
                     {activeTab === 'milestones' && <AboutMilestones user={user} isAuthorized={isAuthorized} />}
                     {activeTab === 'academics' && <AboutAcademics user={user} isAuthorized={isAuthorized} />}
+                    {activeTab === 'tech-stack' && <AboutTechStack />}
                 </div>
             </div>
         </div>
