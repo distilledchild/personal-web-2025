@@ -99,10 +99,9 @@ const formatPacePerKm = (distanceMeters: number, movingTimeSeconds: number): str
 
 
 // Helper function to calculate monthly statistics
-const calculateMonthlyStats = (activities: StravaActivity[]): MonthlyStats => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+const calculateMonthlyStats = (activities: StravaActivity[], targetDate: Date): MonthlyStats => {
+    const currentMonth = targetDate.getMonth();
+    const currentYear = targetDate.getFullYear();
 
     const stats: MonthlyStats = {
         walk: { distance: 0, count: 0 },
@@ -131,10 +130,9 @@ const calculateMonthlyStats = (activities: StravaActivity[]): MonthlyStats => {
 };
 
 // Helper function to get workout days in current month
-const getWorkoutDays = (activities: StravaActivity[]): Set<number> => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+const getWorkoutDays = (activities: StravaActivity[], targetDate: Date): Set<number> => {
+    const currentMonth = targetDate.getMonth();
+    const currentYear = targetDate.getFullYear();
     const workoutDays = new Set<number>();
 
     activities.forEach(activity => {
@@ -148,10 +146,9 @@ const getWorkoutDays = (activities: StravaActivity[]): Set<number> => {
 };
 
 // Helper function to generate calendar days
-const generateCalendarDays = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+const generateCalendarDays = (targetDate: Date) => {
+    const year = targetDate.getFullYear();
+    const month = targetDate.getMonth();
 
     // Get first day of month (0 = Sunday, 1 = Monday, etc.)
     const firstDay = new Date(year, month, 1).getDay();
@@ -219,6 +216,35 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     const [artMuseums, setArtMuseums] = useState<ArtMuseum[]>([]);
     const [loadingArtworks, setLoadingArtworks] = useState(false);
     const [isAdminUser, setIsAdminUser] = useState(false);
+
+    const [currentCalendarDate, setCurrentCalendarDate] = useState(() => {
+        const d = new Date();
+        return new Date(d.getFullYear(), d.getMonth(), 1);
+    });
+
+    const todayDate = useMemo(() => new Date(), []);
+    const maxPastDate = useMemo(() => new Date(todayDate.getFullYear(), todayDate.getMonth() - 11, 1), [todayDate]);
+    const maxFutureDate = useMemo(() => new Date(todayDate.getFullYear(), todayDate.getMonth(), 1), [todayDate]);
+
+    const handlePrevMonth = () => {
+        if (currentCalendarDate > maxPastDate) {
+            setCurrentCalendarDate(prev => {
+                const newDate = new Date(prev);
+                newDate.setMonth(newDate.getMonth() - 1);
+                return newDate;
+            });
+        }
+    };
+
+    const handleNextMonth = () => {
+        if (currentCalendarDate < maxFutureDate) {
+            setCurrentCalendarDate(prev => {
+                const newDate = new Date(prev);
+                newDate.setMonth(newDate.getMonth() + 1);
+                return newDate;
+            });
+        }
+    };
 
     useEffect(() => {
         const fetchAdminRole = async () => {
@@ -401,10 +427,11 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
     // }, [stateData, activeTab]);
 
     // Calculate monthly stats
-    const monthlyStats = calculateMonthlyStats(stravaActivities);
-    const workoutDays = getWorkoutDays(stravaActivities);
-    const calendarDays = generateCalendarDays();
-    const today = new Date().getDate();
+    const monthlyStats = calculateMonthlyStats(stravaActivities, currentCalendarDate);
+    const workoutDays = getWorkoutDays(stravaActivities, currentCalendarDate);
+    const calendarDays = generateCalendarDays(currentCalendarDate);
+    const isCurrentMonth = currentCalendarDate.getMonth() === todayDate.getMonth() && currentCalendarDate.getFullYear() === todayDate.getFullYear();
+    const todayDay = isCurrentMonth ? todayDate.getDate() : -1;
 
     const chartData = [
         { name: 'Walk', distance: monthlyStats.walk.distance, fill: 'url(#walkGradient)' },
@@ -655,7 +682,9 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                         {/* Bar Chart - Monthly Distance */}
                                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                                            <h4 className="text-lg font-bold text-slate-900 mb-4">This Month's Distance (km)</h4>
+                                            <h4 className="text-lg font-bold text-slate-900 mb-4">
+                                                Distance in {currentCalendarDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} (km)
+                                            </h4>
                                             <ResponsiveContainer width="100%" height={250}>
                                                 <BarChart data={chartData}>
                                                     <defs>
@@ -689,9 +718,33 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
 
                                         {/* Monthly Calendar */}
                                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                                            <h4 className="text-lg font-bold text-slate-900 mb-4">
-                                                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                                            </h4>
+                                            <div className="flex items-center justify-center gap-4 mb-4">
+                                                <button
+                                                    onClick={handlePrevMonth}
+                                                    disabled={!(currentCalendarDate > maxPastDate)}
+                                                    className={`p-1 rounded-lg transition-colors ${
+                                                        currentCalendarDate > maxPastDate
+                                                            ? 'text-slate-600 hover:bg-slate-100'
+                                                            : 'text-slate-300 cursor-not-allowed'
+                                                    }`}
+                                                >
+                                                    <ChevronLeft size={20} />
+                                                </button>
+                                                <h4 className="text-lg font-bold text-slate-900 min-w-[150px] text-center">
+                                                    {currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                                </h4>
+                                                <button
+                                                    onClick={handleNextMonth}
+                                                    disabled={!(currentCalendarDate < maxFutureDate)}
+                                                    className={`p-1 rounded-lg transition-colors ${
+                                                        currentCalendarDate < maxFutureDate
+                                                            ? 'text-slate-600 hover:bg-slate-100'
+                                                            : 'text-slate-300 cursor-not-allowed'
+                                                    }`}
+                                                >
+                                                    <ChevronRight size={20} />
+                                                </button>
+                                            </div>
                                             <div className="grid grid-cols-7 gap-1">
                                                 {/* Day headers */}
                                                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
@@ -707,7 +760,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                                             aspect-square flex items-center justify-center text-sm rounded-lg
                                                             ${day === null ? '' :
                                                                 workoutDays.has(day) ? 'text-white font-bold' :
-                                                                    day > today ? 'text-slate-400' :
+                                                                    (isCurrentMonth && day > todayDay) ? 'text-slate-400' :
                                                                         'text-black'}
                                                         `}
                                                         style={
@@ -725,7 +778,7 @@ export const Interests: React.FC<{ isAuthorized: boolean }> = ({ isAuthorized })
                                         {/* Activity Counters */}
                                         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                                             <h4 className="text-lg font-bold text-slate-900 mb-4">
-                                                Activity Count ({new Date().toLocaleDateString('en-US', { month: 'long' })})
+                                                Activity Count ({currentCalendarDate.toLocaleDateString('en-US', { month: 'long' })})
                                             </h4>
                                             <div className="grid grid-cols-3 gap-4">
                                                 {/* Walk Counter */}
