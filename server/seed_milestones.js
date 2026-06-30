@@ -7,6 +7,7 @@ const milestoneSchema = new mongoose.Schema({
     date: Date,
     title: String,
     description: String,
+    link: { type: String, default: '' },
     createdAt: Date,
     category: String // 'ME' or 'WEB'
 }, { collection: 'ABOUT_MILESTONE' });

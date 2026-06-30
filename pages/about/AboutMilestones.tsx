@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, X, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Pencil, Plus, X, Trash2 } from 'lucide-react';
 import { API_URL } from '../../utils/apiConfig';
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 
@@ -8,6 +9,7 @@ interface Milestone {
     date: string;
     title: string;
     description: string;
+    link?: string;
     category: 'ME' | 'WEB';
     createdAt: string;
 }
@@ -18,6 +20,7 @@ interface AboutMilestonesProps {
 }
 
 export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthorized }) => {
+    const navigate = useNavigate();
     const [milestones, setMilestones] = useState<Milestone[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
@@ -25,6 +28,7 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
         date: '',
         title: '',
         description: '',
+        link: '',
         category: 'WEB' as 'ME' | 'WEB'
     });
     const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
@@ -50,6 +54,17 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
     const handleSaveMilestone = async () => {
         if (!user) return;
 
+        const trimmedLink = milestoneForm.link.trim();
+        if (
+            trimmedLink &&
+            !trimmedLink.startsWith('/') &&
+            !trimmedLink.startsWith('http://') &&
+            !trimmedLink.startsWith('https://')
+        ) {
+            alert('Internal links must start with /. External links must start with http:// or https://.');
+            return;
+        }
+
         try {
             const method = editingMilestone ? 'PUT' : 'POST';
             const url = editingMilestone
@@ -61,6 +76,7 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...milestoneForm,
+                    link: trimmedLink,
                     email: user.email
                 })
             });
@@ -107,6 +123,7 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                 date: yearMonth,
                 title: milestone.title,
                 description: milestone.description,
+                link: milestone.link || '',
                 category: milestone.category
             });
         } else {
@@ -117,6 +134,7 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                 date: yearMonth,
                 title: '',
                 description: '',
+                link: '',
                 category: 'WEB'
             });
         }
@@ -147,6 +165,38 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
             }
             return part;
         });
+    };
+
+    const hasNavigableLink = (link?: string) => Boolean(link && link.trim());
+
+    const openMilestoneLink = (link?: string) => {
+        if (!link) return;
+
+        if (link.startsWith('/')) {
+            navigate(link);
+            return;
+        }
+
+        window.open(link, '_blank', 'noopener,noreferrer');
+    };
+
+    const renderMilestoneTitle = (milestone: Milestone) => {
+        if (!hasNavigableLink(milestone.link)) {
+            return <h3 className="mb-2 text-lg font-bold text-slate-800">{milestone.title}</h3>;
+        }
+
+        return (
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    openMilestoneLink(milestone.link);
+                }}
+                className="mb-2 text-left text-lg font-bold text-blue-600 underline decoration-blue-600 underline-offset-4 transition-colors hover:text-blue-700"
+            >
+                {milestone.title}
+            </button>
+        );
     };
 
     // Group milestones by YYYY-MM
@@ -239,16 +289,28 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                                             <div className="w-1/2 pr-12 flex justify-end">
                                                 {milestone.category === 'ME' && (
                                                     <div
-                                                        onClick={() => isAuthorized && openMilestoneModal(milestone)}
                                                         className={`
                                                              relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
-                                                             ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
+                                                             ${hasNavigableLink(milestone.link) ? 'hover:border-blue-200 transition-colors' : ''}
                                                          `}
                                                     >
+                                                        {isAuthorized && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    openMilestoneModal(milestone);
+                                                                }}
+                                                                className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-blue-300 hover:text-blue-600"
+                                                                title="Edit milestone"
+                                                            >
+                                                                <Pencil size={16} />
+                                                            </button>
+                                                        )}
                                                         <div className="absolute top-1/2 -right-12 w-12 h-0.5 bg-slate-300 -translate-y-1/2"></div>
                                                         <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
                                                             <div className="lg:border-l lg:border-transparent lg:pl-0 flex-1">
-                                                                <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
+                                                                {renderMilestoneTitle(milestone)}
                                                                 <p className="text-slate-600 text-sm whitespace-pre-wrap">{renderDescriptionWithLinks(milestone.description)}</p>
                                                             </div>
                                                         </div>
@@ -260,16 +322,28 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                                             <div className="w-1/2 pl-12 flex justify-start">
                                                 {milestone.category === 'WEB' && (
                                                     <div
-                                                        onClick={() => isAuthorized && openMilestoneModal(milestone)}
                                                         className={`
                                                              relative bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full
-                                                             ${isAuthorized ? 'cursor-pointer hover:border-blue-300 hover:shadow-md transition-all' : ''}
+                                                             ${hasNavigableLink(milestone.link) ? 'hover:border-blue-200 transition-colors' : ''}
                                                          `}
                                                     >
+                                                        {isAuthorized && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    openMilestoneModal(milestone);
+                                                                }}
+                                                                className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-blue-300 hover:text-blue-600"
+                                                                title="Edit milestone"
+                                                            >
+                                                                <Pencil size={16} />
+                                                            </button>
+                                                        )}
                                                         <div className="absolute top-1/2 -left-12 w-12 h-0.5 bg-slate-300 -translate-y-1/2"></div>
                                                         <div className="flex flex-col lg:flex-row lg:items-center lg:gap-4">
                                                             <div className="lg:border-l lg:border-transparent lg:pl-0 flex-1">
-                                                                <h3 className="text-lg font-bold text-slate-800 mb-2">{milestone.title}</h3>
+                                                                {renderMilestoneTitle(milestone)}
                                                                 <p className="text-slate-600 text-sm whitespace-pre-wrap">{renderDescriptionWithLinks(milestone.description)}</p>
                                                             </div>
                                                         </div>
@@ -352,6 +426,18 @@ export const AboutMilestones: React.FC<AboutMilestonesProps> = ({ user, isAuthor
                                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
                                     placeholder="Enter milestone description"
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-1">Link</label>
+                                <input
+                                    type="text"
+                                    value={milestoneForm.link}
+                                    onChange={e => setMilestoneForm({ ...milestoneForm, link: e.target.value })}
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Enter milestone link (optional)"
+                                />
+                                <p className="mt-2 text-xs text-slate-500">Internal links must start with /</p>
+                                <p className="text-xs text-slate-500">External links must start with http:// or https://</p>
                             </div>
 
                             <div className="flex gap-3 pt-4">

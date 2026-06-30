@@ -2036,6 +2036,7 @@ const milestoneSchema = new mongoose.Schema({
     date: Date,
     title: String,
     description: String,
+    link: { type: String, default: '' },
     createdAt: Date,
     category: String // 'ME' or 'WEB'
 }, { collection: 'ABOUT_MILESTONE' });
@@ -2057,7 +2058,7 @@ app.get('/api/milestones', async (req, res) => {
 // Create Milestone
 app.post('/api/milestones', async (req, res) => {
     try {
-        const { date, title, description, category, email } = req.body;
+        const { date, title, description, category, link, email } = req.body;
 
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
         if (!authorizedEmails.includes(email)) {
@@ -2068,6 +2069,7 @@ app.post('/api/milestones', async (req, res) => {
             date: new Date(date),
             title,
             description,
+            link: typeof link === 'string' ? link.trim() : '',
             category,
             createdAt: new Date()
         });
@@ -2084,7 +2086,7 @@ app.post('/api/milestones', async (req, res) => {
 app.put('/api/milestones/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { date, title, description, category, email } = req.body;
+        const { date, title, description, category, link, email } = req.body;
 
         const authorizedEmails = ['distilledchild@gmail.com', 'wellclouder@gmail.com'];
         if (!authorizedEmails.includes(email)) {
@@ -2094,10 +2096,11 @@ app.put('/api/milestones/:id', async (req, res) => {
         const milestone = await Milestone.findById(id);
         if (!milestone) return res.status(404).json({ error: 'Not found' });
 
-        if (date) milestone.date = new Date(date);
-        if (title) milestone.title = title;
-        if (description) milestone.description = description;
-        if (category) milestone.category = category;
+        if (date !== undefined) milestone.date = new Date(date);
+        if (title !== undefined) milestone.title = title;
+        if (description !== undefined) milestone.description = description;
+        if (category !== undefined) milestone.category = category;
+        if (link !== undefined) milestone.link = typeof link === 'string' ? link.trim() : '';
 
         await milestone.save();
         res.json(milestone);
